@@ -104,8 +104,8 @@ let
     }
     
     BLINK_INTERVAL=2 # seconds
-    VIBRATION_DURATION=400 #ms
-    VIBRATION_INTERVAL=2 #s
+    VIBRATION_DURATION=500 #ms
+    VIBRATION_INTERVAL=1   #s
     
     find_leds() {
     	find /sys -name "max_brightness" | xargs -I{} dirname {}
