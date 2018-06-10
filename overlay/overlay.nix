@@ -14,9 +14,9 @@ in
      ];
    };
 
+   # Misc. tools.
+   # Keep sorted.
    dtbTool = callPackage ./dtbtool { };
-
    mkbootimg = callPackage ./mkbootimg { };
-
    msm-fb-refresher = callPackage ./msm-fb-refresher { };
  }
