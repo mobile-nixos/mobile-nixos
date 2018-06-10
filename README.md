@@ -10,7 +10,7 @@ WIP notes
 ---------
 
 ```
-nix-build bootimg.nix
+nix-build bootimg.nix --arg device_name '"asus-z00t"'
 # Maybe `nix copy ./result --to ssh://another-host`
 adb wait-for-device && adb reboot bootloader
 fastboot boot result # or full path
