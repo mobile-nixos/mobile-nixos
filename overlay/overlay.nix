@@ -19,4 +19,5 @@ in
    dtbTool = callPackage ./dtbtool { };
    mkbootimg = callPackage ./mkbootimg { };
    msm-fb-refresher = callPackage ./msm-fb-refresher { };
+   ply-image = callPackage ./ply-image { };
  }
