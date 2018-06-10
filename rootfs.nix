@@ -87,74 +87,88 @@ let
     mount -t devtmpfs devtmpfs /dev/
     mount -t proc proc /proc
     mount -t sysfs sysfs /sys
-    
+
     ln -sv ${shell} /bin/sh
-    #ln -s ''${modules}/lib/modules /lib/modules
-    
-    
-    
-    #echo /sbin/mdev >/proc/sys/kernel/hotplug
-    #mdev -s
-    
-    
+
     loop_forever() {
-    	while true; do
-    		sleep 1
-    	done
+        while true; do
+            sleep 3600
+        done
     }
-    
-    BLINK_INTERVAL=2 # seconds
-    VIBRATION_DURATION=500 #ms
-    VIBRATION_INTERVAL=1   #s
-    
-    find_leds() {
-    	find /sys -name "max_brightness" | xargs -I{} dirname {}
+
+    IP=172.16.42.1
+
+    setup_usb_network_android() {
+            # Only run, when we have the android usb driver
+            SYS=/sys/class/android_usb/android0
+            [ -e "$SYS" ] || return
+            # Do the setup
+            printf "%s" "0" >"$SYS/enable"
+            printf "%s" "18D1" >"$SYS/idVendor"
+            printf "%s" "D001" >"$SYS/idProduct"
+            printf "%s" "rndis" >"$SYS/functions"
+            printf "%s" "1" >"$SYS/enable"
     }
-    
-    find_vibrator() {
-    	echo /sys/class/timed_output/vibrator
+    setup_usb_network_configfs() {
+            CONFIGFS=/config/usb_gadget
+            [ -e "$CONFIGFS" ] || return
+            mkdir $CONFIGFS/g1
+            printf "%s" "18D1" >"$CONFIGFS/g1/idVendor"
+            printf "%s" "D001" >"$CONFIGFS/g1/idProduct"
+            mkdir $CONFIGFS/g1/strings/0x409
+            mkdir $CONFIGFS/g1/functions/rndis.usb0
+            mkdir $CONFIGFS/g1/configs/c.1
+            mkdir $CONFIGFS/g1/configs/c.1/strings/0x409
+            printf "%s" "rndis" > $CONFIGFS/g1/configs/c.1/strings/0x409/configuration
+            ln -s $CONFIGFS/g1/functions/rndis.usb0 $CONFIGFS/g1/configs/c.1
+            # See also: #338
+            # shellcheck disable=SC2005
+            echo "$(ls /sys/class/udc)" > $CONFIGFS/g1/UDC
     }
-    
-    # blink_leds takes a list of LEDs as parameters,
-    # it iterates over every LED, and changes their value,
-    # alternating between max_brightness and 0 every BLINK_INTERVAL
-    blink_leds() {
-    	state=false # false = off, true=on
-    	while true; do
-    		for led in $@; do
-    			if [ "$state" = true ]; then
-    				cat $led/max_brightness > $led/brightness
-    			else
-    				echo 0 > $led/brightness
-    			fi
-    			echo blinking LED: $led
-    		done
-    		sleep ''${BLINK_INTERVAL}s
-    		if [ "$state" = true ]; then
-    			state=false
-    		else
-    			state=true
-    		fi
-    	done
+    setup_usb_network() {
+            # Only run once
+            _marker="/tmp/_setup_usb_network"
+            [ -e "$_marker" ] && return
+            touch "$_marker"
+            echo "Setup usb network"
+            # Run all usb network setup functions (add more below!)
+            setup_usb_network_android
+            setup_usb_network_configfs
     }
-    
-    # vibrate_loop vibrates each VIBRATION_INTERVAL for VIBRATION_DURATION
-    # it takes a timed_device path to the vibrator as $1
-    vibrate_loop() {
-    	if [ ! -f $1/enable ]; then
-    		return;
-    	fi
-    
-    	while true; do
-    		echo $VIBRATION_DURATION > $1/enable
-    		sleep ''${VIBRATION_INTERVAL}s
-    	done
+    start_udhcpd() {
+            # Only run once
+            [ -e /etc/udhcpd.conf ] && return
+            # Get usb interface
+            INTERFACE=""
+            ifconfig rndis0 "$IP" && INTERFACE=rndis0
+            if [ -z $INTERFACE ]; then
+                    ifconfig usb0 "$IP" && INTERFACE=usb0
+            fi
+            if [ -z $INTERFACE ]; then
+                    ifconfig eth0 "$IP" && INTERFACE=eth0
+            fi
+            # Create /etc/udhcpd.conf
+            {
+                    echo "start 172.16.42.2"
+                    echo "end 172.16.42.2"
+                    echo "auto_time 0"
+                    echo "decline_time 0"
+                    echo "conflict_time 0"
+                    echo "lease_file /var/udhcpd.leases"
+                    echo "interface $INTERFACE"
+                    echo "option subnet 255.255.255.0"
+            } >/etc/udhcpd.conf
+            echo "Start the dhcpcd daemon (forks into background)"
+            udhcpd
     }
+
+    setup_usb_network
+    start_udhcpd
 
     set_framebuffer_mode() {
         [ -e "/sys/class/graphics/fb0/modes" ] || return
         [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
-    
+
         _mode="$(cat /sys/class/graphics/fb0/modes)"
         echo "Setting framebuffer mode to: $_mode"
         echo "$_mode" > /sys/class/graphics/fb0/mode
@@ -166,22 +180,13 @@ let
 
     gzip -c -d /splash.ppm.gz | fbsplash -s -
 
-    # This also blinks the backlight.
-    # blink_leds $(find_leds) &
-    vibrate_loop $(find_vibrator) &
-    
-    sleep 15
-
-    # Skip looping forever as this currently does nothing useful.
-    # What this means is that the device will reboot after doing
-    # whatever has been defined up above.
-
-    # loop_forever
+    loop_forever
   '';
   ramdisk = makeInitrd {
     contents = [
       { object = stage1; symlink = "/init"; }
       { object = ./temp-splash.ppm.gz; symlink = "/splash.ppm.gz"; }
+      #{ object = ./temp-splash.png; symlink = "/splash.png"; }
     ];
   };
 in
