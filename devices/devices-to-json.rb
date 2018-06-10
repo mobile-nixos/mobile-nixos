@@ -48,5 +48,6 @@ Dir.chdir("#{WORKDIR}/pmbootstrap-master") do
 	end
 end
 
-File.open("postmarketOS-devices.json", "w")
-JSON.pretty_generate($devices)
+File.open("postmarketOS-devices.json", "w") do |f|
+	f.write(JSON.pretty_generate($devices))
+end
