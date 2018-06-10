@@ -10,15 +10,17 @@ Dir.chdir(__dir__)
 # the format upstream uses.
 
 #UPSTREAM="https://github.com/postmarketOS/pmbootstrap"
+#BRANCH = "master"
 # HACK: I need to upstream my device :/
 UPSTREAM = "https://github.com/samueldr/pmbootstrap"
-ARCHIVE = "#{UPSTREAM}/archive/master.tar.gz"
+BRANCH = "device/asus-z00t"
+ARCHIVE = "#{UPSTREAM}/archive/#{BRANCH}.tar.gz"
 WORKDIR = "postmarketOS"
 
 `mkdir -p #{WORKDIR}`
 `curl -L #{ARCHIVE} | tar -zx -C #{WORKDIR}`
 
-Dir.chdir("#{WORKDIR}/pmbootstrap-master") do
+Dir.chdir("#{WORKDIR}/pmbootstrap-#{BRANCH.sub("/", "-")}") do
 	$devices = {}
 	Dir.glob("aports/device/device-*") do |device_dir|
 		pm_name = device_dir.split("/").last.sub(/^device-/, "")
