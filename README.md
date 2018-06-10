@@ -6,6 +6,18 @@ An overlay for building stuff.
 This is a work-in-progress.
 
 
+WIP notes
+---------
+
+```
+nix-build bootimg.nix
+# Maybe `nix copy ./result --to ssh://another-host`
+adb wait-for-device && adb reboot bootloader
+fastboot boot result # or full path
+# getting adb and fastboot working is left as an exercise to the reader.
+```
+
+
 Goals
 -----
 
