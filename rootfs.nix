@@ -171,6 +171,12 @@ let
     vibrate_loop $(find_vibrator) &
     
     sleep 15
+
+    # Skip looping forever as this currently does nothing useful.
+    # What this means is that the device will reboot after doing
+    # whatever has been defined up above.
+
+    # loop_forever
   '';
   ramdisk = makeInitrd {
     contents = [
