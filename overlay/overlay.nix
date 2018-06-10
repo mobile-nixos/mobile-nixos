@@ -4,7 +4,7 @@ let
   callPackage = self.callPackage;
 in
   {
-   linux_asus_z00t = callPackage ./asus-z00t {
+   linux_asus-z00t = callPackage ./asus-z00t {
      kernelPatches = with self.kernelPatches; [
        bridge_stp_helper
        p9_fixes
