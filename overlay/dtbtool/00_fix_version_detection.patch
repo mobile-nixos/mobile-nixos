@@ -1,0 +1,13 @@
+diff --git a/dtbTool b/dtbTool
+index b11402d..2dcdd87 100755
+--- a/dtbTool
++++ b/dtbTool
+@@ -353,7 +353,7 @@ def generate_records(f, pagesize):
+ 	board_id = fdt_get_property_int(blob, 0, "qcom,board-id")
+ 	pmic_id = fdt_get_property_int(blob, 0, "qcom,pmic-id")
+ 
+-	if board_id:
++	if board_id and msm_id:
+ 		x = iter(board_id)
+ 		board_id = list(zip(x, x))
+ 		x = iter(msm_id)

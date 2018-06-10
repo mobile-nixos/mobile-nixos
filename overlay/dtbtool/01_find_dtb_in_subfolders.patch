@@ -1,0 +1,33 @@
+diff --git a/dtbTool b/dtbTool
+index 2dcdd87..0c14a94 100644
+--- a/dtbTool
++++ b/dtbTool
+@@ -408,6 +408,16 @@ def write_padding(f, pagesize):
+ 	if count != pagesize:
+ 		output.write(b"".join([b'\x00' for x in range(count)]))
+ 
++def find_dtb(indir):
++	flist = list()
++	for f in os.listdir(indir):
++		ff = os.path.join(indir, f)
++		if os.path.isfile(ff) and ff.endswith('.dtb'):
++			flist.append(ff)
++		elif os.path.isdir(ff):
++			flist.extend(find_dtb(ff))
++	return flist
++
+ if __name__ == "__main__":
+ 	usage = ("""%prog -o <output file> <input DTB directory> [options]""")
+ 	parser = OptionParser(usage=usage)
+@@ -434,10 +444,7 @@ if __name__ == "__main__":
+ 
+ 	pagesize = options.pagesize
+ 	indir = args[0]
+-	flist = [os.path.join(indir, f)
+-			for f in os.listdir(indir)
+-			if os.path.isfile(os.path.join(indir, f)) and
+-			   f.endswith('.dtb')]
++	flist = find_dtb(indir)
+ 
+ 	records = []
+ 	for f in flist:
