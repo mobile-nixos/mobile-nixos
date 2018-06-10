@@ -10,6 +10,9 @@
   runCommandCC,
   busybox,
   glibc,
+
+  msm-fb-refresher,
+
   ...
 }:
 
@@ -29,6 +32,10 @@ let
     }
     # Copy Busybox
     for BIN in ${busybox}/{s,}bin/*; do
+      copy_bin_and_libs $BIN
+    done
+    # Copy msm-fb-refresher
+    for BIN in ${msm-fb-refresher}/{s,}bin/*; do
       copy_bin_and_libs $BIN
     done
     # Copy ld manually since it isn't detected correctly
@@ -143,8 +150,24 @@ let
     		sleep ''${VIBRATION_INTERVAL}s
     	done
     }
+
+    set_framebuffer_mode() {
+        [ -e "/sys/class/graphics/fb0/modes" ] || return
+        [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
     
-    blink_leds $(find_leds) &
+        _mode="$(cat /sys/class/graphics/fb0/modes)"
+        echo "Setting framebuffer mode to: $_mode"
+        echo "$_mode" > /sys/class/graphics/fb0/mode
+    }
+
+    set_framebuffer_mode
+
+    msm-fb-refresher --loop &
+
+    gzip -c -d /splash.ppm.gz | fbsplash -s -
+
+    # This also blinks the backlight.
+    # blink_leds $(find_leds) &
     vibrate_loop $(find_vibrator) &
     
     sleep 15
@@ -152,6 +175,7 @@ let
   ramdisk = makeInitrd {
     contents = [
       { object = stage1; symlink = "/init"; }
+      { object = ./temp-splash.ppm.gz; symlink = "/splash.ppm.gz"; }
     ];
   };
 in
