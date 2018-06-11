@@ -14,6 +14,7 @@
   strace,
   msm-fb-refresher,
   dropbear,
+  fbv,
   lib,
 
   ...
@@ -39,6 +40,10 @@ let
     done
     # Copy msm-fb-refresher
     for BIN in ${msm-fb-refresher}/{s,}bin/*; do
+      copy_bin_and_libs $BIN
+    done
+    # Copy fbv
+    for BIN in ${fbv}/{s,}bin/*; do
       copy_bin_and_libs $BIN
     done
     # Copy dropbear
@@ -106,13 +111,26 @@ let
     # Some things will like having /etc/.
     mkdir -p /etc
 
-    set_framebuffer_mode
+    show_splash() {
+      echo | fbv -afeci /$1.png > /dev/null 2>&1
+    }
+
+    set_framebuffer_mode() {
+        [ -e "/sys/class/graphics/fb0/modes" ] || return
+        [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
+
+        _mode="$(cat /sys/class/graphics/fb0/modes)"
+        echo "Setting framebuffer mode to: $_mode"
+        echo "$_mode" > /sys/class/graphics/fb0/mode
+    }
 
     echo 1 > /sys/class/leds/lcd-backlight/brightness
 
-    gzip -c -d /loading.ppm.gz | fbsplash -s -
+    set_framebuffer_mode
 
     msm-fb-refresher --loop &
+
+    show_splash loading
 
     ln -sv ${shell} /bin/sh
 
@@ -231,25 +249,15 @@ let
     # This allows blank login passwords.
     dropbear -ERB -b /etc/banner
 
-    set_framebuffer_mode() {
-        [ -e "/sys/class/graphics/fb0/modes" ] || return
-        [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
-
-        _mode="$(cat /sys/class/graphics/fb0/modes)"
-        echo "Setting framebuffer mode to: $_mode"
-        echo "$_mode" > /sys/class/graphics/fb0/mode
-    }
-
-    gzip -c -d /splash.ppm.gz | fbsplash -s -
+    show_splash splash
 
     loop_forever
   '';
   ramdisk = makeInitrd {
     contents = [
       { object = stage1; symlink = "/init"; }
-      { object = ./temp-splash.ppm.gz; symlink = "/splash.ppm.gz"; }
-      { object = ./loading.ppm.gz; symlink = "/loading.ppm.gz"; }
-      #{ object = ./temp-splash.png; symlink = "/splash.png"; }
+      { object = ./temp-splash.png; symlink = "/splash.png"; }
+      { object = ./loading.png; symlink = "/loading.png"; }
     ];
   };
 in
