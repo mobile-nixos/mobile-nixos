@@ -17,6 +17,7 @@ in
    # Misc. tools.
    # Keep sorted.
    dtbTool = callPackage ./dtbtool { };
+   fbv = callPackage ./fbv { libpng = self.libpng12; };
    mkbootimg = callPackage ./mkbootimg { };
    msm-fb-refresher = callPackage ./msm-fb-refresher { };
    ply-image = callPackage ./ply-image { };
