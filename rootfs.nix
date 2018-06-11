@@ -96,6 +96,8 @@ let
   stage1 = writeScript "stage1" ''
     #!${shell}
     export PATH=${extraUtils}/bin/
+    export LD_LIBRARY_PATH=${extraUtils}/lib
+
     mkdir -p /proc /sys /dev /etc/udev /tmp /run/ /lib/ /mnt/ /var/log /etc/plymouth /bin
     mount -t devtmpfs devtmpfs /dev/
     mount -t proc proc /proc
@@ -227,8 +229,7 @@ let
 
     # THIS IS HIGHLY INSECURE
     # This allows blank login passwords.
-    LD_LIBRARY_PATH=$(echo /nix/store/*extra-utils/lib) \
-      dropbear -ERB -b /etc/banner
+    dropbear -ERB -b /etc/banner
 
     set_framebuffer_mode() {
         [ -e "/sys/class/graphics/fb0/modes" ] || return
