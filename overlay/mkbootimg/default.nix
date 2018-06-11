@@ -1,4 +1,4 @@
-{stdenv, fetchurl, python2, dtc, python2Packages}:
+{stdenv, fetchurl}:
 
 let
   version = "2017.12.13";
