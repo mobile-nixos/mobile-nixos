@@ -11,7 +11,10 @@
   busybox,
   glibc,
 
+  strace,
   msm-fb-refresher,
+  dropbear,
+  lib,
 
   ...
 }:
@@ -36,6 +39,16 @@ let
     done
     # Copy msm-fb-refresher
     for BIN in ${msm-fb-refresher}/{s,}bin/*; do
+      copy_bin_and_libs $BIN
+    done
+    # Copy dropbear
+    for BIN in ${dropbear}/{s,}bin/*; do
+      copy_bin_and_libs $BIN
+    done
+    # Needed for dropbear
+    cp -pv ${glibc.out}/lib/libnss_files.so.* $out/lib
+    # Copy strace
+    for BIN in ${strace}/{s,}bin/*; do
       copy_bin_and_libs $BIN
     done
     # Copy ld manually since it isn't detected correctly
@@ -88,6 +101,17 @@ let
     mount -t proc proc /proc
     mount -t sysfs sysfs /sys
 
+    # Some things will like having /etc/.
+    mkdir -p /etc
+
+    set_framebuffer_mode
+
+    echo 1 > /sys/class/leds/lcd-backlight/brightness
+
+    gzip -c -d /loading.ppm.gz | fbsplash -s -
+
+    msm-fb-refresher --loop &
+
     ln -sv ${shell} /bin/sh
 
     loop_forever() {
@@ -96,7 +120,13 @@ let
         done
     }
 
+    # /dev/pts (needed for telnet)
+    mkdir -p /dev/pts
+    mount -t devpts devpts /dev/pts
+
+
     IP=172.16.42.1
+    TELNET_PORT=23
 
     setup_usb_network_android() {
             # Only run, when we have the android usb driver
@@ -138,6 +168,7 @@ let
     start_udhcpd() {
             # Only run once
             [ -e /etc/udhcpd.conf ] && return
+
             # Get usb interface
             INTERFACE=""
             ifconfig rndis0 "$IP" && INTERFACE=rndis0
@@ -162,8 +193,42 @@ let
             udhcpd
     }
 
+    # Hack~ish
+    echo -e '#!/bin/sh\necho b > /proc/sysrq-trigger' > /bin/reboot
+    chmod +x /bin/reboot
+
     setup_usb_network
     start_udhcpd
+
+    #sleep 5
+
+    #
+    # Oh boy, that's insecure!
+    #
+    echo '${shell}' > /etc/shells
+    echo 'root:x:0:0:root:/root:${shell}' > /etc/passwd
+    echo 'passwd: files' > /etc/nsswitch.conf
+    passwd -u root
+    passwd -d root
+    mkdir -p /root/.ssh
+    mkdir -p /etc/dropbear/
+    echo "From a mobile-nixos device ${device_name}" >> /etc/banner
+
+    mkdir -p /var/log
+    touch /var/log/lastlog
+
+    # This is the "everything is going wrong" way to debug.
+    # # ---- START nc
+    # # THIS IS HIGHLY INSECURE
+    # nc -lk -p 2323 -e ${shell} &
+    # # ---- END nc
+
+    # telnetd -p ''${TELNET_PORT} -l ${shell} &
+
+    # THIS IS HIGHLY INSECURE
+    # This allows blank login passwords.
+    LD_LIBRARY_PATH=$(echo /nix/store/*extra-utils/lib) \
+      dropbear -ERB -b /etc/banner
 
     set_framebuffer_mode() {
         [ -e "/sys/class/graphics/fb0/modes" ] || return
@@ -174,10 +239,6 @@ let
         echo "$_mode" > /sys/class/graphics/fb0/mode
     }
 
-    set_framebuffer_mode
-
-    msm-fb-refresher --loop &
-
     gzip -c -d /splash.ppm.gz | fbsplash -s -
 
     loop_forever
@@ -186,6 +247,7 @@ let
     contents = [
       { object = stage1; symlink = "/init"; }
       { object = ./temp-splash.ppm.gz; symlink = "/splash.ppm.gz"; }
+      { object = ./loading.ppm.gz; symlink = "/loading.ppm.gz"; }
       #{ object = ./temp-splash.png; symlink = "/splash.png"; }
     ];
   };
