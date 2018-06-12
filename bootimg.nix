@@ -4,16 +4,16 @@
 with (import ./overlay);
 
 let
-  deviceinfo = (lib.importJSON ./devices/postmarketOS-devices.json).${device_name};
+  device_config = import (./devices + ("/" + device_name)) {inherit lib;};
   linux = pkgs."linux_${device_name}";
   kernel = "${linux}/Image.gz-dtb";
   dt = "${linux}/boot/dt.img";
 
   # TODO : Allow appending / prepending
-  cmdline = deviceinfo.kernel_cmdline;
+  cmdline = device_config.kernel_cmdline;
 
   # TODO : make configurable?
-  initrd = callPackage ./rootfs.nix { inherit device_name; };
+  initrd = callPackage ./rootfs.nix { inherit device_config; };
 in
 stdenv.mkDerivation {
   name = "nixos-mobile_${device_name}_boot.img";
@@ -33,12 +33,12 @@ stdenv.mkDerivation {
       --dt      ${dt} \
       --ramdisk ${initrd} \
       --cmdline       "${cmdline}" \
-      --base           ${deviceinfo.flash_offset_base   } \
-      --kernel_offset  ${deviceinfo.flash_offset_kernel } \
-      --second_offset  ${deviceinfo.flash_offset_second } \
-      --ramdisk_offset ${deviceinfo.flash_offset_ramdisk} \
-      --tags_offset    ${deviceinfo.flash_offset_tags   } \
-      --pagesize       ${deviceinfo.flash_pagesize      } \
+      --base           ${device_config.flash_offset_base   } \
+      --kernel_offset  ${device_config.flash_offset_kernel } \
+      --second_offset  ${device_config.flash_offset_second } \
+      --ramdisk_offset ${device_config.flash_offset_ramdisk} \
+      --tags_offset    ${device_config.flash_offset_tags   } \
+      --pagesize       ${device_config.flash_pagesize      } \
       -o $out
   '';
 }

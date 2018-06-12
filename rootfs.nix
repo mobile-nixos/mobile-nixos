@@ -1,5 +1,5 @@
 {
-  device_name,
+  device_config,
 
   stdenv,
   makeInitrd,
@@ -22,6 +22,7 @@
 
 # TODO : configurable through receiving device-specific informations.
 let
+  device_name = device_config.name;
   extraUtils = runCommandCC "extra-utils"
   {
     buildInputs = [ nukeReferences ];
@@ -265,9 +266,9 @@ let
       { object = stage1; symlink = "/init"; }
       { object = ./temp-splash.png; symlink = "/splash.png"; }
       { object = ./loading.png; symlink = "/loading.png"; }
-      # FIXME : configurable rootfs additions from device config.
-      { object = ./devices/asus-z00t/fb.modes; symlink = "/etc/fb.modes"; }
-    ];
+    ]
+      ++ lib.optional (device_config ? rootfs.fb_modes) { object = device_config.rootfs.fb_modes; symlink = "/etc/fb.modes"; }
+    ;
   };
 in
 stdenv.mkDerivation {
