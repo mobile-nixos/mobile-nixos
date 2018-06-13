@@ -14,7 +14,7 @@ ROOT = File.join(__dir__, "..")
 STORE_PATH = File.readlink("result")
 
 unless ARGV.count == 1 then
-	echo "Usage: bin/remote-boot <hostname>"
+	puts "Usage: bin/remote-boot <hostname>"
 	exit 1
 end
 

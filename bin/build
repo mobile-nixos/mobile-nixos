@@ -9,7 +9,7 @@ ROOT = File.join(__dir__, "..")
 ENTRY_POINT = File.join(ROOT, "bootimg.nix")
 
 unless ARGV.count == 1 then
-	echo "Usage: bin/build <device-name>"
+	puts "Usage: bin/build <device-name>"
 	exit 1
 end
 
