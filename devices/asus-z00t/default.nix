@@ -8,6 +8,8 @@ let
 in
 config // {
   name = config.pm_name;
+  kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+
   stage-1 = {
     fb_modes = ./fb.modes;
     packages = with pkgs; [

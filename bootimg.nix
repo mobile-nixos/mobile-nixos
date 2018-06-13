@@ -7,7 +7,7 @@ in
 with pkgs;
 let
   device_config = import (./devices + ("/" + device_name)) {inherit pkgs lib;};
-  linux = pkgs."linux_${device_name}";
+  linux = device_config.kernel;
   kernel = "${linux}/Image.gz-dtb";
   dt = "${linux}/boot/dt.img";
 
