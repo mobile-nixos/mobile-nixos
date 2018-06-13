@@ -5,6 +5,7 @@
 }:
 let
   config = (lib.importJSON ../postmarketOS-devices.json).asus-z00t;
+  msm-fb-refresher = (import ../../quirks/qualcomm/msm-fb-refresher.nix) { inherit pkgs lib; };
 in
 config // {
   name = config.pm_name;
@@ -12,13 +13,11 @@ config // {
 
   stage-1 = {
     fb_modes = ./fb.modes;
+    inherit (msm-fb-refresher.stage-1) initFramebuffer;
     packages = with pkgs; [
       strace
-      msm-fb-refresher
-    ];
-    initFramebuffer = ''
-      msm-fb-refresher --loop &
-      echo 10 > /sys/class/leds/lcd-backlight/brightness
-    '';
+    ]
+    ++ msm-fb-refresher.stage-1.packages
+    ;
   };
 }
