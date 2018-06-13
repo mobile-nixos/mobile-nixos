@@ -10,8 +10,6 @@
   busybox,
   glibc,
 
-  strace,
-  msm-fb-refresher,
   dropbear,
   fbv,
   lib,
@@ -19,16 +17,20 @@
 }:
 
 let
+  inherit (lib) optionalString optionals optional;
+
+  stage-1 = if device_config ? stage-1 then device_config.stage-1 else {};
+
   device_name = device_config.name;
   extraUtils = mkExtraUtils {
     name = device_name;
     packages = [
       busybox
-      msm-fb-refresher
       fbv
-      strace
       { package = dropbear; extraCommand = "cp -pv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
-    ];
+    ]
+      ++ optionals (stage-1 ? packages) stage-1.packages
+    ;
   };
 
   shell = "${extraUtils}/bin/ash";
@@ -38,53 +40,50 @@ let
     export PATH=${extraUtils}/bin/
     export LD_LIBRARY_PATH=${extraUtils}/lib
 
-    mkdir -p /proc /sys /dev /etc/udev /tmp /run/ /lib/ /mnt/ /var/log /etc/plymouth /bin
+    mkdir -p /bin
+    ln -sv ${shell} /bin/sh
+
+    mkdir -p /proc /sys /dev /etc/udev /tmp /run/ /lib/ /mnt/ /var/log /etc
     mount -t devtmpfs devtmpfs /dev/
     mount -t proc proc /proc
     mount -t sysfs sysfs /sys
 
-    # Some things will like having /etc/.
-    mkdir -p /etc
+    # /dev/pts (needed for ssh or telnet)
+    mkdir -p /dev/pts
+    mount -t devpts devpts /dev/pts
 
     show_splash() {
-      echo | fbv -afeci /$1.png > /dev/null 2>&1
+      echo | fbv -cafei /$1.png > /dev/null 2>&1
     }
 
     set_framebuffer_mode() {
+      # Uses the first defined mode
       if [ -e /etc/fb.modes ]; then
-        # Uses the first defined mode
         fbset $(grep ^mode /etc/fb.modes | head -n1 | cut -d'"' -f2)
       else
         [ -e "/sys/class/graphics/fb0/modes" ] || return
         [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
-
+        
         _mode="$(cat /sys/class/graphics/fb0/modes)"
         echo "Setting framebuffer mode to: $_mode"
         echo "$_mode" > /sys/class/graphics/fb0/mode
       fi
-    }
 
-    echo 1 > /sys/class/leds/lcd-backlight/brightness
+      ${
+        # Start tools like msm-fb-refresher
+        lib.optionalString (stage-1 ? initFramebuffer) stage-1.initFramebuffer
+      }
+    }
 
     set_framebuffer_mode
 
     show_splash loading
-
-    set_framebuffer_mode
-
-    msm-fb-refresher --loop &
-
-    ln -sv ${shell} /bin/sh
 
     loop_forever() {
         while true; do
             sleep 3600
         done
     }
-
-    # /dev/pts (needed for telnet)
-    mkdir -p /dev/pts
-    mount -t devpts devpts /dev/pts
 
 
     IP=172.16.42.1
@@ -201,7 +200,7 @@ let
       { object = ./temp-splash.png; symlink = "/splash.png"; }
       { object = ./loading.png; symlink = "/loading.png"; }
     ]
-      ++ lib.optional (device_config ? rootfs.fb_modes) { object = device_config.rootfs.fb_modes; symlink = "/etc/fb.modes"; }
+      ++ optional (stage-1 ? fb_modes) { object = stage-1.fb_modes; symlink = "/etc/fb.modes"; }
     ;
   };
 in
