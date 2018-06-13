@@ -1,0 +1,40 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -p ruby -i ruby
+
+# Boots a given `result` symlink on a remote system.
+# This is mainly used to speed-up development where
+# an aarch64 host is used to build the system, but the
+# target device is plugged into another system
+
+require "shellwords"
+
+ROOT = File.join(__dir__, "..")
+
+# This assumes `result` is boot.img.
+STORE_PATH = File.readlink("result")
+
+unless ARGV.count == 1 then
+	echo "Usage: bin/remote-boot <hostname>"
+	exit 1
+end
+
+HOST = ARGV.shift
+
+# Copy the result to the target host.
+system("nix", "copy", STORE_PATH, "--to", "ssh://#{HOST}")
+
+# This assumes the host system has adb and fastboot in PATH.
+# This assumption is safe~ish since only using nix store paths
+# wouldn't mean udev rules would be applied, and that adb and
+# fastboot would work.
+cmd = "
+adb reboot bootloader
+fastboot boot #{STORE_PATH}
+"
+
+# Spooky!
+# This uses the previously defined commands.
+# shelljoin makes this safe enough.
+system("ssh", HOST, ["bash", "-l", "-c", cmd].shelljoin)
+
+# vim: ft=ruby
