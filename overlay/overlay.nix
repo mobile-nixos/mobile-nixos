@@ -21,4 +21,13 @@ in
    mkbootimg = callPackage ./mkbootimg { };
    msm-fb-refresher = callPackage ./msm-fb-refresher { };
    ply-image = callPackage ./ply-image { };
+
+   # Extra "libs"
+   mkExtraUtils = import ./lib/extra-utils.nix {
+     inherit (self)
+       runCommandCC
+       nukeReferences
+       glibc
+     ;
+   };
  }

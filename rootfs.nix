@@ -6,7 +6,6 @@
   runCommand,
   writeScript,
 
-  nukeReferences,
   runCommandCC,
   busybox,
   glibc,
@@ -16,89 +15,24 @@
   dropbear,
   fbv,
   lib,
-
-  ...
+  mkExtraUtils,
 }:
 
-# TODO : configurable through receiving device-specific informations.
 let
   device_name = device_config.name;
-  extraUtils = runCommandCC "extra-utils"
-  {
-    buildInputs = [ nukeReferences ];
-    allowedReferences = [ "out" ];
-  } ''
-    set +o pipefail
-    mkdir -p $out/bin $out/lib
-    ln -s $out/bin $out/sbin
-    copy_bin_and_libs() {
-      [ -f "$out/bin/$(basename $1)" ] && rm "$out/bin/$(basename $1)"
-      cp -pd $1 $out/bin
-    }
-    # Copy Busybox
-    for BIN in ${busybox}/{s,}bin/*; do
-      copy_bin_and_libs $BIN
-    done
-    # Copy msm-fb-refresher
-    for BIN in ${msm-fb-refresher}/{s,}bin/*; do
-      copy_bin_and_libs $BIN
-    done
-    # Copy fbv
-    for BIN in ${fbv}/{s,}bin/*; do
-      copy_bin_and_libs $BIN
-    done
-    # Copy dropbear
-    for BIN in ${dropbear}/{s,}bin/*; do
-      copy_bin_and_libs $BIN
-    done
-    # Needed for dropbear
-    cp -pv ${glibc.out}/lib/libnss_files.so.* $out/lib
-    # Copy strace
-    for BIN in ${strace}/{s,}bin/*; do
-      copy_bin_and_libs $BIN
-    done
-    # Copy ld manually since it isn't detected correctly
-    cp -pv ${glibc.out}/lib/ld*.so.? $out/lib
-    # Copy all of the needed libraries
-    find $out/bin $out/lib -type f | while read BIN; do
-      echo "Copying libs for executable $BIN"
-      LDD="$(ldd $BIN)" || continue
-      LIBS="$(echo "$LDD" | awk '{print $3}' | sed '/^$/d')"
-      for LIB in $LIBS; do
-        TGT="$out/lib/$(basename $LIB)"
-        if [ ! -f "$TGT" ]; then
-          SRC="$(readlink -e $LIB)"
-          cp -pdv "$SRC" "$TGT"
-        fi
-      done
-    done
-    # Strip binaries further than normal.
-    chmod -R u+w $out
-    stripDirs "lib bin" "-s"
-    # Run patchelf to make the programs refer to the copied libraries.
-    find $out/bin $out/lib -type f | while read i; do
-      if ! test -L $i; then
-        nuke-refs -e $out $i
-      fi
-    done
-    find $out/bin -type f | while read i; do
-      if ! test -L $i; then
-        echo "patching $i..."
-        patchelf --set-interpreter $out/lib/ld*.so.? --set-rpath $out/lib $i || true
-      fi
-    done
-    # Make sure that the patchelf'ed binaries still work.
-    echo "testing patched programs..."
-    $out/bin/ash -c 'echo hello world' | grep "hello world"
-    export LD_LIBRARY_PATH=$out/lib
-    $out/bin/mount --help 2>&1 | grep -q "BusyBox"
-  '';
-
+  extraUtils = mkExtraUtils {
+    name = device_name;
+    packages = [
+      busybox
+      msm-fb-refresher
+      fbv
+      strace
+      { package = dropbear; extraCommand = "cp -pv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
+    ];
+  };
 
   shell = "${extraUtils}/bin/ash";
 
-  # TODO : make our own rootfs here!
-  # https://github.com/postmarketOS/pmbootstrap/blob/master/aports/main/postmarketos-mkinitfs-hook-maximum-attention/00-maximum-attention.sh
   stage1 = writeScript "stage1" ''
     #!${shell}
     export PATH=${extraUtils}/bin/
