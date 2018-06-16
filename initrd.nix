@@ -1,5 +1,6 @@
 {
-  device_config,
+  device_info,
+  device_name,
 
   stdenv,
   makeInitrd,
@@ -18,10 +19,10 @@
 
 let
   inherit (lib) optionalString optionals optional;
+  inherit device_name;
 
-  stage-1 = if device_config ? stage-1 then device_config.stage-1 else {};
+  stage-1 = if device_info ? stage-1 then device_info.stage-1 else {};
 
-  device_name = device_config.name;
   extraUtils = mkExtraUtils {
     name = device_name;
     packages = [

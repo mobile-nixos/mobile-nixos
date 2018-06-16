@@ -1,23 +1,28 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -p ruby -i ruby
 
+require "shellwords"
+
 # Given a device name, instantiates `nix-build` to build
 # everything needed to boot on that device.
 
 ROOT = File.join(__dir__, "..")
-# Which file builds the basic building block for a whole device build.
-ENTRY_POINT = File.join(ROOT, "bootimg.nix")
 
-unless ARGV.count == 1 then
+if ARGV.count < 1 then
 	puts "Usage: bin/build <device-name>"
 	exit 1
 end
 
 DEVICE = ARGV.shift
 
-system(
-	"nix-build", ENTRY_POINT,
-	"--arg", "device_name", "\"#{DEVICE}\"",
-)
+cmd = [
+	"nix-build", "-A", "all",
+	"--argstr", "device", DEVICE,
+	*ARGV
+]
+
+puts " $ #{cmd.shelljoin}"
+
+system(*cmd)
 
 # vim: ft=ruby

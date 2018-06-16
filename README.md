@@ -10,11 +10,19 @@ WIP notes
 ---------
 
 ```
-nix-build bootimg.nix --arg device_name '"asus-z00t"'
+nix-build --argstr device asus-z00t -A all
 # Maybe `nix copy ./result --to ssh://another-host`
 adb wait-for-device && adb reboot bootloader
 fastboot boot result # or full path
 # getting adb and fastboot working is left as an exercise to the reader.
+```
+
+Alternatively, helpers under `bin` can be used. They mostly pave over
+the nix CLI to provide one-liners and one-parameter helpers.
+
+```
+# Builds -A all for device_name $1
+bin/build asus-z00t
 ```
 
 
