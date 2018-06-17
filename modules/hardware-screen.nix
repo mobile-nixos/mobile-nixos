@@ -14,7 +14,8 @@ in
       type = types.integer;
     };
     fb_modes = mkOption {
-      type = types.path;
+      type = types.nullOr types.path;
+      default = null;
       description = ''
         This file will be made available under /etc/fb.modes, and will be used
         by `fbset` to setup the framebuffer.
@@ -22,7 +23,7 @@ in
     };
   };
 
-  config.mobile.boot.stage-1 = lib.mkIf (cfg.fb_modes != null) {
+  config.mobile.boot.stage-1 = mkIf (cfg.fb_modes != null) {
     contents = [
       { object = cfg.fb_modes; symlink = "/etc/fb.modes"; }
     ];
