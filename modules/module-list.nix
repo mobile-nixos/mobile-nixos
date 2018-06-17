@@ -6,11 +6,16 @@
   ./hardware-qualcomm.nix
   ./hardware-screen.nix
   ./hardware-soc.nix
+  ./initrd-base.nix
+  ./initrd-devices.nix
   ./initrd-framebuffer.nix
+  ./initrd-loop.nix
+  ./initrd-nc-shell.nix
   ./initrd-network.nix
   ./initrd-splash-late.nix
   ./initrd-splash.nix
   ./initrd-ssh.nix
+  ./initrd-telnet.nix
   ./mobile-device.nix
   ./quirks-qualcomm.nix
   ./system-build.nix

@@ -4,7 +4,7 @@ with lib;
 with import ./initrd-order.nix;
 
 let
-  device_name = "TODO";
+  device_name = config.mobile.device.name;
   cfg = config.mobile.boot.stage-1.ssh;
 in
 {
