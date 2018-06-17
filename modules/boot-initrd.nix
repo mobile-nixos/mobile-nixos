@@ -29,5 +29,19 @@ with lib;
         has been made available.
       '';
     };
+    stage-1.contents = mkOption {
+      type = types.listOf types.attrs;
+      description = ''
+        Additional files for the initrd.
+
+        See `makeInitrd` for use of `contents`.
+      '';
+    };
+    stage-1.init = mkOption {
+      type = types.lines;
+      description = ''
+        Lines that will build out the /init script.
+      '';
+    };
   };
 }

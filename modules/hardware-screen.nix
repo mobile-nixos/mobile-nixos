@@ -2,6 +2,9 @@
 
 with lib;
 
+let
+  cfg = config.mobile.hardware.screen;
+in
 {
   options.mobile.hardware.screen = {
     width = mkOption {
@@ -17,5 +20,11 @@ with lib;
         by `fbset` to setup the framebuffer.
       '';
     };
+  };
+
+  config.mobile.boot.stage-1 = lib.mkIf (cfg.fb_modes != null) {
+    contents = [
+      { object = cfg.fb_modes; symlink = "/etc/fb.modes"; }
+    ];
   };
 }
