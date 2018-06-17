@@ -37,4 +37,6 @@ fastboot boot #{STORE_PATH}
 # shelljoin makes this safe enough.
 system("ssh", HOST, ["bash", "-l", "-c", cmd].shelljoin)
 
+exit $?.exitstatus
+
 # vim: ft=ruby
