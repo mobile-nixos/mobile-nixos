@@ -1,6 +1,6 @@
 {
-  device_info,
-  device_name,
+  device_config,
+  stage-1 ? {},
 
   stdenv,
   makeInitrd,
@@ -19,9 +19,9 @@
 
 let
   inherit (lib) optionalString optionals optional;
-  inherit device_name;
 
-  stage-1 = if device_info ? stage-1 then device_info.stage-1 else {};
+  device_name = device_config.name;
+  device_info = device_config.info;
 
   extraUtils = mkExtraUtils {
     name = device_name;
@@ -30,7 +30,7 @@ let
       fbv
       { package = dropbear; extraCommand = "cp -pv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
     ]
-      ++ optionals (stage-1 ? packages) stage-1.packages
+      ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
     ;
   };
 

@@ -4,11 +4,15 @@ with lib;
 
 let
   system_type = config.mobile.system.type;
+  device_config = config.mobile.device;
+  stage-1 = config.mobile.boot.stage-1;
 
   build_types = {
-    android-bootimg =
-    pkgs.callPackage ../bootimg.nix { device_config = config.mobile.device; }
-    ;
+    android-bootimg = pkgs.callPackage ../bootimg.nix {
+      inherit device_config;
+      # XXX : this feels like a hack
+      initrd = pkgs.callPackage ../initrd.nix { inherit device_config stage-1; };
+    };
   };
 in
 {

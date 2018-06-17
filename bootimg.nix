@@ -1,5 +1,6 @@
 {
-  device_config
+  device_config,
+  initrd
 }:
 let
   pkgs = (import ./overlay);
@@ -14,9 +15,6 @@ let
 
   # TODO : Allow appending / prepending
   cmdline = device_info.kernel_cmdline;
-
-  # TODO : make configurable?
-  initrd = callPackage ./initrd.nix { inherit device_name device_info; };
 in
 stdenv.mkDerivation {
   name = "nixos-mobile_${device_name}_boot.img";

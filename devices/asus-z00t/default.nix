@@ -21,8 +21,11 @@ in
   };
   mobile.hardware = {
     # This could also be pre-built option types?
-    soc = "msm8939";
+    soc = "qualcomm-msm8939";
 	screen = { width = 1080; height = 1920; };
   };
   mobile.system.type = "android-bootimg";
+  mobile.boot.stage-1.initFramebuffer = ''
+    echo 10 > /sys/class/leds/lcd-backlight/brightness
+  '';
 }
