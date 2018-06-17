@@ -22,6 +22,7 @@ in
 
   config.mobile.boot.stage-1 = lib.mkIf cfg.enable {
     init = lib.mkOrder BEFORE_SWITCH_ROOT_INIT ''
+      echo "Looping here forever..."
       while true; do
         sleep 3600
       done
