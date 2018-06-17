@@ -1,6 +1,7 @@
 {
   device_config,
   stage-1 ? {},
+  fb_modes ? null,
 
   stdenv,
   makeInitrd,
@@ -201,7 +202,8 @@ let
       { object = ./temp-splash.png; symlink = "/splash.png"; }
       { object = ./loading.png; symlink = "/loading.png"; }
     ]
-      ++ optional (stage-1 ? fb_modes) { object = stage-1.fb_modes; symlink = "/etc/fb.modes"; }
+      # FIXME : initrd files from config instead of hardcoding some.
+      ++ optional (fb_modes != null) { object = fb_modes; symlink = "/etc/fb.modes"; }
     ;
   };
 in
