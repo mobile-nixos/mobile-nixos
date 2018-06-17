@@ -22,7 +22,6 @@ let
   inherit (lib) optionalString optionals optional;
 
   device_name = device_config.name;
-  device_info = device_config.info;
 
   extraUtils = mkExtraUtils {
     name = device_name;
