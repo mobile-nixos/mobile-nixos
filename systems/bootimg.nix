@@ -3,7 +3,7 @@
   initrd
 }:
 let
-  pkgs = (import ./overlay);
+  pkgs = (import ../overlay);
 in
 with pkgs;
 let

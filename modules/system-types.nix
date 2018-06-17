@@ -8,10 +8,10 @@ let
   stage-1 = config.mobile.boot.stage-1;
 
   build_types = {
-    android-bootimg = pkgs.callPackage ../bootimg.nix {
+    android-bootimg = pkgs.callPackage ../systems/bootimg.nix {
       inherit device_config;
       # XXX : this feels like a hack
-      initrd = pkgs.callPackage ../initrd.nix { inherit device_config stage-1; };
+      initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
     };
   };
 in
