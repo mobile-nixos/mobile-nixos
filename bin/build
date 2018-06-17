@@ -25,4 +25,5 @@ puts " $ #{cmd.shelljoin}"
 
 system(*cmd)
 
+exit $?.exitstatus
 # vim: ft=ruby
