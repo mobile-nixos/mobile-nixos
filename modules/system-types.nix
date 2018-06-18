@@ -5,6 +5,7 @@ with lib;
 let
   system_type = config.mobile.system.type;
   device_config = config.mobile.device;
+  hardware_config = config.mobile.hardware;
   stage-1 = config.mobile.boot.stage-1;
 
   build_types = {
@@ -13,12 +14,17 @@ let
       # XXX : this feels like a hack
       initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
     };
+    kernel-initrd = pkgs.callPackage ../systems/kernel-initrd.nix {
+      # FIXME this all feels a bit not enough generic.
+      inherit device_config hardware_config;
+      initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
+    };
   };
 in
 {
   options.mobile = {
     system.type = mkOption {
-      type = types.enum [ "android-bootimg" ];
+      type = types.enum [ "android-bootimg" "kernel-initrd" ];
       description = ''
         Defines the kind of system the device is.
 

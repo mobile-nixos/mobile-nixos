@@ -9,6 +9,10 @@
   mobile.hardware = {
     # This could also be pre-built option types?
     soc = "qualcomm-msm8939";
+    # 3GB for the specific revision supported.
+    # When this will be actually used, this may be dropped to 2, and/or
+    # document all ram types as a list and work with min/max of those.
+    ram = 1024 * 3;
     screen = {
       width = 1080; height = 1920;
       fb_modes = ./fb.modes;

@@ -20,7 +20,7 @@ in
   config.mobile.boot.stage-1 = lib.mkIf cfg.enable {
     init = lib.mkOrder AFTER_FRAMEBUFFER_INIT ''
       show_splash() {
-        echo | fbv -cafei /$1.png > /dev/null 2>&1
+        echo | fbv -caferi /$1.png > /dev/null 2>&1
       }
 
       show_splash loading

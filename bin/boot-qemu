@@ -1,0 +1,35 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -p ruby -i ruby
+
+# Boots a given `result` symlink on a remote system.
+# This is mainly used to speed-up development where
+# an aarch64 host is used to build the system, but the
+# target device is plugged into another system
+
+require "shellwords"
+
+ROOT = File.join(__dir__, "..")
+
+# This assumes `result` is boot.img.
+STORE_PATH = File.readlink("result")
+
+unless ARGV.count == 0 then
+	puts "Usage: bin/boot-eqmu"
+	exit 1
+end
+
+args = []
+args.push("qemu-system-x86_64")
+args.push("-kernel", "result/kernel")
+args.push("-initrd", "result/initrd")
+args.push("-append", File.read("result/cmdline.txt"))
+args.push("-m", "#{File.read("result/ram.txt")}M")
+args.push("-serial", "stdio")
+args.push("-device", "e1000,netdev=net0")
+args.push("-netdev", "user,id=net0,hostfwd=tcp::2222-:22,hostfwd=tcp::2323-:23,net=172.16.42.0/24,dhcpstart=172.16.42.1")
+
+system(*args)
+
+exit $?.exitstatus
+
+# vim: ft=ruby

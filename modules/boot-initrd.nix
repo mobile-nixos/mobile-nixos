@@ -21,6 +21,7 @@ with lib;
     };
     stage-1.initFramebuffer = mkOption {
       type = types.lines;
+      default = "";
       description = ''
         Commands ran particularly early for setting the framebuffer
         and framebuffer devices correctly.
@@ -31,6 +32,7 @@ with lib;
     };
     stage-1.contents = mkOption {
       type = types.listOf types.attrs;
+      default = [];
       description = ''
         Additional files for the initrd.
 
