@@ -25,6 +25,15 @@ the nix CLI to provide one-liners and one-parameter helpers.
 bin/build asus-z00t
 ```
 
+### Botting qemu
+
+```
+bin/build qemu-x86_64 -I nixpkgs=an/unstable/(nixos-or-nixpkgs)/checkout/nixpkgs/
+bin/boot-qemu
+```
+
+This currently does not build using 18.03 and may never (18.09 may release before!)
+
 
 Goals
 -----
