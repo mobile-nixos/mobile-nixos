@@ -1,5 +1,6 @@
 { config, lib, pkgs, ... }:
 
+with import ../../modules/initrd-order.nix;
 let
   kernel = pkgs.linuxPackages_4_16.kernel;
   device_info = (lib.importJSON ../postmarketOS-devices.json).qemu-amd64;
@@ -35,7 +36,13 @@ in
   };
   mobile.system.type = "kernel-initrd";
   mobile.boot.stage-1 = {
-    redirect-log.enable = false;
-    #splash.enable = false;
+    # Comment the next two if you want to play around with splash.
+    redirect-log.targets = [ "/dev/tty0" "/dev/kmsg" ];
+    splash.enable = false;
+    init = (lib.mkOrder BEFORE_READY_INIT ''
+      echo "cmdline:"
+      cat /proc/cmdline
+      echo "Hi there from /init!"
+    '');
   };
 }
