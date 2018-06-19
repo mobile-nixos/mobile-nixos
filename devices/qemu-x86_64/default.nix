@@ -2,7 +2,12 @@
 
 with import ../../modules/initrd-order.nix;
 let
-  splash = false;
+  # This device description is a bit configurable through
+  # mobile options...
+
+  # Enabling the splash changes some settings.
+  splash = config.mobile.boot.stage-1.splash.enable;
+
   kernel = pkgs.linuxPackages_4_16.kernel;
   device_info = (lib.importJSON ../postmarketOS-devices.json).qemu-amd64;
 
@@ -42,7 +47,6 @@ in
   mobile.system.type = "kernel-initrd";
   mobile.boot.stage-1 = {
     redirect-log.targets = lib.mkIf (splash != true) [ "/dev/tty0" ];
-    splash.enable = splash;
     init = (lib.mkOrder BEFORE_READY_INIT ''
       echo "cmdline:"
       cat /proc/cmdline
