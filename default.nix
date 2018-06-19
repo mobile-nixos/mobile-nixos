@@ -9,7 +9,10 @@ let
     pkgs = overlay;
     modules = [
       (import (./. + "/devices/${device}" ))
-    ];
+    ]
+    # TODO : allow loading from elsewhere through ENV
+    ++ overlay.lib.optional (builtins.pathExists ./local.nix) (import (./local.nix ))
+    ;
   };
 in
 {

@@ -34,6 +34,28 @@ bin/boot-qemu
 
 This currently does not build using 18.03 and may never (18.09 may release before!)
 
+### `local.nix`
+
+This file can be used to override (possibly with `lib.mkForce`) options on a global
+scale for your local builds.
+
+If the file does not exist, it will not fail.
+
+A sample `local.nix`:
+
+```
+{ lib, ... }:
+
+{
+  mobile.boot.stage-1.splash.enable = false;
+}
+```
+
+This will disable splash screens.
+
+This will be most useful to configure local sensitive stuff like password (hashes)
+or ssh keys.
+
 
 Goals
 -----
