@@ -18,7 +18,7 @@ let
     "1920x1080x32" = { vga = "0x392"; width = 1920; height = 1080; depth = 32; };
   };
 
-  MODE = MODES."1920x1080x32";
+  MODE = MODES."1280x720x32";
 in
 {
   mobile.device.name = "qemu-x86_64";
