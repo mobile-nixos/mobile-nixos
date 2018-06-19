@@ -14,7 +14,7 @@ in
   config.mobile.boot.stage-1 = {
     # FIXME : this may not cleanup nicely.
     # This implementation is naive and simple.
-    init = lib.mkOrder AFTER_SWITCH_ROOT_INIT ''
+    init = lib.mkIf cfg.enable (lib.mkOrder AFTER_SWITCH_ROOT_INIT ''
       _stop_logger() {
         local i=0 pid
         # re-attach to /dev/console
@@ -22,6 +22,6 @@ in
         # Kill the process
         kill $(cat ${pidfile})
       }
-    '';
+    '');
   };
 }

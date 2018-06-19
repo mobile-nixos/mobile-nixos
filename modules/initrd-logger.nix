@@ -46,7 +46,7 @@ in
 
     # FIXME : this may not cleanup nicely.
     # This implementation is naive and simple.
-    init = lib.mkOrder AFTER_DEVICE_INIT ''
+    init = lib.mkIf cfg.enable (lib.mkOrder AFTER_DEVICE_INIT ''
       _logger() {
         # Setup all redirections
         ${builtins.concatStringsSep "\n" (
@@ -73,6 +73,6 @@ in
       _logger < ${pipe} > /dev/console 2&1 &
       printf %s $! > ${pidfile}
       exec >${pipe} 2>&1
-    '';
+    '');
   };
 }
