@@ -16,6 +16,7 @@
   ./initrd-loop.nix
   ./initrd-nc-shell.nix
   ./initrd-network.nix
+  ./initrd-shell.nix
   ./initrd-splash-late.nix
   ./initrd-splash.nix
   ./initrd-ssh.nix
