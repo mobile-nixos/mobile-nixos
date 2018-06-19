@@ -28,6 +28,7 @@ args.push("-serial", "stdio")
 args.push("-device", "e1000,netdev=net0")
 args.push("-netdev", "user,id=net0,hostfwd=tcp::2222-:22,hostfwd=tcp::2323-:23,net=172.16.42.0/24,dhcpstart=172.16.42.1")
 
+puts " $ #{args.shelljoin}"
 system(*args)
 
 exit $?.exitstatus
