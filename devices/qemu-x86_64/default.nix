@@ -2,6 +2,7 @@
 
 with import ../../modules/initrd-order.nix;
 let
+  splash = false;
   kernel = pkgs.linuxPackages_4_16.kernel;
   device_info = (lib.importJSON ../postmarketOS-devices.json).qemu-amd64;
 
@@ -25,7 +26,11 @@ in
   mobile.device.info = device_info // {
     # TODO : make kernel part of options.
     inherit kernel;
-    kernel_cmdline = device_info.kernel_cmdline + " vga=${MODE.vga}";
+    kernel_cmdline = device_info.kernel_cmdline
+    + " vga=${MODE.vga}" 
+    # TODO : make cmdline configurable outside device.info (device.info would be used for device-specifics only)
+    + lib.optionalString splash " quiet vt.global_cursor_default=0"
+    ;
   };
   mobile.hardware = {
     soc = "generic-x86_64";
@@ -36,9 +41,8 @@ in
   };
   mobile.system.type = "kernel-initrd";
   mobile.boot.stage-1 = {
-    # Comment the next two if you want to play around with splash.
-    redirect-log.targets = [ "/dev/tty0" "/dev/kmsg" ];
-    splash.enable = false;
+    redirect-log.targets = lib.mkIf (splash != true) [ "/dev/tty0" ];
+    splash.enable = splash;
     init = (lib.mkOrder BEFORE_READY_INIT ''
       echo "cmdline:"
       cat /proc/cmdline
