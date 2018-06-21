@@ -11,13 +11,11 @@
   ./initrd-base.nix
   ./initrd-devices.nix
   ./initrd-framebuffer.nix
-  ./initrd-logger-late.nix
   ./initrd-logger.nix
   ./initrd-loop.nix
   ./initrd-nc-shell.nix
   ./initrd-network.nix
   ./initrd-shell.nix
-  ./initrd-splash-late.nix
   ./initrd-splash.nix
   ./initrd-ssh.nix
   ./initrd-telnet.nix

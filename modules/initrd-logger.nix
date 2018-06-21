@@ -36,43 +36,58 @@ in
     };
   };
 
-  config.mobile.boot.stage-1 = {
-    redirect-log.targets = [
-      # Always redirects (tautologically) to /dev/console at least.
-      "/dev/console"
-    ]
-    ++ optional cfg.enable "/init.log"
-    ;
+  config.mobile.boot.stage-1 = mkMerge [
+    {
+      redirect-log.targets = [
+        # Always redirects (tautologically) to /dev/console at least.
+        "/dev/console"
+      ]
+      ++ optional cfg.enable "/init.log"
+      ;
 
-    # FIXME : this may not cleanup nicely.
-    # This implementation is naive and simple.
-    init = lib.mkIf cfg.enable (lib.mkOrder AFTER_DEVICE_INIT ''
-      _logger() {
-        # Setup all redirections
-        ${builtins.concatStringsSep "\n" (
-          imap0 (i: t: ''
-            exec ${toString(i+fd_base)}>${t} 2>&1
-          '') cfg.targets
-        )}
+      # FIXME : this may not cleanup nicely.
+      # This implementation is naive and simple.
+      init = lib.mkIf cfg.enable (lib.mkOrder AFTER_DEVICE_INIT ''
+        _logger() {
+          # Setup all redirections
+          ${builtins.concatStringsSep "\n" (
+            imap0 (i: t: ''
+              exec ${toString(i+fd_base)}>${t} 2>&1
+            '') cfg.targets
+          )}
 
-        # Continuously read from pipe
-        while read -r line; do
-        ${builtins.concatStringsSep "\n" (
-          imap0 (i: t: ''
-            printf '%s\n' "$line" >&${toString(i+fd_base)}
-          '') cfg.targets
-        )}
-        done
-        
-        # Cleanup behind ourselves
-        rm -f ${pipe} ${pidfile}
-      }
+          # Continuously read from pipe
+          while read -r line; do
+          ${builtins.concatStringsSep "\n" (
+            imap0 (i: t: ''
+              printf '%s\n' "$line" >&${toString(i+fd_base)}
+            '') cfg.targets
+          )}
+          done
+          
+          # Cleanup behind ourselves
+          rm -f ${pipe} ${pidfile}
+        }
 
-      mkdir -p ${logger_run}
-      mkfifo ${pipe}
-      _logger < ${pipe} > /dev/console 2&1 &
-      printf %s $! > ${pidfile}
-      exec >${pipe} 2>&1
-    '');
-  };
+        mkdir -p ${logger_run}
+        mkfifo ${pipe}
+        _logger < ${pipe} > /dev/console 2&1 &
+        printf %s $! > ${pidfile}
+        exec >${pipe} 2>&1
+      '');
+    }
+    {
+      # FIXME : this may not cleanup nicely.
+      # This implementation is naive and simple.
+      init = lib.mkIf cfg.enable (lib.mkOrder AFTER_SWITCH_ROOT_INIT ''
+        _stop_logger() {
+          local i=0 pid
+          # re-attach to /dev/console
+          exec 0<>/dev/console 1<>/dev/console 2<>/dev/console
+          # Kill the process
+          kill $(cat ${pidfile})
+        }
+      '');
+    }
+  ];
 }
