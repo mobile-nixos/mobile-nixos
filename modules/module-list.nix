@@ -1,7 +1,10 @@
 # Keep sorted, <nixpkgs> imports first.
+let
+  nixpkgs = (import ../overlay).path;
+in
 [
-  <nixpkgs/nixos/modules/misc/nixpkgs.nix>
-  <nixpkgs/nixos/modules/misc/assertions.nix>
+  (nixpkgs + "/nixos/modules/misc/nixpkgs.nix")
+  (nixpkgs + "/nixos/modules/misc/assertions.nix")
   ./boot-initrd.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix
