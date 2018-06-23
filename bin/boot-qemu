@@ -6,12 +6,19 @@
 # an aarch64 host is used to build the system, but the
 # target device is plugged into another system
 
-require "shellwords"
-
-ROOT = File.join(__dir__, "..")
+require_relative "../lib/rb/all.rb"
+require "fileutils"
+include FileUtils
 
 # This assumes `result` is boot.img.
 STORE_PATH = File.readlink("result")
+# This assumes `fs` is the TEMPORARY image.
+DISK_IMAGE = "fs.img"
+begin
+	disk_image = Dir.glob(File.join(File.readlink("fs"), "sd-image", "*.img")).first
+	cp(disk_image, DISK_IMAGE)
+	chmod("u=rw", DISK_IMAGE)
+end
 
 unless ARGV.count == 0 then
 	puts "Usage: bin/boot-eqmu"
@@ -28,9 +35,6 @@ args.push("-serial", "stdio")
 args.push("-device", "e1000,netdev=net0")
 args.push("-netdev", "user,id=net0,hostfwd=tcp::2222-:22,hostfwd=tcp::2323-:23,net=172.16.42.0/24,dhcpstart=172.16.42.1")
 
-puts " $ #{args.shelljoin}"
-system(*args)
-
-exit $?.exitstatus
+run(*args, exec: true)
 
 # vim: ft=ruby

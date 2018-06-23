@@ -1,18 +1,10 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -p ruby -i ruby
 
-require "shellwords"
-
-def run(*cmd)
-puts " $ #{cmd.shelljoin}"
-	system(*cmd)
-	exit $?.exitstatus unless $?.exitstatus == 0
-end
+require_relative "../lib/rb/all.rb"
 
 # Given a device name, instantiates `nix-build` to build
 # everything needed to boot on that device.
-
-ROOT = File.join(__dir__, "..")
 
 if ARGV.count < 1 then
 	puts "Usage: bin/build <device-name>"
