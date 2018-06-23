@@ -11,6 +11,15 @@ let
   kernel = pkgs.linuxPackages_4_16.kernel;
   device_info = (lib.importJSON ../postmarketOS-devices.json).qemu-amd64;
 
+  modules = [
+    # Disk images
+    "ata_piix"
+    "sd_mod"
+
+    # Networking
+    "e1000"
+  ];
+
   MODES = {
       "800x600x16" = { vga =   "788"; width =  800; height =  600; depth = 16; };
      "1024x786x16" = { vga =   "791"; width = 1024; height =  768; depth = 16; };
@@ -52,5 +61,9 @@ in
       cat /proc/cmdline
       echo "Hi there from /init!"
     '');
+    kernel = {
+      modular = true;
+      inherit modules;
+    };
   };
 }
