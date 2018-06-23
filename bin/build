@@ -3,6 +3,12 @@
 
 require "shellwords"
 
+def run(*cmd)
+puts " $ #{cmd.shelljoin}"
+	system(*cmd)
+	exit $?.exitstatus unless $?.exitstatus == 0
+end
+
 # Given a device name, instantiates `nix-build` to build
 # everything needed to boot on that device.
 
@@ -15,15 +21,10 @@ end
 
 DEVICE = ARGV.shift
 
-cmd = [
+run(
 	"nix-build", "-A", "all",
 	"--argstr", "device", DEVICE,
 	*ARGV
-]
+)
 
-puts " $ #{cmd.shelljoin}"
-
-system(*cmd)
-
-exit $?.exitstatus
 # vim: ft=ruby
