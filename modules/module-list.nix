@@ -11,6 +11,7 @@
   ./initrd-base.nix
   ./initrd-devices.nix
   ./initrd-framebuffer.nix
+  ./initrd-kernel.nix
   ./initrd-logger.nix
   ./initrd-loop.nix
   ./initrd-nc-shell.nix
