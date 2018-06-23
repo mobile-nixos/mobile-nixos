@@ -71,7 +71,7 @@ in
 
         mkdir -p ${logger_run}
         mkfifo ${pipe}
-        _logger < ${pipe} > /dev/console 2&1 &
+        _logger < ${pipe} >/dev/console 2>&1 &
         printf %s $! > ${pidfile}
         exec >${pipe} 2>&1
       '');
