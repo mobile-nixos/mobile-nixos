@@ -15,6 +15,7 @@ DEVICE = ARGV.shift
 
 run(
 	"nix-build", "-A", "all",
+	"-I", "nixpkgs=channel:nixpkgs-unstable",
 	"--argstr", "device", DEVICE,
 	*ARGV
 )

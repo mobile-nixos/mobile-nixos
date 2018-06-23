@@ -18,4 +18,9 @@ in
 {
   inherit overlay;
   inherit (eval.config.system.build) all;
+
+  # Shortcut to allow building `nixos` from the same channel revision.
+  # This is used by `./nixos/default.nix`
+  # Any time `nix-build nixos` is used upstream, it can be used here.
+  nixos = (import (overlay.path + "/nixos"));
 }

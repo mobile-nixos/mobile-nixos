@@ -1,3 +1,9 @@
+# Out links
 result
-*.swp
+*.img
+
+# Local overrides
 local.nix
+
+# Misc
+*.swp

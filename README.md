@@ -28,7 +28,7 @@ bin/build asus-z00t
 ### Booting qemu
 
 ```
-bin/build qemu-x86_64 -I nixpkgs=an/unstable/(nixos-or-nixpkgs)/checkout/nixpkgs/
+bin/build qemu-x86_64
 bin/boot-qemu
 ```
 

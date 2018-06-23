@@ -14,17 +14,28 @@ let
       # XXX : this feels like a hack
       initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
     };
-    kernel-initrd = pkgs.callPackage ../systems/kernel-initrd.nix {
-      # FIXME this all feels a bit not enough generic.
-      inherit device_config hardware_config;
-      initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
-    };
+    kernel-initrd = pkgs.linkFarm "${device_config.name}-build" [
+      {
+        name = "kernel-initrd";
+        path = pkgs.callPackage ../systems/kernel-initrd.nix {
+          # FIXME this all feels a bit not enough generic.
+          inherit device_config hardware_config;
+          initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
+        };
+      }
+      {
+        name = "system";
+        # Equivalent to:
+        #  → nix-build nixos -I nixos-config=system-image.nix -A config.system.build.sdImage
+        path = ((import (pkgs.path + "/nixos")) { configuration = ../system-image.nix; }).config.system.build.sdImage;
+      }
+    ];
   };
 in
 {
   options.mobile = {
     system.type = mkOption {
-      type = types.enum [ "android-bootimg" "kernel-initrd" ];
+      type = types.enum (lib.attrNames build_types);
       description = ''
         Defines the kind of system the device is.
 
