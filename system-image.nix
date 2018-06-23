@@ -24,6 +24,12 @@ in
   sdImage = {
     populateBootCommands = ''
       ${extlinux-conf-builder} -t 3 -c ${config.system.build.toplevel} -d ./boot
+
+      # This is a crutch.
+      # This points to the last generation's `init`.
+      cat >> ./boot/init-path <<EOF
+      ${config.system.build.toplevel}/init
+      EOF
     '';
   };
 }
