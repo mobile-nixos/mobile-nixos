@@ -17,7 +17,8 @@ run(
 	"nix-build", "-A", "all",
 	"-I", "nixpkgs=channel:nixpkgs-unstable",
 	"--argstr", "device", DEVICE,
-	*ARGV
+	*ARGV,
+	exec: true
 )
 
 # vim: ft=ruby
