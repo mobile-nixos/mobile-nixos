@@ -12,9 +12,11 @@ stdenv.mkDerivation {
     sha256 = "1ndnpx8ah121k9pm40s254hlyks9zabpnsc4sj4rgc5rzwf31wi5";
   };
 
+  CC = "${stdenv.cc}/bin/gcc";
+
   buildPhase = ''
-    gcc refresher.c -o refresher.o -c
-    gcc refresher.o -o msm-fb-refresher
+    $CC refresher.c -o refresher.o -c
+    $CC refresher.o -o msm-fb-refresher
   '';
 
   installPhase = ''
