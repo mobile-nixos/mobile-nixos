@@ -8,7 +8,9 @@
 , bison, flex
 , binutils-unwrapped
 , dtbTool
-, kernelPatches ? [] }:
+, kernelPatches ? []
+, buildPackages
+}:
 
 # Inspired by https://github.com/thefloweringash/rock64-nix/blob/master/packages/linux_ayufan_4_4.nix
 # Then in turn inspired by the postmarketos APKBUILDs.
@@ -135,7 +137,7 @@ buildLinux {
   inherit version;
   inherit modDirVersion;
   inherit configfile;
-  stdenv = overrideCC stdenv gcc6;
+  stdenv = overrideCC stdenv buildPackages.gcc6;
 
   allowImportFromDerivation = true;
 }
