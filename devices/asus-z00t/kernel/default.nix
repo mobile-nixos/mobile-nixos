@@ -17,19 +17,6 @@
 
 let
   modDirVersion = "3.10.108";
-  #withAdditionalFirmware = stdenv.mkDerivation rec {
-  #  brcmfmac4356-pcie_txt = fetchurl {
-  #    url = "https://raw.githubusercontent.com/andir/nixos-gpd-pocket/master/firmware/brcmfmac4356-pcie.txt";
-  #    sha256 = "1v44f7y8pxqw3xmk2v43ny5lhjg6lpch2alry40pdzq56pnplypi";
-  #  };
-  #  name = "plus-extra--${firmwareLinuxNonfree.name}";
-  #  src = firmwareLinuxNonfree;
-  #  dontBuild = true;
-  #  installPhase = ''
-  #    cp -prf . $out
-  #    cp ${brcmfmac4356-pcie_txt} $out/lib/firmware/brcm/brcmfmac4356-pcie.txt
-  #  '';
-  #};
 
   version = "${modDirVersion}";
   src = fetchFromGitHub {
@@ -120,10 +107,6 @@ let
     '';
 
     installPhase = ''
-      # FIXME ?
-      #substituteInPlace .config --replace \
-      #  /lib/firmware \
-      #  "$ {withAdditionalFirmware}/lib/firmware"
       cp -v .config $out
     '';
   };
