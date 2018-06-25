@@ -1,5 +1,14 @@
-{stdenv, fetchurl, python2, dtc, python2Packages}:
+{
+  stdenv
+  , fetchurl
+  , python2
+  , python2Packages
+  , buildPackages
+}:
 
+let
+  inherit (buildPackages) dtc;
+in
 stdenv.mkDerivation {
   name = "dtbtool";
   version = "1.6.0";
