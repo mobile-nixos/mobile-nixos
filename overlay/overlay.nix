@@ -17,8 +17,11 @@ in
     mkExtraUtils = import ./lib/extra-utils.nix {
       inherit (self)
         runCommandCC
-        nukeReferences
         glibc
+        buildPackages
+      ;
+      inherit (self.buildPackages)
+        nukeReferences
       ;
     };
 
