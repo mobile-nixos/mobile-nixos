@@ -4,8 +4,8 @@
 }:
 let
   pkgs = (import ../overlay);
+  inherit (pkgs) buildPackages;
 in
-with pkgs;
 let
   device_name = device_config.name;
   device_info = device_config.info;
@@ -16,15 +16,18 @@ let
   # TODO : Allow appending / prepending
   cmdline = device_info.kernel_cmdline;
 in
-stdenv.mkDerivation {
+pkgs.stdenv.mkDerivation {
   name = "nixos-mobile_${device_name}_boot.img";
 
   src = builtins.filterSource (path: type: false) ./.;
   unpackPhase = "true";
 
+  nativeBuildInputs = [
+    buildPackages.mkbootimg
+    buildPackages.dtbTool
+  ];
+
   buildInputs = [
-    mkbootimg
-    dtbTool
     linux
   ];
 
