@@ -2,6 +2,7 @@
   runCommandCC
   , nukeReferences
   , glibc
+  , buildPackages
 }:
 
 {
@@ -25,7 +26,7 @@ let
 in
 runCommandCC "extra-utils-${name}"
   {
-    buildInputs = [ nukeReferences ];
+    nativeBuildInputs = [ nukeReferences buildPackages.glibc.bin ];
     allowedReferences = [ "out" ];
   }
   ''
