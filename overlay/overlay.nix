@@ -19,6 +19,7 @@ in
         runCommandCC
         glibc
         buildPackages
+        writeShellScriptBin
       ;
       inherit (self.buildPackages)
         nukeReferences
