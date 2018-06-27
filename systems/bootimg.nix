@@ -1,9 +1,9 @@
 {
-  device_config,
-  initrd
+  device_config
+  , initrd
+  , pkgs
 }:
 let
-  pkgs = (import ../overlay);
   inherit (pkgs) buildPackages;
 in
 let

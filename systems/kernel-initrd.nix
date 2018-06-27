@@ -1,11 +1,9 @@
 {
-  device_config,
-  hardware_config,
-  initrd
+  device_config
+  , hardware_config
+  , initrd
+  , pkgs
 }:
-let
-  pkgs = (import ../overlay);
-in
 with pkgs;
 let
   inherit (hardware_config) ram;
