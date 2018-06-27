@@ -18,6 +18,8 @@
       fb_modes = ./fb.modes;
     };
   };
+
+  mobile.system.platform = "aarch64-linux";
   mobile.system.type = "android-bootimg";
   mobile.boot.stage-1 = {
     extraUtils = with pkgs; [

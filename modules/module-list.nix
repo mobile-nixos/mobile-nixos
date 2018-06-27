@@ -29,5 +29,6 @@ in
   ./nixpkgs.nix
   ./quirks-qualcomm.nix
   ./system-build.nix
+  ./system-target.nix
   ./system-types.nix
 ]
