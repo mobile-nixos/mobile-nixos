@@ -17,7 +17,7 @@
 , # !!! See comment about check in lib/modules.nix
   check ? true
 , prefix ? []
-, lib ? (import ../overlay).lib
+, lib ? import <nixpkgs/lib>
 }:
 
 let extraArgs_ = extraArgs; pkgs_ = pkgs;

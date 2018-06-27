@@ -1,6 +1,8 @@
 # Keep sorted, <nixpkgs> imports first.
 let
-  nixpkgs = (import ../overlay).path;
+  # This is only used to get the path to nixpkgs.
+  # This one shouldn't affect cross-compiling.
+  nixpkgs = (import <nixpkgs> {}).path;
 in
 [
   (nixpkgs + "/nixos/modules/misc/nixpkgs.nix")
@@ -24,6 +26,7 @@ in
   ./initrd-ssh.nix
   ./initrd-telnet.nix
   ./mobile-device.nix
+  ./nixpkgs.nix
   ./quirks-qualcomm.nix
   ./system-build.nix
   ./system-types.nix

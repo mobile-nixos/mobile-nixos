@@ -1,14 +1,17 @@
-# This defines the mobile-nixos "overlay" which is
-# basically a known channel + this overlay defined
-# in overlay.nix.
 #
-# Every derivations building a boot image and or a
-# complete system will import this file somehow.
-let
-  nixpkgs = import (fetchTarball channel:nixos-unstable);
-in
-nixpkgs {
-  crossSystem = (nixpkgs {}).lib.systems.examples.aarch64-multiplatform;
+# Allows use of the overlay this way:
+#
+# ```
+# $ nix-build ./overlay -A dtbTool
+# $ nix-build --arg crossSystem '(import <nixpkgs/lib>).systems.examples.aarch64-multiplatform' ./overlay -A dtbTool
+# ```
+#
+{
+  nixpkgs ? (fetchTarball channel:nixos-unstable)
+  , crossSystem ? null
+}:
+import nixpkgs {
+  inherit crossSystem;
   overlays = [
     (import ./overlay.nix)
   ];
