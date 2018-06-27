@@ -8,8 +8,11 @@ let
 
   target_types = {
     aarch64-linux = lib.systems.examples.aarch64-multiplatform;
-    x86_64-linux = null; # TODO : cross-compile from ARM and others!
+    x86_64-linux = { config = "x86_64-unknown-linux-gnu"; };
   };
+
+  # Hmmm, this doesn't feel right, but it does work.
+  host_platform = (import <nixpkgs> {}).buildPackages.hostPlatform;
 in
 {
   options.mobile = {
@@ -31,6 +34,6 @@ in
       }
     ];
 
-    nixpkgs.crossSystem = target_types.${cfg.platform};
+    nixpkgs.crossSystem = lib.mkIf ( target_types.${cfg.platform}.config != host_platform.config ) target_types.${cfg.platform};
   };
 }
