@@ -3,6 +3,8 @@
 with lib;
 
 let
+  failed = map (x: x.message) (filter (x: !x.assertion) config.assertions);
+
   system_type = config.mobile.system.type;
   device_config = config.mobile.device;
   hardware_config = config.mobile.hardware;
@@ -52,7 +54,11 @@ in
       { assertion = build_types ? system_type; message = "cannot build unexpected system type: ${system_type}.";}
     ];
     system = {
-      build = build_types."${system_type}";
+      build = 
+        if failed == [] then
+        build_types."${system_type}"
+        else throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: " → ${x}") failed)}\n"
+      ;
     };
   };
 }
