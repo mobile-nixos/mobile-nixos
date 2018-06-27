@@ -3,7 +3,7 @@
 with lib;
 
 let
-  cfg = config.mobile.hardware.soc;
+  cfg = config.mobile.hardware;
 in
 {
   options.mobile.hardware = {
@@ -18,8 +18,8 @@ in
 
   config = {
     assertions = [
-      { assertion = mobile.hardware.socs ? cfg; message = "Cannot enable SOC ${cfg}; it is unknown."; }
+      { assertion = cfg.socs ? ${cfg.soc}; message = "Cannot enable SOC ${cfg.soc}; it is unknown.";}
     ];
-    mobile.hardware.socs."${cfg}".enable = true;
+    mobile.hardware.socs."${cfg.soc}".enable = true;
   };
 }

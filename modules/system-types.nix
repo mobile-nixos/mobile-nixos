@@ -51,7 +51,7 @@ in
     assertions = [
       # While the enum type is enough to implement value safety, this will help
       # when implementing new platforms and not implementing them in build_types.
-      { assertion = build_types ? system_type; message = "cannot build unexpected system type: ${system_type}.";}
+      { assertion = build_types ? ${system_type}; message = "Cannot build unexpected system type: ${system_type}.";}
     ];
     system = {
       build = 
