@@ -4,7 +4,8 @@
 { config, lib, pkgs, ... }:
 
 let
-  path = (import ./overlay).path;
+  inherit (import <nixpkgs> {}) path;
+
   extlinux-conf-builder =
     import (path + "/nixos/modules/system/boot/loader/generic-extlinux-compatible/extlinux-conf-builder.nix") {
       inherit pkgs;
@@ -12,10 +13,6 @@ let
 in
 {
   imports = [
-    # FIXME : use `pkgs.path` instead of this hack.
-    # while evaluating the module argument `pkgs' in "[...]/mobile-nixos/system-image.nix":
-    # infinite recursion encountered, at /nix/store/8vczq3489dl8xa5s7ksqyqkbirmpd3sb-source/lib/modules.nix:163:28
-    # (pkgs.path + "/nixos/modules/installer/cd-dvd/sd-image.nix")
     (path + "/nixos/modules/installer/cd-dvd/sd-image.nix")
     (path + "/nixos/modules/profiles/base.nix")
     (path + "/nixos/modules/profiles/installation-device.nix")
