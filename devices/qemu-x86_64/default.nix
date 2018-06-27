@@ -61,7 +61,6 @@ in
     ram = 512;
   };
 
-  mobile.system.platform = "x86_64-linux";
   mobile.system.type = "kernel-initrd";
   mobile.boot.stage-1 = {
     redirect-log.targets = lib.mkIf (splash != true) [ "/dev/tty0" ];

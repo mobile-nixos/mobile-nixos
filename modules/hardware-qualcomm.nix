@@ -17,5 +17,6 @@ in
   config = {
     # TODO : more generic than msm8939.enable.
     mobile.quirks.qualcomm.msm-fb-refresher.enable = cfg.qualcomm-msm8939.enable;
+    mobile.system.platform = lib.mkIf cfg.qualcomm-msm8939.enable "aarch64-linux";
   };
 }
