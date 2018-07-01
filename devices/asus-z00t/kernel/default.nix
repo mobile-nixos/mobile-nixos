@@ -55,15 +55,6 @@ let
     cp "arch/arm64/boot/dt.img" \
              "$out/boot/dt.img"
 
-    # Copies all potential output files.
-    for f in zImage-dtb Image.gz-dtb; do
-    #*zImage Image.gz Image; do
-      f=arch/arm64/boot/$f
-      [ -e "$f" ] || continue
-      echo "zImage found: $f"
-      cp -v "$f" "$out/"
-    done
-
     # Copies the dtb, could always be useful.
     mkdir -p $out/dtb
     for f in arch/*/boot/dts/*.dtb; do
@@ -78,7 +69,7 @@ let
     # Somehow the build system has issues.
     (
     cd $out
-    cat Image.gz dtb/*.dtb > Image.gz-dtb
+    cat Image.gz dtb/*.dtb > vmlinuz-dtb
     )
   '';
 in
