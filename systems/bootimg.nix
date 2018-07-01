@@ -9,8 +9,9 @@ in
 let
   device_name = device_config.name;
   device_info = device_config.info;
+  with_qcdt = device_info ? bootimg_qcdt && device_info.bootimg_qcdt;
   linux = device_info.kernel;
-  kernel = "${linux}/Image.gz-dtb";
+  kernel = ''${linux}/vmlinuz${if with_qcdt then "-dtb" else ""}'';
   dt = "${linux}/boot/dt.img";
 
   # TODO : Allow appending / prepending
@@ -34,7 +35,12 @@ pkgs.stdenv.mkDerivation {
   installPhase = ''
     mkbootimg \
       --kernel  ${kernel} \
-      --dt      ${dt} \
+      ${
+        if with_qcdt then
+          "--dt ${dt}"
+        else
+          ""
+      } \
       --ramdisk ${initrd} \
       --cmdline       "${cmdline}" \
       --base           ${device_info.flash_offset_base   } \

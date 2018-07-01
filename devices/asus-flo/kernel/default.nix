@@ -16,19 +16,21 @@
 # Then in turn inspired by the postmarketos APKBUILDs.
 
 let
-  modDirVersion = "3.10.108";
+  modDirVersion = "3.4.113";
 
   version = "${modDirVersion}";
   src = fetchFromGitHub {
     owner = "LineageOS";
-    repo = "android_kernel_asus_msm8916";
-    rev = "5fd66aa9219bf9aaa504aa3cb2dae7a3de5238f7";
-    sha256 = "1f2ynnkaxdcm8w3846fd7a304m08fqlpv78mlkdg92fjczw261vx";
+    repo = "android_kernel_google_msm";
+    rev = "a4b9cf707b9acf6e5f6089d1121ae973efe399b0";
+    sha256 = "0q88sqmcd09m0wq27rvzvq588gbk3daji1zp36qpyzl1d66b37v6";
   };
   patches = [
-    ./01_fix_gcc6_errors.patch
-    ./02_mdss_fb_refresh_rate.patch
-    ./05_dtb-fix.patch
+    ./00_fix_return_address.patch
+    ./02_gpu-msm-fix-gcc5-compile.patch
+    ./03-fix-video-argb-setting.patch
+    ./patch_fsp_detect.patch
+    ./patch_lifebook_detect.patch
     ./90_dtbs-install.patch
   ];
   postPatch = ''
@@ -48,12 +50,18 @@ let
   '';
 
   additionalInstall = ''
-    # Generate master DTB (deviceinfo_bootimg_qcdt)
-    ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "arch/arm/boot/"
-
     mkdir -p "$out/boot"
-    cp "arch/arm64/boot/dt.img" \
-             "$out/boot/dt.img"
+
+    # Copies all potential output files.
+    for f in zImage-dtb Image.gz-dtb zImage Image.gz Image; do
+      f=arch/arm/boot/$f
+      [ -e "$f" ] || continue
+      echo "zImage found: $f"
+      cp -v "$f" "$out/"
+      break
+    done
+
+    cp -v "arch/arm/boot/zImage" "$out/vmlinuz"
 
     # Copies the dtb, could always be useful.
     mkdir -p $out/dtb
@@ -64,13 +72,6 @@ let
     # Copies the .config file to output.
     # Helps ensuring sanity.
     cp -v .config $out/src.config
-
-    # Finally, makes Image.gz-dtb image ourselves.
-    # Somehow the build system has issues.
-    (
-    cd $out
-    cat Image.gz dtb/*.dtb > vmlinuz-dtb
-    )
   '';
 in
 let
@@ -81,19 +82,19 @@ let
 
       ${additionalInstall}
     '';
-    installTargets = [ "dtbs" "zinstall" ];
+    installTargets = [ "zinstall" ];
     dontStrip = true;
   }));
 
   configfile = stdenv.mkDerivation {
-    name = "android-asus-z00t-config-${modDirVersion}";
+    name = "android-asus-flo-config-${modDirVersion}";
     inherit version;
     inherit src patches postPatch;
     nativeBuildInputs = [bison flex];
 
     buildPhase = ''
       echo "building config file"
-      cp -v ${./config-asus-z00t.aarch64} .config
+      cp -v ${./config-asus-flo.armv7} .config
       yes "" | make $makeFlags "''${makeFlagsArray[@]}" oldconfig || :
     '';
 

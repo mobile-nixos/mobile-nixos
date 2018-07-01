@@ -21,9 +21,6 @@
 
   mobile.system.type = "android-bootimg";
   mobile.boot.stage-1 = {
-    extraUtils = with pkgs; [
-      strace
-    ];
     initFramebuffer = ''
       echo 10 > /sys/class/leds/lcd-backlight/brightness
     '';

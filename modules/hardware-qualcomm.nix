@@ -7,6 +7,11 @@ let
 in
 {
   options.mobile = {
+    hardware.socs.qualcomm-apq8064-1aa.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is APQ8064–1AA";
+    };
     hardware.socs.qualcomm-msm8939.enable = mkOption {
       type = types.bool;
       default = false;
@@ -14,9 +19,18 @@ in
     };
   };
 
-  config = {
-    # TODO : more generic than msm8939.enable.
-    mobile.quirks.qualcomm.msm-fb-refresher.enable = cfg.qualcomm-msm8939.enable;
-    mobile.system.platform = lib.mkIf cfg.qualcomm-msm8939.enable "aarch64-linux";
-  };
+  config = mkMerge [
+    {
+      mobile = mkIf cfg.qualcomm-msm8939.enable {
+        quirks.qualcomm.msm-fb-refresher.enable = true;
+        system.platform = "aarch64-linux";
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-apq8064-1aa.enable {
+        quirks.qualcomm.msm-fb-refresher.enable = true;
+        system.platform = "armv7a-linux";
+      };
+    }
+  ];
 }

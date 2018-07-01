@@ -8,6 +8,7 @@ let
 
   target_types = {
     aarch64-linux = lib.systems.examples.aarch64-multiplatform;
+    armv7a-linux = lib.systems.examples.armv7l-hf-multiplatform;
     x86_64-linux = { config = "x86_64-unknown-linux-gnu"; };
   };
 
@@ -30,7 +31,7 @@ in
     assertions = [
       {
         assertion = pkgs.targetPlatform.system == cfg.platform;
-        message = "pkgs.targetPlatform.system expected to be `aarch64-linux`, is `${pkgs.targetPlatform.system}`";
+        message = "pkgs.targetPlatform.system expected to be `${cfg.platform}`, is `${pkgs.targetPlatform.system}`";
       }
     ];
 
