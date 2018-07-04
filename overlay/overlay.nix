@@ -33,4 +33,15 @@ in
       packet_fix_race_condition_CVE_2016_8655
       DCCP_double_free_vulnerability_CVE-2017-6074
     ];
+
+    #
+    # Overrides
+    #
+
+    # valgrind won't build cross.
+    libdrm = super.libdrm.overrideAttrs(oldAttrs: {
+      buildInputs = builtins.filter (
+        input: input != self.valgrind-light
+      ) oldAttrs.buildInputs;
+    });
  }

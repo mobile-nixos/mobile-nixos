@@ -21,11 +21,13 @@ in
     {
       init = lib.mkOrder AFTER_FRAMEBUFFER_INIT ''
         show_splash() {
+          ply-image /$1.png > /dev/null 2>&1
         }
 
         show_splash loading
       '';
       extraUtils = [
+        { package = pkgs.ply-image; extraCommand = "cp -pv ${pkgs.glibc.out}/lib/libpthread.so.* $out/lib"; }
       ];
       contents = [
         { object = ../loading.png; symlink = "/loading.png"; }
