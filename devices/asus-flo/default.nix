@@ -11,7 +11,6 @@
     ram = 1024 * 2;
     screen = {
       width = 1200; height = 1920;
-      fb_modes = ./fb.modes;
     };
   };
 

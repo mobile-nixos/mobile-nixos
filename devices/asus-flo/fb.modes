@@ -1,7 +1,0 @@
-mode "1200x1920-0"
-        # D: 0.001 MHz, H: 0.001 kHz, V: 0.000 Hz
-        geometry 1200 1920 1200 5760 32
-        timings 1000000000 60 48 6 3 32 5
-        accel false
-        rgba 8/16,8/8,8/0,8/24
-endmode
