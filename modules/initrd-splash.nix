@@ -21,13 +21,11 @@ in
     {
       init = lib.mkOrder AFTER_FRAMEBUFFER_INIT ''
         show_splash() {
-        echo | fbv -caferi /$1.png > /dev/null 2>&1
         }
 
         show_splash loading
       '';
       extraUtils = [
-        pkgs.fbv
       ];
       contents = [
         { object = ../loading.png; symlink = "/loading.png"; }
@@ -37,9 +35,6 @@ in
       init = lib.mkOrder READY_INIT ''
         show_splash splash
       '';
-      extraUtils = [
-        pkgs.fbv
-      ];
       contents = [
         { object = ../temp-splash.png; symlink = "/splash.png"; }
       ];

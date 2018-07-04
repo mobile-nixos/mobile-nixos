@@ -7,7 +7,6 @@ in
     # Misc. tools.
     # Keep sorted.
     dtbTool = callPackage ./dtbtool { };
-    fbv = callPackage ./fbv { libpng = self.libpng12; };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
