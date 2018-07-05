@@ -15,14 +15,8 @@
     ram = 1024 * 3;
     screen = {
       width = 1080; height = 1920;
-      fb_modes = ./fb.modes;
     };
   };
 
   mobile.system.type = "android-bootimg";
-  mobile.boot.stage-1 = {
-    initFramebuffer = ''
-      echo 10 > /sys/class/leds/lcd-backlight/brightness
-    '';
-  };
 }

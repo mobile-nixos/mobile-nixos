@@ -30,6 +30,7 @@ let
     ./02_mdss_fb_refresh_rate.patch
     ./05_dtb-fix.patch
     ./90_dtbs-install.patch
+    ./99_framebuffer.patch
   ];
   postPatch = ''
     patchShebangs .
