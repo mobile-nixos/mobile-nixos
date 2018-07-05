@@ -30,7 +30,7 @@ in
         { package = pkgs.ply-image; extraCommand = "cp -pv ${pkgs.glibc.out}/lib/libpthread.so.* $out/lib"; }
       ];
       contents = [
-        { object = ../loading.png; symlink = "/loading.png"; }
+        { object = ../artwork/loading.png; symlink = "/loading.png"; }
       ];
     }
     {
@@ -38,7 +38,7 @@ in
         show_splash splash
       '';
       contents = [
-        { object = ../temp-splash.png; symlink = "/splash.png"; }
+        { object = ../artwork/temp-splash.png; symlink = "/splash.png"; }
       ];
     }
   ]);
