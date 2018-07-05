@@ -5,14 +5,14 @@ with import ./initrd-order.nix;
 
 let
   cfg = config.mobile.boot.stage-1.splash;
-  mkSplash = at: name: path:
+  mkSplash = at: name:
   {
     init = lib.mkOrder at ''
       show_splash ${name}
     '';
     contents = [
       {
-        object = path;
+        object = (builtins.path { path = ../artwork + "/${name}.png"; });
         symlink = "/${name}.png";
       }
     ];
@@ -48,8 +48,8 @@ in
       ];
     }
 
-    (mkSplash AFTER_FRAMEBUFFER_INIT "loading" ../artwork/loading.png)
-    (mkSplash (READY_INIT - 1) "splash" ../artwork/splash.png)
-    (mkIf cfg.rgb-debug (mkSplash (READY_INIT) "rgb-debug" ../artwork/rgb-debug.png))
+    (mkSplash AFTER_FRAMEBUFFER_INIT "loading")
+    (mkSplash (READY_INIT - 1) "splash")
+    (mkIf cfg.rgb-debug (mkSplash (READY_INIT) "rgb-debug"))
   ]);
 }
