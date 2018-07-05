@@ -5,6 +5,18 @@ with import ./initrd-order.nix;
 
 let
   cfg = config.mobile.boot.stage-1.splash;
+  mkSplash = at: name: path:
+  {
+    init = lib.mkOrder at ''
+      show_splash ${name}
+    '';
+    contents = [
+      {
+        object = path;
+        symlink = "/${name}.png";
+      }
+    ];
+  };
 in
 {
   options.mobile.boot.stage-1.splash = {
@@ -15,31 +27,29 @@ in
         Enables splash screen.
       '';
     };
+    rgb-debug = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Enables a special splash with RGB debug components.
+      '';
+    };
   };
 
   config.mobile.boot.stage-1 = lib.mkIf cfg.enable (mkMerge [
     {
-      init = lib.mkOrder AFTER_FRAMEBUFFER_INIT ''
+      init = lib.mkOrder BEFORE_FRAMEBUFFER_INIT ''
         show_splash() {
-          ply-image /$1.png > /dev/null 2>&1
+          ply-image --clear=0x000000 /$1.png > /dev/null 2>&1
         }
-
-        show_splash loading
       '';
       extraUtils = [
         { package = pkgs.ply-image; extraCommand = "cp -pv ${pkgs.glibc.out}/lib/libpthread.so.* $out/lib"; }
       ];
-      contents = [
-        { object = ../artwork/loading.png; symlink = "/loading.png"; }
-      ];
     }
-    {
-      init = lib.mkOrder READY_INIT ''
-        show_splash splash
-      '';
-      contents = [
-        { object = ../artwork/temp-splash.png; symlink = "/splash.png"; }
-      ];
-    }
+
+    (mkSplash AFTER_FRAMEBUFFER_INIT "loading" ../artwork/loading.png)
+    (mkSplash (READY_INIT - 1) "splash" ../artwork/splash.png)
+    (mkIf cfg.rgb-debug (mkSplash (READY_INIT) "rgb-debug" ../artwork/rgb-debug.png))
   ]);
 }
