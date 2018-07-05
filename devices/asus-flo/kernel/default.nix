@@ -32,6 +32,7 @@ let
     ./patch_fsp_detect.patch
     ./patch_lifebook_detect.patch
     ./90_dtbs-install.patch
+    ./99_framebuffer.patch
   ];
   postPatch = ''
     patchShebangs .
