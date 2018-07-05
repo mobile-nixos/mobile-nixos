@@ -13,6 +13,10 @@ stdenv.mkDerivation {
     sha256 = "152hh9r04hjqrpfqskqh876vlf5dfqiwx719nyjq1y2qr8a9akm7";
   };
 
+  patches = [
+    ./99_additional_debug.diff
+  ];
+
   nativeBuildInputs = [
     pkgconfig
   ];

@@ -1,0 +1,23 @@
+diff --git a/src/ply-image.c b/src/ply-image.c
+index dff8e04..60ba16b 100644
+--- a/src/ply-image.c
++++ b/src/ply-image.c
+@@ -542,6 +542,18 @@ int main(int argc, char **argv) {
+     return errno;
+   }
+ 
++  if (debug) {
++      fprintf(stderr, "\n\n");
++      fprintf(stderr, "[framebuffer]\n");
++      fprintf(stderr, "R -> position: %u / bits: %u\n", buffer->red_bit_position, buffer->bits_for_red);
++      fprintf(stderr, "G -> position: %u / bits: %u\n", buffer->green_bit_position, buffer->bits_for_green);
++      fprintf(stderr, "B -> position: %u / bits: %u\n", buffer->blue_bit_position, buffer->bits_for_blue);
++      fprintf(stderr, "A -> position: %u / bits: %u\n", buffer->alpha_bit_position, buffer->bits_for_alpha);
++      fprintf(stderr, "Bpp: %zu\n", buffer->bytes_per_pixel);
++      fprintf(stderr, "stride: %zu\n", buffer->row_stride);
++      fprintf(stderr, "\n\n");
++  }
++
+   ply_frame_buffer_area_t fb_area;
+   ply_frame_buffer_get_size(buffer, &fb_area);
+ 
