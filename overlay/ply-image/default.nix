@@ -15,6 +15,7 @@ stdenv.mkDerivation {
 
   patches = [
     ./99_additional_debug.diff
+    ./99_msm-fb.diff
   ];
 
   nativeBuildInputs = [

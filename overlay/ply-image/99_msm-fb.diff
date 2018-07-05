@@ -1,0 +1,22 @@
+diff --git a/src/ply-frame-buffer.c b/src/ply-frame-buffer.c
+index 1160c85..5904331 100644
+--- a/src/ply-frame-buffer.c
++++ b/src/ply-frame-buffer.c
+@@ -596,6 +596,9 @@ bool ply_frame_buffer_fill(ply_frame_buffer_t *buffer,
+     }
+   }
+ 
++  struct fb_var_screeninfo variable_screen_info;
++  ioctl(buffer->device_fd, FBIOPAN_DISPLAY, &variable_screen_info);
++
+   return true;
+ }
+ 
+@@ -659,4 +662,7 @@ void ply_frame_buffer_clear(ply_frame_buffer_t *buffer,
+     default:
+       assert(0);
+   }
++
++  struct fb_var_screeninfo variable_screen_info;
++  ioctl(buffer->device_fd, FBIOPAN_DISPLAY, &variable_screen_info);
+ }
