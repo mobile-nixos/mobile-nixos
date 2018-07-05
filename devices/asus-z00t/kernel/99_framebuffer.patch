@@ -23,7 +23,7 @@ index 075ee8a3880..b4531f66a06 100644
 +		var->vmode = FB_VMODE_NONINTERLACED;
 +		var->blue.offset = 0;
 +		var->green.offset = 8;
-+		var->red.offset = 18;
++		var->red.offset = 16;
 +		var->blue.length = 8;
 +		var->green.length = 8;
 +		var->red.length = 8;
