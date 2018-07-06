@@ -1,0 +1,27 @@
+diff --git a/drivers/video/msm/mdss/mdss_fb.c b/drivers/video/msm/mdss/mdss_fb.c
+index 8d95d9d8c70..fcc08eeba61 100644
+--- a/drivers/video/msm/mdss/mdss_fb.c
++++ b/drivers/video/msm/mdss/mdss_fb.c
+@@ -73,6 +73,13 @@
+ #define BLANK_FLAG_LP	FB_BLANK_VSYNC_SUSPEND
+ #define BLANK_FLAG_ULP	FB_BLANK_NORMAL
+ 
++// FIXME: HACK --sdr
++// This is is due to the fact that the kernel will "cleanup" and shutdown
++// the display when all framebuffer handles are closed.
++// This could be (in the future) toggled through some mean (sysfs?) allowing
++// it to initially keep showing splashes "simply".
++bool skip_shutdown = true;
++
+ static struct fb_info *fbi_list[MAX_FBI_LIST];
+ static int fbi_list_index;
+ 
+@@ -2501,7 +2508,7 @@ static int mdss_fb_release_all(struct fb_info *info, bool release_all)
+ 		}
+ 	}
+ 
+-	if (!mfd->ref_cnt || release_all) {
++	if (!skip_shutdown && (!mfd->ref_cnt || release_all)) {
+ 		/* resources (if any) will be released during blank */
+ 		if (mfd->mdp.release_fnc)
+ 			mfd->mdp.release_fnc(mfd, true, pid);
