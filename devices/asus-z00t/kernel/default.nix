@@ -32,7 +32,6 @@ let
     ./05_dtb-fix.patch
     ./90_dtbs-install.patch
     ./99_framebuffer.patch
-    ./99_msm-fb-flip.patch
   ];
   postPatch = ''
     patchShebangs .
