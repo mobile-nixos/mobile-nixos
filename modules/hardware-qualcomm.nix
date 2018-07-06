@@ -22,13 +22,11 @@ in
   config = mkMerge [
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
-        quirks.qualcomm.msm-fb-refresher.enable = true;
         system.platform = "aarch64-linux";
       };
     }
     {
       mobile = mkIf cfg.qualcomm-apq8064-1aa.enable {
-        quirks.qualcomm.msm-fb-refresher.enable = true;
         system.platform = "armv7a-linux";
       };
     }

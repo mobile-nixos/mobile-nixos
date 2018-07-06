@@ -10,7 +10,10 @@ in
     quirks.qualcomm.msm-fb-refresher.enable = mkOption {
       type = types.bool;
       default = false;
-      description = "Enables use of `msm-fb-refresher`.";
+      description = "
+        Enables use of `msm-fb-refresher`.
+        Use sparingly, it is better to patch software to flip buffers instead.
+      ";
     };
   };
 
