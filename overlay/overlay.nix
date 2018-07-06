@@ -10,6 +10,7 @@ in
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
+    msm-fb-handle = callPackage ./msm-fb-handle { };
     ply-image = callPackage ./ply-image { };
 
     # Extra "libs"

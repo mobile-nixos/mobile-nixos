@@ -23,6 +23,7 @@ in
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
         system.platform = "aarch64-linux";
+        quirks.qualcomm.msm-fb-handle.enable = true;
       };
     }
     {
