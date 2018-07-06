@@ -22,10 +22,11 @@ let
   src = fetchFromGitHub {
     owner = "LineageOS";
     repo = "android_kernel_asus_msm8916";
-    rev = "5fd66aa9219bf9aaa504aa3cb2dae7a3de5238f7";
+    rev = "d56000991e7d90e3a75afd86fb2f3c779232ff29"; # lineage-15.1
     sha256 = "1f2ynnkaxdcm8w3846fd7a304m08fqlpv78mlkdg92fjczw261vx";
   };
   patches = [
+    ./0001-Porting-changes-found-in-LineageOS-android_kernel_cy.patch
     ./01_fix_gcc6_errors.patch
     ./02_mdss_fb_refresh_rate.patch
     ./05_dtb-fix.patch
