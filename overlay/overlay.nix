@@ -6,6 +6,7 @@ in
   {
     # Misc. tools.
     # Keep sorted.
+    android-headers = callPackage ./android-headers { };
     dtbTool = callPackage ./dtbtool { };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
     mkbootimg = callPackage ./mkbootimg { };
