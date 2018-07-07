@@ -81,7 +81,7 @@ runCommandCC "extra-utils-${name}"
     ln -s $out/bin $out/sbin
     copy_bin_and_libs() {
       [ -f "$out/bin/$(basename $1)" ] && rm "$out/bin/$(basename $1)"
-      cp -pd $1 $out/bin
+      cp -pdv $1 $out/bin
     }
     ${install_packages}
 
@@ -106,6 +106,7 @@ runCommandCC "extra-utils-${name}"
     # Run patchelf to make the programs refer to the copied libraries.
     find $out/bin $out/lib -type f | while read i; do
       if ! test -L $i; then
+        echo "nuking refs from $i..."
         nuke-refs -e $out $i
       fi
     done
