@@ -2,6 +2,15 @@ self: super:
 
 let
   callPackage = self.callPackage;
+  # FIXME : upstream fix for .a in "lib" instead of this hack.
+  # This is used to "re-merge" the split gcc package.
+  # Static libraries (.a) aren't available in the "lib" package.
+  # libtool, reading the `.la` files in the "lib" package expects `.a`
+  # to be in the "lib" package; they are in out.
+  merged_gcc7 = super.wrapCC (self.symlinkJoin {
+    name = "gcc7-merged";
+    paths = with super.buildPackages.gcc7.cc; [ out lib ];
+  });
 in
   {
     # Misc. tools.
@@ -9,6 +18,14 @@ in
     android-headers = callPackage ./android-headers { };
     dtbTool = callPackage ./dtbtool { };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
+    libhybris = callPackage ./libhybris {
+      # FIXME : verify how it acts on native aarch64 build.
+      stdenv = if self.buildPlatform != self.targetPlatform then
+        self.stdenv
+      else
+        with self; overrideCC stdenv (merged_gcc7)
+      ;
+    };
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     msm-fb-handle = callPackage ./msm-fb-handle { };
