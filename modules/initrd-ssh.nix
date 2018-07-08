@@ -11,7 +11,7 @@ in
   options.mobile.boot.stage-1.ssh = {
     enable = mkOption {
       type = types.bool;
-      default = true;
+      default = false;
       description = ''
         Enables ssh.
         CURRENT CONFIGURATION ALSO OPENS ACCESS TO ALL WITHOUT A PASSWORD NOR SSH KEY.
@@ -24,9 +24,6 @@ in
       #
       # Oh boy, that's insecure!
       #
-      echo '/bin/sh' > /etc/shells
-      echo 'root:x:0:0:root:/root:/bin/sh' > /etc/passwd
-      echo 'passwd: files' > /etc/nsswitch.conf
       passwd -u root
       passwd -d root
       echo "From a mobile-nixos device ${device_name}" >> /etc/banner
@@ -38,7 +35,7 @@ in
       dropbear -ERB -b /etc/banner
     '';
     extraUtils = with pkgs; [
-      { package = dropbear; extraCommand = "cp -pv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
+      { package = dropbear; extraCommand = "cp -fpv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
     ];
   };
 }

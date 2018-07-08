@@ -32,6 +32,11 @@ in
       mount -t devpts devpts /dev/pts
 
       touch /var/log/lastlog
+
+      # Basic stuff necessary for a shell.
+      echo '/bin/sh' > /etc/shells
+      echo 'root:*:0:0:root:/root:/bin/sh' > /etc/passwd
+      echo 'passwd: files' > /etc/nsswitch.conf
     '';
   };
 }
