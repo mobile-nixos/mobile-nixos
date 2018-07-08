@@ -1,0 +1,54 @@
+From 91137e800584a1f6ad4fd84cce9485f7bae920a4 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 8 Jul 2018 20:48:03 -0400
+Subject: [PATCH 5/5] Removes `sudo` dependency + /bin/sh
+
+---
+ core/adb/adb.c      | 1 -
+ core/adb/services.c | 7 +++----
+ 2 files changed, 3 insertions(+), 5 deletions(-)
+
+diff --git a/core/adb/adb.c b/core/adb/adb.c
+index 3c35473..1290f0e 100644
+--- a/core/adb/adb.c
++++ b/core/adb/adb.c
+@@ -1264,7 +1264,6 @@ static void drop_capabilities_bounding_set_if_needed() {
+ 
+ static int should_drop_privileges() {
+ #ifndef ALLOW_ADBD_ROOT
+-    return 1;
+ #else /* ALLOW_ADBD_ROOT */
+     int secure = 0;
+     char value[PROPERTY_VALUE_MAX];
+diff --git a/core/adb/services.c b/core/adb/services.c
+index d5e0624..d943272 100644
+--- a/core/adb/services.c
++++ b/core/adb/services.c
+@@ -304,10 +304,9 @@ static int create_subproc_raw(const char *cmd, const char *arg0, const char *arg
+ #define SHELL_COMMAND "/bin/sh"
+ #define ALTERNATE_SHELL_COMMAND ""
+ #else
+-#define SHELL_COMMAND "/system/bin/sh"
++#define SHELL_COMMAND "/bin/sh"
+ #define ALTERNATE_SHELL_COMMAND "/sbin/sh"
+ #endif
+-#define SUDO "/usr/bin/sudo"
+ 
+ #if !ADB_HOST
+ static void subproc_waiter_service(int fd, void *cookie)
+@@ -385,10 +384,10 @@ static int create_subproc_thread(const char *name, const subproc_mode mode)
+ 
+     switch (mode) {
+     case SUBPROC_PTY:
+-        ret_fd = create_subproc_pty(SUDO, useropt, "-i", shell_command, arg0, arg1, &pid);
++        ret_fd = create_subproc_pty(shell_command, arg0, arg1, 0, 0, 0, &pid);
+         break;
+     case SUBPROC_RAW:
+-        ret_fd = create_subproc_raw(SUDO, useropt, "-i", shell_command, arg0, arg1, &pid);
++        ret_fd = create_subproc_raw(shell_command, arg0, arg1, 0, 0, 0, &pid);
+         break;
+     default:
+         fprintf(stderr, "invalid subproc_mode %d\n", mode);
+-- 
+2.16.4
+

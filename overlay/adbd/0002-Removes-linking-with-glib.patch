@@ -1,0 +1,27 @@
+From e84e24a480ebbc2be2e18d0c8ed758b06db4cb4d Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 8 Jul 2018 20:45:02 -0400
+Subject: [PATCH 2/5] Removes linking with glib.
+
+---
+ debian/makefiles/adbd.mk | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
+
+diff --git a/debian/makefiles/adbd.mk b/debian/makefiles/adbd.mk
+index d7889b4..14b6d17 100644
+--- a/debian/makefiles/adbd.mk
++++ b/debian/makefiles/adbd.mk
+@@ -44,9 +44,8 @@ CPPFLAGS+= -I../adb
+ CPPFLAGS+= -I../include
+ CPPFLAGS+= -I../ubuntu
+ CPPFLAGS+= -I../../../external/zlib
+-CPPFLAGS+= `pkg-config --cflags glib-2.0 gio-2.0`
+ 
+-LIBS+= -lc -lpthread -lz -lcrypto -landroid-properties -lsystemd -lresolv `pkg-config --libs glib-2.0 gio-2.0`
++LIBS+= -lc -lpthread -lz -lcrypto -landroid-properties -lsystemd -lresolv
+ 
+ OBJS= $(patsubst %, %.o, $(basename $(SRCS)))
+ 
+-- 
+2.16.4
+

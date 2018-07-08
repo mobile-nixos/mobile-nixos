@@ -15,6 +15,7 @@ in
   {
     # Misc. tools.
     # Keep sorted.
+    adbd = callPackage ./adbd { };
     android-headers = callPackage ./android-headers { };
     dtbTool = callPackage ./dtbtool { };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };

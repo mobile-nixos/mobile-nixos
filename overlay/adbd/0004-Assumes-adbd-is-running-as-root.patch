@@ -1,0 +1,49 @@
+From 906e8babd71b91f7b30eabd61c75e1f313a47b2d Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 8 Jul 2018 20:47:34 -0400
+Subject: [PATCH 4/5] Assumes `adbd` is running as root.
+
+---
+ core/adb/adb.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/core/adb/adb.c b/core/adb/adb.c
+index 41698e2..3c35473 100644
+--- a/core/adb/adb.c
++++ b/core/adb/adb.c
+@@ -1365,8 +1365,8 @@ int adb_main(int is_daemon, int server_port)
+         exit(1);
+     }
+ */
+-    // initialize all default groups for the UBUNTU_PHABLET user
+-    struct passwd *pw = getpwuid(UBUNTU_PHABLET);
++    // initialize all default groups for the UBUNTU_ID_ROOT user
++    struct passwd *pw = getpwuid(UBUNTU_ID_ROOT);
+     initgroups(pw->pw_name, pw->pw_gid);
+ 
+     /* don't listen on a port (default 5037) if running in secure mode */
+@@ -1379,10 +1379,10 @@ int adb_main(int is_daemon, int server_port)
+         }
+ 
+         /* then switch user and group to "shell" */
+-        if (setgid(UBUNTU_PHABLET) != 0) {
++        if (setgid(UBUNTU_ID_ROOT) != 0) {
+             exit(1);
+         }
+-        if (setuid(UBUNTU_PHABLET) != 0) {
++        if (setuid(UBUNTU_ID_ROOT) != 0) {
+             exit(1);
+         }
+ 
+@@ -1729,7 +1729,7 @@ int main(int argc, char **argv)
+         }
+     }
+     // create adb socket here, usually this is done by Android init
+-    ubuntu_create_android_control_socket("adbd", SOCK_STREAM, 0660, UBUNTU_PHABLET, UBUNTU_PHABLET);
++    ubuntu_create_android_control_socket("adbd", SOCK_STREAM, 0660, UBUNTU_ID_ROOT, UBUNTU_ID_ROOT);
+ 
+     start_device_log();
+     D("Handling main()\n");
+-- 
+2.16.4
+

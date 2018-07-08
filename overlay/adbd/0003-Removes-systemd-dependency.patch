@@ -1,0 +1,64 @@
+From bca64ac0346d3871bf55f7a35e47a6cbedad8d29 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 8 Jul 2018 20:46:00 -0400
+Subject: [PATCH 3/5] Removes systemd dependency
+
+ + socket activation from systemd
+
+This is for use in initrd, mainly.
+---
+ core/ubuntu/ubuntu_sockets.c | 11 -----------
+ debian/makefiles/adbd.mk     |  2 +-
+ 2 files changed, 1 insertion(+), 12 deletions(-)
+
+diff --git a/core/ubuntu/ubuntu_sockets.c b/core/ubuntu/ubuntu_sockets.c
+index fb0277c..7bcf5e2 100644
+--- a/core/ubuntu/ubuntu_sockets.c
++++ b/core/ubuntu/ubuntu_sockets.c
+@@ -21,7 +21,6 @@
+ #include <resolv.h>
+ #include <cutils/list.h>
+ #include <cutils/sockets.h>
+-#include <systemd/sd-daemon.h>
+ #include <sys/un.h>
+ #include <stdlib.h>
+ 
+@@ -37,15 +36,6 @@
+  */
+ int ubuntu_create_android_control_socket(const char *name, int type, mode_t perm, uid_t uid, gid_t gid) {
+     int fd, n;
+-    D("ubuntu_get_android_control_socket<<<\n");
+-    n = sd_listen_fds(0);
+-    if (n > 1) {
+-        D("Too many file descriptors received.\n");
+-        return -1;
+-    } else if (n == 1) {
+-        fd = SD_LISTEN_FDS_START + 0;
+-        D("Socket already exists: fd=%d\n", fd);
+-    } else {
+         union {
+                 struct sockaddr sa;
+                 struct sockaddr_un un;
+@@ -76,6 +66,5 @@ int ubuntu_create_android_control_socket(const char *name, int type, mode_t perm
+                 sizeof(key) - sizeof(ANDROID_SOCKET_ENV_PREFIX));
+         snprintf(val, sizeof(val), "%d", fd);
+         setenv(key, val, 1);
+-    }
+     return fd;
+ }
+diff --git a/debian/makefiles/adbd.mk b/debian/makefiles/adbd.mk
+index 14b6d17..4d6c79b 100644
+--- a/debian/makefiles/adbd.mk
++++ b/debian/makefiles/adbd.mk
+@@ -45,7 +45,7 @@ CPPFLAGS+= -I../include
+ CPPFLAGS+= -I../ubuntu
+ CPPFLAGS+= -I../../../external/zlib
+ 
+-LIBS+= -lc -lpthread -lz -lcrypto -landroid-properties -lsystemd -lresolv
++LIBS+= -lc -lpthread -lz -lcrypto -landroid-properties -lresolv
+ 
+ OBJS= $(patsubst %, %.o, $(basename $(SRCS)))
+ 
+-- 
+2.16.4
+
