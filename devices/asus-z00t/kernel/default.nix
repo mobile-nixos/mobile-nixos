@@ -23,7 +23,7 @@ let
     owner = "LineageOS";
     repo = "android_kernel_asus_msm8916";
     rev = "d56000991e7d90e3a75afd86fb2f3c779232ff29"; # lineage-15.1
-    sha256 = "1f2ynnkaxdcm8w3846fd7a304m08fqlpv78mlkdg92fjczw261vx";
+    sha256 = "079sm5z0ml0ijm866ga5mzwnix4wzvida0469vymbrh8mhz47p4r";
   };
   patches = [
     ./0001-Porting-changes-found-in-LineageOS-android_kernel_cy.patch
