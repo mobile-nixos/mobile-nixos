@@ -1,0 +1,66 @@
+Partitions
+==========
+
+Right now, we will **not** touch any partition map.
+
+This is because it may break devices.
+
+Some (all?) android devices keep a small bit of their internal storage aside to put
+secondary bootloaders in.
+
+When the storage is cleared, or their bootloaders stored therein are corrupt, many devices will
+boot to a proprietary download mode. Follows a random picking of links related.
+
+ * https://forum.xda-developers.com/g2-mini/general/hard-bricked-help-via-aboot-img-abootb-t3212609
+ * https://forum.xda-developers.com/android/development/qd-9008-fix-tested-lg-v410g-pad-7-0-att-t3269057
+ * https://forum.xda-developers.com/showpost.php?p=75360854&postcount=199
+ * https://forum.xda-developers.com/nexus-7-2013/nexus-7-2013-qa/fix-nexus-7-2013-bricked-stuck-t3310608
+
+It may be possible to recover, but this is highly device-dependent... and spooky.
+
+Here's an example guide from a user that re-partitions their device:
+
+ * https://forum.xda-developers.com/nexus-7-2013/general/guide-repartition-nexus72013-to-t3599907
+
+
+* * *
+
+Generating a partitions listing
+-------------------------------
+
+By adding this to `local.nix`, build an initramfs for your device and boot it.
+
+```
+  mobile.boot.stage-1.extraUtils = with pkgs; [
+    gptfdisk
+  ];
+```
+
+Run this command:
+
+```
+adb shell "echo p | gdisk /dev/mmcblk0" > devices/$DEVICE/partitions_$SIZE$UNIT.gdisk
+```
+
+Where:
+
+ * $DEVICE is the device name
+ * $SIZE is the size un $UNIT
+ * $UNIT is `GB`, as in GigaBytes
+
+This will dump everything `gdisk` knows about the partition scheme. Saving it raw will
+allow future tools to re-use the data as dumped to create a better metadata set. It is
+okay if you replace the Disk identifier (GUID) with a string of zeroes. (It is unknown
+if it is truly unique across similar devices.)
+
+The storage size is included in the filename as some devices (most?) have different
+variants differing only in their storage size.
+
+
+* * *
+
+### See also
+
+  * https://source.android.com/devices/bootloader/partitions-images
+  * https://forum.xda-developers.com/general/general/android-partitions-explained-t3657183
+
