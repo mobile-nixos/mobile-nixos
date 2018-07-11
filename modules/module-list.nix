@@ -29,6 +29,7 @@ in
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks-qualcomm.nix
+  ./stage-2.nix
   ./system-build.nix
   ./system-target.nix
   ./system-types.nix
