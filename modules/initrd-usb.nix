@@ -41,17 +41,20 @@ in
     # TODO: Only run, when we have the android usb driver
     init = lib.mkOrder AFTER_DEVICE_INIT ''
       # Setting up Android-specific USB.
+      (
       SYS=/sys/class/android_usb/android0
-      [ -e "$SYS" ] || return
-      printf "%s" "0"    > "$SYS/enable"
-      printf "%s" "18D1" > "$SYS/idVendor"
-      printf "%s" "D001" > "$SYS/idProduct"
-      printf "%s" "${concatStringsSep "," cfg.usb.features}" > "$SYS/functions"
-      sleep 0.5
-      printf "%s" "1" > "$SYS/enable"
-      sleep 1
+      if [ -e "$SYS" ]; then
+        printf "%s" "0"    > "$SYS/enable"
+        printf "%s" "18D1" > "$SYS/idVendor"
+        printf "%s" "D001" > "$SYS/idProduct"
+        printf "%s" "${concatStringsSep "," cfg.usb.features}" > "$SYS/functions"
+        sleep 0.5
+        printf "%s" "1" > "$SYS/enable"
+        sleep 1
 
-      ${optionalString cfg.usb.adbd "adbd &\n"}
+        ${optionalString cfg.usb.adbd "adbd &\n"}
+      fi
+      )
     '';
     extraUtils = with pkgs; []
     ++ optional cfg.usb.adbd { package = adbd; extraCommand = "cp -fpv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
