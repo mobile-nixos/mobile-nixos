@@ -11,6 +11,9 @@ let
   stage-1 = config.mobile.boot.stage-1;
 
   build_types = {
+    android-device = pkgs.callPackage ../systems/android-device.nix {
+      inherit config;
+    };
     android-bootimg = pkgs.callPackage ../systems/bootimg.nix {
       inherit device_config;
       # XXX : this feels like a hack

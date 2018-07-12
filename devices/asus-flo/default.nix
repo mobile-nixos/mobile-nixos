@@ -14,5 +14,5 @@
     };
   };
 
-  mobile.system.type = "android-bootimg";
+  mobile.system.type = "android-device";
 }
