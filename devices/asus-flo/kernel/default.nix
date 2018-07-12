@@ -10,7 +10,8 @@
 , dtbTool
 , kernelPatches ? []
 , buildPackages
-}:
+, ...
+} @args:
 
 # Inspired by https://github.com/thefloweringash/rock64-nix/blob/master/packages/linux_ayufan_4_4.nix
 # Then in turn inspired by the postmarketos APKBUILDs.
