@@ -44,10 +44,18 @@ in
       (
       SYS=/sys/class/android_usb/android0
       if [ -e "$SYS" ]; then
+        mkdir /dev/usb-ffs/adb
+        mount -t functionfs adb /dev/usb-ffs/adb/
         printf "%s" "0"    > "$SYS/enable"
         printf "%s" "18D1" > "$SYS/idVendor"
         printf "%s" "D001" > "$SYS/idProduct"
-        printf "%s" "${concatStringsSep "," cfg.usb.features}" > "$SYS/functions"
+        printf "%s" "0"    > "$SYS/bDeviceClass"
+        #printf "%s" "adb"  > "$SYS/f_ffs/aliases"
+        #printf "%s" "${concatStringsSep "," cfg.usb.features}" > "$SYS/functions"
+        printf "%s" "rndis,adb" > "$SYS/functions"
+        printf "%s" "FIXME" > "$SYS/iManufacturer"
+        printf "%s" "FIXME" > "$SYS/iProduct"
+        printf "%s" "FIXME" > "$SYS/iSerial"
         sleep 0.5
         printf "%s" "1" > "$SYS/enable"
         sleep 1
