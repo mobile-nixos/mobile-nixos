@@ -21,7 +21,6 @@ in
   boot.loader.generic-extlinux-compatible.enable = true;
 
   # FIXME: this probably should be in installation-device.nix
-  users.extraUsers.root.initialHashedPassword = "";
 
   sdImage = {
     populateBootCommands = ''
