@@ -8,7 +8,7 @@ let
   # Enabling the splash changes some settings.
   splash = config.mobile.boot.stage-1.splash.enable;
 
-  kernel = pkgs.linuxPackages_4_16.kernel;
+  kernel = pkgs.linuxPackages_4_19.kernel;
   device_info = (lib.importJSON ../postmarketOS-devices.json).qemu-amd64;
 
   modules = [
