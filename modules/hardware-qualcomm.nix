@@ -12,6 +12,11 @@ in
       default = false;
       description = "enable when SOC is APQ8064–1AA";
     };
+    hardware.socs.qualcomm-msm8953.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is msm8953";
+    };
     hardware.socs.qualcomm-msm8939.enable = mkOption {
       type = types.bool;
       default = false;
@@ -22,6 +27,12 @@ in
   config = mkMerge [
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
+        system.platform = "aarch64-linux";
+        quirks.qualcomm.msm-fb-handle.enable = true;
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-msm8953.enable {
         system.platform = "aarch64-linux";
         quirks.qualcomm.msm-fb-handle.enable = true;
       };
