@@ -17,19 +17,26 @@
 # Then in turn inspired by the postmarketos APKBUILDs.
 
 let
-  modDirVersion = "3.18.115";
+  modDirVersion = "3.18.71";
 
   version = "${modDirVersion}";
-  # Based on https://github.com/Alberto97/android_kernel_motorola_msm8953/tree/pie
   src = fetchFromGitHub {
-    owner = "samueldr";
-    repo = "linux";
-    rev = "883b9049a6eceb5405d95420b97331bc89674f78"; # motorola-addison/pie-fixes
-    sha256 = "13xmcajb51klqb3ma084xj2bidz0dfb312ci8fk6ii9hq6gd30f0";
+    owner = "LineageOS";
+    repo = "android_kernel_motorola_msm8953";
+    rev = "80530de6e297dd0f0ba479c0dcc4ddb7c9e90e24"; # lineage-15.1
+    sha256 = "0qw8x61ycpkk5pqvs9k2abr5lq56ga5dml6vkygvmi8psm2g6kg1";
   };
+  ## Based on https://github.com/Alberto97/android_kernel_motorola_msm8953/tree/pie
+  #src = fetchFromGitHub {
+  #  owner = "samueldr";
+  #  repo = "linux";
+  #  rev = "883b9049a6eceb5405d95420b97331bc89674f78"; # motorola-addison/pie-fixes
+  #  sha256 = "13xmcajb51klqb3ma084xj2bidz0dfb312ci8fk6ii9hq6gd30f0";
+  #};
   patches = [
     ./04_fix_camera_msm_isp.patch
     ./05_misc_msm_fixes.patch
+    ./06_prima_gcc6.patch
     ./99_framebuffer.patch
   ];
   postPatch = ''
@@ -50,7 +57,8 @@ let
 
   additionalInstall = ''
     # Generate master DTB (deviceinfo_bootimg_qcdt)
-    ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "arch/arm64/boot/"
+    echo "Generating master DTB"
+    ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/dt.img" "$out/dtbs/qcom/"
 
     mkdir -p "$out/boot"
     cp "arch/arm64/boot/dt.img" \
@@ -61,10 +69,6 @@ let
     for f in arch/*/boot/dts/*.dtb; do
       cp -v "$f" $out/dtb/
     done
-
-    # Copies the .config file to output.
-    # Helps ensuring sanity.
-    cp -v .config $out/src.config
 
     # Finally, makes Image.gz-dtb image ourselves.
     # Somehow the build system has issues.
