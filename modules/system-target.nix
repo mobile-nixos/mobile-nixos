@@ -13,7 +13,7 @@ let
   };
 
   # Hmmm, this doesn't feel right, but it does work.
-  #host_platform = (import <nixpkgs> {}).buildPackages.hostPlatform;
+  host_platform = (import <nixpkgs> {}).buildPackages.hostPlatform;
 in
 {
   options.mobile = {
@@ -35,6 +35,9 @@ in
       }
     ];
 
-    #nixpkgs.crossSystem = lib.mkIf ( target_types.${cfg.platform}.config != host_platform.config ) target_types.${cfg.platform};
+    nixpkgs.crossSystem = lib.mkIf
+      ( target_types.${cfg.platform}.config != host_platform.config )
+      (target_types.${cfg.platform} // { system = cfg.platform; }) # FIXME : WHY? I didn't need to add system before :/
+    ;
   };
 }

@@ -1,5 +1,4 @@
 { stdenv
-#, hostPlatform
 , overrideCC
 , gcc6
 , fetchurl
@@ -118,7 +117,6 @@ in
 
 buildLinux {
   inherit kernelPatches;
-  #inherit hostPlatform;
   inherit src;
   inherit version;
   inherit modDirVersion;
