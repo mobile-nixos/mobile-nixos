@@ -8,6 +8,7 @@ in
   (nixpkgs + "/nixos/modules/misc/nixpkgs.nix")
   (nixpkgs + "/nixos/modules/misc/assertions.nix")
   ./boot-initrd.nix
+  ./hardware-allwinner.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix
   ./hardware-ram.nix
