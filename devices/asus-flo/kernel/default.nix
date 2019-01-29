@@ -77,7 +77,7 @@ let
   '';
 in
 let
-  buildLinux = (args: (linuxManualConfig args).overrideAttrs ({ makeFlags, postInstall, ... }: {
+  buildLinux = (args: (linuxManualConfig args).overrideAttrs ({ makeFlags, postInstall, passthru, ... }: {
     inherit patches postPatch;
     postInstall = ''
       ${postInstall}
@@ -85,7 +85,19 @@ let
       ${additionalInstall}
     '';
     installTargets = [ "zinstall" ];
+    # Copied to skip a sed edit of `scripts/ld-version.sh`
+    prePatch = ''
+      for mf in $(find -name Makefile -o -name Makefile.include -o -name install.sh); do
+          echo "stripping FHS paths in \`$mf'..."
+          sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
+      done
+      sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
+    '';
     dontStrip = true;
+
+	passthru = passthru // {
+	  image = "vmlinuz";
+	};
   }));
 
   configfile = stdenv.mkDerivation {

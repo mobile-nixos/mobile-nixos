@@ -76,7 +76,7 @@ let
   '';
 in
 let
-  buildLinux = (args: (linuxManualConfig args).overrideAttrs ({ makeFlags, postInstall, ... }: {
+  buildLinux = (args: (linuxManualConfig args).overrideAttrs ({ makeFlags, postInstall, passthru, ... }: {
     inherit patches postPatch;
     postInstall = ''
       ${postInstall}
@@ -92,6 +92,10 @@ let
     '';
     installTargets = [ "dtbs" "zinstall" ];
     dontStrip = true;
+
+	passthru = passthru // {
+	  image = "vmlinuz-dtb";
+	};
   }));
 
   configfile = stdenv.mkDerivation {
