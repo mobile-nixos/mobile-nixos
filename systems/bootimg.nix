@@ -11,7 +11,9 @@ let
   device_info = device_config.info;
   with_qcdt = device_info ? bootimg_qcdt && device_info.bootimg_qcdt;
   linux = device_info.kernel;
-  kernel = ''${linux}/vmlinuz${if with_qcdt then "-dtb" else ""}'';
+  kernel = ''${linux}/${linux.image}'';
+
+  # TODO : make configurable
   dt = "${linux}/boot/dt.img";
 
   # TODO : Allow appending / prepending
@@ -33,6 +35,10 @@ pkgs.stdenv.mkDerivation {
   ];
 
   installPhase = ''
+	echo Using kernel: ${kernel}
+(
+PS4=" $ "
+set -x
     mkbootimg \
       --kernel  ${kernel} \
       ${
@@ -50,5 +56,6 @@ pkgs.stdenv.mkDerivation {
       --tags_offset    ${device_info.flash_offset_tags   } \
       --pagesize       ${device_info.flash_pagesize      } \
       -o $out
+)
   '';
 }
