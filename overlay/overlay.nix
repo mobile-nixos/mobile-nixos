@@ -87,6 +87,8 @@ in
       ) oldAttrs.buildInputs;
     });
 
+    u-boot = callPackage ./u-boot { };
+
     # Things specific to mobile-nixos.
     # Not necessarily internals, but they probably won't go into <nixpkgs>.
     mobile-nixos = {

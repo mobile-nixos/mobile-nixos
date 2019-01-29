@@ -1,0 +1,40 @@
+From 4351c299b53122526ceea2e03188f958fa051e03 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 27 Jan 2019 22:36:56 -0500
+Subject: [PATCH 3/3] !!! Loads FDT from qualcomm-specific format of android
+ bootimg
+
+---
+ common/image-fdt.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/common/image-fdt.c b/common/image-fdt.c
+index 5988808f18..391859da38 100644
+--- a/common/image-fdt.c
++++ b/common/image-fdt.c
+@@ -453,6 +453,22 @@ int boot_get_fdt(int flag, int argc, char * const argv[], uint8_t arch,
+ 			debug("## No Flattened Device Tree\n");
+ 			goto no_fdt;
+ 		}
++#ifdef CONFIG_ANDROID_BOOT_IMAGE
++	} else if (/* FIXME: detect presence of dt? */ 1) {
++			ulong fdt_len;
++			android_image_get_dt((void *)images->os.start,
++				&fdt_addr, &fdt_len);
++			fdt_blob = (char *)fdt_addr;
++
++			debug("*  fdt: raw FDT blob\n");
++			printf("## Flattened Device Tree blob at %08lx\n",
++				   (long)fdt_addr);
++
++			if (fdt_totalsize(fdt_blob) != fdt_len) {
++				fdt_error("fdt size != image size");
++				goto error;
++			}
++#endif
+ 	} else {
+ 		debug("## No Flattened Device Tree\n");
+ 		goto no_fdt;
+-- 
+2.18.1
+

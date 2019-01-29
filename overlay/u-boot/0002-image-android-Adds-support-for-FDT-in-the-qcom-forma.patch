@@ -1,0 +1,99 @@
+From 2215d46124f785ac8867496491bdb589f30cb017 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 27 Jan 2019 22:04:33 -0500
+Subject: [PATCH 2/3] !!! image-android: Adds support for FDT in the qcom
+ format.
+
+ * https://github.com/osm0sis/mkbootimg/blob/2017.12.13/bootimg.h#L46
+
+This is a hack, mainly because my pipeline in my personal project uses
+that specific `mkbootimg`. I didn't know before starting that this was a
+qualcomm specific variant of android boot images.
+
+Once this is verified as working, it should be possible to cleanup and
+port the actual upstream android FDT loading.
+
+ * https://android.googlesource.com/platform/system/core/+/master/mkbootimg/include/bootimg/bootimg.h#1
+---
+ common/image-android.c  | 22 ++++++++++++++++++++++
+ include/android_image.h |  3 ++-
+ include/image.h         |  2 ++
+ 3 files changed, 26 insertions(+), 1 deletion(-)
+
+diff --git a/common/image-android.c b/common/image-android.c
+index 2f38c191e9..1401be22eb 100644
+--- a/common/image-android.c
++++ b/common/image-android.c
+@@ -117,6 +117,7 @@ ulong android_image_get_end(const struct andr_img_hdr *hdr)
+ 	end += ALIGN(hdr->kernel_size, hdr->page_size);
+ 	end += ALIGN(hdr->ramdisk_size, hdr->page_size);
+ 	end += ALIGN(hdr->second_size, hdr->page_size);
++	end += ALIGN(hdr->dt_size, hdr->page_size); /* qcom */
+ 
+ 	return end;
+ }
+@@ -164,6 +165,26 @@ int android_image_get_second(const struct andr_img_hdr *hdr,
+ 	return 0;
+ }
+ 
++int android_image_get_dt(const struct andr_img_hdr *hdr,
++			      ulong *dt_data, ulong *dt_len)
++{
++	if (!hdr->dt_size) {
++		*dt_data = *dt_len = 0;
++		return -1;
++	}
++
++	*dt_data = (unsigned long)hdr;
++	*dt_data += hdr->page_size;
++	*dt_data += ALIGN(hdr->kernel_size, hdr->page_size);
++	*dt_data += ALIGN(hdr->ramdisk_size, hdr->page_size);
++	*dt_data += ALIGN(hdr->second_size, hdr->page_size);
++
++	printf("dt address is 0x%lx\n",*dt_data);
++
++	*dt_len = hdr->dt_size;
++	return 0;
++}
++
+ #if !defined(CONFIG_SPL_BUILD)
+ /**
+  * android_print_contents - prints out the contents of the Android format image
+@@ -191,6 +212,7 @@ void android_print_contents(const struct andr_img_hdr *hdr)
+ 	printf("%ssecond address:   %x\n", p, hdr->second_addr);
+ 	printf("%stags address:     %x\n", p, hdr->tags_addr);
+ 	printf("%spage size:        %x\n", p, hdr->page_size);
++	printf("%sdt_size:          %x\n", p, hdr->dt_size); /* qcom */
+ 	/* ver = A << 14 | B << 7 | C         (7 bits for each of A, B, C)
+ 	 * lvl = ((Y - 2000) & 127) << 4 | M  (7 bits for Y, 4 bits for M) */
+ 	printf("%sos_version:       %x (ver: %u.%u.%u, level: %u.%u)\n",
+diff --git a/include/android_image.h b/include/android_image.h
+index d78db9e2b7..3f574702ee 100644
+--- a/include/android_image.h
++++ b/include/android_image.h
+@@ -33,7 +33,8 @@ struct andr_img_hdr {
+ 
+ 	u32 tags_addr;		/* physical addr for kernel tags */
+ 	u32 page_size;		/* flash page size we assume */
+-	u32 unused;		/* reserved for future expansion: MUST be 0 */
++	/* https://github.com/osm0sis/mkbootimg/blob/2017.12.13/bootimg.h#L46 */
++	u32 dt_size;		/* reserved for future expansion: MUST be 0 */
+ 
+ 	/* operating system version and security patch level; for
+ 	 * version "A.B.C" and patch level "Y-M-D":
+diff --git a/include/image.h b/include/image.h
+index 765ffecee0..1389d83fb4 100644
+--- a/include/image.h
++++ b/include/image.h
+@@ -1310,6 +1310,8 @@ int android_image_get_ramdisk(const struct andr_img_hdr *hdr,
+ 			      ulong *rd_data, ulong *rd_len);
+ int android_image_get_second(const struct andr_img_hdr *hdr,
+ 			      ulong *second_data, ulong *second_len);
++int android_image_get_dt(const struct andr_img_hdr *hdr,
++			      ulong *dt_data, ulong *dt_len);
+ ulong android_image_get_end(const struct andr_img_hdr *hdr);
+ ulong android_image_get_kload(const struct andr_img_hdr *hdr);
+ void android_print_contents(const struct andr_img_hdr *hdr);
+-- 
+2.18.1
+
