@@ -7,7 +7,7 @@ index 0a189fc03d..4b9582adbb 100644
  CONFIG_USB_EHCI_HCD=y
  CONFIG_SYS_USB_EVENT_POLL_VIA_INT_QUEUE=y
 +
-+CONFIG_BOOTCOMMAND="setenv bootmenu_0 Generic distro=run distro_bootcmd; setenv bootmenu_1 Fastboot=fastboot usb 0; setenv bootmenu_2 Reset board=reset; bootmenu 5; "
++CONFIG_BOOTCOMMAND="setenv bootmenu_0 System='mmc read 0x42000000 0x8000 0x10000;bootm 0x42000000'; setenv bootmenu_1 Recovery='mmc read 0x42000000 0x18000 0x10000;bootm 0x42000000'; setenv bootmenu_2 Generic distro=run distro_bootcmd; setenv bootmenu_3 Fastboot=fastboot usb 0; setenv bootmenu_4 Reset board=reset; bootmenu 5; "
 +
 +CONFIG_USB_MUSB_GADGET=y
 +CONFIG_USB_FUNCTION_FASTBOOT=y
