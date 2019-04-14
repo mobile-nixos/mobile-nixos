@@ -1,20 +1,15 @@
-{
-  device_config
-  , initrd
-  , pkgs
+{ device_config
+, initrd
+, pkgs
 }:
 let
   inherit (pkgs) buildPackages;
-in
-let
+  inherit (device_info) kernel dtb;
   device_name = device_config.name;
   device_info = device_config.info;
-  with_qcdt = device_info ? bootimg_qcdt && device_info.bootimg_qcdt;
-  linux = device_info.kernel;
-  kernel = ''${linux}/${linux.image}'';
 
-  # TODO : make configurable
-  dt = "${linux}/boot/dt.img";
+  with_qcdt = device_info ? bootimg_qcdt && device_info.bootimg_qcdt;
+  kernel_file = if device_info ? kernel_file then device_info.kernel_file else "${kernel}/${kernel.file}";
 
   # TODO : Allow appending / prepending
   cmdline = device_info.kernel_cmdline;
@@ -30,20 +25,16 @@ pkgs.stdenv.mkDerivation {
     buildPackages.dtbTool
   ];
 
-  buildInputs = [
-    linux
-  ];
-
   installPhase = ''
-	echo Using kernel: ${kernel}
+	echo Using kernel: ${kernel_file}
 (
 PS4=" $ "
 set -x
     mkbootimg \
-      --kernel  ${kernel} \
+      --kernel  ${kernel_file} \
       ${
         if with_qcdt then
-          "--dt ${dt}"
+          "--dt ${dtb}"
         else
           ""
       } \

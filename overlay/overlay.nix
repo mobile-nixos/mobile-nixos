@@ -85,4 +85,13 @@ in
         input: input != self.valgrind-light
       ) oldAttrs.buildInputs;
     });
+
+    # Things specific to mobile-nixos.
+    # Not necessarily internals, but they probably won't go into <nixpkgs>.
+    mobile-nixos = {
+      kernel-builder = callPackage ./mobile-nixos/kernel/builder.nix {};
+      kernel-builder-gcc6 = callPackage ./mobile-nixos/kernel/builder.nix {
+        stdenv = with self; overrideCC stdenv buildPackages.gcc6;
+      };
+    };
  }
