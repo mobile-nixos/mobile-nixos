@@ -12,11 +12,12 @@ if ARGV.count < 1 then
 end
 
 DEVICE = ARGV.shift
+NIXPKGS=File.join(*__dir__.split("/")[0..-2], "nixpkgs")
 
 run(
 	"env", "-i",
 	"nix-build", "-A", "all",
-	"-I", "nixpkgs=channel:nixpkgs-unstable",
+	"-I", "nixpkgs=#{NIXPKGS}",
 	"--argstr", "device", DEVICE,
 	*ARGV,
 	exec: true
