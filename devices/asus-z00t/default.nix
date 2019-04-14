@@ -2,9 +2,10 @@
 
 {
   mobile.device.name = "asus-z00t";
-  mobile.device.info = (lib.importJSON ../postmarketOS-devices.json).asus-z00t // {
+  mobile.device.info = (lib.importJSON ../postmarketOS-devices.json).asus-z00t // rec {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    dtb = "${kernel}/dtbs/asus-z00t.img";
   };
   mobile.hardware = {
     # This could also be pre-built option types?
