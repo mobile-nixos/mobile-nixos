@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -p ruby -i ruby
+#!nix-shell -p qemu -p ruby -i ruby
 
 # Boots a given `result` symlink on a remote system.
 # This is mainly used to speed-up development where
