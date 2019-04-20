@@ -130,6 +130,26 @@ stdenv.mkDerivation {
         --replace NIXOS_RANDSTRUCT_SEED \
         $(echo ${src} ${configfile} | sha256sum | cut -d ' ' -f 1 | tr -d '\n')
     fi
+
+    # FIXME : make optional...
+    # Makes the "logo" option show only one logo and not dependent on cores.
+    # This should be "safer" than a patch on a greater range of kernel versions.
+    # Also defaults to centering when possible.
+    
+    if [ -e drivers/video/fbdev/core/fbmem.c ]; then
+      sed -i -e 's/num_online_cpus()/1/g' \
+        drivers/video/fbdev/core/fbmem.c
+      sed -i -e '/^bool fb_center_logo/ s/;/ = true;/' \
+        drivers/video/fbdev/core/fbmem.c
+    fi
+    if [ -e drivers/video/fbmem.c ]; then
+      sed -i -e 's/num_online_cpus()/1/g' \
+        drivers/video/fbmem.c
+    fi
+
+    # Overrides the kernel logo
+    cp ${./logo_linux_clut224.ppm} drivers/video/logo/logo_linux_clut224.ppm
+
     ${postPatch}
   '';
 
