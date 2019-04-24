@@ -27,9 +27,9 @@ in
     BL31 = "${armTrustedFirmwareAllwinner}/bl31.bin";
 
     extraPatches = [
-      ./0001-fastboot-boot-gives-enough-space-to-fit-a-pointer.patch
-      ./0002-image-android-Adds-support-for-FDT-in-the-qcom-forma.patch
-      ./0003-Loads-FDT-from-qualcomm-specific-format-of-android-b.patch
+      ./0001-image-android-Adds-support-for-FDT-in-the-qcom-forma.patch
+      ./0002-Loads-FDT-from-qualcomm-specific-format-of-android-b.patch
+
       # FIXME : figure out a more generic way to handle this
       (writeText "xxxx-sopine_defconfig.patch" ''
 diff --git a/configs/sopine_baseboard_defconfig b/configs/sopine_baseboard_defconfig
@@ -73,12 +73,11 @@ index 0a189fc03d..4b9582adbb 100644
     #  CONFIG_CFB_CONSOLE_ANSI=y
     #  '';
   }).overrideAttrs(old: rec {
-    version = "2019.01";
+    version = "2019.04";
     src = fetchgit {
-	  #url = http://git.denx.de/u-boot.git;
 	  url = git://git.denx.de/u-boot.git;
-      sha256 = "10c6vlppkpfx9c4b4mn6faaf71zb0rszch80s45h5w6kjmr6j6ig";
-	  rev = "2f41ade79e5969ebea03a7dcadbeae8e03787d7e";
+      sha256 = "1vc6dh9a0bjwgs8x5cl282gasn0hqcvjfsipgf7hyxq5jrhl3qyg";
+	  rev = "v${version}";
     };
   });
 }
