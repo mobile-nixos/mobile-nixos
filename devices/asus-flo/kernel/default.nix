@@ -7,8 +7,9 @@
 (mobile-nixos.kernel-builder-gcc6 {
   version = "3.4.113";
   configfile = ./config.armv7;
-  #file = "vmlinuz-dtb";
+
   file = "zImage";
+
   src = fetchFromGitHub {
     owner = "LineageOS";
     repo = "android_kernel_google_msm";
