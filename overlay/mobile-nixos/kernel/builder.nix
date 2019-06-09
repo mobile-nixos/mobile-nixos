@@ -44,8 +44,8 @@ in
 , modDirVersion ? modDirify version
 
 , configfile
-# FIXME : Not used anymore...
-, dtb ? null
+, hasDTB ? false
+
 , kernelPatches ? []
 , patches ? []
 , postPatch ? ""
@@ -61,8 +61,6 @@ in
 }:
 
 let
-  hasDTB = (dtb != null);
-
   commonMakeFlags = [
     "O=$(buildRoot)"
   ]
