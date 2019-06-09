@@ -2,12 +2,11 @@
 
 {
   mobile.device.name = "motorola-addison";
-  mobile.device.info = {
+  mobile.device.info = rec {
     format_version = "0";
     name = "Motorola Moto Z Play";
     manufacturer = "Motorola";
     date = "";
-    dtb = "";
     modules_initfs = "";
     arch = "aarch64";
     keyboard = false;
@@ -29,6 +28,7 @@
     flash_pagesize = "2048";
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    dtb = "${kernel}/dtbs/motorola-addison.img";
   };
   mobile.hardware = {
     soc = "qualcomm-msm8953";
