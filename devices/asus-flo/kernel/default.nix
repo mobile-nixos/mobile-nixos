@@ -1,31 +1,21 @@
-{ stdenv
-, overrideCC
-, gcc6
-, fetchurl
+{
+  mobile-nixos
 , fetchFromGitHub
-, linuxManualConfig
-, firmwareLinuxNonfree
-, bison, flex
-, binutils-unwrapped
-, dtbTool
-, kernelPatches ? []
-, buildPackages
-, ...
-} @args:
+, kernelPatches ? [] # FIXME
+}:
 
-# Inspired by https://github.com/thefloweringash/rock64-nix/blob/master/packages/linux_ayufan_4_4.nix
-# Then in turn inspired by the postmarketos APKBUILDs.
-
-let
-  modDirVersion = "3.4.113";
-
-  version = "${modDirVersion}";
+(mobile-nixos.kernel-builder-gcc6 {
+  version = "3.4.113";
+  configfile = ./config.armv7;
+  #file = "vmlinuz-dtb";
+  file = "zImage";
   src = fetchFromGitHub {
     owner = "LineageOS";
     repo = "android_kernel_google_msm";
     rev = "a4b9cf707b9acf6e5f6089d1121ae973efe399b0";
     sha256 = "0q88sqmcd09m0wq27rvzvq588gbk3daji1zp36qpyzl1d66b37v6";
   };
+
   patches = [
     ./00_fix_return_address.patch
     ./02_gpu-msm-fix-gcc5-compile.patch
@@ -35,25 +25,18 @@ let
     ./90_dtbs-install.patch
     ./99_framebuffer.patch
   ];
-  postPatch = ''
-    patchShebangs .
 
+  isModular = false;
+
+}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
+  installTargets = [ "zinstall" ];
+  postPatch = postPatch + ''
     cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
-
-    # Remove -Werror from all makefiles
-    local i
-    local makefiles="$(find . -type f -name Makefile)
-    $(find . -type f -name Kbuild)"
-    for i in $makefiles; do
-      sed -i 's/-Werror-/-W/g' "$i"
-      sed -i 's/-Werror//g' "$i"
-    done
-    echo "Patched out -Werror"
   '';
-
-  additionalInstall = ''
+  postInstall = postInstall + ''
     mkdir -p "$out/boot"
 
+    # FIXME factor this out properly
     # Copies all potential output files.
     for f in zImage-dtb Image.gz-dtb zImage Image.gz Image; do
       f=arch/arm/boot/$f
@@ -63,69 +46,10 @@ let
       break
     done
 
-    cp -v "arch/arm/boot/zImage" "$out/vmlinuz"
-
-    # Copies the dtb, could always be useful.
     mkdir -p $out/dtb
     for f in arch/*/boot/dts/*.dtb; do
       cp -v "$f" $out/dtb/
     done
 
-    # Copies the .config file to output.
-    # Helps ensuring sanity.
-    cp -v .config $out/src.config
   '';
-in
-let
-  buildLinux = (args: (linuxManualConfig args).overrideAttrs ({ makeFlags, postInstall, passthru, ... }: {
-    inherit patches postPatch;
-    postInstall = ''
-      ${postInstall}
-
-      ${additionalInstall}
-    '';
-    installTargets = [ "zinstall" ];
-    # Copied to skip a sed edit of `scripts/ld-version.sh`
-    prePatch = ''
-      for mf in $(find -name Makefile -o -name Makefile.include -o -name install.sh); do
-          echo "stripping FHS paths in \`$mf'..."
-          sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
-      done
-      sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
-    '';
-    dontStrip = true;
-
-	passthru = passthru // {
-	  image = "vmlinuz";
-	};
-  }));
-
-  configfile = stdenv.mkDerivation {
-    name = "android-asus-flo-config-${modDirVersion}";
-    inherit version;
-    inherit src patches postPatch;
-    nativeBuildInputs = [bison flex];
-
-    buildPhase = ''
-      echo "building config file"
-      cp -v ${./config-asus-flo.armv7} .config
-      yes "" | make $makeFlags "''${makeFlagsArray[@]}" oldconfig || :
-    '';
-
-    installPhase = ''
-      cp -v .config $out
-    '';
-  };
-
-in
-
-buildLinux {
-  inherit kernelPatches;
-  inherit src;
-  inherit version;
-  inherit modDirVersion;
-  inherit configfile;
-  stdenv = overrideCC stdenv buildPackages.gcc6;
-
-  allowImportFromDerivation = true;
-}
+})
