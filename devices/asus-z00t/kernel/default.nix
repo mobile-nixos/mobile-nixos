@@ -8,9 +8,10 @@
 (mobile-nixos.kernel-builder-gcc6 {
   version = "3.10.108";
   configfile = ./config.aarch64;
-  dtb = "unknown";
-  #file = "vmlinuz-dtb";
+
   file = "Image.gz";
+  hasDTB = true;
+
   src = fetchFromGitHub {
     owner = "LineageOS";
     repo = "android_kernel_asus_msm8916";
