@@ -20,6 +20,7 @@ in
     android-headers = callPackage ./android-headers { };
     dtbTool = callPackage ./dtbtool { };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
+    hard-shutdown = callPackage ./misc/hard-shutdown.nix { };
     libhybris = callPackage ./libhybris {
       # FIXME : verify how it acts on native aarch64 build.
       stdenv = if self.buildPlatform != self.targetPlatform then

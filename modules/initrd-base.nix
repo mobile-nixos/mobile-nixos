@@ -11,7 +11,7 @@ in
       type = types.bool;
       default = true;
       description = ''
-        Adds hard-reboot script.
+        Adds hard-reboot/hard-shutdown script.
       '';
     };
   };
@@ -19,6 +19,7 @@ in
   config.mobile.boot.stage-1 = {
     extraUtils = with pkgs; lib.mkIf cfg.hard-reboot.enable [
       hard-reboot 
+      hard-shutdown
     ];
   };
 }
