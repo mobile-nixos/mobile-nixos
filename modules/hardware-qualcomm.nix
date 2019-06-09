@@ -40,6 +40,7 @@ in
     {
       mobile = mkIf cfg.qualcomm-apq8064-1aa.enable {
         system.platform = "armv7a-linux";
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
   ];
