@@ -1,7 +1,7 @@
 {stdenv, fetchurl}:
 
 let
-  version = "2017.12.13";
+  version = "2019.04.13";
 in
 # https://github.com/osm0sis/mkbootimg/blob/2017.12.13/bootimg.h
 # This builds the MSM-specific bootimgs...
@@ -16,7 +16,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/osm0sis/mkbootimg/archive/${version}.tar.gz";
-    sha256 = "1wyn0a2nxwyz3j6yx4vmm67inrsh83h24sfig6y7ww249miix2xp";
+    sha256 = "0pwxc1wn38a159lcwlsri4dc8b7kpnfyryi2l75i4a61wxqb94kj";
   };
 
   postPatch = ''
