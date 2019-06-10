@@ -1,16 +1,31 @@
 {
   mobile-nixos
+, stdenv
+, hostPlatform
 , fetchFromGitHub
 , kernelPatches ? [] # FIXME
 , dtbTool
 }:
 
+#
+# Note:
+# This kernel build is special, it supports both armv7l and aarch64.
+# This is because motorola ships an armv7l userspace from stock ROM.
+#
+# in local.nix:
+#  mobile.system.platform = lib.mkForce "armv7a-linux";
+#
+
+let
+  inherit (stdenv.lib) optionalString;
+  cpuName = hostPlatform.parsed.cpu.name;
+in
 (mobile-nixos.kernel-builder-gcc6 {
   version = "3.18.71";
-  configfile = ./config.aarch64;
+  configfile = ./. + "/config.${cpuName}";
 
-  file = "Image.gz";
-  hasDTB = true;
+  file = if (cpuName == "aarch64") then "Image.gz" else "zImage";
+  hasDTB = (cpuName == "aarch64");
 
   src = fetchFromGitHub {
     owner = "LineageOS";
@@ -29,7 +44,7 @@
   isModular = false;
 
 }).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" ];
+  installTargets = [ "zinstall" "dtbs" ];
   postPatch = postPatch + ''
     cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
 
@@ -47,6 +62,13 @@
     )
   '';
   postInstall = postInstall + ''
+    mkdir -p "$out/dtbs/"
+  ''
+  + optionalString (cpuName == "aarch64") ''
     ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "$out/dtbs/motorola-addison.img" "$out/dtbs/qcom/"
-  '';
+  ''
+  + optionalString (cpuName == "armv7l") ''
+     ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "$out/dtbs/motorola-addison.img" "arch/arm/boot"
+  ''
+  ;
 })
