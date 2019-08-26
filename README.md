@@ -63,15 +63,17 @@ Goals
 The goal is to get a nix-built operating system, preferably NixOS running on
 mobile devices, e.g. Android phones.
 
+This is intended as building blocks, allowing the end-users to configure their
+systems as desired.
+
+The amount of targeted devices does not dilute or devalue the work. It's the
+other way around, it increases the odds that people will start using the project
+and contribute back.
+
 
 Prior work
 ----------
 
-This project heavily borrows and relies on the hard work from the [PostmarketOS
-project](https://postmarketos.org/).
-
-
-Notes
------
-
-> This is an unofficial and unsanctioned project.
+This project initially borrowed and relied on the hard work from the
+[PostmarketOS project](https://postmarketos.org/). They are forever
+thanked in their valiant efforts.
