@@ -3,7 +3,7 @@
 /*  */ let scope = { "diskImage.makeMBR" =
 
 let
-  inherit (lib) concatMapStringsSep;
+  inherit (lib) concatMapStringsSep optionalString;
 
   # List of known mappings of MBR partition types to filesystems.
   types = {
@@ -23,15 +23,7 @@ let
   _name = name;
 
   eachPart = partitions: fn: (
-    concatMapStringsSep "\n" (input: 
-      let
-        # Assumes that is the attribute `partition` exists, it's an attrset
-        # and not a derivation.
-        partition = if input ? partition then
-          input.partition else
-          input
-        ;
-      in
+    concatMapStringsSep "\n" (partition:
       fn partition
   ) partitions);
 in
@@ -61,8 +53,15 @@ stdenvNoCC.mkDerivation rec {
       totalSize=$(( totalSize + size ))
       echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
+      (
       # The size is /1024; otherwise it's in sectors.
-      echo 'start='"$((start/1024))"'KiB, size='"$((size/1024))"'KiB, type=${types."${partition.filesystemType}"}' >> script.sfdisk
+      echo -n 'start='"$((start/1024))"'KiB'
+      echo -n ', size='"$((size/1024))"'KiB'
+      echo -n ', type=${types."${partition.filesystemType}"}'
+      ${optionalString (partition ? bootable && partition.bootable)
+          "echo -n ', bootable'"}
+      echo "" # Finishes the command
+      ) >> script.sfdisk
     '')}
 
     echo
