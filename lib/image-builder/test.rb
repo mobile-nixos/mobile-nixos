@@ -33,17 +33,25 @@ tests =
     Dir.glob(File.join(prefix, "**/*.nix"))
   end
 
+tests.sort!
+
 $exit = 0
+$failed_tests = []
+
+puts ""
+puts "Tests"
+puts "====="
+puts ""
 
 tests.each_with_index do |file, index|
   short_name = file.sub("#{prefix}/", "")
-  print "Running test #{index+1}/#{tests.length} '#{short_name}' "
+  print "Running test #{(index+1).to_s.rjust(tests.length.to_s.length)}/#{tests.length} '#{short_name}' "
 
   failures = []
 
   # Reads the first line of the file. It may hold a json snippet
   # configuring the expected test results.
-  directives = File.read(file).split("\n").first
+  directives = File.read(file).split("\n").first || ""
   directives = DEFAULT_DIRECTIVES.merge(
     if directives.match(/^\s*#\s*expect:/i) then
       # Parse...
@@ -89,19 +97,49 @@ tests.each_with_index do |file, index|
     end
 
     if failures.length == 0 then
-      puts "[Success] (#{store_path})"
+      puts "[Success] (#{store_path})  "
     else
       $exit = 1
-      puts "[Failed] (#{store_path || "no output"})"
+      $failed_tests << file
+      puts "[Failed] (#{store_path || "no output"})  "
+      puts ""
+      puts "Failures:"
       failures.each do |failure|
-        puts " → #{failure}"
+        puts " - #{failure}"
       end
-      print "Directives: #{directives.inspect}"
+      puts ""
+      puts "Directives:"
+      puts ""
+      puts "```"
+      puts "#{directives.inspect}"
+      puts "```"
 
-      puts "\nOutput from the test:"
-      puts "\n#{log}\n"
+      puts ""
+      puts "Output from the test:"
+      puts ""
+      puts "````"
+      puts "#{log}"
+      puts "````"
     end
   end
+end
+
+puts ""
+puts "* * *"
+puts ""
+puts "Test summary"
+puts "============"
+puts ""
+
+puts "#{tests.length - $failed_tests.length}/#{tests.length} tests successful."
+
+if $failed_tests.length > 0 then
+puts ""
+puts "Failed tests:\n"
+$failed_tests.each do |filename|
+  puts " - #{filename.sub(/^#{__dir__}/, ".")}"
+end
+puts ""
 end
 
 exit $exit
