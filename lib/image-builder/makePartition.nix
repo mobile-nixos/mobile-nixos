@@ -52,7 +52,11 @@ stdenvNoCC.mkDerivation (args // rec {
     echo "$checkPhase"
     runHook checkPhase
 
-  '';
+  ''
+  + lib.optionalString ((builtins.getEnv "TEST_MODE") == "yes")
+    "# test impure builds ${toString builtins.currentTime}"
+  ;
+
 })
     # mkdir -p $out/nix-support
     # cat ${writeText "${name}-metadata" (builtins.toJSON {
