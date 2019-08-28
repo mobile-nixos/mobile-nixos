@@ -25,8 +25,13 @@ Env = {
   "TEST_MODE" => "yes",
 }
 
-# Assumes all nix files in `./tests` are tests to `nix-build`.
-tests = Dir.glob(File.join(prefix, "**/*.nix"))
+tests =
+  if ARGV.count > 0 then
+    ARGV
+  else
+    # Assumes all nix files in `./tests` are tests to `nix-build`.
+    Dir.glob(File.join(prefix, "**/*.nix"))
+  end
 
 $exit = 0
 
