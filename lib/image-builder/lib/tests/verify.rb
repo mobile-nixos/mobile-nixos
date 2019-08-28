@@ -16,6 +16,7 @@ $result = ARGV.shift
 
 module Helpers
   def compare_output(cmd, expected, message: nil)
+    expected ||= ""
     message ||= "Command `#{cmd.shelljoin}` has unexpected output:"
     expected = expected.strip
     out = `#{cmd.shelljoin}`.strip
