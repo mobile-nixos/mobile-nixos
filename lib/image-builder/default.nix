@@ -10,6 +10,7 @@ lib.makeScope newScope (self:
     # All known supported filesystems for image generation.
     # Use stand-alone (outside of a disk image) is supported.
     fileSystem = rec {
+      makeExt4 = callPackage ./makeExt4.nix {};
       makeFAT32 = callPackage ./makeFAT32.nix {};
       # Specialization of `makeFAT32` with (1) filesystemType showing as ESP,
       # and (2) the name defaults to ESP.
