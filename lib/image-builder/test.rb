@@ -8,7 +8,7 @@ require "json"
 # require "fileutils"
 
 prefix = File.join(__dir__, "tests")
-NIX_PATH = "nixpkgs=channel:nixos-19.03:image-builder=#{__dir__}"
+NIX_PATH = "nixpkgs-overlays=#{__dir__}/overlay.nix:nixpkgs=channel:nixos-19.03:image-builder=#{__dir__}"
 
 # Default directives for the test.
 DEFAULT_DIRECTIVES = {
