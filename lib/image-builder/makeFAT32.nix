@@ -24,7 +24,8 @@ makeFilesystem (args // {
   copyPhase = ''
     for f in ./* ./.*; do
       if [[ "$f" != "./." && "$f" != "./.." ]]; then
-        mcopy -psvm -i "$img" "$f" ::
+        faketime "1970-01-01 00:00:00" \
+          mcopy -psv -i "$img" "$f" ::
       fi
     done
   '';
