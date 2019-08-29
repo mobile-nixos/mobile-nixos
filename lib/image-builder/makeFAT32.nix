@@ -21,8 +21,11 @@ makeFilesystem (args // {
   '';
 
   copyPhase = ''
-    # FIXME : here mcopy files
-    echo ... would copy here ...
+    for f in ./* ./.*; do
+      if [[ "$f" != "./." && "$f" != "./.." ]]; then
+        mcopy -psvm -i "$img" "$f" ::
+      fi
+    done
   '';
 
   checkPhase = ''
