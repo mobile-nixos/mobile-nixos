@@ -6,18 +6,21 @@ let
   imageBuilder = pkgs.callPackage <image-builder> {};
   inherit (pkgs.lib.attrsets) mapAttrsToList;
   inherit (pkgs.lib.strings) concatStringsSep removePrefix;
+  IDs = {
+    FAT32 = "0123456789ABCDEF";
+    ESP = "0123456789ABCDEF";
+  };
 in
 
 with imageBuilder;
 
 let
   cmds =
-    mapAttrsToList (name: fn:
+    mapAttrsToList (fn_name: fn:
     let
-      fs = fn {
-        name = removePrefix "make" name;
-        # FIXME : this is wrong. Not all partition IDs have the same format.
-        partitionID = "0123456789ABCDEF";
+      fs = fn rec {
+        name = removePrefix "make" fn_name;
+        partitionID = IDs."${name}";
         populateCommands = ''
           echo "I am ${name}." > file
           ls -lA
