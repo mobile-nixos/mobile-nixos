@@ -22,7 +22,7 @@ let
       };
     in
     ''
-      cp ${fs}/${fs.filename} $out/
+      ln -s ${fs}/${fs.filename} $out/
     '') fileSystem;
 in
   pkgs.runCommandNoCC "filesystems-test" {} ''

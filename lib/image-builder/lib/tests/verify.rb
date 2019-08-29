@@ -37,7 +37,7 @@ module Helpers
   def file(filename, expected)
     filename = File.join($result, filename)
     compare_output(
-      ["file", "--brief", filename], expected,
+      ["file", "--dereference", "--brief", filename], expected,
       message: "File #{filename.shellescape} has unexpected file type",
     )
   end
