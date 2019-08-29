@@ -1,10 +1,9 @@
-{ stdenvNoCC, lib, writeText, size }:
+{ stdenvNoCC, lib, writeText }:
 
 /*  */ let scope = { "fileSystem.makeFilesystem" =
 
 let
   inherit (lib) optionals optionalString assertMsg;
-  minimumSize = toString (size.KiB 500);
 in
 
 {
@@ -58,9 +57,9 @@ stdenvNoCC.mkDerivation (args // rec {
     size=$(cd files; du -sb --apparent-size . | tr -cd '[:digit:]')
     ''}
 
-    if (( size < ${minimumSize} )); then
-      size=${minimumSize}
-      echo "WARNING: partition was too small, size increased to ${minimumSize} bytes."
+    if (( size < minimumSize )); then
+      size=$minimumSize
+      echo "WARNING: partition was too small, size increased to $minimumSize bytes."
     fi
 
     echo
