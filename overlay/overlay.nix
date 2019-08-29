@@ -54,6 +54,13 @@ in
     ];
 
     #
+    # New software to upstream
+    # ------------------------
+    #
+
+    make_ext4fs = callPackage ./make_ext4fs {};
+
+    #
     # Fixes to upstream
     # -----------------
     #
