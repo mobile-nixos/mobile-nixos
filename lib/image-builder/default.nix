@@ -5,7 +5,7 @@ lib.makeScope newScope (self:
     inherit (self) callPackage;
   in
   {
-    makePartition = callPackage ./makePartition.nix {};
+    makeFilesystem = callPackage ./makeFilesystem.nix {};
 
     # All known supported filesystems for image generation.
     # Use stand-alone (outside of a disk image) is supported.

@@ -1,16 +1,26 @@
 { stdenvNoCC, lib, writeText }:
 
-/*  */ let scope = { "fileSystem.makePartition" =
+/*  */ let scope = { "fileSystem.makeFilesystem" =
 
 let
-  inherit (lib) optionals;
+  inherit (lib) optionals optionalString assertMsg;
 in
 
 {
   name
+  # The populate commands are executed in a subshell. The CWD at the star is the
+  # public API to know where to add files that will be added to the image.
+  , populateCommands ? null
+  # When size is not given, it is assumed that `populateCommands` will populate
+  # the filesystem.
   , size ? null
   , ...
 } @ args:
+
+assert lib.asserts.assertMsg
+  (size !=null || populateCommands != null)
+  "Either a size or populateCommands needs to be given to build a filesystem.";
+
 let
   partName = name;
   partSize = toString size;
@@ -34,6 +44,17 @@ stdenvNoCC.mkDerivation (args // rec {
 
     mkdir -p $out
 
+    ${optionalString (populateCommands != null) ''
+    echo
+    echo "Populating disk image"
+    echo
+    (
+      mkdir -p files
+      cd files
+      ${populateCommands}
+    )
+    ''}
+
     echo
     echo "Building partition ${partName}"
     echo "With ${if size == null then "automatic size" else "${toString size} bytes"}"
@@ -53,7 +74,7 @@ stdenvNoCC.mkDerivation (args // rec {
     runHook checkPhase
 
   ''
-  + lib.optionalString ((builtins.getEnv "TEST_MODE") == "yes")
+  + optionalString ((builtins.getEnv "TEST_MODE") == "yes")
     "# test impure builds ${toString builtins.currentTime}"
   ;
 
@@ -63,4 +84,4 @@ stdenvNoCC.mkDerivation (args // rec {
     #   inherit size;
     # })} > $out/nix-support/partition-metadata.json
 
-/*  */ ;}; in scope."fileSystem.makePartition"
+/*  */ ;}; in scope."fileSystem.makeFilesystem"

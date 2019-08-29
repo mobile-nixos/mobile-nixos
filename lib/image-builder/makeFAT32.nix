@@ -1,9 +1,9 @@
-{ makePartition, dosfstools, mtools, libfaketime }:
+{ makeFilesystem, dosfstools, mtools, libfaketime }:
 
 /*  */ let scope = { "fileSystem.makeFAT32" =
 
 { partitionID, ... } @ args:
-makePartition (args // {
+makeFilesystem (args // {
   # FAT32 can be used for ESP. Let's make this obvious.
   filesystemType = if args ? filesystemType then args.filesystemType else "FAT32";
 
