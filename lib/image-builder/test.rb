@@ -83,7 +83,7 @@ tests.each_with_index do |file, index|
     end
 
     # Do we test further with the test scripts?
-    if failures.length == 0 then
+    if failures.length == 0 and status.success? then
       script = file.sub(/\.nix$/, ".rb")
       if File.exists?(script) then
         log, status = Open3.capture2e(Env, File.join(__dir__, "lib/tests/verify.rb"), script, result)
@@ -97,7 +97,7 @@ tests.each_with_index do |file, index|
     end
 
     if failures.length == 0 then
-      puts "[Success] (#{store_path})  "
+      puts "[Success] (#{store_path || "no output"})  "
     else
       $exit = 1
       $failed_tests << file
