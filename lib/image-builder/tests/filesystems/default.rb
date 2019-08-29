@@ -1,11 +1,11 @@
 hashes = {
-  "ESP.img"   => "bd5f7e3b8e35e002e9fc4b22de619f3c0ddc2e5d80c8dd4d66728896493a51d3",
-  "FAT32.img" => "2298707f7288d7b39fade76589e00ec4eb0fe013e847c35547fbd6da1d989b11",
+  "ESP.img"   => "225b07ed075c8e088f973f1002382b07df1e6ca62e43049e9cb7b20534bee796",
+  "FAT32.img" => "e4146b21ed3ea287a5a86e7910d678bf056b40374c4f1533191e21b8ce6d48c9",
 }
 
 filetypes = {
-  "ESP.img"   => 'DOS/MBR boot sector, code offset 0x3c+2, OEM-ID "mkfs.fat", sectors/cluster 4, reserved sectors 4, root entries 512, sectors 20480 (volumes <=32 MB), Media descriptor 0xf8, sectors/FAT 20, sectors/track 32, heads 64, serial number 0x89abcdef, label: "ESP        ", FAT (16 bit)',
-  "FAT32.img" => 'DOS/MBR boot sector, code offset 0x3c+2, OEM-ID "mkfs.fat", sectors/cluster 4, reserved sectors 4, root entries 512, sectors 20480 (volumes <=32 MB), Media descriptor 0xf8, sectors/FAT 20, sectors/track 32, heads 64, serial number 0x89abcdef, label: "FAT32      ", FAT (16 bit)',
+  "ESP.img"   => 'DOS/MBR boot sector, code offset 0x58+2, OEM-ID "mkfs.fat", sectors 20480 (volumes <=32 MB), Media descriptor 0xf8, sectors/track 32, heads 64, FAT (32 bit), sectors/FAT 158, serial number 0x89abcdef, label: "ESP        "',
+  "FAT32.img" => 'DOS/MBR boot sector, code offset 0x58+2, OEM-ID "mkfs.fat", sectors 20480 (volumes <=32 MB), Media descriptor 0xf8, sectors/track 32, heads 64, FAT (32 bit), sectors/FAT 158, serial number 0x89abcdef, label: "FAT32      "',
 }
 
 # By globbing on the output, we can validate all built images are verified.
