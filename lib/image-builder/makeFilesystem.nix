@@ -1,9 +1,10 @@
-{ stdenvNoCC, lib, writeText }:
+{ stdenvNoCC, lib, writeText, size }:
 
 /*  */ let scope = { "fileSystem.makeFilesystem" =
 
 let
   inherit (lib) optionals optionalString assertMsg;
+  minimumSize = toString (size.KiB 500);
 in
 
 {
@@ -23,7 +24,6 @@ assert lib.asserts.assertMsg
 
 let
   partName = name;
-  partSize = toString size;
 in
 stdenvNoCC.mkDerivation (args // rec {
   # Do not inherit `size`; we don't want to accidentally use it. The `size` can
@@ -43,31 +43,45 @@ stdenvNoCC.mkDerivation (args // rec {
     unset -f checkPhase
 
     mkdir -p $out
+    mkdir -p files
 
     ${optionalString (populateCommands != null) ''
     echo
     echo "Populating disk image"
     echo
     (
-      mkdir -p files
       cd files
       ${populateCommands}
     )
     ''}
+    ${optionalString (size == null) ''
+    size=$(cd files; du -sb --apparent-size . | tr -cd '[:digit:]')
+    ''}
+
+    if (( size < ${minimumSize} )); then
+      size=${minimumSize}
+      echo "WARNING: partition was too small, size increased to ${minimumSize} bytes."
+    fi
 
     echo
     echo "Building partition ${partName}"
-    echo "With ${if size == null then "automatic size" else "${toString size} bytes"}"
+    echo "With ${if size == null
+      then "automatic size ($size bytes)"
+      else "$size bytes"
+    }"
     echo
 
     echo " -> Allocating space"
-    truncate -s ${partSize} "$img"
+    truncate -s $size "$img"
 
     echo " -> Making filesystem"
     runHook filesystemPhase
 
     echo " -> Copying files"
-    runHook copyPhase
+    (
+      cd files
+      runHook copyPhase
+    )
 
     echo " -> Checking filesystem"
     echo "$checkPhase"
