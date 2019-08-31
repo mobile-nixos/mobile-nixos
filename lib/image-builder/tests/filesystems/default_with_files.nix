@@ -3,7 +3,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  imageBuilder = pkgs.callPackage <image-builder> {};
+  inherit (pkgs) imageBuilder;
   inherit (pkgs.lib.attrsets) mapAttrsToList;
   inherit (pkgs.lib.strings) concatStringsSep removePrefix;
   IDs = {

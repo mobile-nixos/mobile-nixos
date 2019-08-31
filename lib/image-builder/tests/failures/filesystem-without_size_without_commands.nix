@@ -2,7 +2,7 @@
 { pkgs ? import <nixpkgs> {} }:
 
 let
-  imageBuilder = pkgs.callPackage <image-builder> {};
+  inherit (pkgs) imageBuilder;
 in
 
 with imageBuilder;

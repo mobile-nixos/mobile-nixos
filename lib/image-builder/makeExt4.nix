@@ -1,14 +1,15 @@
-{ makeFilesystem, libfaketime, size
-, e2fsprogs, make_ext4fs, lkl
-}:
+{ imageBuilder, libfaketime, e2fsprogs, make_ext4fs }:
 
 /*  */ let scope = { "fileSystem.makeExt4" =
 
+let
+  inherit (imageBuilder) makeFilesystem;
+in
 { partitionID, ... } @ args:
 makeFilesystem (args // {
   filesystemType = "ext4";
 
-  minimumSize = size.MiB 5;
+  minimumSize = imageBuilder.size.MiB 5;
 
   nativeBuildInputs = [
     e2fsprogs

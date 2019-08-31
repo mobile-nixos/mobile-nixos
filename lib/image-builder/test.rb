@@ -8,7 +8,7 @@ require "json"
 # require "fileutils"
 
 prefix = File.join(__dir__, "tests")
-NIX_PATH = "nixpkgs-overlays=#{__dir__}/overlay.nix:nixpkgs=channel:nixos-19.03:image-builder=#{__dir__}"
+NIX_PATH = "nixpkgs-overlays=#{__dir__}/lib/tests/test-overlay.nix:nixpkgs=channel:nixos-19.03"
 
 # Default directives for the test.
 DEFAULT_DIRECTIVES = {
@@ -22,7 +22,6 @@ DEFAULT_DIRECTIVES = {
 
 Env = {
   "NIX_PATH" => NIX_PATH,
-  "TEST_MODE" => "yes",
 }
 
 tests =
@@ -70,7 +69,7 @@ tests.each_with_index do |file, index|
     result = File.join(dir, "result")
 
     # TODO : figure out how to keep stdout/stderr synced but logged separately.
-    log, status = Open3.capture2e(Env, "nix-build", "--out-link", result, file)
+    log, status = Open3.capture2e(Env, "nix-build", "--show-trace", "--out-link", result, file)
 
     unless status.exitstatus == directives[:status]
       failures << "Build exited with status #{status.exitstatus} expected #{directives[:status]}."

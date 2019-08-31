@@ -1,13 +1,16 @@
-{ makeFilesystem, dosfstools, mtools, libfaketime, size }:
+{ imageBuilder, dosfstools, mtools, libfaketime}:
 
 /*  */ let scope = { "fileSystem.makeFAT32" =
 
+let
+  inherit (imageBuilder) makeFilesystem;
+in
 { partitionID, ... } @ args:
 makeFilesystem (args // {
   # FAT32 can be used for ESP. Let's make this obvious.
   filesystemType = if args ? filesystemType then args.filesystemType else "FAT32";
 
-  minimumSize = size.KiB 500;
+  minimumSize = imageBuilder.size.KiB 500;
 
   nativeBuildInputs = [
     libfaketime

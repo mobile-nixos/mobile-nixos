@@ -86,10 +86,7 @@ stdenvNoCC.mkDerivation (args // rec {
     echo "$checkPhase"
     runHook checkPhase
 
-  ''
-  + optionalString ((builtins.getEnv "TEST_MODE") == "yes")
-    "# test impure builds ${toString builtins.currentTime}"
-  ;
+  '';
 
 })
     # mkdir -p $out/nix-support
