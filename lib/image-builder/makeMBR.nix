@@ -1,4 +1,7 @@
-{ stdenvNoCC, lib, utillinux, size }:
+{ stdenvNoCC, lib
+, imageBuilder
+, utillinux
+}:
 
 /*  */ let scope = { "diskImage.makeMBR" =
 
@@ -17,6 +20,8 @@ in
 {
   name
   , partitions
+  # Without the prefixed `0x`
+  , diskID
 }:
 
 let
@@ -32,17 +37,22 @@ stdenvNoCC.mkDerivation rec {
   filename = "${_name}.img";
   img = "${placeholder "out"}/${filename}";
 
-  buildInputs = [ utillinux ];
+  nativeBuildInputs = [
+    utillinux
+  ];
+
+  # `sfdisk` starts at 1MiB by default, let's align at the same default.
+  startOffset = imageBuilder.size.MiB 1;
 
   buildCommand = ''
     mkdir -p $out
 
     cat <<EOF > script.sfdisk
     label: dos
+    label-id: 0x${diskID}
     EOF
 
-    # `sfdisk` starts at 1MiB by default, let's use the same default.
-    totalSize=${toString (size.MiB 1)}
+    totalSize=$startOffset
 
     echo
     echo "Gathering information about partitions."
@@ -69,7 +79,7 @@ stdenvNoCC.mkDerivation rec {
     truncate -s $totalSize $img
     sfdisk $img < script.sfdisk
 
-    totalSize=${toString (size.MiB 1)}
+    totalSize=$startOffset
     echo
     echo "Writing partitions into image"
     ${eachPart partitions (partition: ''
