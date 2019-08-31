@@ -19,7 +19,7 @@ makeFilesystem (args // {
   ];
 
   filesystemPhase = ''
-    faketime "1970-01-01 00:00:00" mkfs.vfat \
+    faketime -f "1970-01-01 00:00:00" mkfs.vfat \
       -F 32 \
       -i $partitionID \
       -n $partName \
@@ -29,7 +29,7 @@ makeFilesystem (args // {
   copyPhase = ''
     for f in ./* ./.*; do
       if [[ "$f" != "./." && "$f" != "./.." ]]; then
-        faketime "1970-01-01 00:00:00" \
+        faketime -f "1970-01-01 00:00:00" \
           mcopy -psv -i "$img" "$f" ::
       fi
     done

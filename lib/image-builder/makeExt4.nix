@@ -22,7 +22,7 @@ makeFilesystem (args // {
   '';
 
   copyPhase = ''
-    faketime "1970-01-01 00:00:00" \
+    faketime -f "1970-01-01 00:00:00" \
       make_ext4fs \
       -L $partName \
       -l $size \
