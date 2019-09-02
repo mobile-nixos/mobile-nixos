@@ -13,6 +13,7 @@ in
   , populateCommands ? null
   # When size is not given, it is assumed that `populateCommands` will populate
   # the filesystem.
+  , blockSize
   , size ? null
   , ...
 } @ args:
@@ -27,7 +28,7 @@ in
 stdenvNoCC.mkDerivation (args // rec {
   # Do not inherit `size`; we don't want to accidentally use it. The `size` can
   # be dynamic depending on the contents.
-  inherit partName;
+  inherit partName blockSize;
 
   name = "partition-${partName}";
   filename = "${partName}.img";
@@ -37,6 +38,16 @@ stdenvNoCC.mkDerivation (args // rec {
   ] ++ optionals (args ? nativeBuildInputs) args.nativeBuildInputs;
 
   buildCommand = ''
+    sum-lines() {
+      local acc=0
+      while read -r number; do
+          acc=$((acc+number))
+      done
+
+      echo "$acc"
+    }
+
+
     # The default stdenv/generic clashes with `runHook`.
     # It doesn't override as expected.
     unset -f checkPhase
@@ -54,7 +65,11 @@ stdenvNoCC.mkDerivation (args // rec {
     )
     ''}
     ${optionalString (size == null) ''
-    size=$(cd files; du -sb --apparent-size . | tr -cd '[:digit:]')
+      # Size rounded in blocks. This assumes all files are to be rounded to a
+      # multiple of blockSize.
+      size=$(du -akh --block-size "$blockSize" . | cut -f1 | sum-lines)
+      # Size in bytes
+      size=$((size * blockSize))
     ''}
 
     if (( size < minimumSize )); then
