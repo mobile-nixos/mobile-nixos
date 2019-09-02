@@ -5,10 +5,13 @@
 let
   inherit (imageBuilder) makeFilesystem;
 in
-{ partitionID, ... } @ args:
+{ partitionID
+, blockSize ? imageBuilder.size.KiB 4
+, ... } @ args:
 makeFilesystem (args // {
   filesystemType = "ext4";
 
+  inherit blockSize;
   minimumSize = imageBuilder.size.MiB 5;
 
   nativeBuildInputs = [
@@ -24,6 +27,7 @@ makeFilesystem (args // {
   copyPhase = ''
     faketime -f "1970-01-01 00:00:00" \
       make_ext4fs \
+      -b $blockSize \
       -L $partName \
       -l $size \
       -U $partitionID \
