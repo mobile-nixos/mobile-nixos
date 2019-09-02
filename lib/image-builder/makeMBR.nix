@@ -89,10 +89,8 @@ stdenvNoCC.mkDerivation rec {
       totalSize=$(( totalSize + size ))
       echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
-      set -x
       echo "$start / $size"
       dd conv=notrunc if=$input_img of=$img seek=$((start/512)) count=$((size/512)) bs=512
-      set +x
     '')}
 
     ls -lh $img
