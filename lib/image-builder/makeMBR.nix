@@ -31,6 +31,9 @@ let
     concatMapStringsSep "\n" (partition:
       fn partition
   ) partitions);
+
+  # Default alignment.
+  alignment = toString (imageBuilder.size.MiB 1);
 in
 stdenvNoCC.mkDerivation rec {
   name = "disk-image-${_name}";
@@ -41,10 +44,18 @@ stdenvNoCC.mkDerivation rec {
     utillinux
   ];
 
-  # `sfdisk` starts at 1MiB by default, let's align at the same default.
-  startOffset = imageBuilder.size.MiB 1;
-
-  buildCommand = ''
+  buildCommand = let
+    # This fragment is used to compute the (aligned) size of the partition.
+    # It is used *only* to track the tally of the space used, thus the starting
+    # offset of the next partition. The filesystem sizes are untouched.
+    sizeFragment = ''
+      start=$totalSize
+      size=$(($(du --apparent-size -B 512 "$input_img" | awk '{ print $1 }') * 512))
+      size=$(( $(if (($size % ${alignment})); then echo 1; else echo 0; fi ) + size / ${alignment} ))
+      size=$(( size * ${alignment} ))
+      totalSize=$(( totalSize + size ))
+    '';
+  in ''
     mkdir -p $out
 
     cat <<EOF > script.sfdisk
@@ -52,15 +63,12 @@ stdenvNoCC.mkDerivation rec {
     label-id: 0x${diskID}
     EOF
 
-    totalSize=$startOffset
-
+    totalSize=${alignment}
     echo
     echo "Gathering information about partitions."
     ${eachPart partitions (partition: ''
       input_img="${partition}/${partition.filename}"
-      start=$totalSize
-      size=$(($(du -B 512 --apparent-size "$input_img" | awk '{ print $1 }') * 512))
-      totalSize=$(( totalSize + size ))
+      ${sizeFragment}
       echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
       (
@@ -79,14 +87,12 @@ stdenvNoCC.mkDerivation rec {
     truncate -s $totalSize $img
     sfdisk $img < script.sfdisk
 
-    totalSize=$startOffset
+    totalSize=${alignment}
     echo
     echo "Writing partitions into image"
     ${eachPart partitions (partition: ''
       input_img="${partition}/${partition.filename}"
-      start=$totalSize
-      size=$(($(du -B 512 --apparent-size "$input_img" | awk '{ print $1 }') * 512))
-      totalSize=$(( totalSize + size ))
+      ${sizeFragment}
       echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
       echo "$start / $size"
