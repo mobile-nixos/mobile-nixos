@@ -8,13 +8,23 @@ in
 
 {
   name
+  # Size (in bytes) the filesystem image will be given.
+  # When size is not given, it is assumed that `populateCommands` will populate
+  # the filesystem, and the size will be derived (see computeMinimalSize).
+  , size ? null
+
   # The populate commands are executed in a subshell. The CWD at the star is the
   # public API to know where to add files that will be added to the image.
   , populateCommands ? null
-  # When size is not given, it is assumed that `populateCommands` will populate
-  # the filesystem.
+
+  # Used with the assumption that files are rounded up to blockSize increments.
   , blockSize
-  , size ? null
+
+  # Additional commands to compute a required increase in size to fit files.
+  , computeMinimalSize ? null
+
+  # When automatic sizing is used, additional amount of bytes to pad the image by.
+  , extraPadding ? 0
   , ...
 } @ args:
 
@@ -38,6 +48,40 @@ stdenvNoCC.mkDerivation (args // rec {
   ] ++ optionals (args ? nativeBuildInputs) args.nativeBuildInputs;
 
   buildCommand = ''
+    adjust-minimal-size() {
+      size="$1"
+
+      echo "$size"
+    }
+
+    compute-minimal-size() {
+      local size=0
+      (
+      cd files
+      # Size rounded in blocks. This assumes all files are to be rounded to a
+      # multiple of blockSize.
+      # Use of `--apparent-size` is to ensure we don't get the block size of the underlying FS.
+      # Use of `--block-size` is to get *our* block size.
+      size=$(find . ! -type d -exec 'du' '--apparent-size' '--block-size' "$blockSize" '{}' ';' | cut -f1 | sum-lines)
+      echo "Reserving $size sectors for files..." 1>&2
+
+      # Adds one blockSize per directory, they do take some place, in the end.
+      # FIXME: write test to confirm this assumption
+      local directories=$(find . -type d | wc -l)
+      echo "Reserving $directories sectors for directories..." 1>&2
+
+      size=$(( directories + size ))
+
+      size=$((size * blockSize))
+
+      ${if computeMinimalSize == null then "" else computeMinimalSize}
+
+      size=$(( size + ${toString extraPadding} ))
+
+      echo "$size"
+      )
+    }
+
     sum-lines() {
       local acc=0
       while read -r number; do
@@ -65,16 +109,12 @@ stdenvNoCC.mkDerivation (args // rec {
     )
     ''}
     ${optionalString (size == null) ''
-      # Size rounded in blocks. This assumes all files are to be rounded to a
-      # multiple of blockSize.
-      size=$(du -akh --block-size "$blockSize" . | cut -f1 | sum-lines)
-      # Size in bytes
-      size=$((size * blockSize))
+      size=$(compute-minimal-size)
     ''}
 
     if (( size < minimumSize )); then
       size=$minimumSize
-      echo "WARNING: partition was too small, size increased to $minimumSize bytes."
+      echo "WARNING: the '$partName' partition was too small, size increased to $minimumSize bytes."
     fi
 
     echo
