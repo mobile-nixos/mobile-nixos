@@ -54,12 +54,14 @@ stdenvNoCC.mkDerivation rec {
       size=$(( $(if (($size % ${alignment})); then echo 1; else echo 0; fi ) + size / ${alignment} ))
       size=$(( size * ${alignment} ))
       totalSize=$(( totalSize + size ))
+      echo "start $start | size $size | totalSize $totalSize"
     '';
   in ''
     mkdir -p $out
 
     cat <<EOF > script.sfdisk
     label: dos
+    grain: 1024
     label-id: 0x${diskID}
     EOF
 
@@ -82,9 +84,13 @@ stdenvNoCC.mkDerivation rec {
       ) >> script.sfdisk
     '')}
 
+    echo "--- script ----"
+    cat script.sfdisk
+    echo "--- script ----"
+
     echo
     echo "Making image, $totalSize bytes..."
-    truncate -s $totalSize $img
+    truncate -s $((totalSize)) $img
     sfdisk $img < script.sfdisk
 
     totalSize=${alignment}
@@ -99,7 +105,10 @@ stdenvNoCC.mkDerivation rec {
       dd conv=notrunc if=$input_img of=$img seek=$((start/512)) count=$((size/512)) bs=512
     '')}
 
+    echo
+    echo "Information about the image:"
     ls -lh $img
+    sfdisk -V --list $img
   '';
 }
 
