@@ -79,7 +79,6 @@ makeFilesystem (args // {
       -h ${toString hiddenSectors} \
       -s ${toString (blockSize / sectorSize)} \
       -S ${toString sectorSize} \
-      -F 32 \
       -i $partitionID \
       -n $partName \
       "$img"
