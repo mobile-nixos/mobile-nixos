@@ -22,6 +22,11 @@ makeScope newScope (self:
       makeESP = args: self.fileSystem.makeFAT32 ({ name = "ESP"; filesystemType = "ESP"; } // args);
     };
 
+    gap = length: {
+      inherit length;
+      isGap = true;
+    };
+
     # All supported disk formats for image generation.
     diskImage = {
       makeMBR = callPackage ./makeMBR.nix {};

@@ -54,7 +54,21 @@ stdenvNoCC.mkDerivation rec {
       size=$(( $(if (($size % ${alignment})); then echo 1; else echo 0; fi ) + size / ${alignment} ))
       size=$(( size * ${alignment} ))
       totalSize=$(( totalSize + size ))
-      echo "start $start | size $size | totalSize $totalSize"
+      echo "Partition: start $start | size $size | totalSize $totalSize"
+    '';
+
+    # This fragment is used to add the desired gap to `totalSize`.
+    # We're setting `start` and `size` only to mirror the information shown
+    # for partitions.
+    # Do note that gaps are always aligned, so two gaps sized half the alignment
+    # would create 2× the space expected.
+    # What may *instead* be done at one point is always align `start` for partitions.
+    gapFragment = partition: ''
+      start=$totalSize
+      size=${toString partition.length}
+      size=$(( $(if (($size % ${alignment})); then echo 1; else echo 0; fi ) + size / ${alignment} ))
+      totalSize=$(( totalSize + size ))
+      echo "Gap: start $start | size $size | totalSize $totalSize"
     '';
   in ''
     mkdir -p $out
@@ -68,21 +82,26 @@ stdenvNoCC.mkDerivation rec {
     totalSize=${alignment}
     echo
     echo "Gathering information about partitions."
-    ${eachPart partitions (partition: ''
-      input_img="${partition}/${partition.filename}"
-      ${sizeFragment}
-      echo " -> ${partition.name}: $size / ${partition.filesystemType}"
+    ${eachPart partitions (partition:
+      if partition ? isGap && partition.isGap then
+        (gapFragment partition)
+      else
+        ''
+          input_img="${partition}/${partition.filename}"
+          ${sizeFragment}
+          echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
-      (
-      # The size is /1024; otherwise it's in sectors.
-      echo -n 'start='"$((start/1024))"'KiB'
-      echo -n ', size='"$((size/1024))"'KiB'
-      echo -n ', type=${types."${partition.filesystemType}"}'
-      ${optionalString (partition ? bootable && partition.bootable)
-          "echo -n ', bootable'"}
-      echo "" # Finishes the command
-      ) >> script.sfdisk
-    '')}
+          (
+          # The size is /1024; otherwise it's in sectors.
+          echo -n 'start='"$((start/1024))"'KiB'
+          echo -n ', size='"$((size/1024))"'KiB'
+          echo -n ', type=${types."${partition.filesystemType}"}'
+          ${optionalString (partition ? bootable && partition.bootable)
+              "echo -n ', bootable'"}
+          echo "" # Finishes the command
+          ) >> script.sfdisk
+        ''
+    )}
 
     echo "--- script ----"
     cat script.sfdisk
@@ -96,14 +115,19 @@ stdenvNoCC.mkDerivation rec {
     totalSize=${alignment}
     echo
     echo "Writing partitions into image"
-    ${eachPart partitions (partition: ''
-      input_img="${partition}/${partition.filename}"
-      ${sizeFragment}
-      echo " -> ${partition.name}: $size / ${partition.filesystemType}"
+    ${eachPart partitions (partition: 
+      if partition ? isGap && partition.isGap then
+        (gapFragment partition)
+      else
+        ''
+          input_img="${partition}/${partition.filename}"
+          ${sizeFragment}
+          echo " -> ${partition.name}: $size / ${partition.filesystemType}"
 
-      echo "$start / $size"
-      dd conv=notrunc if=$input_img of=$img seek=$((start/512)) count=$((size/512)) bs=512
-    '')}
+          echo "$start / $size"
+          dd conv=notrunc if=$input_img of=$img seek=$((start/512)) count=$((size/512)) bs=512
+        ''
+    )}
 
     echo
     echo "Information about the image:"
