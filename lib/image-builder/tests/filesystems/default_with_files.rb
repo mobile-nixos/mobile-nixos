@@ -1,7 +1,7 @@
 hashes = {
   "ESP.img"   => "9b53acc0332e4b143e31203dc0df02de929c3bcff9b36799c651f1c8d5eaca4c",
   "FAT32.img" => "9b76804f3624566664132134d28208fce005bfe5d3dad3da9d91814f7ca2286f",
-  "Ext4.img"  => "abcf53929fc3271965c7a8c93f45a3bf6144a3b8a371d26fca2e5e0b3eac1f8e",
+  "Ext4.img"  => "56181a43406c4ba731ed14b3ed32ed6c169b1c2abfe385eef989faef55e3cd07",
 }
 
 filetypes = {
