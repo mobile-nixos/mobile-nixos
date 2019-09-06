@@ -23,4 +23,12 @@ stdenv.mkDerivation {
     mkdir -p $out/bin
     cp make_ext4fs $out/bin
   '';
+
+  meta = with stdenv.lib; {
+    homepage = https://git.openwrt.org/?p=project/make_ext4fs.git;
+    description = "Standalone fork of Android make_ext4fs utility";
+    license = licenses.asl20;
+    platforms = platforms.linux;
+    maintainers = [ maintainers.samueldr ];
+  };
 }
