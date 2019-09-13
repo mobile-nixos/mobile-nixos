@@ -52,7 +52,7 @@ in
 
 # Part of the "API" of the kernel builder.
 # Image builders expect this attribute to know where to find the kernel file.
-, file ? "Image" # FIXME : make more generic?
+, file ? stdenv.hostPlatform.platform.kernelTarget
 
 # FIXME : useful?
 , isModular ? true
