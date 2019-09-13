@@ -18,7 +18,7 @@ in
       '';
     };
     features = mkOption {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       default = [];
       description = ''
         `android_usb` features to enable.

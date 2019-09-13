@@ -9,7 +9,7 @@ in
   options.mobile.hardware = {
     soc = mkOption {
       # This is used to enable a specific SOC on a device, while giving it a name.
-      type = types.string;
+      type = types.str;
       description = ''
         Give the SOC name for the device.
       '';
