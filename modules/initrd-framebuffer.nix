@@ -17,7 +17,7 @@ in
       '';
     };
     initialization = mkOption {
-      type = types.string;
+      type = types.str;
       default = ''
         [ -e "/sys/class/graphics/fb0/modes" ] || return
         [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return

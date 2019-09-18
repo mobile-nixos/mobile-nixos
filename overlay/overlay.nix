@@ -94,6 +94,14 @@ in
       ) oldAttrs.buildInputs;
     });
 
+    vboot_reference = super.vboot_reference.overrideAttrs(attrs: {
+      # https://github.com/NixOS/nixpkgs/pull/69039
+      postPatch = ''
+        substituteInPlace Makefile \
+          --replace "ar qc" '${self.stdenv.cc.bintools.targetPrefix}ar qc'
+      '';
+    });
+
     # Things specific to mobile-nixos.
     # Not necessarily internals, but they probably won't go into <nixpkgs>.
     mobile-nixos = {

@@ -18,7 +18,7 @@ in
       '';
     };
     console = mkOption {
-      type = types.string;
+      type = types.str;
       default = "console";
       description = ''
         Selects the /dev/___ device to use.

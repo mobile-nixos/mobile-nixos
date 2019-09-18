@@ -11,6 +11,7 @@ in
   ./hardware-generic.nix
   ./hardware-qualcomm.nix
   ./hardware-ram.nix
+  ./hardware-rockchip.nix
   ./hardware-screen.nix
   ./hardware-soc.nix
   ./initrd-base.nix
