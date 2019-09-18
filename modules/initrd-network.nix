@@ -19,14 +19,14 @@ in
       '';
     };
     IP = mkOption {
-      type = types.string;
+      type = types.str;
       default = "172.16.42.1";
       description = ''
         IP address for the USB networking gadget.
       '';
     };
     hostIP = mkOption {
-      type = types.string;
+      type = types.str;
       default = "172.16.42.2";
       description = ''
         IP address for the USB networking gadget.

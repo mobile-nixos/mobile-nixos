@@ -24,7 +24,7 @@ in
       '';
     };
     targets = mkOption {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       description = ''
         Where the init process logs are redirected to.
 

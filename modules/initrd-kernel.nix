@@ -27,7 +27,7 @@ in
       '';
     };
     modules = mkOption {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       default = [
       ];
       description = ''
@@ -36,7 +36,7 @@ in
       '';
     };
     additional_modules = mkOption {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       default = [
       ];
       description = ''
@@ -45,7 +45,7 @@ in
       '';
     };
     firmwares = mkOption {
-      type = types.listOf types.string;
+      type = types.listOf types.str;
       default = [];
       description = ''
         Firmwares to add to the cloure.
