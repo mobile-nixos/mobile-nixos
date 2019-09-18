@@ -27,19 +27,19 @@ in
   config = mkMerge [
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
-        system.platform = "aarch64-linux";
+        system.system = "aarch64-linux";
         quirks.qualcomm.msm-fb-handle.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8953.enable {
-        system.platform = "aarch64-linux";
+        system.system = "aarch64-linux";
         quirks.qualcomm.msm-fb-handle.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-apq8064-1aa.enable {
-        system.platform = "armv7a-linux";
+        system.system = "armv7l-linux";
         quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }

@@ -17,7 +17,7 @@ in
   config = mkMerge [
     {
       mobile = mkIf cfg.rockchip-op1.enable {
-        system.platform = "aarch64-linux";
+        system.system = "aarch64-linux";
       };
     }
   ];
