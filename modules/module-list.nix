@@ -1,12 +1,11 @@
-# Keep sorted, <nixpkgs> imports first.
-let
-  # This is only used to get the path to nixpkgs.
-  # This one shouldn't affect cross-compiling.
-  nixpkgs = (import <nixpkgs> {}).path;
-in
+# Import the upstream module-list.
+# FIXME : This won't allow importing `mobile-nixos` into /etc/configuration.nix
+(import <nixpkgs/nixos/modules/module-list.nix>) ++
+
+# Then add our additional modules.
+# Keep this list `:sort`ed.
 [
-  (nixpkgs + "/nixos/modules/misc/nixpkgs.nix")
-  (nixpkgs + "/nixos/modules/misc/assertions.nix")
+  ./_nixos-disintegration
   ./boot-initrd.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix
@@ -31,7 +30,6 @@ in
   ./nixpkgs.nix
   ./quirks-qualcomm.nix
   ./stage-2.nix
-  ./system-build.nix
   ./system-target.nix
   ./system-types.nix
 ]
