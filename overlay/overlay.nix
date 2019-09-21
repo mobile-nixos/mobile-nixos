@@ -67,33 +67,6 @@ in
     # All that follows will have to be cleaned and then upstreamed.
     #
 
-    fbterm = super.fbterm.overrideDerivation(oldAttrs: with self; {
-      # Adds missing nativeBuildInputs (they're only buildInputs in nixpkgs).
-      nativeBuildInputs = [ pkgconfig ncurses binutils ];
-      # Futhermore, this patch is needed for compilation.
-      patches = [
-        (fetchpatch {
-          name = "0001-fbio.cpp-improxy.cpp-fbterm.cpp-fix-musl-compile.patch";
-          url = "https://raw.githubusercontent.com/buildroot/buildroot/master/package/fbterm/0001-fbio.cpp-improxy.cpp-fbterm.cpp-fix-musl-compile.patch";
-          sha256 = "10dgpsym0nhsxzjbi0dbp1y5h2a1b7srsf9l09j9g10ia31ljbs3";
-        })
-      ]
-      ++ oldAttrs.patches
-      ;
-    });
-
-    freetype = super.freetype.overrideDerivation(oldAttrs: with self;{
-      # ./configure doesn't detect the native compiler properly.
-      CC_BUILD = "${buildPackages.stdenv.cc}/bin/cc";
-    });
-
-    libdrm = super.libdrm.overrideAttrs(oldAttrs: {
-      # valgrind won't build cross.
-      buildInputs = builtins.filter (
-        input: input != self.valgrind-light
-      ) oldAttrs.buildInputs;
-    });
-
     vboot_reference = super.vboot_reference.overrideAttrs(attrs: {
       # https://github.com/NixOS/nixpkgs/pull/69039
       postPatch = ''
