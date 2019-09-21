@@ -52,7 +52,7 @@ in
           result = selectedPlatform.system != builtins.currentSystem;
         in
         builtins.trace
-        "Building with crossSystem?: ${selectedPlatform.system} != ${builtins.currentSystem} → ${if result then "true" else "false"}"
+        "Building with crossSystem?: ${selectedPlatform.system} != ${builtins.currentSystem} → ${if result then "we are" else "we're not"}."
         result
       )
       (
