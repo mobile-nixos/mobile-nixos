@@ -110,4 +110,6 @@ in
         stdenv = with self; overrideCC stdenv buildPackages.gcc6;
       };
     };
+
+    imageBuilder = callPackage ../lib/image-builder {};
  }
