@@ -12,10 +12,15 @@ with import ./initrd-order.nix;
 
     _init_path() {
       local _system=""
-      # IF no /nix/var...
-      if [ -e "$targetRoot/nix/var/nix/profiles/system" ]; then
-        _system="$targetRoot/nix/var/nix/profiles/system"
+
+      # Using -L is required, as the link chain is most likely dangling.
+      if [ -L "$targetRoot/nix/var/nix/profiles/system" ]; then
+        # There is a system symlink, use it.
+        # What's that strange dance? We're canonicalizing one level deep of an
+        # absolute symlink that we can't easily canonicalize otherwise.
+        _system=$(cd $targetRoot/nix/var/nix/profiles/; readlink $(readlink system))
       elif [ -e "$targetRoot/nix-path-registration" ]; then
+        # Otherwise, try to find one in nix-path-registration.
         _system="$(grep '^/nix/store/[a-z0-9]\+-nixos-system-' $targetRoot/nix-path-registration | head -1)"
       else
         echo "!!!!!"
@@ -29,6 +34,7 @@ with import ./initrd-order.nix;
         echo "!!!!!"
         echo "!!!!!"
         sleep 2m
+        exit 1
       fi
 
       echo "$_system/init"
