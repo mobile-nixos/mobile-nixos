@@ -2,6 +2,8 @@
 , fetchurl
 , runCommandNoCC
 , initrd
+, imageBuilder
+, lib
 
 , dtc
 , ubootTools
@@ -11,14 +13,39 @@
 }:
 
 let
+  inherit (imageBuilder) size;
+  inherit (imageBuilder.diskImage) makeGPT;
+
+  # https://www.chromium.org/chromium-os/chromiumos-design-docs/disk-format
+  # This doesn't fit into the generic makeGPT, some of those are really specific
+  # to depthcharge.
+  GPT_ENTRY_TYPES = {
+    UNUSED             = "00000000-0000-0000-0000-000000000000";
+    EFI                = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B";
+    CHROMEOS_FIRMWARE  = "CAB6E88E-ABF3-4102-A07A-D4BB9BE3C1D3";
+    CHROMEOS_KERNEL    = "FE3A2A5D-4F32-41A7-B725-ACCC3285A309";
+    CHROMEOS_ROOTFS    = "3CB8E202-3B7E-47DD-8A3C-7FF2A13CFCEC";
+    CHROMEOS_RESERVED  = "2E0A753D-9E48-43B0-8337-B15192CB1B5E";
+    LINUX_DATA         = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7";
+    LINUX_FS           = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
+  };
+
   inherit (device_info) arch kernel kernel_cmdline dtbs;
+
   device_info = device_config.info;
   device_name = device_config.name;
+
+  # Kernel used in kpart.
   kernel_file = "${kernel}/${kernel.file}";
+
+  # Kernel command line for vbutil_kernel.
   kpart_config = writeTextFile {
     name = "kpart-config-${device_name}";
     text = kernel_cmdline;
   };
+
+  # Name used for some image file output.
+  name = "mobile-nixos-${device_name}";
 
   # https://github.com/thefloweringash/kevin-nix/issues/3
   make-kernel-its = fetchurl {
@@ -26,7 +53,8 @@ let
     sha256 = "05918hcmrgrj71hiq460gpzz8lngz2ccf617m9p4c82s43v4agmg";
   };
 
-  kpart = runCommandNoCC "depthcharge-${device_name}" {
+  # The image file containing the kernel and initrd.
+  kpart = runCommandNoCC "kpart-${device_name}" {
     nativeBuildInputs = [
       dtc
       ubootTools
@@ -62,6 +90,41 @@ let
       --config ${kpart_config} \
       --pack $out/kpart
   '';
+
+  # An "unfinished" disk image.
+  # It's missing some minor cgpt magic.
+  # FIXME : make(MBR|GPT) should have a postBuild hook to manipulate the image.
+  image = makeGPT {
+    inherit name;
+    diskID = "44444444-4444-4444-8888-888888888888";
+    partitions = [
+      {
+        name = "kernel";
+        filename = "${kpart}/kpart";
+        partitionType = GPT_ENTRY_TYPES.CHROMEOS_KERNEL;
+        length = size.MiB 64;
+      }
+    ];
+  };
 in
-  # FIXME: produce more than the kernel partition.
-  kpart
+  # Takes the built image, and do some light editing using `cgpt`.
+  # This uses some depthcharge-specific fields to make the image bootable.
+  # FIXME : integrate into the makeGPT call with postBuild or something
+  runCommandNoCC "depthcharge-${device_name}" { nativeBuildInputs = [ vboot_reference ]; } ''
+    # Copy the generated image...
+    # Note that while it's GPT, it's lacking some depthcharge magic attributes
+    cp ${image}/${name}.img ./
+    chmod +w ${name}.img
+
+    # Which is what we're adding back with cgpt!
+    cgpt add ${lib.concatStringsSep " " [
+      "-i 1"  # Work on the first partition (instead of adding)
+      "-S 1"  # Mark as successful (so it'll be booted from)
+      "-T 5"  # Tries remaining
+      "-P 10" # Priority
+      "${name}.img"
+    ]}
+
+    mkdir -p $out
+    cp ${name}.img $out/
+  ''
