@@ -34,14 +34,18 @@ let
       }
       {
         name = "system";
-        # Equivalent to:
-        #  → nix-build nixos -I nixos-config=system-image.nix -A config.system.build.sdImage
-        path = ((import (pkgs.path + "/nixos")) { configuration = ../system-image.nix; }).config.system.build.sdImage;
+        path = config.system.build.rootfs;
       }
     ];
   };
 in
 {
+  imports = [
+    ../systems/rootfs.nix
+    # FIXME: factor out installation device profile.
+    <nixpkgs/nixos/modules/profiles/installation-device.nix>
+  ];
+
   options.mobile = {
     system.type = mkOption {
       type = types.enum (lib.attrNames build_types);
