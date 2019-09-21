@@ -49,7 +49,10 @@ in
       ];
     }
 
-    (mkSplash AFTER_FRAMEBUFFER_INIT "loading")
+    # This is as early as we can splash...
+    (mkSplash AFTER_FRAMEBUFFER_INIT "splash.stage-0")
+    # Though there's still some setting-up in stage-1,
+    # This is where "init is ready".
     (mkSplash (READY_INIT - 1) "splash.stage-1")
     (mkIf cfg.rgb-debug (mkSplash (READY_INIT) "rgb-debug"))
   ]);
