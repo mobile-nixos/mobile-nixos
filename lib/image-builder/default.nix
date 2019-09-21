@@ -30,6 +30,7 @@ makeScope newScope (self:
     # All supported disk formats for image generation.
     diskImage = {
       makeMBR = callPackage ./makeMBR.nix {};
+      makeGPT = callPackage ./makeGPT.nix {};
     };
 
     # Don't do maths yourselves, just use the helpers.
