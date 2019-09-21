@@ -1,14 +1,24 @@
 { config, lib, pkgs, ... }:
 
+# FIXME: Add hook for mounting, right now it's hardcoded to only mount "/".
+#        (This'll allow complex schemes like LVM)
+# FIXME: Move udev stuff out.
+
+let
+  rootfs = config.fileSystems."/".device;
+in
 with import ./initrd-order.nix;
 {
-  mobile.boot.stage-1.init = lib.mkOrder SWITCH_ROOT_INIT ''
+  mobile.boot.stage-1.init =
+  lib.mkOrder SWITCH_ROOT_INIT ''
     set -x
-    targetRoot=/mnt
 
-    _fs_id() {
-      blkid | grep ' LABEL="'"$1"'" ' | cut -d':' -f1
-    }
+    # FIXME : udev stuff out of here...
+    systemd-udevd --daemon
+    udevadm trigger --action=add
+    udevadm settle
+
+    targetRoot=/mnt
 
     _init_path() {
       local _system=""
@@ -40,18 +50,8 @@ with import ./initrd-order.nix;
       echo "$_system/init"
     }
 
-    _fs_id NIXOS_SD
-    _fs_id NIXOS_BOOT
-    # FIXME : LESS FLIMSY!
     mkdir -p $targetRoot
-    mount $(_fs_id NIXOS_SD) $targetRoot
-
-    # mkdir -p $targetRoot/boot
-    # mount $(_fs_id NIXOS_BOOT) $targetRoot/boot
-
-    # mount "$(blkid | grep ' LABEL="'"NIXOS_SD"'" ' | cut -d':' -f1)" /mnt
-    # mkdir -p /mnt/boot/
-    # mount "$(blkid | grep ' LABEL="'"NIXOS_BOOT"'" ' | cut -d':' -f1)" /mnt/boot
+    mount "${rootfs}" $targetRoot
 
     echo ""
     echo "***"
@@ -61,11 +61,16 @@ with import ./initrd-order.nix;
     echo "***"
     echo ""
 
-
     for mp in /proc /sys /dev /run; do
       mkdir -m 0755 -p $targetRoot/$mp
       mount --move $mp $targetRoot/$mp
     done
+
+    # TODO : hook "AT" switch root
+
+    # FIXME : udev stuff out of here...
+    # Stop udevd.
+    udevadm control --exit
 
     exec env -i $(type -P switch_root) $targetRoot $(_init_path)
   '';
