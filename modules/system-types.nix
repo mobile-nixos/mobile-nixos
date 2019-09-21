@@ -19,10 +19,13 @@ let
       # XXX : this feels like a hack
       initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
     };
+
     depthcharge = pkgs.callPackage ../systems/depthcharge {
       inherit device_config;
       initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
+      system = config.system.build.rootfs;
     };
+
     kernel-initrd = pkgs.linkFarm "${device_config.name}-build" [
       {
         name = "kernel-initrd";

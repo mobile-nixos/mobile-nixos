@@ -2,6 +2,7 @@
 , fetchurl
 , runCommandNoCC
 , initrd
+, system
 , imageBuilder
 , lib
 
@@ -104,6 +105,7 @@ let
         partitionType = GPT_ENTRY_TYPES.CHROMEOS_KERNEL;
         length = size.MiB 64;
       }
+      system
     ];
   };
 in
