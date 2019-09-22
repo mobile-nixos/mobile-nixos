@@ -12,6 +12,7 @@ in
 {
   imports = [
     ../systems/rootfs.nix
+    ./system-types/depthcharge.nix
     ./system-types/kernel-initrd.nix
   ];
 
