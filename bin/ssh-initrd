@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+
+PS4=" $ "
+set -eux
+
+exec ssh -o UserKnownHostsFile=/dev/null root@172.16.42.1
