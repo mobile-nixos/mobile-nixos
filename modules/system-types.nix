@@ -14,6 +14,7 @@ in
     ../systems/rootfs.nix
     ./system-types/depthcharge.nix
     ./system-types/kernel-initrd.nix
+    ./system-types/android.nix
   ];
 
   options.mobile = {
