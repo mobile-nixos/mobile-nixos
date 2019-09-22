@@ -26,6 +26,7 @@
   ./initrd-ssh.nix
   ./initrd-telnet.nix
   ./initrd-usb.nix
+  ./initrd.nix
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks-qualcomm.nix
