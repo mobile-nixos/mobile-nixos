@@ -12,6 +12,7 @@ in
 {
   imports = [
     ../systems/rootfs.nix
+    ./system-types/kernel-initrd.nix
   ];
 
   options.mobile = {
