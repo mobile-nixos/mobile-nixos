@@ -21,6 +21,7 @@
 
   patches = [
     ./0001-Porting-changes-found-in-LineageOS-android_kernel_cy.patch
+    ./01_more_precise_arch.patch
     ./01_fix_gcc6_errors.patch
     ./02_mdss_fb_refresh_rate.patch
     ./05_dtb-fix.patch
