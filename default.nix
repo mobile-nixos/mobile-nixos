@@ -26,6 +26,11 @@ let
   # Eval with `local.nix` if available.
   # This eval is the "WIP" eval. What's usually built with `nix-build`.
   eval = evalWith (optional (builtins.pathExists ./local.nix) (import (./local.nix )));
+
+  # This is used by the `-A installer` shortcut.
+  installer-eval = evalWith [
+    ./profiles/installer.nix
+  ];
 in
 {
   # The build artifacts from the modules system.
@@ -45,6 +50,10 @@ in
   # Any time `nix-build nixos` is used upstream, it can be used here.
   nixos = import <nixpkgs/nixos>;
 
+  # `mobile-installer` will, when possible, contain the installer build for the
+  # given system. It usually is an alias for a disk-image type build.
+  installer = installer-eval.config.system.build.mobile-installer;
+
   # Evaluating this whole set is counter-productive.
   # It'll put a *bunch* of build products from the misc. inherits we added.
 
@@ -57,6 +66,9 @@ in
 
     Building this whole set is counter-productive, and not likely to be what
     is desired.
+
+    You can try to build the `installer` attribute (-A installer) if your system
+    provides an installer.
 
     Please refer to your platform's documentation for usage.
   '';
