@@ -1,7 +1,5 @@
 # This file is based on <nixpkgs/nixos/lib/eval-config.nix>.
 
-# From a device configuration, build an initrd.
-
 { # !!! system can be set modularly, would be nice to remove
   system ? builtins.currentSystem
 , # !!! is this argument needed any more? The pkgs argument can

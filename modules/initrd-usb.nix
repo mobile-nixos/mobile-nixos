@@ -5,6 +5,7 @@ with import ./initrd-order.nix;
 
 let
   cfg = config.mobile.boot.stage-1;
+  system_type = config.mobile.system.type;
 in
 {
   # FIXME Generic USB gadget support to come.
@@ -26,7 +27,7 @@ in
     };
     adbd = mkOption {
       type = types.bool;
-      default = true;
+      default = system_type == "android";
       description = ''
         Enables adbd on the device.
       '';

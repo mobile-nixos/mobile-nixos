@@ -6,45 +6,27 @@ let
   failed = map (x: x.message) (filter (x: !x.assertion) config.assertions);
 
   system_type = config.mobile.system.type;
-  device_config = config.mobile.device;
-  hardware_config = config.mobile.hardware;
-  stage-1 = config.mobile.boot.stage-1;
 
-  build_types = {
-    android-device = pkgs.callPackage ../systems/android-device.nix {
-      inherit config;
-    };
-    android-bootimg = pkgs.callPackage ../systems/bootimg.nix {
-      inherit device_config;
-      # XXX : this feels like a hack
-      initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
-    };
-    depthcharge = pkgs.callPackage ../systems/depthcharge {
-      inherit device_config;
-      initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
-    };
-    kernel-initrd = pkgs.linkFarm "${device_config.name}-build" [
-      {
-        name = "kernel-initrd";
-        path = pkgs.callPackage ../systems/kernel-initrd.nix {
-          # FIXME this all feels a bit not enough generic.
-          inherit device_config hardware_config;
-          initrd = pkgs.callPackage ../systems/initrd.nix { inherit device_config stage-1; };
-        };
-      }
-      {
-        name = "system";
-        # Equivalent to:
-        #  → nix-build nixos -I nixos-config=system-image.nix -A config.system.build.sdImage
-        path = ((import (pkgs.path + "/nixos")) { configuration = ../system-image.nix; }).config.system.build.sdImage;
-      }
-    ];
-  };
+  known_system_types = config.mobile.system.types;
 in
 {
+  imports = [
+    ../systems/rootfs.nix
+    ./system-types/depthcharge.nix
+    ./system-types/kernel-initrd.nix
+    ./system-types/android.nix
+  ];
+
   options.mobile = {
+    system.types = mkOption {
+      type = types.listOf types.str;
+      internal = true;
+      description = ''
+        Registry of system types.
+      '';
+    };
     system.type = mkOption {
-      type = types.enum (lib.attrNames build_types);
+      type = types.enum known_system_types;
       description = ''
         Defines the kind of system the device is.
 
@@ -57,15 +39,11 @@ in
   config = {
     assertions = [
       # While the enum type is enough to implement value safety, this will help
-      # when implementing new platforms and not implementing them in build_types.
-      { assertion = build_types ? ${system_type}; message = "Cannot build unexpected system type: ${system_type}.";}
+      # when implementing new platforms and not implementing them in known_system_types.
+      {
+        assertion = lib.lists.any (x: x == system_type) known_system_types;
+        message = "Cannot build unexpected system type: ${system_type}.\n  Known types: ${lib.concatStringsSep ", " known_system_types}";
+      }
     ];
-    system = {
-      build = 
-        if failed == [] then
-        build_types."${system_type}"
-        else throw "\nFailed assertions:\n${concatStringsSep "\n" (map (x: " → ${x}") failed)}\n"
-      ;
-    };
   };
 }

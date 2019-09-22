@@ -13,7 +13,7 @@
 # This is because motorola ships an armv7l userspace from stock ROM.
 #
 # in local.nix:
-#  mobile.system.platform = lib.mkForce "armv7a-linux";
+#  mobile.system.system = lib.mkForce "armv7l-linux";
 #
 
 let

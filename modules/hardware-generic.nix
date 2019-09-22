@@ -15,6 +15,6 @@ in
   };
 
   config = {
-    mobile.system.platform = lib.mkIf cfg.generic-x86_64.enable "x86_64-linux";
+    mobile.system.system = lib.mkIf cfg.generic-x86_64.enable "x86_64-linux";
   };
 }
