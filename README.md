@@ -1,38 +1,32 @@
 Mobile NixOS
 ============
 
-An overlay for building stuff.
-
-This is a work-in-progress.
+*This is expected to be built against the nixos-unstable for now.*
 
 
 WIP notes
 ---------
 
 ```
-nix-build --argstr device asus-z00t -A all
 # Maybe `nix copy ./result --to ssh://another-host`
 adb wait-for-device && adb reboot bootloader
 fastboot boot result # or full path
 # getting adb and fastboot working is left as an exercise to the reader.
 ```
 
-Alternatively, helpers under `bin` can be used. They mostly pave over
-the nix CLI to provide one-liners and one-parameter helpers.
-
 ```
-# Builds -A all for device_name $1
-bin/build asus-z00t
+nix-build --argstr device asus-z00t -A build.android-bootimg
 ```
 
 ### Booting qemu
 
-```
-bin/build qemu-x86_64
-bin/boot-qemu
-```
+The qemu target has a `vm` build output, which results in a script that will
+automatically start the "virtual device".
 
-This currently does not build using 18.03 and may never (18.09 may release before!)
+```
+nix-build -I --argstr device qemu-x86_64 -A build.vm
+./result
+```
 
 ### `local.nix`
 
