@@ -14,8 +14,8 @@
     external_storage = true;
 
     # FIXME
-    screen_width = "1920";
-    screen_height = "1080";
+    screen_width = "720";
+    screen_height = "1440";
 
     flash_method = "fastboot";
 
