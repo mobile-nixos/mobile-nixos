@@ -30,8 +30,8 @@ nix-build -I --argstr device qemu-x86_64 -A build.vm
 
 ### `local.nix`
 
-This file can be used to override (possibly with `lib.mkForce`) options on a global
-scale for your local builds.
+This file is used to work on producing build artifacts from the "WIP" repository
+checkout. This is equivalent to adding settings in `configuration.nix`.
 
 If the file does not exist, it will not fail.
 
@@ -47,8 +47,12 @@ A sample `local.nix`:
 
 This will disable splash screens.
 
-This will be most useful to configure local sensitive stuff like password (hashes)
-or ssh keys.
+Note that this can be set to another file with `<mobile-nixos-configuration>`.
+By setting it to the path of a nix expression, it will be used instead of using
+`local.nix`.
+
+This is the current mechanism expected to be used to create special builds using
+the mobile-nixos tooling (e.g. to create a custom special `boot.img`).
 
 
 Goals
