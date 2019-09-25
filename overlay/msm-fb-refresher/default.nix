@@ -1,7 +1,7 @@
 {stdenv, fetchurl}:
 
 let
-  version = "0.1";
+  version = "0.2";
 in
 stdenv.mkDerivation {
   inherit version;
@@ -9,7 +9,7 @@ stdenv.mkDerivation {
 
   src = fetchurl {
     url = "https://github.com/AsteroidOS/msm-fb-refresher/archive/v${version}.tar.gz";
-    sha256 = "1ndnpx8ah121k9pm40s254hlyks9zabpnsc4sj4rgc5rzwf31wi5";
+    sha256 = "1w1kvk8kgmzh7v50sc24c9dkq4ix9pf65dscqzwikbaz537x5rkf";
   };
 
   CC = "${stdenv.cc}/bin/gcc";
