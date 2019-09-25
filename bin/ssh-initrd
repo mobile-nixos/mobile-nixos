@@ -3,4 +3,4 @@
 PS4=" $ "
 set -eux
 
-exec ssh -o UserKnownHostsFile=/dev/null root@172.16.42.1
+exec ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null root@172.16.42.1 "$@"
