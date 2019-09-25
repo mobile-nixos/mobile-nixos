@@ -26,26 +26,44 @@ in
     };
   };
 
-  config.mobile.boot = mkMerge [
-	(mkIf cfg.msm-fb-handle.enable {
-	  stage-1 = {
-		extraUtils = with pkgs; [
-		  msm-fb-handle
-		];
-		initFramebuffer = ''
-		msm-fb-handle &
-		'';
-	  };
-	})
-	(mkIf cfg.msm-fb-refresher.enable {
-	  stage-1 = {
-		extraUtils = with pkgs; [
-		  msm-fb-refresher
-		];
-		initFramebuffer = ''
-		msm-fb-refresher --loop &
-		'';
-	  };
-	})
+  config = mkMerge [
+    {
+      mobile.boot = mkMerge [
+        (mkIf cfg.msm-fb-handle.enable {
+          stage-1 = {
+            extraUtils = with pkgs; [
+              msm-fb-handle
+            ];
+            initFramebuffer = ''
+              msm-fb-handle &
+            '';
+          };
+        })
+        (mkIf cfg.msm-fb-refresher.enable {
+          stage-1 = {
+            extraUtils = with pkgs; [
+              msm-fb-refresher
+            ];
+            initFramebuffer = ''
+              msm-fb-refresher --loop &
+            '';
+          };
+        })
+      ];
+    }
+
+    # With X11, the fb-handle hack doesn't work.
+    # Why keep fb-handle hack? Because it acts better in initrd in my testing.
+    (mkIf (cfg.msm-fb-handle.enable || cfg.msm-fb-refresher.enable) {
+      systemd.services.msm-fb-refresher = {
+        description = "Fixup for Qualcomm dumb stuff.";
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          ExecStart = ''
+            ${pkgs.msm-fb-refresher}/bin/msm-fb-refresher --loop
+          '';
+        };
+      };
+    })
   ];
 }
