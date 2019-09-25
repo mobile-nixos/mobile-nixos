@@ -1,31 +1,52 @@
-# Selection of the device can be made either through the environment or through
-# using `--argstr device [...]`.
-let deviceFromEnv = builtins.getEnv "MOBILE_NIXOS_DEVICE"; in
+let
+  # Selection of the device can be made either through the environment or through
+  # using `--argstr device [...]`.
+  deviceFromEnv = builtins.getEnv "MOBILE_NIXOS_DEVICE";
 
-{
+  # Selection of the configuration can by made either through NIX_PATH,
+  # through local.nixx or as a parameter.
+  default_configuration =
+    let
+      configPathFromNixPath = (builtins.tryEval <mobile-nixos-configuration>).value;
+    in
+    if configPathFromNixPath != false then [ configPathFromNixPath ]
+    else if (builtins.pathExists ./local.nix) then [ (import ./local.nix) ]
+    else []
+  ;
+
   # "a" nixpkgs we're using for its lib.
-  pkgs' ? import <nixpkgs> {}
-
+  pkgs' = import <nixpkgs> {};
+in
+{
   # The identifier of the device this should be built for.
-, device ?
-    if deviceFromEnv == ""
-    then throw "Please pass a device name or set the MOBILE_NIXOS_DEVICE environment variable."
-    else deviceFromEnv
+  # (This gets massaged later on)
+  # This allows using `default.nix` as a pass-through function.
+  # See usage in examples folder.
+  device ? null
+, configuration ? default_configuration
 }:
 let
   inherit (pkgs'.lib) optional;
+
+  # Either use:
+  #   The given `device`.
+  #   The environment variable.
+  final_device = if device != null then device
+    else if deviceFromEnv == "" then
+    throw "Please pass a device name or set the MOBILE_NIXOS_DEVICE environment variable."
+    else deviceFromEnv
+  ;
 
   # Evaluates NixOS, mobile-nixos and the device config with the given
   # additional modules.
   evalWith = modules: import ./lib/eval-config.nix {
     modules = [
-      (import (./. + "/devices/${device}" ))
+      (import (./. + "/devices/${final_device}" ))
     ] ++ modules;
   };
 
-  # Eval with `local.nix` if available.
-  # This eval is the "WIP" eval. What's usually built with `nix-build`.
-  eval = evalWith (optional (builtins.pathExists ./local.nix) (import (./local.nix )));
+  # The "default" eval.
+  eval = evalWith configuration;
 
   # This is used by the `-A installer` shortcut.
   installer-eval = evalWith [
@@ -62,7 +83,7 @@ in
   #        each platform can document what it makes available. This would allow
   #        the message to be more user-friendly by displaying a choice.
   __please-fail = throw ''
-    Cannot directly build for ${device}...
+    Cannot directly build for ${final_device}...
 
     Building this whole set is counter-productive, and not likely to be what
     is desired.
