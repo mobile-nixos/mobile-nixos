@@ -1,0 +1,50 @@
+{ config, lib, pkgs, ... }:
+
+{
+  mobile.device.name = "google-taimen";
+  mobile.device.info = rec {
+    name = "Google Pixel 2 XL";
+    # TODO : make kernel part of options.
+    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+
+    format_version = "0";
+    manufacturer = "Google";
+    codename = "google-taimen";
+    date = "";
+    dtb = "";
+    modules_initfs = "";
+    arch = "aarch64";
+    keyboard = "false";
+    external_storage = "true";
+    screen_width = "1440";
+    screen_height = "2880";
+    dev_touchscreen = "";
+    dev_touchscreen_calibration = "";
+    dev_keyboard = "";
+    flash_method = "fastboot";
+
+    kernel_cmdline = "console=ttyMSM0,115200,n8 earlycon=msm_serial_dm,0xc1b0000 androidboot.hardware=taimen androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 service_locator.enable=1 swiotlb=2048 firmware_class.path=/vendor/firmware loop.max_part=7 raid=noautodetect buildvariant=user";
+
+    generate_bootimg = "true";
+    bootimg_qcdt = false;
+    flash_offset_base = "0x00000000";
+    flash_offset_kernel = "0x00008000";
+    flash_offset_ramdisk = "0x01000000";
+    flash_offset_second = "0x00f00000";
+    flash_offset_tags = "0x00000100";
+    flash_pagesize = "4096";
+  };
+
+  mobile.hardware = {
+    soc = "qualcomm-msm8998";
+    # 4GB for the specific revision supported.
+    # When this will be actually used, this may be dropped to 3, and/or
+    # document all ram types as a list and work with min/max of those.
+    ram = 1024 * 4;
+    screen = {
+      width = 1440; height = 2880;
+    };
+  };
+
+  mobile.system.type = "android";
+}
