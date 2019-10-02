@@ -24,7 +24,7 @@ The qemu target has a `vm` build output, which results in a script that will
 automatically start the "virtual device".
 
 ```
-nix-build -I --argstr device qemu-x86_64 -A build.vm
+nix-build --argstr device qemu-x86_64 -A build.vm
 ./result
 ```
 
