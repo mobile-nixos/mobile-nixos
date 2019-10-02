@@ -61,6 +61,21 @@ in
     make_ext4fs = callPackage ./make_ext4fs {};
 
     #
+    # Hacks
+    # -----
+    #
+    # Totally not upstreamable stuff.
+    #
+
+    xorg = super.xorg.overrideScope'(self: super: {
+      xf86videofbdev = super.xf86videofbdev.overrideAttrs({patches ? [], ...}: {
+        patches = patches ++ [
+          ./xserver/0001-HACK-fbdev-don-t-bail-on-mode-initialization-fail.patch
+        ];
+      });
+    });
+
+    #
     # Fixes to upstream
     # -----------------
     #
