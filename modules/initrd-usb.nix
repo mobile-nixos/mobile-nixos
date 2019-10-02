@@ -8,6 +8,11 @@ let
   device_name = device_config.name;
   device_config = config.mobile.device;
   system_type = config.mobile.system.type;
+
+  rndis_f_name = if device_config.info ? usb && device_config.info.usb ? rndis_f_name
+    then device_config.info.usb.rndis_f_name
+    else "rndis"
+  ;
 in
 {
   # FIXME Generic USB gadget support to come.
@@ -42,12 +47,16 @@ in
       ++ optional cfg.usb.adbd "ffs"
     ;
 
-    # TODO: Only run, when we have the android usb driver
+    # FIXME : split into "old style" (/sys/class/android_usb/android0/) and
+    # the newer mainline style (configfs + functionfs)
     init = lib.mkOrder AFTER_DEVICE_INIT ''
       # Setting up Android-specific USB.
       (
+      echo "Preparing usb gadgets"
+
       SYS=/sys/class/android_usb/android0
-      if [ -e "$SYS" ]; then
+
+      if [ -e "$SYS/enable" ]; then
         mkdir -p /dev/usb-ffs/adb
         mount -t functionfs adb /dev/usb-ffs/adb/
 
@@ -64,8 +73,35 @@ in
         printf "%s" "1" > "$SYS/enable"
         sleep 0.1
 
-        ${optionalString cfg.usb.adbd "adbd &\n"}
+      # Bad assumption to be "else"...
+      else
+        (
+          mkdir -p /config
+          mount -t configfs configfs /config
+
+          cd /config/usb_gadget
+
+          mkdir -p g1/strings/0x409
+          printf "%s" "0x18D1" > "g1/idVendor"
+          printf "%s" "0xD001" > "g1/idProduct"
+          printf "%s" "mobile-nixos"   > "g1/strings/0x409/manufacturer"
+          printf "%s" "${device_name}" > "g1/strings/0x409/product"
+
+          mkdir -p g1/configs/c.1/strings/0x409
+          printf "%s" "rndis" > g1/configs/c.1/strings/0x409/configuration
+
+          for f in ${rndis_f_name}.usb0; do
+            mkdir -p g1/functions/$f
+            ln -s g1/functions/$f g1/configs/c.1/$f
+          done
+
+          (cd /sys/class/udc; echo *) > g1/UDC
+        )
       fi
+      echo "Finished setting up configfs"
+
+      # Always start adbd... what's the worst that could happen?
+      ${optionalString cfg.usb.adbd "adbd &\n"}
       )
     '';
     extraUtils = with pkgs; []
