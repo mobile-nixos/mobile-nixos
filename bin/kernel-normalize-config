@@ -23,7 +23,7 @@ out="$1"; shift
 set -x
 
 build() {
-	nix-build --no-out-link -I nixpkgs="$PWD/nixpkgs" -A config.mobile.device.info.kernel --argstr device "$device"
+	nix-build --no-out-link -A config.mobile.device.info.kernel --argstr device "$device"
 }
 
 # The first one actively rebuilds to get the config...
