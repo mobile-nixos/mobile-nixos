@@ -1,0 +1,60 @@
+From 117ffa9fe6994b82604c71f93332537e362f3cb7 Mon Sep 17 00:00:00 2001
+From: Nathan Chancellor <natechancellor@gmail.com>
+Date: Tue, 6 Mar 2018 18:04:37 -0700
+Subject: [PATCH] lge_battery: Use EPROBE_DEFER instead of ENODEV during probe
+
+When this driver is built into the kernel image, it is loaded during
+device_initcall; however, this is too early because the parallel
+power supply is not up yet and the driver fails to load (as verified
+with logging).
+
+While this normally wouldn't be a problem with a platform driver due
+to the probe function, it is here because LG returns -ENODEV instead
+of -EPROBE_DEFER so the driver never attempts to reload. Without this
+driver, fast charging does not work, leading to a poor user experience.
+
+One other solution is to move to a later initcall, like late_initcall
+as was done in commit 32d86fe33640 ("power: {lge,htc}_battery: Use
+late_initcall instead of module_initcall") but I believe this is the
+better one as the probe functionality specifically works for this use
+case.
+
+Signed-off-by: Nathan Chancellor <natechancellor@gmail.com>
+---
+ drivers/power/lge_battery.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/power/lge_battery.c b/drivers/power/lge_battery.c
+index 4b5a786aa64f..39ea4937978c 100644
+--- a/drivers/power/lge_battery.c
++++ b/drivers/power/lge_battery.c
+@@ -670,25 +670,25 @@ static int bm_init(struct battery_manager *bm)
+ 	bm->batt_psy = power_supply_get_by_name("battery");
+ 	if (!bm->batt_psy) {
+ 		pr_bm(ERROR, "Couldn't get batt_psy\n");
+-		return -ENODEV;
++		return -EPROBE_DEFER;
+ 	}
+ 
+ 	bm->usb_psy = power_supply_get_by_name("usb");
+ 	if (!bm->usb_psy) {
+ 		pr_bm(ERROR, "Couldn't get usb_psy\n");
+-		return -ENODEV;
++		return -EPROBE_DEFER;
+ 	}
+ 
+ 	bm->pl_psy = power_supply_get_by_name("parallel");
+ 	if (!bm->pl_psy) {
+ 		pr_bm(ERROR, "Couldn't get pl_psy\n");
+-		return -ENODEV;
++		return -EPROBE_DEFER;
+ 	}
+ 
+ 	bm->bms_psy = power_supply_get_by_name("bms");
+ 	if (!bm->bms_psy) {
+ 		pr_bm(ERROR, "Couldn't get bms_psy\n");
+-		return -ENODEV;
++		return -EPROBE_DEFER;
+ 	}
+ 
+ 	rc = bm_get_property(bm->batt_psy,
