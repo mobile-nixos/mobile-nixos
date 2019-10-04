@@ -33,6 +33,7 @@ in
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     msm-fb-handle = callPackage ./msm-fb-handle { };
     ply-image = callPackage ./ply-image { };
+    pulseaudio-modules-droid = callPackage ./pulseaudio-modules-droid { };
 
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
