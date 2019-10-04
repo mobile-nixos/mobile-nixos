@@ -34,6 +34,11 @@ in
     msm-fb-handle = callPackage ./msm-fb-handle { };
     ply-image = callPackage ./ply-image { };
     pulseaudio-modules-droid = callPackage ./pulseaudio-modules-droid { };
+    xorg = super.xorg.overrideScope'(self: super: {
+      xf86videohwcomposer = callPackage ./xf86-video-hwcomposer { };
+    }) # See all-packages.nix for more about this messy composition :/
+    // { inherit (self) xlibsWrapper; };
+    qt5-qpa-hwcomposer-plugin = self.qt5.callPackage ./qt5-qpa-hwcomposer-plugin { };
 
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
