@@ -41,7 +41,31 @@ in
       xf86videohwcomposer = callPackage ./xf86-video-hwcomposer { };
     }) # See all-packages.nix for more about this messy composition :/
     // { inherit (self) xlibsWrapper; };
-    qt5-qpa-hwcomposer-plugin = self.qt5.callPackage ./qt5-qpa-hwcomposer-plugin { };
+
+    plasma5 = super.plasma5.overrideScope'(pself: psuper: {
+      kwin = psuper.kwin.overrideAttrs(old: {
+        cmakeFlags = old.cmakeFlags ++ [
+          "-Dhybriseglplatform_INCLUDE_DIR=${self.libhybris}/include"
+          "-Dlibhardware_INCLUDE_DIR=${self.android-headers}/include"
+        ];
+        NIX_CFLAGS_COMPILE = "-I${self.android-headers}/include/android -I${self.libhybris}/include/hybris/eglplatformcommon";
+        buildInputs = old.buildInputs ++ [
+          self.xorg.libpthreadstubs  # TODO: Upstream
+          self.libhybris
+          self.qt5.qtwayland
+          self.android-headers
+        ];
+      });
+    });
+
+    qt512 = super.qt512.overrideScope'(qself: qsuper: {
+      qpa-hwcomposer-plugin = qself.callPackage ./qt5-qpa-hwcomposer-plugin { };
+      qtwayland = qsuper.qtwayland.overrideAttrs(old: {
+        buildInputs = old.buildInputs ++ [
+          self.libhybris
+        ];
+      });
+    });
 
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
