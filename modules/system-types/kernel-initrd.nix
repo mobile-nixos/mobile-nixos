@@ -41,6 +41,7 @@ in
 
             qemu-system-x86_64 \
               -enable-kvm \
+              -L ${pkgs.mobile-nixos.virtualization.bios} \
               -kernel "${kernel-initrd}/kernel" \
               -initrd "${kernel-initrd}/initrd" \
               -append "$(cat "${kernel-initrd}/cmdline.txt")" \

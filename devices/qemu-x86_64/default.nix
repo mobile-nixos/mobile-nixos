@@ -51,9 +51,11 @@ let
     "1920x1080x16" = { vga = "0x390"; width = 1920; height = 1080; depth = 16; };
     "1920x1080x24" = { vga = "0x391"; width = 1920; height = 1080; depth = 24; };
     "1920x1080x32" = { vga = "0x392"; width = 1920; height = 1080; depth = 32; };
+     "720x1280x32" = { vga = "0x393"; width =  720; height = 1280; depth = 32; };
+    "1080x1920x32" = { vga = "0x394"; width = 1080; height = 1920; depth = 32; };
   };
 
-  MODE = MODES."1280x720x32";
+  MODE = MODES."1080x1920x32";
 in
 {
   mobile.device.name = "qemu-x86_64";
