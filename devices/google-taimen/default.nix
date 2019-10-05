@@ -47,4 +47,8 @@
   };
 
   mobile.system.type = "android";
+
+  # FIXME: properly use the partlabel instead.
+  # This is a huge hack and should be dropped ASAP.
+  fileSystems."/".device = lib.mkForce "/dev/sda13";
 }
