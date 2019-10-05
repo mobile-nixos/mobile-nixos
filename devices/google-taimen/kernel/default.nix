@@ -24,8 +24,7 @@ in
   };
 
   patches = [
-    # FIXME: provide patch
-    #./0001-mobile-nixos-Adds-and-sets-BGRA-as-default.patch
+    ./0001-mobile-nixos-Adds-and-sets-BGRA-as-default.patch
     ./0001-mobile-nixos-Workaround-selected-processor-does-not-.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
 	./117ffa9fe6994b82604c71f93332537e362f3cb7.patch
