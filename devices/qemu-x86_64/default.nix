@@ -36,6 +36,15 @@ let
     "hid_generic"
     "pcips2" "atkbd" "i8042"
 
+    # Mouse
+    "mousedev"
+
+    # Input within X11
+    "uinput" "evdev"
+
+    # USB
+    "usbcore" "usbhid" "ehci_pci" "ehci_hcd"
+
     # x86 RTC needed by the stage 2 init script.
     "rtc_cmos"
   ];
