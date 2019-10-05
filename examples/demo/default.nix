@@ -10,6 +10,6 @@ let
   };
 in
   {
-    inherit (system-build.build) android-bootimg android-device;
+    inherit (system-build.build) android-bootimg android-device vm;
     android-burn-tool = burn-tool-build.build.android-bootimg;
   }
