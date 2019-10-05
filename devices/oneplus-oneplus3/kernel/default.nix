@@ -23,6 +23,7 @@
   patches = [
     ./99_framebuffer.patch
     ./0001-Imports-drivers-input-changes-from-lineage-16.0.patch
+    ./0001-s3320-Workaround-libinput-claiming-kernel-bug.patch
   ];
 
   isModular = false;
