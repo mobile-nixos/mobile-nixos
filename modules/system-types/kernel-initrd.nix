@@ -46,9 +46,11 @@ in
               -initrd "${kernel-initrd}/initrd" \
               -append "$(cat "${kernel-initrd}/cmdline.txt")" \
               -m      "$(cat "${kernel-initrd}/ram.txt")M" \
-              -serial "stdio" \
+              -serial "mon:stdio" \
               -drive  "file=fs.img,format=raw" \
               -device "e1000,netdev=net0" \
+              -device usb-ehci -device usb-kbd \
+              -device "usb-tablet" \
               -netdev "user,id=net0,hostfwd=tcp::2222-:22,hostfwd=tcp::2323-:23,net=172.16.42.0/24,dhcpstart=172.16.42.1"
           '';
         };
