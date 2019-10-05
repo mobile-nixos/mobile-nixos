@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 4.4.194 Kernel Configuration
+# Linux/arm64 4.4.195 Kernel Configuration
 #
 CONFIG_ARM64=y
 CONFIG_64BIT=y
@@ -2743,7 +2743,7 @@ CONFIG_FB_SYS_FOPS=y
 # CONFIG_FB_SVGALIB is not set
 # CONFIG_FB_MACMODES is not set
 # CONFIG_FB_BACKLIGHT is not set
-# CONFIG_FB_MODE_HELPERS is not set
+CONFIG_FB_MODE_HELPERS=y
 # CONFIG_FB_TILEBLITTING is not set
 
 #
@@ -2806,7 +2806,18 @@ CONFIG_FB_MSM_MDSS_DP_PANEL=y
 # CONFIG_BACKLIGHT_LCD_SUPPORT is not set
 # CONFIG_ADF is not set
 # CONFIG_VGASTATE is not set
-# CONFIG_LOGO is not set
+
+#
+# Console display driver support
+#
+CONFIG_DUMMY_CONSOLE=y
+CONFIG_DUMMY_CONSOLE_COLUMNS=80
+CONFIG_DUMMY_CONSOLE_ROWS=25
+# CONFIG_FRAMEBUFFER_CONSOLE is not set
+CONFIG_LOGO=y
+# CONFIG_LOGO_LINUX_MONO is not set
+# CONFIG_LOGO_LINUX_VGA16 is not set
+CONFIG_LOGO_LINUX_CLUT224=y
 CONFIG_SOUND=y
 # CONFIG_SOUND_OSS_CORE is not set
 CONFIG_SND=y
@@ -3659,6 +3670,7 @@ CONFIG_STAGING=y
 #
 # Speakup console speech
 #
+# CONFIG_SPEAKUP is not set
 # CONFIG_TOUCHSCREEN_SYNAPTICS_I2C_RMI4 is not set
 # CONFIG_STAGING_MEDIA is not set
 
