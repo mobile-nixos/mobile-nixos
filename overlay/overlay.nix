@@ -21,6 +21,7 @@ in
     drihybris = callPackage ./drihybris { };
     drihybrisproto = callPackage ./drihybrisproto { };
     dtbTool = callPackage ./dtbtool { };
+    glamor-hybris = callPackage ./glamor-hybris { };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
     hard-shutdown = callPackage ./misc/hard-shutdown.nix { };
     libhybris = callPackage ./libhybris {
