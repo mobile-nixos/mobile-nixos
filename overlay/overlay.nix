@@ -18,6 +18,7 @@ in
     # Keep sorted.
     adbd = callPackage ./adbd { };
     android-headers = callPackage ./android-headers { };
+    drihybrisproto = callPackage ./drihybrisproto { };
     dtbTool = callPackage ./dtbtool { };
     hard-reboot = callPackage ./misc/hard-reboot.nix { };
     hard-shutdown = callPackage ./misc/hard-shutdown.nix { };
