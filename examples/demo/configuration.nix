@@ -45,6 +45,8 @@ in
         # xfce has been chosen mainly because it is light, and quick to start.
         # FIXME: Find a better demo environment.
         desktopManager.xfce.enable = true;
+        desktopManager.xfce.enableXfwm = false;
+        desktopManager.xfce.noDesktop = true;
 
         # Automatically login as nixos.
         displayManager.lightdm = {
@@ -65,6 +67,9 @@ in
         sgtpuzzles
         hard-reboot
         hard-shutdown
+        awesome
+        xfce.xfce4-panel
+        xfce.xfdesktop
 
         adapta-gtk-theme
       ];
@@ -75,6 +80,10 @@ in
 
       environment.etc."xdg/xfce4" = {
         source = xfce4-defaults;
+      };
+
+      environment.etc."xdg/awesome" = {
+        source = ./xdg/awesome;
       };
 
       # Hacky way to setup an initial brightness
