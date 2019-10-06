@@ -15,23 +15,16 @@ let
     mkdir -p $out/
     cp ${../../artwork/wallpapers}/*.png $out/
   '';
-
-  # TODO: DPI/size settings, so that a DPI can be derived from the device info.
-  xfce4-defaults = pkgs.runCommandNoCC "xfce4-defaults" {} ''
-    cp -r ${./xdg/xfce4} $out
-    wallpaper="${wallpapers}/mobile-nixos-19.09.png"
-    substituteInPlace $out/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
-      --subst-var wallpaper
-  '';
 in
-  {
-    imports = [
-      ../../profiles/installer.nix
-    ];
-    disabledModules = [
-      <nixpkgs/nixos/modules/installer/cd-dvd/iso-image.nix>
-      <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-base.nix>
-    ];
+{
+  imports = [
+    ../../profiles/installer.nix
+  ];
+
+  disabledModules = [
+    <nixpkgs/nixos/modules/installer/cd-dvd/iso-image.nix>
+    <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-base.nix>
+  ];
 
   config = lib.mkMerge [
     {
@@ -41,12 +34,6 @@ in
 
         libinput.enable = true;
         videoDrivers = [ "fbdev" ];
-
-        # xfce has been chosen mainly because it is light, and quick to start.
-        # FIXME: Find a better demo environment.
-        desktopManager.xfce.enable = true;
-        desktopManager.xfce.enableXfwm = false;
-        desktopManager.xfce.noDesktop = true;
 
         # Automatically login as nixos.
         displayManager.lightdm = {
@@ -58,33 +45,18 @@ in
         };
 
       };
-
       powerManagement.enable = true;
       hardware.pulseaudio.enable = true;
 
       environment.systemPackages = with pkgs; [
-        firefox
+        (writeShellScriptBin "firefox" ''
+          export MOZ_USE_XINPUT2=1
+          exec ${pkgs.firefox}/bin/firefox "$@"
+        '')
         sgtpuzzles
         hard-reboot
         hard-shutdown
-        awesome
-        xfce.xfce4-panel
-        xfce.xfdesktop
-
-        adapta-gtk-theme
       ];
-
-      fonts.fonts = with pkgs; [
-        aileron
-      ];
-
-      environment.etc."xdg/xfce4" = {
-        source = xfce4-defaults;
-      };
-
-      environment.etc."xdg/awesome" = {
-        source = ./xdg/awesome;
-      };
 
       # Hacky way to setup an initial brightness
       # TODO: better factor this out...
@@ -144,6 +116,49 @@ in
       # Though, it seems fine to simply disable it.
       # FIXME : figure out why systemd-udev-settle doesn't work.
       systemd.services.systemd-udev-settle.enable = false;
+    }
+
+    # Customized XFCE environment
+    {
+      services.xserver = {
+        desktopManager.xfce.enable = true;
+      };
+
+      environment.systemPackages = with pkgs; [
+        adapta-gtk-theme
+      ];
+
+      fonts.fonts = with pkgs; [
+        aileron
+      ];
+
+      environment.etc."xdg/xfce4" = {
+        # TODO: DPI/size settings, so that a DPI can be derived from the device info.
+        source =  pkgs.runCommandNoCC "xfce4-defaults" {} ''
+          cp -r ${./xdg/xfce4} $out
+          wallpaper="${wallpapers}/mobile-nixos-19.09.png"
+          substituteInPlace $out/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
+            --subst-var wallpaper
+        '';
+      };
+    }
+
+    # Replace xfwm with awesome with a custom config.
+    {
+      services.xserver = {
+        desktopManager.xfce.enableXfwm = false;
+        desktopManager.xfce.extraSessionCommands = ''
+          awesome &
+        '';
+      };
+
+      environment.systemPackages = with pkgs; [
+        awesome
+      ];
+
+      environment.etc."xdg/awesome" = {
+        source = ./xdg/awesome;
+      };
     }
   ];
 }
