@@ -2,6 +2,27 @@
 
 let
   inherit (lib) mkForce;
+
+  # Why copy them all?
+  # Because otherwise the wallpaper picker will default to /nix/store as a path
+  # and this could get messy with the amazing amount of files there are in there.
+  # Why copy only pngs?
+  # Rendering of `svg` is hard! Not that it's costly in cpu time, but that the
+  # rendering might not be as expected depending on what renders it.
+  # The SVGs in that directory are used as an authoring format files, not files
+  # to be used as they are. They need to be pre-rendered.
+  wallpapers = pkgs.runCommandNoCC "wallpapers" {} ''
+    mkdir -p $out/
+    cp ${../../artwork/wallpapers}/*.png $out/
+  '';
+
+  # TODO: DPI/size settings, so that a DPI can be derived from the device info.
+  xfce4-defaults = pkgs.runCommandNoCC "xfce4-defaults" {} ''
+    cp -r ${./xdg/xfce4} $out
+    wallpaper="${wallpapers}/mobile-nixos-19.09.png"
+    substituteInPlace $out/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
+      --subst-var wallpaper
+  '';
 in
   {
     imports = [
@@ -44,7 +65,17 @@ in
         sgtpuzzles
         hard-reboot
         hard-shutdown
+
+        adapta-gtk-theme
       ];
+
+      fonts.fonts = with pkgs; [
+        aileron
+      ];
+
+      environment.etc."xdg/xfce4" = {
+        source = xfce4-defaults;
+      };
 
       # Hacky way to setup an initial brightness
       # TODO: better factor this out...

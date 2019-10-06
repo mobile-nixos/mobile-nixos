@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-volumed-pulse" version="1.0">
+  <property name="icon-style" type="uint" value="0"/>
+  <property name="volume-step-size" type="uint" value="5"/>
+</channel>

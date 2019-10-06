@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <value type="int" value="2"/>
+
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="96"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="6"/>
+        <value type="int" value="5"/>
+        <value type="int" value="16"/>
+      </property>
+    </property>
+
+    <!-- As an example, could hold widgets that do actions like "back", "home"... -->
+    <property name="panel-2" type="empty">
+      <property name="position" type="string" value="p=10;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="64"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="101"/>
+        <value type="int" value="102"/>
+        <value type="int" value="103"/>
+      </property>
+    </property>
+  </property>
+
+  <!-- All plugins added to panels. -->
+  <property name="plugins" type="empty">
+    
+    <!-- top left menu -->
+    <property name="plugin-1" type="string" value="applicationsmenu">
+      <property name="show-button-title" type="bool" value="false"/>
+      <property name="show-tooltips" type="bool" value="false"/>
+      <property name="button-icon" type="string" value="system-search"/>
+    </property>
+
+    <!-- separator used to align stuff -->
+    <property name="plugin-2" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+
+    <!-- clock -->
+    <property name="plugin-5" type="string" value="clock">
+      <property name="digital-format" type="string" value="%T"/>
+      <property name="mode" type="uint" value="2"/>
+    </property>
+
+    <!-- tray -->
+    <property name="plugin-6" type="string" value="systray">
+      <property name="show-frame" type="bool" value="false"/>
+      <property name="size-max" type="uint" value="96"/>
+    </property>
+
+    <!-- window list -->
+    <property name="plugin-16" type="string" value="windowmenu">
+      <property name="style" type="uint" value="0"/>
+      <!-- Doesn't really work with awesome it seems... The add/remove options do nothing -->
+      <property name="workspace-actions" type="bool" value="false"/>
+    </property>
+
+    <!-- Bottom -->
+
+    <property name="plugin-101" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="1"/>
+    </property>
+    <property name="plugin-102" type="string" value="showdesktop"/>
+
+    <property name="plugin-103" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="1"/>
+    </property>
+  </property>
+</channel>
