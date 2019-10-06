@@ -6,6 +6,9 @@
 , xorgserver
 , android-headers
 , libhybris
+, glamor-hybris
+, drihybris
+, drihybrisproto
 }:
 
 stdenv.mkDerivation {
@@ -24,14 +27,28 @@ stdenv.mkDerivation {
     pkgconfig
   ];
 
+  configureFlags = [
+    "--enable-drihybris"
+    "--enable-glamor-hybris"
+  ];
+
   buildInputs = [
+    drihybrisproto
     android-headers
     libhybris
     utilmacros
     xorgserver
+    glamor-hybris
+    drihybris
   ];
 
-  NIX_CFLAGS_COMPILE = "-I${android-headers}/include/android";
+  NIX_CFLAGS_COMPILE = stdenv.lib.concatStringsSep " " [
+    "-I${android-headers}/include/android"
+    # For glamor-hybris.h
+    "-I${glamor-hybris}/include/xorg"
+    # For drihybris.h
+    "-I${drihybris}/include/xorg"
+  ];
 
   meta = with stdenv.lib; {
     homepage = https://github.com/gemian/xf86-video-hwcomposer;
