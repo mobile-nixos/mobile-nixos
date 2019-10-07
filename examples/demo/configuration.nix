@@ -160,5 +160,18 @@ in
         source = ./xdg/awesome;
       };
     }
+
+    # Onboard on-screen keyboard
+    {
+      environment.systemPackages = with pkgs; [
+        onboard
+      ];
+      environment.etc."xdg/autostart/onboard-autostart.desktop" = {
+        source = pkgs.runCommandNoCC "onboard-autostart.desktop" {} ''
+          cat "${pkgs.onboard}/etc/xdg/autostart/onboard-autostart.desktop" > $out
+          echo "X-XFCE-Autostart-Override=true" >> $out
+        '';
+      };
+    }
   ];
 }
