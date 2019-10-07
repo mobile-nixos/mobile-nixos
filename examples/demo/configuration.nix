@@ -152,8 +152,31 @@ in
         '';
       };
 
-      environment.systemPackages = with pkgs; [
+      environment.systemPackages = with pkgs;
+      let
+        close = writeShellScript "action-close-window" ''
+          awesome-client '
+            local awful = require("awful");
+            local c = awful.client.focus.filter(client.focus)
+            if c then
+              c:kill()
+            end
+          '
+        '';
+      in
+      [
         awesome
+        (runCommandNoCC "awesome-actions" {} ''
+          mkdir -vp $out/share/applications/
+          (cd $out/share/applications/
+          cat > awesome-close.desktop <<EOF
+          [Desktop Entry]
+          Name=Close active window
+          Exec=${close}
+          Icon=process-stop
+          EOF
+          )
+        ''/* TODO: better icon than process-stop */)
       ];
 
       environment.etc."xdg/awesome" = {

@@ -27,9 +27,10 @@
       <property name="position-locked" type="bool" value="true"/>
       <property name="size" type="uint" value="64"/>
       <property name="plugin-ids" type="array">
-        <value type="int" value="101"/>
-        <value type="int" value="102"/>
-        <value type="int" value="103"/>
+        <value type="int" value="110"/>
+        <value type="int" value="140"/>
+        <!-- value type="int" value="150"/ -->
+        <value type="int" value="160"/>
         <value type="int" value="199"/>
       </property>
     </property>
@@ -71,16 +72,24 @@
     </property>
 
     <!-- Bottom -->
-
-    <property name="plugin-101" type="string" value="separator">
-      <property name="expand" type="bool" value="true"/>
-      <property name="style" type="uint" value="1"/>
+    
+    <property name="plugin-110" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/run/current-system/sw/share/applications/awesome-close.desktop"/>
+      </property>
     </property>
-    <property name="plugin-102" type="string" value="showdesktop"/>
 
-    <property name="plugin-103" type="string" value="separator">
+    <property name="plugin-140" type="string" value="separator">
       <property name="expand" type="bool" value="true"/>
-      <property name="style" type="uint" value="1"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+
+    <!-- FIXME: replace with something that makes sense... -->
+    <!-- property name="plugin-150" type="string" value="showdesktop"/ -->
+
+    <property name="plugin-160" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
     </property>
 
     <property name="plugin-199" type="string" value="launcher">
