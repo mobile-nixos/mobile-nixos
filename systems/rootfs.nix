@@ -9,6 +9,8 @@ in
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = false;
 
+  boot.growPartition = lib.mkDefault true;
+
   system.build.rootfs =
     pkgs.imageBuilder.fileSystem.makeExt4 {
       name = "NIXOS_SYSTEM";
@@ -27,8 +29,9 @@ in
         echo "Done copying system closure..."
         cp -v ${closureInfo}/registration ./nix-path-registration
       '';
-      # FIXME : fixup the partition autoexpand.
-      extraPadding = pkgs.imageBuilder.size.MiB 500;
+
+      # Give some headroom for initial mounting.
+      extraPadding = pkgs.imageBuilder.size.MiB 20;
     }
   ;
 
