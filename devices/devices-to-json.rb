@@ -9,20 +9,17 @@ Dir.chdir(__dir__)
 # Breakage could be expected. Let's make it our job to keep it compatible with
 # the format upstream uses.
 
-#UPSTREAM="https://github.com/postmarketOS/pmbootstrap"
-#BRANCH = "master"
-# HACK: I need to upstream my device :/
-UPSTREAM = "https://github.com/samueldr/pmbootstrap"
-BRANCH = "device/asus-z00t"
-ARCHIVE = "#{UPSTREAM}/archive/#{BRANCH}.tar.gz"
-WORKDIR = "postmarketOS"
+UPSTREAM = "https://gitlab.com/postmarketOS/pmaports"
+BRANCH = "master"
+ARCHIVE = "#{UPSTREAM}/repository/archive.tar.gz?ref=#{BRANCH}"
+WORKDIR = "postmarketOS/#{BRANCH}"
 
 `mkdir -p #{WORKDIR}`
-`curl -L #{ARCHIVE} | tar -zx -C #{WORKDIR}`
+`curl -L #{ARCHIVE} | tar -zx -C #{WORKDIR} --strip-components=1`
 
-Dir.chdir("#{WORKDIR}/pmbootstrap-#{BRANCH.sub("/", "-")}") do
+Dir.chdir(WORKDIR) do
 	$devices = {}
-	Dir.glob("aports/device/device-*") do |device_dir|
+	Dir.glob("device/device-*") do |device_dir|
 		pm_name = device_dir.split("/").last.sub(/^device-/, "")
 		contents = File.read(File.join(device_dir, "deviceinfo"))
 			.split("\n")
