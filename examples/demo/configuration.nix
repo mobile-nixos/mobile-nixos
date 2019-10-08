@@ -213,6 +213,8 @@ in
         source = pkgs.runCommandNoCC "onboard-autostart.desktop" {} ''
           cat "${pkgs.onboard}/etc/xdg/autostart/onboard-autostart.desktop" > $out
           echo "X-XFCE-Autostart-Override=true" >> $out
+          substituteInPlace $out \
+            --replace "Icon=onboard" "Icon=input-keyboard"
         '';
       };
     }
