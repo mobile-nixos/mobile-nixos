@@ -42,13 +42,33 @@ in
 
         # Get usb interface
         INTERFACE=""
-        ifconfig rndis0 "${IP}" && INTERFACE=rndis0
+
+        # Try five times
+        for try in 1 2 3 4 5; do
+          echo "Trying to identify interface ($try/5)"
+
+          ifconfig rndis0 "${IP}" && INTERFACE=rndis0
+          if [ -z $INTERFACE ]; then
+            ifconfig usb0 "${IP}" && INTERFACE=usb0
+          fi
+          if [ -z $INTERFACE ]; then
+            ifconfig eth0 "${IP}" && INTERFACE=eth0
+          fi
+
+          if [ -z $INTERFACE ]; then
+            sleep 1
+          else
+            break
+          fi
+        done
+
         if [ -z $INTERFACE ]; then
-          ifconfig usb0 "${IP}" && INTERFACE=usb0
+          echo "Couldn't identify interface..."
+          return
         fi
-        if [ -z $INTERFACE ]; then
-          ifconfig eth0 "${IP}" && INTERFACE=eth0
-        fi
+
+        echo "Identified interface $INTERFACE"
+
         # Create /etc/udhcpd.conf
         {
           echo "start ${hostIP}"
