@@ -184,6 +184,8 @@ in
       environment.etc."xdg/awesome" = {
         source = ./xdg/awesome;
       };
+
+      services.unclutter.enable = true;
     }
 
     # Onboard on-screen keyboard
