@@ -28,6 +28,10 @@ in
 
       mkdir -p /etc/udev /tmp /run /lib /mnt /var/log
 
+      # Some tools, notably extfs tools, will bark angrily
+      # when they cannot determine if the device is mounted.
+      ln -s /proc/mounts /etc/mtab
+
       mkdir -p /dev/pts
       mount -t devpts devpts /dev/pts
 
