@@ -29,6 +29,8 @@ in
   config = lib.mkMerge [
     {
 
+      boot.growPartition = lib.mkDefault true;
+
       services.xserver = {
         enable = true;
 
