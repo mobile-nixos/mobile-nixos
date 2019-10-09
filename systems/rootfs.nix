@@ -1,6 +1,10 @@
 # This builds a rootfs image (ext4) from the current configuration.
 { config, lib, pkgs, ... }:
 
+let
+  inherit (config.boot) growPartition;
+  inherit (lib) optionalString;
+in
 {
   boot.loader.grub.enable = false;
   boot.loader.generic-extlinux-compatible.enable = false;
@@ -40,25 +44,9 @@
     }
   ;
 
-  #pkgs.runCommandNoCC "mobile-nixos-rootfs" {} ''
-  #  echo "${config.system.build.toplevel}" > $out
-  #'';
-
   boot.postBootCommands = ''
     # On the first boot do some maintenance tasks
     if [ -f /nix-path-registration ]; then
-      ${""
-      # TODO : optionally resize NIXOS_SYSTEM, depending on the target.
-      # # Figure out device names for the boot device and root filesystem.
-      # rootPart=$(readlink -f /dev/disk/by-label/NIXOS_SYSTEM)
-      # bootDevice=$(lsblk -npo PKNAME $rootPart)
-
-      # # Resize the root partition and the filesystem to fit the disk
-      # echo ",+," | sfdisk -N2 --no-reread $bootDevice
-      # ${pkgs.parted}/bin/partprobe
-      # ${pkgs.e2fsprogs}/bin/resize2fs $rootPart
-      }
-
       # Register the contents of the initial Nix store
       ${config.nix.package.out}/bin/nix-store --load-db < /nix-path-registration
 
