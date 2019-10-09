@@ -17,8 +17,6 @@
     screen_height = "2340";
     flash_method = "fastboot";
     kernel_cmdline = lib.concatStringsSep " " [
-      "console=ttyMSM0,115200,n8"
-      "androidboot.console=ttyMSM0"
       "earlycon=msm_serial_dm,0xc170000"
       "androidboot.hardware=qcom"
       "user_debug=31"
