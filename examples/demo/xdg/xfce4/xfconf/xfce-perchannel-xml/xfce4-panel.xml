@@ -43,7 +43,7 @@
     <property name="plugin-1" type="string" value="applicationsmenu">
       <property name="show-button-title" type="bool" value="false"/>
       <property name="show-tooltips" type="bool" value="false"/>
-      <property name="button-icon" type="string" value="system-search"/>
+      <property name="button-icon" type="string" value="/run/current-system/sw/share/icons/breeze-dark/actions/32/application-menu.svg"/>
     </property>
 
     <!-- separator used to align stuff -->
