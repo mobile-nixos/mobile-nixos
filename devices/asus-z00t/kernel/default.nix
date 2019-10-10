@@ -21,6 +21,12 @@
 
   patches = [
     ./0001-Porting-changes-found-in-LineageOS-android_kernel_cy.patch
+    ./0001-Revert-qmp-sphinx-Add-Qualcomm-Malware-Protection-ke.patch
+    ./0001-Revert-Handle-sk-being-NULL-in-UID-based-routing.patch
+    ./0001-Revert-Grants-system-server-access-to-proc-pid-oom_a.patch
+    ./0001-Revert-misc-uidstat-change-release-handler-for-stat-.patch
+    ./0001-netfilter-xt_IDLETIMER-make-compatible-with-USER_NS.patch
+    ./0001-asus-flash-Remove-hardcoded-IDs-for-USER_NS.patch
     ./01_more_precise_arch.patch
     ./01_fix_gcc6_errors.patch
     ./02_mdss_fb_refresh_rate.patch
