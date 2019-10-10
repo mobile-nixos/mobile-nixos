@@ -10,6 +10,13 @@ let
   };
 in
   {
-    inherit (system-build.build) android-bootimg android-device vm;
+    inherit (system-build.build)
+      # Android devices
+      android-bootimg android-device
+      # QEMU VM
+      vm
+      # Depthcharge
+      disk-image
+    ;
     android-burn-tool = burn-tool-build.build.android-bootimg;
   }
