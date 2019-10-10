@@ -41,9 +41,10 @@
     
     <!-- top left menu -->
     <property name="plugin-1" type="string" value="applicationsmenu">
-      <property name="show-button-title" type="bool" value="false"/>
-      <property name="show-tooltips" type="bool" value="false"/>
+      <property name="show-button-title" type="bool" value="true"/>
+      <property name="show-tooltips" type="empty"/>
       <property name="button-icon" type="string" value="/run/current-system/sw/share/icons/breeze-dark/actions/32/application-menu.svg"/>
+      <property name="button-title" type="string" value="   "/>
     </property>
 
     <!-- separator used to align stuff -->
