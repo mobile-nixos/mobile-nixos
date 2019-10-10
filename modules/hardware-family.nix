@@ -10,6 +10,7 @@ in
   # That is, until a method of loading an imports file based on the value of an
   # option is figured out.
   imports = [
+    ./families/chromebook-gru.nix
   ];
 
   options.mobile.hardware = {
