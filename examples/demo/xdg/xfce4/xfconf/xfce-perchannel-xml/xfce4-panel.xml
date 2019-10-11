@@ -62,7 +62,7 @@
     <!-- tray -->
     <property name="plugin-6" type="string" value="systray">
       <property name="show-frame" type="bool" value="false"/>
-      <property name="size-max" type="uint" value="96"/>
+      <property name="size-max" type="uint" value="64"/>
     </property>
 
     <!-- window list -->
