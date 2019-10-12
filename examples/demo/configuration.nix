@@ -101,7 +101,7 @@ in
       networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
 
       # Setup USB gadget networking in initrd...
-      mobile.boot.stage-1.networking.enable = true;
+      mobile.boot.stage-1.networking.enable = lib.mkDefault true;
       #mobile.boot.stage-1.ssh.enable = true;
 
       # Start SSH by default...
