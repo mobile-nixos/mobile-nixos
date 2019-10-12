@@ -14,7 +14,12 @@ with import ./initrd-order.nix;
       mobile.boot.stage-1.init = mkOrder SWITCH_ROOT_INIT ''
         targetRoot=/mnt
 
-        _init_path() {
+        _mount_root() {
+          mkdir -p $targetRoot || return 1
+          mount "${rootfs}" $targetRoot || return 2
+        }
+
+        _find_init_path() {
           local _system=""
 
           # Using -L is required, as the link chain is most likely dangling.
@@ -27,30 +32,18 @@ with import ./initrd-order.nix;
             # Otherwise, try to find one in nix-path-registration.
             _system="$(grep '^/nix/store/[a-z0-9]\+-nixos-system-' $targetRoot/nix-path-registration | head -1)"
           else
-            echo "!!!!!"
-            echo "!!!!!"
-            echo "!!!!!"
-            echo ""
-            echo "Could not figure out where `init` is."
-            echo "Panic in 2 minutes."
-            echo ""
-            echo "!!!!!"
-            echo "!!!!!"
-            echo "!!!!!"
-            sleep 2m
-            exit 1
+            init_fail FF00FF init_not_found "Could not find init path for stage-2"
           fi
 
           echo "$_system/init"
         }
 
-        mkdir -p $targetRoot
-        mount "${rootfs}" $targetRoot
+        _mount_root || init_fail FFFF00 root_mount_failure "Could not mount root filesystem"
 
         echo ""
         echo "***"
         echo ""
-        echo "Swiching root to $(_init_path)"
+        echo "Swiching root to $(_find_init_path)"
         echo ""
         echo "***"
         echo ""
@@ -63,7 +56,8 @@ with import ./initrd-order.nix;
     }
     {
       mobile.boot.stage-1.init = mkOrder SWITCH_ROOT_HAPPENING ''
-        exec env -i $(type -P switch_root) $targetRoot $(_init_path)
+        exec env -i $(type -P switch_root) $targetRoot $(_find_init_path)
+        init_fail FF0000 init_exec_failure "Could not exec stage-2 init"
       '';
     }
   ];
