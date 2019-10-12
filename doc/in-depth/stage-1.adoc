@@ -1,0 +1,26 @@
+= Notes about `stage-1`
+include::_support/common.inc[]
+
+== What is stage-1?
+
+This is what is also referred as `initrd`, or `initramfs`. `stage-1` refers to
+the fact that this is the first part of the system that gets run once the kernel
+has been started.
+
+== About "sad phone" screens
+
+It may happen that you have a "sad phone" screen when booting.
+
+This means that a fatal error has happened.
+
+When there is no screen logging available for the device, the general case of
+error has been codified as a background color.
+
+ * Yellow (`0xFFFF00`) means that mounting the root filesystem was not possible.
+ * Fuchsia (`0xFF00FF`) means that mounting succeeded, but no compatible generation was found to boot.
+ * Red (`0xFF0000`) means that executing (`exec`) and switching to the found generation's init failed.
+
+It may happen that the boot seemingly or actually hangs before a "sad phone"
+screen appears. In those instances, it means something else earlier kept the
+early init scripts to continue. In the future, better logging and status
+reporting will be added to keep track of early failures.

@@ -7,6 +7,10 @@ include::_support/common.inc[]
 
 Index of in-depth topics.
 
+== Boot
+
+* <<stage-1.adoc#,Stage-1>>
+
 == Android-Based Devices
 
 * <<android/partitions.adoc#,Partitions>>
