@@ -57,6 +57,18 @@ awful.rules.rules = {
         }
     },
 
+    -- XFCE notification
+    -- Otherwise all notifications will interrupt input with a HW (bluetooth) keyboard
+    { rule = { instance = "xfce4-notifyd", class = "Xfce4-notifyd" },
+        properties = {
+            border_width = 0,
+            sticky = true,
+            focusable = false,
+            nofocus = true,
+            ontop = true;
+        }
+    },
+
     -- Onboard on-screen keyboard
     { rule = { instance = "onboard", class = "Onboard" },
         properties = {
