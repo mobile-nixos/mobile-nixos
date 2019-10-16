@@ -100,6 +100,9 @@ in
       networking.networkmanager.enable = true;
       networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
 
+      services.blueman.enable = true;
+      hardware.bluetooth.enable = true;
+
       # Setup USB gadget networking in initrd...
       mobile.boot.stage-1.networking.enable = lib.mkDefault true;
       #mobile.boot.stage-1.ssh.enable = true;
