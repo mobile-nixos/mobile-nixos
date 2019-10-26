@@ -73,7 +73,8 @@ in
           ./xserver/0001-HACK-fbdev-don-t-bail-on-mode-initialization-fail.patch
         ];
       });
-    });
+    }) # See all-packages.nix for more about this messy composition :/
+    // { inherit (self) xlibsWrapper; };
 
     #
     # Fixes to upstream
