@@ -4,8 +4,12 @@
 #        (This'll allow complex schemes like LVM)
 
 let
-  rootfs = config.fileSystems."/".device;
+  rootfs = config.fileSystems."/";
+  inherit (builtins) concatStringsSep length;
   inherit (lib) mkMerge mkOrder;
+
+  rootfsOptions = lib.optionalString (length rootfs.options > 0)
+    "-o " + concatStringsSep "," rootfs.options;
 in
 with import ./initrd-order.nix;
 {
@@ -45,7 +49,7 @@ with import ./initrd-order.nix;
         }
 
         mkdir -p $targetRoot
-        mount "${rootfs}" $targetRoot
+        mount ${rootfsOptions} "${rootfs.device}" $targetRoot
 
         echo ""
         echo "***"
