@@ -15,7 +15,7 @@ in
   file = "Image.gz-dtb";
   hasDTB = true;
 
-  version = "4.4.195";
+  version = "4.9.197";
   src = fetchFromGitHub {
     owner = "android-linux-stable";
     repo = "bluecross";
@@ -27,7 +27,7 @@ in
     ./0001-mobile-nixos-Adds-and-sets-BGRA-as-default.patch
     ./0001-mobile-nixos-Workaround-selected-processor-does-not-.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
-	  ./117ffa9fe6994b82604c71f93332537e362f3cb7.patch
+    #./117ffa9fe6994b82604c71f93332537e362f3cb7.patch
   ];
 
   isModular = false;
