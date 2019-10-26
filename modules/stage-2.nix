@@ -5,9 +5,17 @@
 
 let
   rootfs = config.fileSystems."/";
-  inherit (builtins) concatStringsSep length;
+  inherit (builtins) concatStringsSep elem length;
   inherit (lib) mkMerge mkOrder;
 
+  waitForRootfs =
+    lib.optionalString (elem "loop" rootfs.options) ''
+      while [ ! -f "${rootfs.device}" ]; do
+        echo "Waiting for the rootfs image at '${rootfs.device}'..."
+        sleep 5
+      done
+      echo "Rootfs image found."
+    '';
   rootfsOptions = lib.optionalString (length rootfs.options > 0)
     "-o " + concatStringsSep "," rootfs.options;
 in
@@ -49,6 +57,7 @@ with import ./initrd-order.nix;
         }
 
         mkdir -p $targetRoot
+        ${waitForRootfs}
         mount ${rootfsOptions} "${rootfs.device}" $targetRoot
 
         echo ""
