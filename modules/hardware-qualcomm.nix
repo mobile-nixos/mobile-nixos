@@ -27,6 +27,11 @@ in
       default = false;
       description = "enable when SOC is msm8998";
     };
+    hardware.socs.qualcomm-sdm845.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is sdm845";
+    };
   };
 
   config = mkMerge [
@@ -52,6 +57,12 @@ in
       mobile = mkIf cfg.qualcomm-apq8064-1aa.enable {
         system.system = "armv7l-linux";
         quirks.qualcomm.msm-fb-refresher.enable = true;
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-sdm845.enable {
+        system.system = "aarch64-linux";
+        quirks.qualcomm.msm-fb-handle.enable = true;
       };
     }
   ];
