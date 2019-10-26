@@ -2893,6 +2893,8 @@ CONFIG_MEDIA_ATTACH=y
 #
 # Audio decoders, processors and mixers
 #
+CONFIG_DTS_EAGLE=y
+CONFIG_DTS_SRS_TM=y
 
 #
 # RDS decoders
