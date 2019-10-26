@@ -4,7 +4,10 @@ with (import ./overlay) {};
 mkShell rec {
   name = "nixos-mobile";
   buildInputs = [
-    mkbootimg
     dtbTool
+    file
+    lz4
+    mkbootimg
+    python3Packages.binwalk
   ];
 }
