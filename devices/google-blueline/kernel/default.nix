@@ -20,7 +20,7 @@ in
     owner = "LineageOS";
     repo = "android_kernel_google_crosshatch";
     rev = "f8cb98bcb606f94a2307f39c21dfb705fe7868d2";
-    sha256 = "00000000000000000000000000000000000000008ms3f3bzjdid";
+    sha256 = "0qjf546yqq6bi5wg6sr6gxai6lhs9wxbd5f34885763b6xnv22ag";
   };
 
   patches = [
