@@ -1,0 +1,50 @@
+From 6ffc61edfe8d986cd64eb85c2aa6e3ab86ecc720 Mon Sep 17 00:00:00 2001
+From: Zhuowei Zhang <linux@worthdoingbadly.com>
+Date: Mon, 10 Dec 2018 22:17:57 -0800
+Subject: [PATCH] sec_ts: disable touchscreen firmware upgrade
+
+The firmware upgrade function causes two issues on postmarketOS:
+
+- USB breaks if the driver is built directly into the kernel.
+- 60 second boot delay if the driver is built as a module, then loaded
+  in the initramfs without the firmware file.
+
+Disable the firmware upgrade functionality to avoid these problems.
+
+This patch is based on TWRP's patch by bigbiff and SultanXDA:
+
+https://github.com/TeamWin/android_kernel_google_crosshatch/commit/52654c7693f2d10b12803ab1f757a217936982ad
+---
+ drivers/input/touchscreen/sec_ts/sec_ts.c | 2 +-
+ drivers/input/touchscreen/sec_ts/sec_ts.h | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/input/touchscreen/sec_ts/sec_ts.c b/drivers/input/touchscreen/sec_ts/sec_ts.c
+index 2f76de3df874..5813a444c813 100644
+--- a/drivers/input/touchscreen/sec_ts/sec_ts.c
++++ b/drivers/input/touchscreen/sec_ts/sec_ts.c
+@@ -2339,7 +2339,7 @@ static void sec_ts_read_info_work(struct work_struct *work)
+ 	input_log_fix();
+ }
+ 
+-static void sec_ts_fw_update_work(struct work_struct *work)
++static void __maybe_unused sec_ts_fw_update_work(struct work_struct *work)
+ {
+ 	struct sec_ts_data *ts = container_of(work, struct sec_ts_data,
+ 					      work_fw_update);
+diff --git a/drivers/input/touchscreen/sec_ts/sec_ts.h b/drivers/input/touchscreen/sec_ts/sec_ts.h
+index be99d36b426e..2e564dd3eb58 100644
+--- a/drivers/input/touchscreen/sec_ts/sec_ts.h
++++ b/drivers/input/touchscreen/sec_ts/sec_ts.h
+@@ -125,7 +125,7 @@
+ #define SEC_TS_FW_HEADER_SIGN		0x53494654
+ #define SEC_TS_FW_CHUNK_SIGN		0x53434654
+ 
+-#define SEC_TS_FW_UPDATE_ON_PROBE
++//#define SEC_TS_FW_UPDATE_ON_PROBE
+ 
+ #define AMBIENT_CAL			0
+ #define OFFSET_CAL_SDC			1
+-- 
+2.17.1
+
