@@ -32,7 +32,7 @@ in
 
   isModular = false;
 }).overrideAttrs({ postInstall ? "", postPatch ? "", nativeBuildInputs, ... }: {
-  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
+  installTargets = [ "Image.gz" "zinstall" "Image.gz-dtb" "install" ];
   postPatch = postPatch + ''
     # FIXME : factor out
     (
