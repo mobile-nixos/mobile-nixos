@@ -10,7 +10,7 @@ in
   options.mobile.boot.stage-1.loop-forever = {
     enable = mkOption {
       type = types.bool;
-      default = false;
+      default = true;
       description = ''
         Enables loop-forever.
         This will "freeze" the initrd, no switch root will happen.
