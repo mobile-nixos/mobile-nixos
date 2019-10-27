@@ -1,0 +1,33 @@
+From 371415e897a4cab4fd823a8d496eb5867591dd91 Mon Sep 17 00:00:00 2001
+From: Zhuowei Zhang <linux@worthdoingbadly.com>
+Date: Tue, 27 Nov 2018 14:22:17 -0800
+Subject: [PATCH 1/2] clk: qcom: mdss: fix in-tree build
+
+Without an explicit include path, when doing an in-tree build, I get
+
+```
+In file included from drivers/clk/qcom/mdss/mdss_pll_trace.h:116,
+                 from drivers/clk/qcom/mdss/mdss-dsi-pll-10nm.c:24:
+./include/trace/define_trace.h:88:42: fatal error: ./mdss_pll_trace.h: No such file or directory
+ #include TRACE_INCLUDE(TRACE_INCLUDE_FILE)
+```
+
+Adding the full path fixes this.
+---
+ drivers/clk/qcom/mdss/mdss_pll_trace.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/clk/qcom/mdss/mdss_pll_trace.h b/drivers/clk/qcom/mdss/mdss_pll_trace.h
+index cd4fda6c7d30..1c7225a46b23 100644
+--- a/drivers/clk/qcom/mdss/mdss_pll_trace.h
++++ b/drivers/clk/qcom/mdss/mdss_pll_trace.h
+@@ -112,5 +112,5 @@ TRACE_EVENT(mdss_pll_trace_counter,
+ 
+ /* This part must be outside protection */
+ #undef TRACE_INCLUDE_PATH
+-#define TRACE_INCLUDE_PATH .
++#define TRACE_INCLUDE_PATH ../../drivers/clk/qcom/mdss
+ #include <trace/define_trace.h>
+-- 
+2.17.1
+
