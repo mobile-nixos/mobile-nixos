@@ -15,12 +15,12 @@ in
   file = "Image.gz-dtb";
   hasDTB = true;
 
-  version = "4.9.197";
+  version = "4.9.96";
   src = fetchFromGitHub {
-    owner = "android-linux-stable";
-    repo = "bluecross";
-    rev = "b66022a4e44ce7366570bafbd558018b6bade882";
-    sha256 = "1gps4f5asd78vqkbzv0j9hp41brpqgkln38rkkzr8ms3f3bzjdid";
+    owner = "LineageOS";
+    repo = "android_kernel_google_crosshatch";
+    rev = "f8cb98bcb606f94a2307f39c21dfb705fe7868d2";
+    sha256 = "00000000000000000000000000000000000000008ms3f3bzjdid";
   };
 
   patches = [
