@@ -40,4 +40,9 @@
   };
 
   mobile.system.type = "android";
+
+  mobile.boot.stage-1.init = lib.mkIf config.mobile.boot.stage-1.usb.enable
+    (config.lib.mkOrder AFTER_DEVICE_INIT ''
+      echo 1 > /sys/module/dwc3_msm/parameters/otg_switch
+    '');
 }
