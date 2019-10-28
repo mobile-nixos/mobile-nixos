@@ -15,11 +15,11 @@ in
   file = "Image.gz-dtb";
   hasDTB = true;
 
-  version = "4.9.197";
+  version = "4.9.96";
   src = fetchFromGitHub {
     owner = "android-linux-stable";
     repo = "bluecross";
-    rev = "b66022a4e44ce7366570bafbd558018b6bade882";
+    rev = "320d53a9d07cb348ca24cb59a4ac716091938aaa";
     sha256 = "1gps4f5asd78vqkbzv0j9hp41brpqgkln38rkkzr8ms3f3bzjdid";
   };
 
