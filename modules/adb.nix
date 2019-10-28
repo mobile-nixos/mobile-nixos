@@ -44,8 +44,7 @@ with import ./initrd-order.nix;
 
     boot.postBootCommands = ''
       # Restart adbd early during stage-2
-      adbd_pid=$(${pkgs.procps}/bin/pidof adbd)
-      [ -n "$adbd_pid" ] && kill "$adbd_pid"
+      ${pkgs.procps}/bin/pkill -x adbd
       ${pkgs.adbd}/bin/adbd &
     '';
   };
