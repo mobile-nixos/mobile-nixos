@@ -20,7 +20,7 @@ in
     owner = "android-linux-stable";
     repo = "bluecross";
     rev = "320d53a9d07cb348ca24cb59a4ac716091938aaa";
-    sha256 = "1gps4f5asd78vqkbzv0j9hp41brpqgkln38rkkzr8ms3f3bzjdid";
+    sha256 = "12yjadwxlz2qi5bg278maym6aj034sqkc0brj50r6nxms9biijb0";
   };
 
   patches = [
