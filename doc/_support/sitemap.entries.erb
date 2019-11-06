@@ -1,0 +1,21 @@
+<ul>
+  <% sitemap.each do |entry|
+    _, page_title = entry.catalog.shift
+  %>
+<li class="page">
+  <a href="<%= entry.path %>"><%= page_title %></a>
+  <% if entry.sitemap_index? %>
+    <%= render_section(entry.entries) %>
+  <% else %>
+    <% if entry.catalog.length.positive? %>
+      <ul>
+        <% entry.catalog.map do |id, title| %>
+          <li class="section"><a href="<%= [entry.path, id].join("#") %>"><%= title %></a></li>
+        <% end %>
+      </ul>
+    <% end %>
+  <% end %>
+</li>
+<% end %>
+</ul>
+

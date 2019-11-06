@@ -1,0 +1,27 @@
+#content .lead .paragraph,
+.contents > * {
+	max-width: 48rem;
+}
+
+.admonitionblock {
+	td {
+		border: none;
+	}
+	td.icon {
+		padding-right: 0;
+		padding-top: 0.7em;
+		font-variant: small-caps;
+		font-size: 0.7em;
+		color: #666;
+		vertical-align: top;
+		#no-select();
+	}
+	border-left: 0.3rem solid #aaa;
+}
+
+.admonitionblock {
+	&.warning {
+		background: #FFEEC8;
+		border-left-color: #FFBF00;
+	}
+}

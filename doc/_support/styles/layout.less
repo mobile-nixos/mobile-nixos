@@ -1,0 +1,160 @@
+body {
+	background-color: @color-blue-light;
+	max-width: 1920px;
+	box-shadow: 0 0 0vw 100vw #333;
+}
+
+
+body > header,
+body > footer {
+	#no-select();
+	margin-left: -@gutter;
+	margin-right: -@gutter;
+	padding: @gutter/2 @gutter;
+
+	a:not(.is-active) {
+		text-decoration: none;
+	}
+
+	a, a:hover, a:active, a:focus {
+		color: inherit;
+		text-decoration: underline;
+	}
+}
+
+body > header {
+	color: #fff;
+	margin-top: -@gutter;
+	margin-bottom: @gutter;
+	background: @color-blue-darkest;
+}
+
+body > footer {
+	color: #aaa;
+	font-size: 0.7rem;
+	margin-top: @gutter;
+	margin-bottom: -@gutter;
+	background-color: desaturate(@color-blue-darkest, 100%);
+	overflow: auto;
+	border-bottom: @color-blue-dark solid @gutter/2;
+}
+
+body.index > header {
+	h1 {
+		font-size: 2em;
+	}
+}
+
+body.index {
+	.lead > .paragraph:first-child p {
+		font-size: 1.5rem;
+		margin-bottom: @gutter;
+	}
+}
+
+body > #content {
+	overflow: auto;
+	background-color: #fff;
+	margin-left: -@gutter;
+	margin-right: -@gutter;
+	margin-top: -@gutter;
+	margin-bottom: -@gutter;
+	padding: @gutter;
+	padding-bottom: 0;
+
+	& > :last-child {
+		margin-bottom: @gutter;
+	}
+}
+
+// Header as in "article header"
+body #content .lead:first-child ,
+body > div#header {
+	margin-left: -@gutter;
+	margin-right: -@gutter;
+	margin-top: -@gutter;
+	margin-bottom: @gutter;
+	padding: @gutter;
+	background-color: @color-blue-dark;
+	color: #fff;
+	text-shadow: 1px 1px rgba(0, 0, 0, 0.4);
+
+	h1 {
+		margin: 0;
+	}
+
+	a, a:hover, a:active, a:focus {
+		color: inherit;
+	}
+
+	.paragraph:last-child p {
+		margin-bottom: 0;
+	}
+
+	.details {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.details > br {
+		display: none;
+	}
+
+	.details > #author {
+		flex-grow: 1;
+	}
+
+	.details > #revdate {
+		font-style: italic;
+		text-align: right;
+	}
+}
+
+footer nav,
+header nav {
+	ul, ul li {
+		margin: 0;
+		text-align: center;
+		list-style-type: none;
+	}
+	ul {
+		display: flex;
+		align-items: baseline;
+		flex-wrap: wrap;
+		flex-direction: row;
+		justify-content: end;
+		margin-left: -@gutter / 2;
+		margin-right: -@gutter / 2;
+	}
+	li {
+		padding-left: @gutter / 2;
+		padding-right: @gutter / 2;
+	}
+	li:first-child {
+		flex-grow: 1;
+		text-align: left;
+		#screen-xxs-max({
+			width: 100%;
+		});
+	}
+	h1 {
+		font-size: inherit;
+		margin: 0;
+		a {
+			text-decoration: none;
+		}
+	}
+	#screen-xs-max({
+		h1 {
+			text-align: center;
+			font-size: 1.2rem;
+		}
+		ul {
+			display: block;
+		}
+		li a {
+			display: block;
+			padding: @gutter / 2;
+		}
+	});
+}

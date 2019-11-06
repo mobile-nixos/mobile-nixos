@@ -1,0 +1,48 @@
+{
+  pkgs ? import ./pkgs.nix
+}:
+
+let
+  inherit (pkgs) stdenv mobile-nixos-process-doc;
+
+  # Styles, built from a preprocessor.
+  styles = pkgs.callPackage ./_support/styles { };
+
+  # Asciidoc source for the devices section.
+  devices = pkgs.callPackage ./_support/devices { };
+in
+
+stdenv.mkDerivation {
+  name = "mobile-nixos-docs";
+  src = ./.;
+
+  buildInputs = [
+    mobile-nixos-process-doc
+  ];
+
+  buildPhase = ''
+    # Removes the internal notes.
+    rm -f README.md
+
+    # Replace it in-place with the repo README.
+    cat >> README.md <<EOF
+    README.md
+    =========
+    include::_support/common.inc[]
+    :relative_file_path: README.md 
+
+    EOF
+
+    tail -n +3 ${../README.md} >> README.md
+
+    # Copies the generated asciidoc source for the devices.
+    cp -prf ${devices}/devices devices
+
+    # Use our pipeline to process the docs.
+    process-doc "**/*.adoc" "**/*.md" \
+      --styles-dir="${styles}" \
+      --output-dir="$out"
+  '';
+
+  dontInstall = true;
+}
