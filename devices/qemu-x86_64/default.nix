@@ -10,8 +10,8 @@ let
 
   kernel = pkgs.linuxPackages_4_19.kernel;
   device_info = {
+   name = "QEMU (x86_64)";
    # format_version = "0";
-   # name = "Qemu amd64";
    # manufacturer = "Qemu";
    # date = "";
    # keyboard = true;
