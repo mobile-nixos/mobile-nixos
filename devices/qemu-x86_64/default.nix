@@ -9,7 +9,20 @@ let
   splash = config.mobile.boot.stage-1.splash.enable;
 
   kernel = pkgs.linuxPackages_4_19.kernel;
-  device_info = (lib.importJSON ../postmarketOS-devices.json).qemu-amd64;
+  device_info = {
+   # format_version = "0";
+   # name = "Qemu amd64";
+   # manufacturer = "Qemu";
+   # date = "";
+   # keyboard = true;
+   # nonfree = "????";
+   # dtb = "";
+   # modules_initfs = "qxl drm_bochs";
+   # external_storage = true;
+   # flash_method = "none";
+   # generate_legacy_uboot_initfs = false;
+   # arch = "x86_64";
+  };
 
   modules = [
     # Disk images
@@ -47,8 +60,7 @@ in
   mobile.device.info = device_info // {
     # TODO : make kernel part of options.
     inherit kernel;
-    kernel_cmdline = device_info.kernel_cmdline
-    + " vga=${MODE.vga}" 
+    kernel_cmdline = "console=tty1 console=ttyS0 vga=${MODE.vga}" 
     # TODO : make cmdline configurable outside device.info (device.info would be used for device-specifics only)
     + lib.optionalString splash " quiet vt.global_cursor_default=0"
     ;
