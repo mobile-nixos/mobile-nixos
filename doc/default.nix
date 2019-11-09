@@ -3,7 +3,7 @@
 }:
 
 let
-  inherit (pkgs) stdenv mobile-nixos-process-doc;
+  inherit (pkgs) stdenv mobile-nixos-process-doc rsync;
 
   # Styles, built from a preprocessor.
   styles = pkgs.callPackage ./_support/styles { };
@@ -18,6 +18,7 @@ stdenv.mkDerivation {
 
   buildInputs = [
     mobile-nixos-process-doc
+    rsync
   ];
 
   buildPhase = ''
@@ -42,6 +43,8 @@ stdenv.mkDerivation {
     process-doc "**/*.adoc" "**/*.md" \
       --styles-dir="${styles}" \
       --output-dir="$out"
+
+    rsync --prune-empty-dirs --verbose --archive --include="*.jpeg" --include="*/" --exclude="*" . $out/
   '';
 
   dontInstall = true;
