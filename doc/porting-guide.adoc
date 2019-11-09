@@ -1,4 +1,11 @@
 = Device Porting Guide
 include::_support/common.inc[]
 
-How to device port...
+NOTE: This subject needs to be expanded upon.
+
+In a nutshell, the basic steps are:
+
+* Preparing the device for development use (unlocking the bootloader).
+* Finding appropriate the sources (mainly the kernel).
+* Writing the expressions to build said sources.
+
