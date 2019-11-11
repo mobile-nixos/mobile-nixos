@@ -4,18 +4,20 @@ Mobile NixOS
 *This is expected to be built against the nixos-unstable for now.*
 
 
-WIP notes
----------
+2-minutes startup
+-----------------
+
+For an already bootloader-unlocked Android-based, `fastboot`-using device.
 
 ```
-# Maybe `nix copy ./result --to ssh://another-host`
+# Build a boot image
+nix-build --argstr device $DEVICE -A build.android-bootimg
+
+# Reboot the phone to fastboot
 adb wait-for-device && adb reboot bootloader
-fastboot boot result # or full path
-# getting adb and fastboot working is left as an exercise to the reader.
-```
 
-```
-nix-build --argstr device asus-z00t -A build.android-bootimg
+# Use fastboot to boot the produced image
+fastboot boot result
 ```
 
 ### Booting qemu
@@ -24,7 +26,10 @@ The qemu target has a `vm` build output, which results in a script that will
 automatically start the "virtual device".
 
 ```
+# Build the system
 nix-build --argstr device qemu-x86_64 -A build.vm
+
+# Run the VM, using the script
 ./result
 ```
 
@@ -58,8 +63,7 @@ the mobile-nixos tooling (e.g. to create a custom special `boot.img`).
 Goals
 -----
 
-The goal is to get a nix-built operating system, preferably NixOS running on
-mobile devices, e.g. Android phones.
+The goal is to get a NixOS system running on mobile devices, e.g. Android phones.
 
 This is intended as building blocks, allowing the end-users to configure their
 systems as desired.
@@ -74,4 +78,4 @@ Prior work
 
 This project initially borrowed and relied on the hard work from the
 [PostmarketOS project](https://postmarketos.org/). They are forever
-thanked in their valiant efforts.
+thanked in their efforts.
