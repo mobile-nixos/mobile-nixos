@@ -1,0 +1,12 @@
+= In-Depth Topics
+include::_support/common.inc[]
+:sitemap_index: true
+// This page is used to list all in-depth topics.
+// Ensure a topic found under in-depth has its path well-categorised, and is
+// listed in this page.
+
+Index of in-depth topics.
+
+== Android-Based Devices
+
+* <<android/partitions.adoc#,Partitions>>

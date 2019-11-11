@@ -1,5 +1,4 @@
-Partitions
-==========
+= Partitions on Android-Based Devices
 include::_support/common.inc[]
 
 Right now, we will **not** touch any partition map.
