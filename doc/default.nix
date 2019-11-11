@@ -26,15 +26,15 @@ stdenv.mkDerivation {
     rm -f README.md
 
     # Replace it in-place with the repo README.
-    cat >> README.md <<EOF
-    README.md
-    =========
+    cat >> README.adoc <<EOF
+    README.adoc
+    ===========
     include::_support/common.inc[]
-    :relative_file_path: README.md 
+    :relative_file_path: README.adoc
 
     EOF
 
-    tail -n +3 ${../README.md} >> README.md
+    tail -n +3 ${../README.adoc} >> README.adoc
 
     # Copies the generated asciidoc source for the devices.
     cp -prf ${devices}/devices devices
