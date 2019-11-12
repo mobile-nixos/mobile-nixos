@@ -18,6 +18,18 @@ pipeline, but frowned upon except for the simplest documentation articles.
 The build pipeline can be improved upon, and contributions doing so are welcome!
 
 
+Main Page and News
+------------------
+
+To reduce the amount of irrelevant contents in the documentation folders, the
+main page, and news entries from the Mobile NixOS website have been split into
+the Mobile NixOS website repository.
+
+This also allows more leeway to add additional non-documentation relevant pages
+to the website. The documentation folder of the main repository is used solely
+for documentation.
+
+
 Devices list
 ------------
 
