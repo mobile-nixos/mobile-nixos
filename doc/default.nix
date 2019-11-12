@@ -27,12 +27,23 @@ stdenv.mkDerivation {
 
     # Replace it in-place with the repo README.
     cat >> README.adoc <<EOF
-    README.adoc
-    ===========
+    = README.adoc
     include::_support/common.inc[]
     :relative_file_path: README.adoc
 
     EOF
+
+    if [ ! -e index.adoc ]; then
+    cat >> index.adoc <<EOF
+    = Main Page
+    include::_support/common.inc[]
+
+    This is a local build of the Mobile NixOS documentation.
+
+    The full site is at https://mobile.nixos.org/.
+
+    EOF
+    fi
 
     tail -n +3 ${../README.adoc} >> README.adoc
 
