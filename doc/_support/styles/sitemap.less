@@ -1,0 +1,42 @@
+section.sitemap {
+	.page > a {
+		font-weight: bold;
+		font-variant: small-caps;
+		display: block;
+	}
+	& > ul > .page > a {
+		background: @color-blue-dark;
+		text-decoration: none;
+		color: #fff;
+		text-shadow: 1px 1px rgba(0, 0, 0, 0.6);
+		&:hover, &:active, &:focus {
+			background: @color-blue-light;
+			text-decoration: underline;
+		}
+		border-bottom: 1px solid @color-blue-light;
+		border-right: 1px solid @color-blue-light;
+		padding: 0 @gutter/2;
+		&:nth-child(3n) {
+			border-right: 0;
+		}
+	}
+
+	ul, ul li {
+		list-style-type: none;
+		margin-left: 0;
+	}
+
+	li > ul {
+		margin-left: @gutter;
+	}
+
+	& > ul {
+		display: flex;
+		flex-wrap: wrap;
+		& > * {
+			margin-bottom: @gutter;
+			width: 33.333%;
+			min-width: 15rem;
+		}
+	}
+}

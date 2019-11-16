@@ -1,0 +1,38 @@
+@import "colors";
+
+@aal-font-size: 18px;
+
+// This gives us more leeway for narrower displays.
+// We are not restricting zooms, so no issues, and 14px
+// equivalent is the default font size anyway.
+#screen-xs-max({
+	@aal-font-size: 16px;
+	html, html>body {font-size: @aal-font-size;}
+});
+
+body {
+	font-family: "Noto Serif", "DejaVu Serif", serif;
+}
+
+h1, h2, h3, h4, h5, h6 {
+	font-family: "Open Sans", "DejaVu Sans", sans-serif;
+	font-weight: 300;
+}
+
+a {
+	color: @color-link;
+	text-decoration: underline;
+	&:hover, &:active {
+		outline: 0;
+	}
+	&:focus, &:hover {
+		color: @color-link-active;
+		text-decoration: underline;
+	}
+}
+
+pre {
+	background-color: #eee;
+	padding: @gutter / 2;
+	overflow: auto;
+}

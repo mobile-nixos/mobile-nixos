@@ -1,0 +1,13 @@
+<footer id="footer">
+  <nav>
+    <ul>
+      <li><%# TODO : add commit/date infos from cli param? %></li>
+      <% unless generated? %>
+      <li><%= github_source_link("Page Source") %></li>
+      <li><%= github_edit_link("Edit") %></li>
+      <% else %>
+      <% end %>
+      <li><%= link("sitemap.html", "Site Map") %></li>
+    </ul>
+  </nav>
+</footer>

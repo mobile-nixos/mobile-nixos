@@ -1,0 +1,135 @@
+= Getting Started
+include::_support/common.inc[]
+
+This guide assumes the user knows how to prepare their device for development
+use. These instructions are device-dependent, but not specific to Mobile NixOS.
+
+
+== Source Code
+
+The project is hosted under the link:https://github.com/NixOS/[NixOS organization],
+as link:https://github.com/NixOS/mobile-nixos[mobile-nixos].
+
+=== Getting the sources
+
+Depending on your configuration, for users with a GitHub account and the proper
+ssh configuration.
+
+ git clone git@github.com:NixOS/mobile-nixos.git
+
+Or, for everyone else.
+
+ git clone https://github.com/NixOS/mobile-nixos.git
+
+Nothing else! Everything required is self-contained.
+
+If you're interested in testing with a device not-yet-approved, you will have
+to roll up your sleeves and checkout the relevant branch for the PRs.
+The link:https://help.github.com/en/github/collaborating-with-issues-and-pull-requests/checking-out-pull-requests-locally[
+GitHub help article] may help.
+
+
+== Compiling
+
+This is where it becomes harder to make a simple guide. These are different,
+heterogeneous, hardware platforms, with different quirks, compilation steps,
+and mainly, installation steps.
+
+=== Android devices
+
+To build a system image, you will need to build on the native target architecture.
+
+Building the boot image (`boot.img`) can be done through cross-compilation. The
+build tooling will automatically handle this.
+
+
+ nix-build --argstr device "$DEVICE" -A build.android-bootimg
+
+Assuming `DEVICE` has been set to an appropriate device name.
+
+=== Depthcharge devices
+
+To build full image, you will need to build on the native target architecture.
+
+Though, it is possible to build the partition `depthcharge` will boot from,
+which holds the kernel and initrd, through cross-compilation. The build tooling
+will automatically handle this.
+
+ nix-build --argstr device "$DEVICE" -A build.kpart
+
+
+== Running
+
+This is where the device-specific and platform-specific instructions will help
+you. Though, here's a quick overview.
+
+=== Android
+
+Some, if not most, Android-based platforms will allow you to boot the boot image
+using `fastboot`.
+
+Luckily, running stage-1 through `fastboot` is enough to get started porting for
+the target system, as it will exercise the harder initial bootstrapping parts.
+That is, getting a system working with a minimal set of useful features.
+
+The device will need to be booted in its bootloader, or `fastboot`, mode. The
+instructions are device-dependent. The boot image can be run using the following
+command.
+
+ fastboot boot result
+
+If you have a system image (`system.img`) built, you can use `fastboot` to flash
+it to the device. Note that it might be too big to fit over the `system`
+partition. In such case, it can be flashed on the `userdata` partition.
+
+WARNING: *This will erase everything on the partition*. Additionally, the common
+backups methods, e.g. TWRP, will *not* backup the `userdata` partition.
+
+ fastboot flash userdata system.img
+
+=== Depthcharge
+
+This one is annoying to get started currently. Without a full Mobile NixOS
+build, you will need to fill in some gaps manually.
+
+The link:https://www.chromium.org/chromium-os/chromiumos-design-docs/disk-format[
+upstream documentation about the disk format] may help shed some light in getting
+this booting.
+
+On a Mobile NixOS-built disk image for a ; depthcharge` device, you can replace
+the partition with the newly built image, for the next boot. This is especially
+useful with USB devices or SD cards.
+
+
+== Customizing
+
+You probably will want to toggle options and such things when fiddling with
+Mobile NixOS, at first. The repository is structured in a way to allow you to
+add options to an untracked `local.nix` file. The default `nix-build`
+invocations will respect the content of that file as your configuration.
+
+A sample `local.nix`.
+
+```nix
+{ lib, ... }:
+
+{
+  # Disables splash screens during boot
+  mobile.boot.stage-1.splash.enable = false;
+}
+```
+
+
+== Contributing
+
+This is a big topic, and not something about getting started! Though, quickly
+noted, contributions are currently handled through GitHub pull requests.
+
+If you are unable or unwilling to use GitHub for pull requests, you can e-mail
+contributions, following the usual git via e-mail contribution workflow, to my
+e-mail address, which you will find attached to commits I authored.
+
+Note that there are more in-depth guides about specific contribution topics.
+
+* <<porting-guide.adoc#,Device Porting Guide>>
+

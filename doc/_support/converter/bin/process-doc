@@ -1,0 +1,35 @@
+#!/usr/bin/env ruby
+
+require "erb"
+require "fileutils"
+require "asciidoctor"
+#require "tilt"
+
+# Parse command line parameters
+require_relative "../lib/cli"
+require_relative "../lib/processor"
+
+DEFAULTS = {
+    safe: :unsafe,
+    source_dir: $options["root"],
+    base_dir: $options["root"],
+}
+
+# Handle every file.
+$inputs.each do |input_file|
+  Processor::Page
+    .from_file(input_file)
+    .make_page()
+end
+
+# Generating the sitemap...
+Processor::Sitemap
+  .new(Processor::Page.get_sitemap)
+  .generate()
+
+# Copying the styles, as needed
+if $options["styles_dir"] then
+  puts "[s] Copying styles"
+  FileUtils.mkdir_p($options["output_dir"])
+  FileUtils.cp_r($options["styles_dir"], File.join($options["output_dir"], "styles"))
+end

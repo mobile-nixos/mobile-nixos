@@ -1,5 +1,5 @@
-Partitions
-==========
+= Partitions on Android-Based Devices
+include::_support/common.inc[]
 
 Right now, we will **not** touch any partition map.
 
@@ -23,7 +23,7 @@ Here's an example guide from a user that re-partitions their device:
  * https://forum.xda-developers.com/nexus-7-2013/general/guide-repartition-nexus72013-to-t3599907
 
 
-* * *
+---
 
 Generating a partitions listing
 -------------------------------
@@ -56,8 +56,7 @@ if it is truly unique across similar devices.)
 The storage size is included in the filename as some devices (most?) have different
 variants differing only in their storage size.
 
-
-* * *
+---
 
 ### See also
 
