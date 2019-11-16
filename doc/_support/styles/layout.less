@@ -45,6 +45,19 @@ body.index > header {
 	}
 }
 
+body > header h1 {
+	a {
+		display: block;
+		#svg-logo();
+		background-repeat: no-repeat;
+		background-position: left center;
+		background-size: contain;
+		text-indent: -99999px;
+		position: relative;
+		min-height: 1em;
+	}
+}
+
 body.index {
 	.lead > .paragraph:first-child p {
 		font-size: 1.5rem;
@@ -148,6 +161,9 @@ header nav {
 		h1 {
 			text-align: center;
 			font-size: 1.2rem;
+			a {
+				background-position: center center;
+			}
 		}
 		ul {
 			display: block;
