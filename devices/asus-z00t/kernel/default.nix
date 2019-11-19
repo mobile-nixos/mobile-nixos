@@ -15,12 +15,18 @@
   src = fetchFromGitHub {
     owner = "LineageOS";
     repo = "android_kernel_asus_msm8916";
-    rev = "d56000991e7d90e3a75afd86fb2f3c779232ff29"; # lineage-15.1
-    sha256 = "079sm5z0ml0ijm866ga5mzwnix4wzvida0469vymbrh8mhz47p4r";
+    rev = "1a45c63742b8c3253a38c2ff97b672918c88d8df"; # lineage-15.1
+    sha256 = "02mfz3h5s3lvkdinglqmhm2hyfw4w0hqzzh1xla1i9wfc31ddbap";
   };
 
   patches = [
     ./0001-Porting-changes-found-in-LineageOS-android_kernel_cy.patch
+    ./0001-Revert-qmp-sphinx-Add-Qualcomm-Malware-Protection-ke.patch
+    ./0001-Revert-Handle-sk-being-NULL-in-UID-based-routing.patch
+    ./0001-Revert-Grants-system-server-access-to-proc-pid-oom_a.patch
+    ./0001-Revert-misc-uidstat-change-release-handler-for-stat-.patch
+    ./0001-netfilter-xt_IDLETIMER-make-compatible-with-USER_NS.patch
+    ./0001-asus-flash-Remove-hardcoded-IDs-for-USER_NS.patch
     ./01_more_precise_arch.patch
     ./01_fix_gcc6_errors.patch
     ./02_mdss_fb_refresh_rate.patch
