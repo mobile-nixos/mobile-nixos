@@ -15,6 +15,12 @@ let
     "ext2"  = "83";
     "ext3"  = "83";
     "ext4"  = "83";
+
+    # "8a Linux Kernel Partition (used by AiR-BOOT)"
+    #  — https://www.win.tue.nl/~aeb/partitions/partition_types-1.html
+    # Let's co-opt that same number, for what it's worth.
+    "kernel" = "8a";
+    "boot.img" = "8a";
   };
 in
 {
