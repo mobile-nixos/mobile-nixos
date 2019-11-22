@@ -67,6 +67,7 @@ stdenvNoCC.mkDerivation rec {
       start=$totalSize
       size=${toString partition.length}
       size=$(( $(if (($size % ${alignment})); then echo 1; else echo 0; fi ) + size / ${alignment} ))
+      size=$(( size * ${alignment} ))
       totalSize=$(( totalSize + size ))
       echo "Gap: start $start | size $size | totalSize $totalSize"
     '';
