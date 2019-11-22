@@ -33,6 +33,7 @@
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks-qualcomm.nix
+  ./quirks-u-boot.nix
   ./stage-2.nix
   ./system-target.nix
   ./system-types.nix
