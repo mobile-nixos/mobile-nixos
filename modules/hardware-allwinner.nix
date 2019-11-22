@@ -18,6 +18,7 @@ in
     {
       mobile = mkIf cfg.allwinner-r18.enable {
         system.system = "aarch64-linux";
+        quirks.u-boot.soc.family = "allwinner";
       };
     }
   ];
