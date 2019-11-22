@@ -1,0 +1,67 @@
+From 3a0fac7f79fad69efe4611d889dd9fcdd8816a09 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 19 Nov 2019 19:53:33 -0500
+Subject: [PATCH 2/2] !!! Loads FDT from qualcomm-specific format of android
+ bootimg
+
+---
+ common/image-fdt.c | 39 +++++++++++++++++----------------------
+ 1 file changed, 17 insertions(+), 22 deletions(-)
+
+diff --git a/common/image-fdt.c b/common/image-fdt.c
+index 4247dcee0c..3fb9fb441a 100644
+--- a/common/image-fdt.c
++++ b/common/image-fdt.c
+@@ -458,32 +458,27 @@ int boot_get_fdt(int flag, int argc, char * const argv[], uint8_t arch,
+ 			goto no_fdt;
+ 		}
+ #ifdef CONFIG_ANDROID_BOOT_IMAGE
+-	} else if (genimg_get_format(buf) == IMAGE_FORMAT_ANDROID) {
+-		struct andr_img_hdr *hdr = buf;
+-		ulong fdt_data, fdt_len;
+-
+-		if (!android_image_get_second(hdr, &fdt_data, &fdt_len) &&
+-		    !fdt_check_header((char *)fdt_data)) {
+-			fdt_blob = (char *)fdt_data;
+-			if (fdt_totalsize(fdt_blob) != fdt_len)
+-				goto error;
+-
+-			debug("## Using FDT in Android image second area\n");
+-		} else {
+-			fdt_addr = env_get_hex("fdtaddr", 0);
+-			if (!fdt_addr)
+-				goto no_fdt;
+-
+-			fdt_blob = map_sysmem(fdt_addr, 0);
+-			if (fdt_check_header(fdt_blob))
+-				goto no_fdt;
+-
+-			debug("## Using FDT at ${fdtaddr}=Ox%lx\n", fdt_addr);
++	} else {
++		/* FIXME: detect presence of dt rather than full blown "else" */
++		/* FIXME: use `android_image_get_dt` when this fails */
++		ulong fdt_len;
++		android_image_get_dt((void *)images->os.start,
++				&fdt_addr, &fdt_len);
++		fdt_blob = (char *)fdt_addr;
++
++		debug("*  fdt: raw FDT blob\n");
++		printf("## Flattened Device Tree blob at %08lx\n",
++				(long)fdt_addr);
++
++		if (fdt_totalsize(fdt_blob) != fdt_len) {
++			fdt_error("fdt size != image size");
++			goto error;
+ 		}
+-#endif
++#else
+ 	} else {
+ 		debug("## No Flattened Device Tree\n");
+ 		goto no_fdt;
++#endif
+ 	}
+ 
+ 	*of_flat_tree = fdt_blob;
+-- 
+2.23.0
+

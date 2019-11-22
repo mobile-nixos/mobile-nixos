@@ -49,4 +49,6 @@
 
   # Not really, but we're making it act like one.
   mobile.system.type = "android";
+  mobile.quirks.u-boot.system.enable = true;
+  mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};
 }
