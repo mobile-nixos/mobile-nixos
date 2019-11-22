@@ -1,0 +1,27 @@
+= PinePhone Don't be evil development kit
+include::_support/common.inc[]
+
+== Building a full disk image
+
+This platform uses the `u-boot` quirk. This means that a full disk image can be
+produced, and this full disk image flashed _outright_ flashed to the block
+device. That block device can be the internal eMMC or the SD card.
+
+Flashing to the internal eMMC is left as an exercise to the reader. (Read: to be
+documented.) The fact that U-Boot supports a USB mass storage gadget is a good
+first step.
+
+The PinePhone will boot from SD card if a bootloader can be found. This means
+that the full disk image can be flashed to an SD card.
+
+```
+ $ nix-build --argstr device pine64-dont-be-evil -A build.diskImage
+```
+
+If built using cross-compilation, a warning will be printed, here it is:
+
+WARNING: Using dummy empty filesystem as we're cross-compiling.
+
+What this means is that when built on a non-aarch64 host, the image will not
+contain a working filesystem, but rather a dummy empty filesystem that can be
+replaced with a working `system.img` built on a native machine.
