@@ -2,6 +2,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  inherit (pkgs) hostPlatform buildPackages imageBuilder;
   inherit (config.boot) growPartition;
   inherit (lib) optionalString;
 in
@@ -12,39 +13,39 @@ in
   boot.growPartition = lib.mkDefault true;
 
   system.build.rootfs =
-    pkgs.imageBuilder.fileSystem.makeExt4 {
+    if hostPlatform.system == builtins.currentSystem
+    then (imageBuilder.fileSystem.makeExt4 {
+      bootable = true;
       name = "NIXOS_SYSTEM";
       partitionID = "44444444-4444-4444-8888-888888888888";
       populateCommands =
-      let
-        closureInfo = pkgs.buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
-      in
-      ''
-        mkdir -p ./nix/store
-        echo "Copying system closure..."
-        while IFS= read -r path; do
+        let
+          closureInfo = buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
+        in ''
+          mkdir -p ./nix/store
+          echo "Copying system closure..."
+          while IFS= read -r path; do
           echo "  Copying $path"
           cp -prf "$path" ./nix/store
-        done < "${closureInfo}/store-paths"
-        echo "Done copying system closure..."
-        cp -v ${closureInfo}/registration ./nix-path-registration
-      '';
+          done < "${closureInfo}/store-paths"
+          echo "Done copying system closure..."
+          cp -v ${closureInfo}/registration ./nix-path-registration
+        '';
 
       # Give some headroom for initial mounting.
-      extraPadding = pkgs.imageBuilder.size.MiB 20;
-    }
-  ;
-
-  # FIXME: this is not a rootfs!
-  system.build.diskImage = 
-    pkgs.imageBuilder.diskImage.makeMBR {
-      name = "mobile-nixos";
-      diskID = "01234567";
-      partitions = [
-        # FIXME : initrd how?
-        config.system.build.rootfs
-      ];
-    }
+      extraPadding = imageBuilder.size.MiB 20;
+    })
+    else (builtins.trace "WARNING: Using dummy empty filesystem as we're cross-compiling."
+      (imageBuilder.fileSystem.makeExt4 {
+        bootable = true;
+        name = "DUMMY"; # Using the "wrong" filesystem label here by design.
+        partitionID = "33333333-4444-4444-8888-888888888888"; # Using the "wrong" GUID here by design.
+        size = imageBuilder.size.MiB 10;
+        populateCommands = ''
+          # no-op
+        '';
+      })
+    )
   ;
 
   boot.postBootCommands = ''
