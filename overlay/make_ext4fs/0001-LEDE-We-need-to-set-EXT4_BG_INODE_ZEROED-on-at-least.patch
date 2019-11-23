@@ -1,0 +1,47 @@
+From b3e643e488c0bd5f7f4797f43e7d765bf7c0a2f9 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 23 Nov 2019 17:25:09 -0500
+Subject: [PATCH] [LEDE] We need to set EXT4_BG_INODE_ZEROED on at least Block
+ Group 0.
+
+This bit says whether the inode table has been explicitly zeroed
+or not. ext4 in the kernel now insists that this bit be set on
+block group 0 at least.
+
+Since we are creating the filesystem as a flat sparse file, by
+definition, the inode tables are zeroed on creation.
+
+* * *
+
+Provenance information, for Mobile NixOS:
+
+This patch comes from the OpenWRT forum.
+
+ * https://forum.openwrt.org/t/read-only-file-system-after-a-fresh-installation-of-lede-17-01-5/17242/8
+
+The patch should come from:
+
+ * `tools/make-ext4fs/patches/200-set-EXT4_BG_INODE_ZEROED.patch`
+
+Though, it seems it never has gone through to LEDE, neither into
+OpenWRT's make_ext4fs project...
+---
+ allocate.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/allocate.c b/allocate.c
+index cca3dc1..80fcaa5 100644
+--- a/allocate.c
++++ b/allocate.c
+@@ -307,7 +307,7 @@ static void init_bg(struct block_group_info *bg, unsigned int i)
+ 	bg->first_free_block = 0;
+ 	bg->free_inodes = info.inodes_per_group;
+ 	bg->first_free_inode = 1;
+-	bg->flags = EXT4_BG_INODE_UNINIT;
++	bg->flags = EXT4_BG_INODE_UNINIT|EXT4_BG_INODE_ZEROED;
+ 
+ 	if (reserve_blocks(bg, bg->first_free_block, bg->header_blocks) < 0)
+ 		error("failed to reserve %u blocks in block group %u\n", bg->header_blocks, i);
+-- 
+2.23.0
+

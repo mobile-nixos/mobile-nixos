@@ -13,6 +13,7 @@ stdenv.mkDerivation {
   patches = [
     ./0001-uuid-add-facilities-to-parse-and-print-UUIDs.patch
     ./0002-make_ext4fs-allow-setting-a-specific-UUID.patch
+    ./0001-LEDE-We-need-to-set-EXT4_BG_INODE_ZEROED-on-at-least.patch
   ];
 
   buildInputs = [
