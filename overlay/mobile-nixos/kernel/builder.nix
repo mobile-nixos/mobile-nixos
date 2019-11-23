@@ -49,6 +49,7 @@ in
 , kernelPatches ? []
 , patches ? []
 , postPatch ? ""
+, makeFlags ? []
 
 # Part of the "API" of the kernel builder.
 # Image builders expect this attribute to know where to find the kernel file.
@@ -217,7 +218,7 @@ stdenv.mkDerivation {
     "ARCH=${stdenv.hostPlatform.platform.kernelArch}"
   ] ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [
     "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
-  ];
+  ] ++ makeFlags;
 
   requiredSystemFeatures = [ "big-parallel" ];
   enableParallelBuilding = true;

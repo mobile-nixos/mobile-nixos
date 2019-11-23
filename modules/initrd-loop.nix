@@ -24,7 +24,7 @@ in
     init = lib.mkOrder (BEFORE_SWITCH_ROOT_INIT+1) ''
       echo "Looping here forever..."
       while true; do
-        sleep 3600
+        sleep 3600 || break
       done
     '';
   };
