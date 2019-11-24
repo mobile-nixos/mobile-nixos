@@ -24,6 +24,7 @@ in
   };
 
   patches = [
+    ./0001-Revert-four-tty-related-commits.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
     ./99_framebuffer.patch
   ];
