@@ -16,12 +16,13 @@ module Processor
       ].join("")
     end
 
-    def append_header(document)
+    def header()
       header = ERB.new(File.read(File.join($options["root"], "_support/header.erb")))
       rootrel = root_relative
+      header.result(binding)
+    end
 
-      header = header.result(binding)
-
+    def append_header(document)
       output = document.split("\n")
       idx = output.find_index do |line|
         line.match(/<body /)

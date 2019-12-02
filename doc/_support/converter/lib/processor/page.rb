@@ -68,6 +68,9 @@ module Processor
       # Prepare output, to make next steps more readable.
       @output = @doc.convert
 
+      # Adds necessary stuff in <head />
+      @output = Processor::Head.new(@page, @root_relative).append_to_head(@output)
+
       # Force the site header on the generated page.
       @output = Processor::Header.new(@page, @root_relative).append_header(@output)
 
