@@ -18,25 +18,37 @@ module Processor
       ].join("")
     end
 
+    def repo_link(to)
+      # When this generation framework gets factored out, ensure the
+      # repo links generation can point to non-github hosts.
+      [
+        "https://github.com",
+        @doc.attributes["repo"],
+        to
+      ].join("/")
+    end
+
     def src()
       if @doc.attributes["relative_file_path"] then
         @doc.attributes["relative_file_path"]
+      elsif @doc.attributes["relative_prefix"] then
+        [@doc.attributes["relative_prefix"], @source_file].join("/")
       else
-        "doc/#{@source_file}"
+        @source_file
       end
     end
 
-    def github_edit_link(label)
+    def repo_edit_link(label)
       [
-        "<a href='https://github.com/NixOS/mobile-nixos/edit/master/#{src}'>",
+        "<a href='#{repo_link("/edit/master/#{src}")}'>",
         label,
         "</a>",
       ].join("")
     end
 
-    def github_source_link(label)
+    def repo_source_link(label)
       [
-        "<a href='https://github.com/NixOS/mobile-nixos/blob/master/#{src}'>",
+        "<a href='#{repo_link("/blob/master/#{src}")}'>",
         label,
         "</a>",
       ].join("")
