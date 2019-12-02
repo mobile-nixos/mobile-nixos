@@ -1,0 +1,9 @@
+    <item>
+      <title><%= html_escape(entry[:title]) %></title>
+      <pubDate><%= html_escape(entry[:date].rfc822) %></pubDate>
+      <link><%= html_escape(entry[:url]) %></link>
+      <guid><%= html_escape(entry[:url]) %></guid>
+      <description>
+<%= html_escape(entry[:contents]) %>
+      </description>
+    </item>

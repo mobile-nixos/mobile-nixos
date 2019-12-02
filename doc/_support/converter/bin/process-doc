@@ -27,6 +27,10 @@ Processor::Sitemap
   .new(Processor::Page.get_sitemap)
   .generate()
 
+Processor::RSS
+  .new(Processor::Page.get_sitemap)
+  .generate()
+
 # Copying the styles, as needed
 if $options["styles_dir"] then
   puts "[s] Copying styles"
