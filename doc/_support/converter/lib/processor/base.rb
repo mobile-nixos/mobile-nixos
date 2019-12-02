@@ -31,5 +31,13 @@ module Processor
         {}
       end
     end
+
+    def title()
+      @doc.attributes["doctitle"] || @doc.doctitle
+    end
+
+    def date()
+      Date.parse(@doc.revdate)
+    end
   end
 end
