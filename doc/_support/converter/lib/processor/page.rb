@@ -112,8 +112,7 @@ module Processor
     end
 
     def handle_special_homepage()
-      articles = Dir.glob(File.join($options["root"], "news/*.adoc")).sort.reverse
-      news_items = articles.map do |filename|
+      news_items = Article.get_article_paths().map do |filename|
         article = Article.new(filename)
         article.output
       end.join("\n")
