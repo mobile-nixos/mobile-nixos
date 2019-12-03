@@ -21,6 +21,12 @@ module Processor
       image = @doc.attributes["image"]
       title = @doc.doctitle
       url = @relative_filename
+      header_styles =
+        if @doc.attributes["header_prefers"] then
+          " background-position: #{@doc.attributes["header_prefers"]} center;"
+        else
+          ""
+        end
 
       template = ERB.new(File.read(File.join($options["root"], "_support/news_article.erb")))
       template.result(binding)

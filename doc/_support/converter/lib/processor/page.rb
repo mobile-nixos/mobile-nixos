@@ -128,6 +128,12 @@ module Processor
       template = ERB.new(File.read(File.join($options["root"], "_support/news_article_header.erb")))
 
       image = @doc.attributes["image"]
+      header_styles =
+        if @doc.attributes["header_prefers"] then
+          " background-position: #{@doc.attributes["header_prefers"]} center;"
+        else
+          ""
+        end
       header = template.result(binding)
 
       pos = @output.index('<div id="content"')
