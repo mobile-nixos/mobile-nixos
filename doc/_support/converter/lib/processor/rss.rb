@@ -35,7 +35,7 @@ module Processor
     end
 
     def generate()
-      puts "[S] Generating sitemap..."
+      puts "[S] Generating RSS feed..."
       entries = Article.get_article_paths().map do |filename|
         entry = Article.new(filename)
         {
@@ -45,6 +45,8 @@ module Processor
           contents: strip_unneecessary(entry.output),
         }
       end
+
+      return unless entries.length > 0
 
       File.open(File.join($options["output_dir"], "index.xml"), "w") do |file|
         file.write(to_rss(entries))
