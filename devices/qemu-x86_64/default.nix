@@ -36,6 +36,15 @@ let
     "hid_generic"
     "pcips2" "atkbd" "i8042"
 
+    # Mouse
+    "mousedev"
+
+    # Input within X11
+    "uinput" "evdev"
+
+    # USB
+    "usbcore" "usbhid" "ehci_pci" "ehci_hcd"
+
     # x86 RTC needed by the stage 2 init script.
     "rtc_cmos"
   ];
@@ -51,9 +60,11 @@ let
     "1920x1080x16" = { vga = "0x390"; width = 1920; height = 1080; depth = 16; };
     "1920x1080x24" = { vga = "0x391"; width = 1920; height = 1080; depth = 24; };
     "1920x1080x32" = { vga = "0x392"; width = 1920; height = 1080; depth = 32; };
+     "720x1280x32" = { vga = "0x393"; width =  720; height = 1280; depth = 32; };
+    "1080x1920x32" = { vga = "0x394"; width = 1080; height = 1920; depth = 32; };
   };
 
-  MODE = MODES."1280x720x32";
+  MODE = MODES."1080x1920x32";
 in
 {
   mobile.device.name = "qemu-x86_64";
@@ -70,7 +81,7 @@ in
     screen = {
       inherit (MODE) height width;
     };
-    ram = 512;
+    ram = 1024 * 2;
   };
 
   mobile.system.type = "kernel-initrd";

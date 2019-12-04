@@ -1,0 +1,41 @@
+From fe256e0ac58e583b06640106f664ad9ae131d6ba Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 5 Oct 2019 01:27:34 -0400
+Subject: [PATCH] HACK: Adds mobile-like VGA modes
+
+---
+ vgasrc/bochsvga.c | 3 +++
+ vgasrc/cbvga.c    | 3 +++
+ 2 files changed, 6 insertions(+)
+
+diff --git a/vgasrc/bochsvga.c b/vgasrc/bochsvga.c
+index ec5d101..62e38fb 100644
+--- a/vgasrc/bochsvga.c
++++ b/vgasrc/bochsvga.c
+@@ -100,6 +100,9 @@ static struct bochsvga_mode
+     { 0x190, { MM_DIRECT, 1920, 1080, 16, 8, 16, SEG_GRAPH } },
+     { 0x191, { MM_DIRECT, 1920, 1080, 24, 8, 16, SEG_GRAPH } },
+     { 0x192, { MM_DIRECT, 1920, 1080, 32, 8, 16, SEG_GRAPH } },
++    // "Mobile" modes
++    { 0x193, { MM_DIRECT,  720, 1280, 32, 8, 16, SEG_GRAPH } },
++    { 0x194, { MM_DIRECT, 1080, 1920, 32, 8, 16, SEG_GRAPH } },
+ };
+ 
+ static int dispi_found VAR16 = 0;
+diff --git a/vgasrc/cbvga.c b/vgasrc/cbvga.c
+index f85989a..8d7395b 100644
+--- a/vgasrc/cbvga.c
++++ b/vgasrc/cbvga.c
+@@ -81,6 +81,9 @@ static struct cbvga_mode_s
+     { 0x190, { MM_DIRECT, 1920, 1080, 16, 8, 16, SEG_GRAPH } },
+     { 0x191, { MM_DIRECT, 1920, 1080, 24, 8, 16, SEG_GRAPH } },
+     { 0x192, { MM_DIRECT, 1920, 1080, 32, 8, 16, SEG_GRAPH } },
++    // "Mobile" modes
++    { 0x193, { MM_DIRECT,  720, 1280, 32, 8, 16, SEG_GRAPH } },
++    { 0x194, { MM_DIRECT, 1080, 1920, 32, 8, 16, SEG_GRAPH } },
+ };
+ 
+ struct vgamode_s *cbvga_find_mode(int mode)
+-- 
+2.23.0
+
