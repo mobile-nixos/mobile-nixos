@@ -26,10 +26,12 @@ in
         desktopManager.xfce.enable = true;
 
         # Automatically login as nixos.
-        displayManager.slim = {
+        displayManager.lightdm = {
           enable = true;
-          defaultUser = "nixos";
-          autoLogin = true;
+          autoLogin = {
+            enable = true;
+            user = "nixos";
+          };
         };
 
       };
