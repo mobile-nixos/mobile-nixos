@@ -7,6 +7,7 @@
 [
   ./_nixos-disintegration
   ./boot-initrd.nix
+  ./hardware-family.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix
   ./hardware-ram.nix
