@@ -1,0 +1,24 @@
+From bfd1f83531daf0f9c172e76a3860257d488df2c3 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 28 Sep 2019 23:27:41 -0400
+Subject: [PATCH] [HACK]: fbdev: don't bail on mode initialization fail
+
+---
+ src/fbdev.c | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/src/fbdev.c b/src/fbdev.c
+index f25ef72..a9ab195 100644
+--- a/src/fbdev.c
++++ b/src/fbdev.c
+@@ -797,7 +797,6 @@ FBDevScreenInit(SCREEN_INIT_ARGS_DECL)
+ 
+ 	if (!fbdevHWModeInit(pScrn, pScrn->currentMode)) {
+ 		xf86DrvMsg(pScrn->scrnIndex,X_ERROR,"mode initialization failed\n");
+-		return FALSE;
+ 	}
+ 	fbdevHWSaveScreen(pScreen, SCREEN_SAVER_ON);
+ 	fbdevHWAdjustFrame(ADJUST_FRAME_ARGS(pScrn, 0, 0));
+-- 
+2.23.0
+

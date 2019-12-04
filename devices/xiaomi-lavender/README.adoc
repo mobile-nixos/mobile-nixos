@@ -1,0 +1,46 @@
+= Xiaomi Redmi Note 7
+include::_support/common.inc[]
+
+== Device-specific note
+
+=== `fastboot oem getlog`
+
+This is the first device, and possibly the only device, known to ship with the
+`oem getlog` fastboot command.
+
+This is not a trivial command to use, but it is extremely useful as it allows
+side-stepping the need to boot in a known working system to use the ramoops
+console.
+
+The output of the command is a jumble, but is still usable for figuring out
+early boot issues. It is much better than having to rely on a booted system to
+get the information, but still not as good as having a dedicated serial access.
+
+Example usage follows.
+
+```
+ $ fastboot oem getlog 2>&1
+(bootloader) [    0.000000] Booting Linux on physical CPU 0x0
+[    0.000
+(bootloader) 000] Initializing cgroup subsys cpuset
+[    0.000000] Initi
+(bootloader) alizing cgroup subsys cpu
+[    0.000000] Initializing cgrou
+(bootloader) p subsys cpuacct
+[    0.000000] Initializing cgroup subsys
+(bootloader) schedtune
+[    0.000000] Linux version 4.4.153 (nixbld@loca
+(bootloader) lhost) (gcc version 4.9.4 (GCC) ) #2 SMP PREEMPT Sat Nov 23
+(bootloader)  20:31:33 UTC 2019
+[    0.000000] Boot CPU: AArch64 Process
+(bootloader) or [51af8014]
+[...]
+```
+
+As the output of the command is on stderr, here's how to output to a file.
+
+```
+ $ fastboot oem getlog > log.txt 2>&1
+```
+
+It is unknown if there are ways to make the output better.

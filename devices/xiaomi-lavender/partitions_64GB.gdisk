@@ -1,0 +1,85 @@
+GPT fdisk (gdisk) version 1.0.4
+
+Partition table scan:
+  MBR: protective
+  BSD: not present
+  APM: not present
+  GPT: present
+
+Found valid GPT with protective MBR; using GPT.
+Disk /dev/mmcblk0: 122142720 sectors, 58.2 GiB
+Sector size (logical/physical): 512/512 bytes
+Disk identifier (GUID): B1F621FE-ABED-CF14-2CF2-ED7B269315F2
+Partition table holds up to 68 entries
+Main partition table begins at sector 2 and ends at sector 18
+First usable sector is 34, last usable sector is 122142686
+Partitions will be aligned on 8-sector boundaries
+Total free space is 6 sectors (3.0 KiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1              40              55   8.0 KiB     8300  switch
+   2              56              71   8.0 KiB     A024  dpo
+   3              72              87   8.0 KiB     A029  fsc
+   4              88             151   32.0 KiB    A040  limits
+   5             152             215   32.0 KiB    A02C  ssd
+   6             216             255   20.0 KiB    A01D  sec
+   7             256             383   64.0 KiB    FFFF  vbmeta
+   8             384             511   64.0 KiB    0700  vbmetabak
+   9             512             767   128.0 KiB   FFFF  storsec
+  10             768            1023   128.0 KiB   0700  storsecbak
+  11            1024            1535   256.0 KiB   A022  apdp
+  12            1536            2047   256.0 KiB   A023  msadp
+  13            2048            3071   512.0 KiB   A02D  keystore
+  14            3072            4095   512.0 KiB   FFFF  frp
+  15            4096            5119   512.0 KiB   A018  rpm
+  16            5120            6143   512.0 KiB   0700  rpmbak
+  17            6144            7167   512.0 KiB   A017  hyp
+  18            7168            8191   512.0 KiB   0700  hypbak
+  19            8192            9215   512.0 KiB   A01E  pmic
+  20            9216           10239   512.0 KiB   0700  pmicbak
+  21           10240           12287   1024.0 KiB  FFFF  cmnlib
+  22           12288           14335   1024.0 KiB  0700  cmnlibbak
+  23           14336           16383   1024.0 KiB  FFFF  cmnlib64
+  24           16384           18431   1024.0 KiB  0700  cmnlib64bak
+  25           18432           20479   1024.0 KiB  FFFF  abl
+  26           20480           22527   1024.0 KiB  0700  ablbak
+  27           22528           24575   1024.0 KiB  FFFF  dip
+  28           24576           26623   1024.0 KiB  A01A  ddr
+  29           26624           28671   1024.0 KiB  FFFF  toolsfv
+  30           28672           30719   1024.0 KiB  0700  devcfgbak
+  31           30720           32767   1024.0 KiB  FFFF  devcfg
+  32           32768           40959   4.0 MiB     A016  tz
+  33           40960           49151   4.0 MiB     0700  tzbak
+  34           49152           57343   4.0 MiB     FFFF  mdtpsecapp
+  35           57344           65535   4.0 MiB     0700  mdtpsecappbak
+  36           65536           67583   1024.0 KiB  FFFF  keymaster
+  37           67584           69631   1024.0 KiB  0700  keymasterbak
+  38           69632           71679   1024.0 KiB  FFFF  bluetooth
+  39           71680           75775   2.0 MiB     FFFF  sti
+  40           75776           82943   3.5 MiB     A012  xbl
+  41           82944           90111   3.5 MiB     0700  xblbak
+  42           90112           98303   4.0 MiB     A01F  misc
+  43           98304          114687   8.0 MiB     A021  devinfo
+  44          114688          131071   8.0 MiB     FFFF  logfs
+  45          131072          147455   8.0 MiB     A02A  fsg
+  46          147456          163839   8.0 MiB     A027  modemst1
+  47          163840          180223   8.0 MiB     A028  modemst2
+  48          180224          212991   16.0 MiB    FFFF  dsp
+  49          212992          262143   24.0 MiB    8300  bk1
+  50          262144          327679   32.0 MiB    FFFF  mdtp
+  51          327680          360447   16.0 MiB    8300  bk2
+  52          360448          376831   8.0 MiB     FFFF  dtbo
+  53          376832          393215   8.0 MiB     FFFF  dtbobak
+  54          393216          524287   64.0 MiB    FFFF  splash
+  55          524288          589823   32.0 MiB    A026  persist
+  56          589824          655359   32.0 MiB    0700  persistbak
+  57          655360          786431   64.0 MiB    FFFF  logdump
+  58          786432         1179647   192.0 MiB   0700  modem
+  59         1179648         1441791   128.0 MiB   A01C  rawdump
+  60         1441792         1572863   64.0 MiB    A036  boot
+  61         1572864         1703935   64.0 MiB    A025  recovery
+  62         1703936         2228223   256.0 MiB   A039  cache
+  63         2228224         9568255   3.5 GiB     A038  system
+  64         9568256        13762559   2.0 GiB     A038  vendor
+  65        13762560        15466495   832.0 MiB   A038  cust
+  66        15466496       122142686   50.9 GiB    A03A  userdata
