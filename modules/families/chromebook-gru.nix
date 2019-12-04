@@ -12,6 +12,9 @@ let
 in
 {
   config = mkIf enabled {
+    # There no rndis gadget configured yet for the gru platform.
+    mobile.boot.stage-1.networking.enable = false;
+
     # TODO: also add to stage-2 for when we have kexec + modular kernels.
     mobile.boot.stage-1.contents = [
       (fw { filename = "dptx.bin";                  path = "firmware/rockchip"; })
