@@ -17,7 +17,17 @@
     dev_touchscreen_calibration = "";
     dev_keyboard = "";
     flash_method = "fastboot";
-    kernel_cmdline = "console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=qcom user_debug=30 msm_rtb.filter=0x237 ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 vmalloc=350M buildvariant=userdebug";
+    kernel_cmdline = lib.concatStringsSep " " [
+      "androidboot.console=ttyHSL0"
+      "androidboot.hardware=qcom"
+      "user_debug=30"
+      "msm_rtb.filter=0x237"
+      "ehci-hcd.park=3"
+      "androidboot.bootdevice=7824900.sdhci"
+      "lpm_levels.sleep_disabled=1"
+      "vmalloc=350M"
+      "buildvariant=userdebug"
+    ];
     generate_bootimg = true;
     bootimg_qcdt = true;
     flash_offset_base = "0x80000000";
