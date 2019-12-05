@@ -6,6 +6,7 @@
 # Keep this list `:sort`ed.
 [
   ./_nixos-disintegration
+  ./adb.nix
   ./boot-initrd.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix

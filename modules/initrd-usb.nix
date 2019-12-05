@@ -27,19 +27,11 @@ in
         `android_usb` features to enable.
       '';
     };
-    adbd = mkOption {
-      type = types.bool;
-      default = system_type == "android";
-      description = ''
-        Enables adbd on the device.
-      '';
-    };
   };
 
   config.mobile.boot.stage-1 = lib.mkIf cfg.usb.enable {
     usb.features = []
       ++ optional cfg.networking.enable "rndis"
-      ++ optional cfg.usb.adbd "ffs"
     ;
 
     # TODO: Only run, when we have the android usb driver
@@ -48,9 +40,6 @@ in
       (
       SYS=/sys/class/android_usb/android0
       if [ -e "$SYS" ]; then
-        mkdir -p /dev/usb-ffs/adb
-        mount -t functionfs adb /dev/usb-ffs/adb/
-
         printf "%s" "0"    > "$SYS/enable"
         printf "%s" "18D1" > "$SYS/idVendor"
         printf "%s" "D001" > "$SYS/idProduct"
@@ -62,14 +51,8 @@ in
 
         sleep 0.1
         printf "%s" "1" > "$SYS/enable"
-        sleep 0.1
-
-        ${optionalString cfg.usb.adbd "adbd &\n"}
       fi
       )
     '';
-    extraUtils = with pkgs; []
-    ++ optional cfg.usb.adbd { package = adbd; extraCommand = "cp -fpv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
-    ;
   };
 }
