@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<channel name="xfce4-panel" version="1.0">
+  <property name="configver" type="int" value="2"/>
+  <property name="panels" type="array">
+    <value type="int" value="1"/>
+    <value type="int" value="2"/>
+
+    <property name="panel-1" type="empty">
+      <property name="position" type="string" value="p=6;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="96"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="1"/>
+        <value type="int" value="2"/>
+        <value type="int" value="6"/>
+        <value type="int" value="5"/>
+        <value type="int" value="16"/>
+      </property>
+    </property>
+
+    <!-- As an example, could hold widgets that do actions like "back", "home"... -->
+    <property name="panel-2" type="empty">
+      <property name="position" type="string" value="p=10;x=0;y=0"/>
+      <property name="length" type="uint" value="100"/>
+      <property name="position-locked" type="bool" value="true"/>
+      <property name="size" type="uint" value="64"/>
+      <property name="plugin-ids" type="array">
+        <value type="int" value="110"/>
+        <value type="int" value="140"/>
+        <!-- value type="int" value="150"/ -->
+        <value type="int" value="160"/>
+        <value type="int" value="199"/>
+      </property>
+    </property>
+  </property>
+
+  <!-- All plugins added to panels. -->
+  <property name="plugins" type="empty">
+    
+    <!-- top left menu -->
+    <property name="plugin-1" type="string" value="applicationsmenu">
+      <property name="show-button-title" type="bool" value="true"/>
+      <property name="show-tooltips" type="empty"/>
+      <property name="button-icon" type="string" value="/run/current-system/sw/share/icons/breeze-dark/actions/32/application-menu.svg"/>
+      <property name="button-title" type="string" value="   "/>
+    </property>
+
+    <!-- separator used to align stuff -->
+    <property name="plugin-2" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+
+    <!-- clock -->
+    <property name="plugin-5" type="string" value="clock">
+      <property name="digital-format" type="string" value="%T"/>
+      <property name="mode" type="uint" value="2"/>
+    </property>
+
+    <!-- tray -->
+    <property name="plugin-6" type="string" value="systray">
+      <property name="show-frame" type="bool" value="false"/>
+      <property name="size-max" type="uint" value="64"/>
+    </property>
+
+    <!-- window list -->
+    <property name="plugin-16" type="string" value="windowmenu">
+      <property name="style" type="uint" value="0"/>
+      <!-- Doesn't really work with awesome it seems... The add/remove options do nothing -->
+      <property name="workspace-actions" type="bool" value="false"/>
+    </property>
+
+    <!-- Bottom -->
+    
+    <property name="plugin-110" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/run/current-system/sw/share/applications/awesome-close.desktop"/>
+      </property>
+    </property>
+
+    <property name="plugin-140" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+
+    <!-- FIXME: replace with something that makes sense... -->
+    <!-- property name="plugin-150" type="string" value="showdesktop"/ -->
+
+    <property name="plugin-160" type="string" value="separator">
+      <property name="expand" type="bool" value="true"/>
+      <property name="style" type="uint" value="0"/>
+    </property>
+
+    <property name="plugin-199" type="string" value="launcher">
+      <property name="items" type="array">
+        <value type="string" value="/etc/xdg/autostart/onboard-autostart.desktop"/>
+      </property>
+    </property>
+  </property>
+</channel>
