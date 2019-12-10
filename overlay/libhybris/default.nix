@@ -13,14 +13,14 @@ let
   inherit (stdenv) targetPlatform;
 in
 stdenv.mkDerivation {
-  name = "libhybris";
-  version = "0";
+  pname = "libhybris";
+  version = "2019-12-02";
 
   src = fetchFromGitHub {
     owner = "libhybris";
     repo = "libhybris";
-    rev = "07b547e90db625685050bdfd00c92ccafc64aa09";
-    sha256 = "0g0cqjydbahbzas40vz0awwyw2xjyjj3hxrkdydkn9qscyiyx593";
+    rev = "d27c1a85703db8dea4539ceb4d869792fd78ee37";
+    sha256 = "014wrpzd1w2bbza5jsy51qhhn9lvffz5h8l6mkwvkkn98i3h9yzn";
   };
 
   postAutoreconf = ''
