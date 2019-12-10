@@ -24,7 +24,11 @@ stdenv.mkDerivation {
     sha256 = "014wrpzd1w2bbza5jsy51qhhn9lvffz5h8l6mkwvkkn98i3h9yzn";
   };
 
-  patches = lib.optional useLegacyProperties ./0001-HACK-Rely-on-legacy-properties-rather-than-native-pr.patch;
+  patches = [
+    ./0001-Removes-failing-test-for-wayland-less-builds.patch
+  ]
+    ++ lib.optional useLegacyProperties ./0001-HACK-Rely-on-legacy-properties-rather-than-native-pr.patch
+  ;
 
   postAutoreconf = ''
     substituteInPlace configure \
