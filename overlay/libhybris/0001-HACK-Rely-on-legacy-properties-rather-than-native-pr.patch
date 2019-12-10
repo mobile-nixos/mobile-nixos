@@ -1,0 +1,94 @@
+From 3ffcc51679542cc8052de26a8aa7ed99112e15d1 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 9 Dec 2019 23:52:28 -0500
+Subject: [PATCH] [HACK]: Rely on legacy properties rather than native
+ properties
+
+---
+ hybris/properties/hybris_properties.c | 60 +++++----------------------
+ 1 file changed, 10 insertions(+), 50 deletions(-)
+
+diff --git a/hybris/properties/hybris_properties.c b/hybris/properties/hybris_properties.c
+index 7a6e06c..1ab60c8 100644
+--- a/properties/hybris_properties.c
++++ b/properties/hybris_properties.c
+@@ -15,66 +15,26 @@
+  *
+  */
+ 
+-#include <stdio.h>
+-#include <stdlib.h>
+-#include <dlfcn.h>
+-
+-#include <hybris/common/binding.h>
+-
+-static void *libcutils = NULL;
+-
+-// These may point to the libhybris implementation or to the bionic implementation, depending on the linker being used.
+-static int (*bionic_property_list)(void (*propfn)(const char *key, const char *value, void *cookie), void *cookie) = NULL;
+-static int (*bionic_property_get)(const char *key, char *value, const char *default_value) = NULL;
+-static int (*bionic_property_set)(const char *key, const char *value) = NULL;
+-
+-static void unload_libcutils(void)
+-{
+-    if (libcutils) {
+-        android_dlclose(libcutils);
+-    }
+-}
+-
+-#define PROPERTY_DLSYM(func) {*(void **)(&bionic_##func) = (void*)android_dlsym(libcutils, #func); \
+-                              if (!bionic_##func) { \
+-                                  fprintf(stderr, "failed to load " #func " from bionic libcutils\n"); \
+-                                  abort(); \
+-                              }}
+-
+-static void ensure_bionic_properties_initialized(void)
+-{
+-    if (!libcutils) {
+-        libcutils = android_dlopen("libcutils.so", RTLD_LAZY);
+-        if (libcutils) {
+-            PROPERTY_DLSYM(property_get);
+-            PROPERTY_DLSYM(property_set);
+-            PROPERTY_DLSYM(property_list);
+-            atexit(unload_libcutils);
+-        } else {
+-            fprintf(stderr, "failed to load bionic libc.so\n");
+-            abort();
+-        }
+-    }
+-}
++/**
++ * Mobile NixOS hack:
++ * This property "provider" relies on the older "legacy" behaviour. This is used
++ * to avoid loading libraries in the stage-1 environment. This is possible since
++ * adbd doesn't care much about using the actual libraries from the device, but
++ * only relies on other functions from libhybris.
++ */
+ 
+ int property_list(void (*propfn)(const char *key, const char *value, void *cookie), void *cookie)
+ {
+-    ensure_bionic_properties_initialized();
+-
+-    return bionic_property_list(propfn, cookie);
++    return my_property_list(propfn, cookie);
+ }
+ 
+ int property_get(const char *key, char *value, const char *default_value)
+ {
+-    ensure_bionic_properties_initialized();
+-
+-    return bionic_property_get(key, value, default_value);
++    return my_property_get(key, value, default_value);
+ }
+ 
+ int property_set(const char *key, const char *value)
+ {
+-    ensure_bionic_properties_initialized();
+-
+-    return bionic_property_set(key, value);
++    return my_property_set(key, value);
+ }
+ 
+-- 
+2.23.0
+

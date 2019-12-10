@@ -1,0 +1,24 @@
+From 95d9181f725f06e4d00d920c9608cb1ed9c6537a Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 9 Dec 2019 23:38:59 -0500
+Subject: [PATCH] Removes failing test for wayland-less builds
+
+---
+ hybris/tests/Makefile.am | 1 -
+ 1 file changed, 1 deletion(-)
+
+diff --git a/hybris/tests/Makefile.am b/hybris/tests/Makefile.am
+index 6f97c3e..1a1656d 100644
+--- a/tests/Makefile.am
++++ b/tests/Makefile.am
+@@ -7,7 +7,6 @@ bin_PROGRAMS = \
+ 	test_sensors \
+ 	test_input \
+ 	test_lights \
+-	test_camera \
+ 	test_vibrator \
+ 	test_media \
+ 	test_recorder \
+-- 
+2.23.0
+

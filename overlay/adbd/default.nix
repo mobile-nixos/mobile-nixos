@@ -36,7 +36,7 @@ stdenv.mkDerivation {
   ];
 
   propagatedBuildInputs = [
-    libhybris
+    (libhybris.override { useLegacyProperties = true; })
     zlib
     openssl
   ];
