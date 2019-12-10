@@ -7,6 +7,7 @@ stdenv
 
 , android-headers
 , file
+, useLegacyProperties ? false
 }:
 
 let
@@ -22,6 +23,8 @@ stdenv.mkDerivation {
     rev = "d27c1a85703db8dea4539ceb4d869792fd78ee37";
     sha256 = "014wrpzd1w2bbza5jsy51qhhn9lvffz5h8l6mkwvkkn98i3h9yzn";
   };
+
+  patches = lib.optional useLegacyProperties ./0001-HACK-Rely-on-legacy-properties-rather-than-native-pr.patch;
 
   postAutoreconf = ''
     substituteInPlace configure \
