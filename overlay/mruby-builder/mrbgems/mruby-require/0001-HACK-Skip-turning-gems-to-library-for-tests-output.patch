@@ -1,0 +1,26 @@
+From 0c476626d9494d8f960a13d15203fd6438e2641c Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 19 Dec 2019 21:20:47 -0500
+Subject: [PATCH] [HACK] Skip turning gems to library for tests output
+
+This is used to work around the issue where mrbtest seemingly cannot be
+built that way.
+---
+ mrbgem.rake | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/mrbgem.rake b/mrbgem.rake
+index 6321302..b152e80 100644
+--- a/mrbgem.rake
++++ b/mrbgem.rake
+@@ -46,6 +46,7 @@ MRuby::Gem::Specification.new('mruby-require') do |spec|
+   MRuby.each_target do
+     next if @bundled
+     @bundled = []
++    next if test_enabled?
+     next unless enable_gems?
+     top_build_dir = build_dir
+     # Only gems included AFTER the mruby-require gem during compilation are 
+-- 
+2.23.0
+

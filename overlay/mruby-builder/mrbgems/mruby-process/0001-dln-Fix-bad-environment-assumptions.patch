@@ -1,0 +1,54 @@
+From c162a8a15e685aa45d1227f3f252ce5984470275 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 19 Dec 2019 17:23:33 -0500
+Subject: [PATCH] dln: Fix bad environment assumptions
+
+This fixes an issue where environment lookups didn't work as expected.
+
+That is, the environment lookup was only (seemingly) right for Windows
+environments. It was defaulting to the "Path" environment variable.
+
+This does not fail in conventional POSIX-ish setups, since the fallback
+is to look in a bunch of default paths when PATH_ENV is null.
+
+This, however, fails in sandboxed and isolated situations where
+dependencies are injected through PATH. This is why it fails on NixOS.
+
+Furthermore, the path separator also defaulted to a non-POSIXly correct
+one.
+
+These changes hinge on the Windows conditional, and makes environment
+lookups work correctly on non-windows platforms.
+---
+ src/dln.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/src/dln.c b/src/dln.c
+index 74d5ed5..d8e24f7 100644
+--- a/src/dln.c
++++ b/src/dln.c
+@@ -26,12 +26,21 @@
+ #include <sys/types.h>
+ #include <sys/stat.h>
+ 
++#ifdef _WIN32
+ #ifndef PATH_ENV
+ # define PATH_ENV "Path"
+ #endif
+ #ifndef PATH_SEP
+ # define PATH_SEP ";"
+ #endif
++#else
++#ifndef PATH_ENV
++# define PATH_ENV "PATH"
++#endif
++#ifndef PATH_SEP
++# define PATH_SEP ":"
++#endif
++#endif
+ 
+ #ifdef _WIN32
+ static size_t
+-- 
+2.23.0
+
