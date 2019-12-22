@@ -19,7 +19,7 @@ mruby.builder {
   '';
 
   buildPhase = ''
-    makeBin init main.rb
+    makeBin init lib/* main.rb
   '';
 
   gems = with mrbgems; [
