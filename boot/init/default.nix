@@ -25,8 +25,10 @@ mruby.builder {
   gems = with mrbgems; [
     { core = "mruby-io"; }
     { core = "mruby-sleep"; }
-    mruby-regexp-pcre
+    mruby-dir
     mruby-env
+    mruby-json
     mruby-open3
+    mruby-regexp-pcre
   ];
 }
