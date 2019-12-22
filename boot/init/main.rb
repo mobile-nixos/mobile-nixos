@@ -1,58 +1,74 @@
-def pp(x)
-  puts(x.inspect)
-end
+# FIXME: Allow overriding $logger.level = Logger::DEBUG at build-time
+# Otherwise early logging will be lost.
+$logger.level = Logger::DEBUG
 
-def prepare_environment()
-  rules = File.read("/etc/udev/rules.d/00-env.rules").strip.split("\n")
-  rules.each do |r|
-    name, value = r.split("=", 2)
-    name = name.match(/^ENV{(.*)}$/)[1]
-    value = value.sub(/^"/, "").sub(/"$/, "")
-    ENV[name] = value
-  end
+# TODO: Allow defining depending on stage-0/stage-1.
+STAGE = 1
+log("************************")
+log("* Mobile NixOS stage-#{STAGE} *")
+log("************************")
+log("")
+log("TODO: embed build information...")
+log("")
+
+def cat(*files)
+  files.map do |file|
+    File.read(file)
+  end.join("")
 end
 
 def prepare_mounts()
-  # FIXME : porcelain around mkdir and mount
-  system("mkdir", "-p", "/proc", "/sys", "/dev")
-  system("mount", "-t", "devtmpfs", "devtmpfs", "/dev")
-  system("mount", "-t", "proc", "proc", "/proc")
-  system("mount", "-t", "sysfs", "sysfs", "/sys")
+  FileUtils.mkdir_p(
+    "/proc",
+    "/sys",
+    "/dev",
+    "/tmp",
+    "/run",
+    "/lib",
+    "/mnt",
+    "/etc/udev",
+    "/var/log",
+  )
+  System.mount("/dev", type: "devtmpfs")
+  System.mount("/proc", type: "proc")
+  System.mount("/sys", type: "sysfs")
+
+  FileUtils.mkdir_p("/dev/pts")
+  System.mount("/dev/pts", type: "devpts")
+end
+
+def prepare_shell_files()
+  # Basic stuff expected by shells and logins
+  File.write("/etc/shells", "/bin/sh\n")
+  File.write("/etc/passwd", "root:*:0:0:root:/root:/bin/sh\n")
+  File.write("/etc/nsswitch.conf", "passwd: files\n")
+  File.write("/var/log/lastlog", "")
 end
 
 def prepare_framebuffer()
-  # [ -e "/sys/class/graphics/fb0/modes" ] || return
-  # [ -z "$(cat /sys/class/graphics/fb0/mode)" ] || return
-
-  # _mode="$(cat /sys/class/graphics/fb0/modes)"
-  # echo "Setting framebuffer mode to: $_mode"
-  # echo "$_mode" > /sys/class/graphics/fb0/mode
   mode = File.read("/sys/class/graphics/fb0/modes")
-  puts "Setting framebuffer mode to: #{mode}"
-  File.open("/sys/class/graphics/fb0/mode", "w") do |f|
-    f.write(mode)
-  end
+  log("Setting framebuffer mode to: #{mode}")
+  File.write("/sys/class/graphics/fb0/mode", mode)
 end
 
-prepare_environment
+def show_splash(name)
+  System.run("ply-image", "/splash.#{name}.png")
+end
 
-puts "----"
-puts "Environment:"
-pp ENV
-puts "----"
+# Loads a basic environment.
+# This is used mainly to make LD_LIBRARY_PATH valid, and additionally
+# point PATH to extraUtils.
+UDev.simple_load_environment("/etc/udev/rules.d/00-env.rules")
 
-prepare_mounts
+prepare_mounts()
+# FIXME: Set logger level according to /proc/cmdline
+$logger.level = Logger::DEBUG
 
-system("ls", "-l", "/sys")
-system("ls", "-l", "/sys/class")
-system("ls", "-l", "/sys/class/graphics")
-system("ls", "-l", "/sys/class/graphics/fb0")
-system("ls", "-l", "/sys/class/graphics/fb0/modes")
-prepare_framebuffer
-
-system("ply-image", "/splash.stage-0.png")
+prepare_shell_files()
+prepare_framebuffer()
+show_splash("stage-0")
 
 while true do
-  puts("Hello from this init!")
-  sleep(1)
+  log("Hello from this init!")
+  sleep(60)
 end
