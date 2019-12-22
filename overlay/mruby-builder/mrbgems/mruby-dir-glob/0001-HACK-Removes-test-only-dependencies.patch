@@ -1,0 +1,32 @@
+From 7118f6960e5a6eedff287c6565cf4e6403bb1015 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 22 Dec 2019 15:53:36 -0500
+Subject: [PATCH] =?UTF-8?q?[HACK]=C2=A0Removes=20test-only=20dependencies?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This also assumes tests are disabled.
+
+This is an old mrbgem and doesn't play nice with minimal dependencies
+due to it always requiring those gems.
+---
+ mrbgem.rake | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/mrbgem.rake b/mrbgem.rake
+index e7481ab..ff63c98 100644
+--- a/mrbgem.rake
++++ b/mrbgem.rake
+@@ -9,8 +9,6 @@ MRuby::Gem::Specification.new('mruby-dir-glob') do |spec|
+   spec.add_dependency 'mruby-io'
+   spec.add_dependency 'mruby-errno'
+   spec.add_dependency 'mruby-file-stat'
+-  spec.add_dependency 'mruby-process'
+-  spec.add_dependency 'mruby-pack'
+ 
+   # how to specify a 'general' regexp engine?
+ #  spec.add_dependency 'mruby-regexp-pcre'
+-- 
+2.23.0
+

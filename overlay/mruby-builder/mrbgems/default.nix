@@ -32,6 +32,30 @@ rec {
     rev = "09af1ecdce7b39582023c7614f8305386ee4d789";
     sha256 = "0b4g9zmz15fki6zb7a0ijyj1azk6k09kk3h5p6kcxv73zzdbdr7f";
   };
+  mruby-dir = fetchFromGitHub {
+    repo = "mruby-dir";
+    owner = "iij";
+    rev = "89dceefa1250fb1ae868d4cb52498e9e24293cd1";
+    sha256 = "0zrhiy9wmwmc9ls62iyb2z86j2ijqfn7rn4xfmrbrfxygczarsm9";
+  };
+  mruby-dir-glob = (patched (tweaked (fetchFromGitHub {
+    repo = "mruby-dir-glob";
+    owner = "gromnitsky";
+    rev = "334c040a2e2c4c2689f8c3440168011f64d57ada";
+    sha256 = "1ji826s9mbwk6rmn5fccxp53hfgnq6ayaphv6ccznr0k6pim8cv5";
+  }) ''
+    # Disable all tests, they're not kind with gems :/
+    rm -vrf test test.local
+  '') [
+    ./mruby-dir-glob/0001-HACK-Removes-test-only-dependencies.patch
+  ])
+  .overrideAttrs(old: {
+    requiredGems = [
+      mruby-dir
+      mruby-errno
+      mruby-file-stat
+    ];
+  });
   mruby-env = fetchFromGitHub {
     repo = "mruby-env";
     owner = "iij";
@@ -48,6 +72,18 @@ rec {
       mruby-regexp-pcre
     ];
   });
+  mruby-errno = fetchFromGitHub {
+    repo = "mruby-errno";
+    owner = "iij";
+    rev = "b4415207ff6ea62360619c89a1cff83259dc4db0";
+    sha256 = "12djcwjjw0fygai5kssxbfs3pzh3cpnq07h9m2h5b51jziw380xj";
+  };
+  mruby-file-stat = fetchFromGitHub {
+    repo = "mruby-file-stat";
+    owner = "ksss";
+    rev = "aa474589f065c71d9e39ab8ba976f3bea6f9aac2";
+    sha256 = "1clarmr67z133ivkbwla1a42wcjgj638j9w0mlv5n21mhim9rid5";
+  };
   mruby-json = fetchFromGitHub {
     repo = "mruby-json";
     owner = "mattn";
