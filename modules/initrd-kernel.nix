@@ -54,12 +54,11 @@ in
   };
 
   config.mobile.boot.stage-1 = mkIf cfg.modular {
-    contents = [ { object = modulesClosure; symlink = "/.kernel-modules"; } ];
+    contents = [
+      { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
+      { object = "${modulesClosure}/lib/firmware"; symlink = "/lib/firmware"; }
+    ];
     init = lib.mkOrder BEFORE_DEVICE_INIT ''
-      mkdir -p /lib
-      ln -s ${modulesClosure}/lib/modules/ lib/modules
-      ln -s ${modulesClosure}/lib/firmware/ lib/firmware
-
       ${
         lib.concatMapStringsSep "\n" (mod: ''modprobe ${mod}'') cfg.modules
       }
