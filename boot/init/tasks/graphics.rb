@@ -8,6 +8,9 @@ class Tasks::Graphics < SingletonTask
       "/sys/class/graphics/fb0/mode",
       "/sys/class/graphics/fb0/modes",
     )
+    # This is only incidental to the fact that /dev/fb0 wouldn't exist for
+    # users of the "Graphics" dependency.
+    add_dependency(:Mount, "/dev")
   end
 
   def run()
