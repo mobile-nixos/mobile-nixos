@@ -8,7 +8,14 @@ let
     runCommandNoCC
     udev
   ;
-  inherit (lib) flatten optionals;
+  inherit (lib) flatten optionals optionalString;
+
+  initWrapperRealInit = "/actual-init";
+
+  # TODO: define as an option
+  withStrace = false;
+
+  initWrapperEnabled = withStrace;
 
   device_config = config.mobile.device;
   device_name = device_config.name;
@@ -17,6 +24,24 @@ let
 
   mobile-nixos-init = pkgs.pkgsStatic.callPackage ../boot/init {};
   init = "${mobile-nixos-init}/bin/init";
+
+  shell = "${extraUtils}/bin/sh";
+  debugInit = pkgs.writeScript "debug-init" ''
+    #!${shell}
+
+    echo
+    echo "***************************************"
+    echo "* Mobile NixOS stage-0 script wrapper *"
+    echo "***************************************"
+    echo
+
+    PS4="=> "
+    set -x
+
+    export LD_LIBRARY_PATH="${extraUtils}/lib"
+
+    exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} ${initWrapperRealInit}
+  '';
 
   contents =
     (optionals (stage-1 ? contents) (flatten stage-1.contents))
@@ -27,7 +52,13 @@ let
 
       # FIXME: udev/udevRules module.
       { object = udevRules; symlink = "/etc/udev/rules.d"; }
+    ]
+    ++ optionals (!initWrapperEnabled) [
       { object = init; symlink = "/init"; }
+    ]
+    ++ optionals initWrapperEnabled [
+      { object = init; symlink = initWrapperRealInit; }
+      { object = debugInit; symlink = "/init"; }
     ]
   ;
 
@@ -80,13 +111,13 @@ let
     packages = [
       busybox
     ]
-      ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
-      ++ [{
+    ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
+    ++ [{
       package = runCommandNoCC "empty" {} "mkdir -p $out";
       extraCommand =
-        let
-          inherit (pkgs) udev;
-        in
+      let
+        inherit (pkgs) udev;
+      in
         ''
           # Copy udev.
           copy_bin_and_libs ${udev}/lib/systemd/systemd-udevd
@@ -97,6 +128,15 @@ let
         ''
       ;
     }]
+    ++ optionals withStrace [
+      {
+        package = runCommandNoCC "empty" {} "mkdir -p $out";
+        extraCommand = with pkgs; ''
+          copy_bin_and_libs ${strace}/bin/strace
+          cp -fpv ${glibc.out}/lib/libgcc_s.so* $out/lib
+        '';
+      }
+    ]
     ;
   };
 
