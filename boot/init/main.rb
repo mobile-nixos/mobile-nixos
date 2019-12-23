@@ -30,6 +30,7 @@ Tasks::Splash.new("stage-1")
   .add_dependency(:SingletonTask, :UDev)
 
 Tasks::Mount.new($configuration["root"]["device"], "/mnt")
+Tasks::Modules.new(*$configuration["kernel"]["modules"])
 
 Tasks::go()
 
