@@ -23,25 +23,19 @@ mruby.builder {
   buildPhase = ''
     get_tasks() {
       for s in $tasks; do
-        find tasks/$s -type f
+        find $s -type f -iname '*.rb'
       done | sort
     }
 
     makeBin init \
       $(find lib -type f | sort) \
-      $(get_tasks) \
+      $(find tasks -type f | sort) \
       main.rb
   '';
 
   # TODO: better way to handle this?
   tasks = [
-    "directory.rb"
-    "environment.rb"
-    "graphics.rb"
-    "login_environment.rb"
-    "mount.rb"
-    "splash.rb"
-    "symlink.rb"
+    "./tasks"
   ];
 
   gems = with mrbgems; [
