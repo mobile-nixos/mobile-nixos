@@ -11,7 +11,7 @@ class Tasks::Modules < Task
       begin
         System.run("modprobe", mod)
       rescue System::CommandError
-        $logger.warn("Module #{mod} failed to load.")
+        $logger.warn("Kernel module #{mod} failed to load.")
       end
     end
   end

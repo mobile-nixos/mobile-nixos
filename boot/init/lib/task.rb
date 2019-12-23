@@ -24,6 +24,7 @@ module Tasks
     @singletons_to_be_instantiated = []
 
     until @tasks.all?(&:ran) do
+      $logger.debug("Tasks resolution loop start")
       @tasks
         .reject(&:ran)
         .each do |task|
@@ -72,7 +73,7 @@ class Task
     unless @ran
       $logger.info("Running #{name}...")
       run()
-      $logger.info("Finished #{name}...")
+      $logger.debug("Finished #{name}...")
       @ran = true
     end
   end
