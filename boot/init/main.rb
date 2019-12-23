@@ -2,13 +2,11 @@
 STAGE = 1
 FAILURE_SLEEP = 10
 
-$configuration = JSON.parse(File.read("/etc/boot/config"));
-
 log("************************")
 log("* Mobile NixOS stage-#{STAGE} *")
 log("************************")
 log("")
-log("Built for device #{$configuration["device"]["name"]}")
+log("Built for device #{Configuration["device"]["name"]}")
 log("")
 
 Tasks::Splash.new("stage-0")
@@ -29,8 +27,9 @@ end
 Tasks::Splash.new("stage-1")
   .add_dependency(:SingletonTask, :UDev)
 
-Tasks::Mount.new($configuration["root"]["device"], "/mnt")
-Tasks::Modules.new(*$configuration["kernel"]["modules"])
+Tasks::Mount.new(Configuration["root"]["device"], "/mnt")
+Tasks::Modules.new(*Configuration["kernel"]["modules"])
+
 
 Tasks::go()
 
