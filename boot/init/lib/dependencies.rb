@@ -12,6 +12,21 @@ module Dependencies
   class Boot < BaseDependency
   end
 
+  class Task < BaseDependency
+    def initialize(instance)
+      @instance = instance
+    end
+
+    def fulfilled()
+      if @instance.ran
+        true
+      else
+        $logger.debug(" -> Dependency #{name} unfulfilled (task #{@instance.inspect} hasn't run yet)")
+        false
+      end
+    end
+  end
+
   class SingletonTask < BaseDependency
     def initialize(symbol)
       @symbol = symbol
