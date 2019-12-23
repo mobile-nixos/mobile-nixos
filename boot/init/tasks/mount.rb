@@ -3,6 +3,27 @@ class Tasks::Mount < Task
   attr_reader :source
   attr_reader :mount_point
 
+  class ExistingMountTask < StandardError
+  end
+
+  def self.normalize_mountpoint(path)
+    path = path.gsub(/\//, "/")
+    path.sub(/\/$/, "") unless path == "/"
+  end
+
+  def self.register(mount_point, instance)
+    mount_point == normalize_mountpoint(mount_point)
+    @registry ||= {}
+    unless @registry[mount_point].nil? then
+      raise ExistingMountTask.new("Mount point task for '#{mount_point}' already exists.")
+    end
+    @registry[mount_point] = instance
+  end
+
+  def self.registry()
+    @registry
+  end
+
   def initialize(source, mount_point=nil, **named)
     @named = named
     if mount_point
@@ -14,6 +35,7 @@ class Tasks::Mount < Task
       @mount_point = source
     end
     add_dependency(:SingletonTask, :Environment)
+    self.class.register(@mount_point, self)
   end
 
   def run()
@@ -27,5 +49,18 @@ class Tasks::Mount < Task
 
   def name()
     "#{super}(#{source}, #{mount_point}, #{@named.inspect})"
+  end
+end
+
+module Dependencies
+  class Mount < BaseDependency
+    def initialize(mount_point)
+      @mount_point = Tasks::Mount.normalize_mountpoint(mount_point)
+    end
+
+    def fulfilled?()
+      task = Tasks::Mount.registry[@mount_point]
+      task && task.ran
+    end
   end
 end

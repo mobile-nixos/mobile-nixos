@@ -12,7 +12,7 @@ log("")
 Tasks::Splash.new("stage-0")
 Tasks::Symlink.new("/proc/mounts", "/etc/mtab")
 Tasks::Mount.new("/dev/pts", type: "devpts")
-  .add_dependency(:Files, "/dev/")
+  .add_dependency(:Mount, "/dev")
 Tasks::Mount.new("/dev", type: "devtmpfs")
 Tasks::Mount.new("/proc", type: "proc")
 Tasks::Mount.new("/sys", type: "sysfs")
@@ -29,7 +29,6 @@ Tasks::Splash.new("stage-1")
 
 Tasks::Mount.new(Configuration["root"]["device"], "/mnt")
 Tasks::Modules.new(*Configuration["kernel"]["modules"])
-
 
 Tasks::go()
 
