@@ -18,17 +18,43 @@ mruby.builder {
     cp ${shellwords} lib/0001_shellwords.rb
   '';
 
+  # Sorting ensures a stable lexicographic import order.
+  # Otherwise the compiler could accidentally be flaky.
   buildPhase = ''
-    makeBin init lib/* main.rb
+    get_tasks() {
+      for s in $tasks; do
+        find tasks/$s -type f
+      done | sort
+    }
+
+    makeBin init \
+      $(find lib -type f | sort) \
+      $(get_tasks) \
+      main.rb
   '';
 
+  # TODO: better way to handle this?
+  tasks = [
+    "directory.rb"
+    "environment.rb"
+    "graphics.rb"
+    "login_environment.rb"
+    "mount.rb"
+    "splash.rb"
+    "symlink.rb"
+  ];
+
   gems = with mrbgems; [
+    { core = "mruby-exit"; }
     { core = "mruby-io"; }
     { core = "mruby-sleep"; }
     mruby-dir
+    mruby-dir-glob
     mruby-env
     mruby-json
+    mruby-logger
     mruby-open3
     mruby-regexp-pcre
+    mruby-singleton
   ];
 }

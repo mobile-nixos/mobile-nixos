@@ -4,6 +4,8 @@ module System
   end
   class CommandNotFound < CommandError
   end
+  class MountError < StandardError
+  end
 
   # Runs and pretty-prints a command. Parameters and shelling-out have the same
   # meaning as with +Kernel#spawn+; one parameter is shelling-out, multiple is
@@ -38,12 +40,25 @@ module System
   # @overload mount(dest, type:)
   #   @param dest [String] Destination path to mount to
   #   @param type [String] Type of the mount (+-t+).
-  def self.mount(source, dest = nil, type: )
+  def self.mount(source, dest = nil, type: nil)
     # Fill-in the "reversed" optional parameters.
     unless dest
       dest = source
       source = type
     end
-    run("mount", "-t", type, source, dest)
+
+    if source.nil? and type.nil?
+      raise MountError.new("Cannot mount when missing both source and type.")
+    end
+
+    args = []
+    if type
+      args << "-t"
+      args << type
+    end
+    args << source
+    args << dest
+
+    run("mount", *args)
   end
 end

@@ -1,9 +1,7 @@
-# FIXME: Allow overriding $logger.level = Logger::DEBUG at build-time
-# Otherwise early logging will be lost.
-$logger.level = Logger::DEBUG
-
 # TODO: Allow defining depending on stage-0/stage-1.
 STAGE = 1
+FAILURE_SLEEP = 10
+
 log("************************")
 log("* Mobile NixOS stage-#{STAGE} *")
 log("************************")
@@ -11,64 +9,35 @@ log("")
 log("TODO: embed build information...")
 log("")
 
-def cat(*files)
-  files.map do |file|
-    File.read(file)
-  end.join("")
+Tasks::Splash.new("stage-0")
+Tasks::Symlink.new("/proc/mounts", "/etc/mtab")
+Tasks::Mount.new("/dev/pts", type: "devpts")
+  .add_dependency(:Files, "/dev/")
+Tasks::Mount.new("/dev", type: "devtmpfs")
+Tasks::Mount.new("/proc", type: "proc")
+Tasks::Mount.new("/sys", type: "sysfs")
+[
+  "/proc",
+  "/sys",
+  "/dev",
+  "/tmp",
+  "/run",
+  "/lib",
+  "/mnt",
+  "/etc/udev",
+  "/var/log",
+].each do |dir|
+  Tasks::Directory.new(dir)
 end
 
-def prepare_mounts()
-  FileUtils.mkdir_p(
-    "/proc",
-    "/sys",
-    "/dev",
-    "/tmp",
-    "/run",
-    "/lib",
-    "/mnt",
-    "/etc/udev",
-    "/var/log",
-  )
-  System.mount("/dev", type: "devtmpfs")
-  System.mount("/proc", type: "proc")
-  System.mount("/sys", type: "sysfs")
+# FIXME: depend on udev running
+Tasks::Splash.new("stage-1")
 
-  FileUtils.mkdir_p("/dev/pts")
-  System.mount("/dev/pts", type: "devpts")
-end
+Tasks::Mount.new("/dev/disks/by-label/NIXOS", "/mnt")
 
-def prepare_shell_files()
-  # Basic stuff expected by shells and logins
-  File.write("/etc/shells", "/bin/sh\n")
-  File.write("/etc/passwd", "root:*:0:0:root:/root:/bin/sh\n")
-  File.write("/etc/nsswitch.conf", "passwd: files\n")
-  File.write("/var/log/lastlog", "")
-end
+Tasks::go()
 
-def prepare_framebuffer()
-  mode = File.read("/sys/class/graphics/fb0/modes")
-  log("Setting framebuffer mode to: #{mode}")
-  File.write("/sys/class/graphics/fb0/mode", mode)
-end
-
-def show_splash(name)
-  System.run("ply-image", "/splash.#{name}.png")
-end
-
-# Loads a basic environment.
-# This is used mainly to make LD_LIBRARY_PATH valid, and additionally
-# point PATH to extraUtils.
-UDev.simple_load_environment("/etc/udev/rules.d/00-env.rules")
-
-prepare_mounts()
-# FIXME: Set logger level according to /proc/cmdline
-$logger.level = Logger::DEBUG
-
-prepare_shell_files()
-prepare_framebuffer()
-show_splash("stage-0")
-
-while true do
-  log("Hello from this init!")
-  sleep(60)
-end
+$logger.fatal("Tasks all ran, but we're still here...")
+$logger.fatal("Sleeping for #{FAILURE_SLEEP} seconds then exiting...")
+sleep(FAILURE_SLEEP)
+exit(99)
