@@ -2,9 +2,10 @@
 class Tasks::UDev < SingletonTask
   def initialize()
     add_dependency(:SingletonTask, :Environment)
-    add_dependency(:Files, "/run")
     add_dependency(:Mount, "/dev")
     add_dependency(:Mount, "/proc")
+    add_dependency(:Mount, "/run")
+    add_dependency(:Mount, "/sys")
   end
 
   def udevadm(*args)
