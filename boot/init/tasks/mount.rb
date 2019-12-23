@@ -1,18 +1,31 @@
 # Mounts mount point
 class Tasks::Mount < Task
-  def initialize(*args)
+  attr_reader :source
+  attr_reader :mount_point
+
+  def initialize(source, mount_point=nil, **named)
+    @named = named
+    if mount_point
+      @source = source
+      @mount_point = mount_point
+      add_dependency(:Files, source)
+    else
+      @source = named[:type]
+      @mount_point = source
+    end
     add_dependency(:SingletonTask, :Environment)
-    @args = args
   end
 
   def run()
-    args = @args.dup
-    dir = args.first
-    FileUtils.mkdir_p(dir)
-    System.mount(*args)
+    FileUtils.mkdir_p(mount_point)
+    System.mount(source, mount_point, **@named)
+  end
+
+  def type
+    @named[:type]
   end
 
   def name()
-    "#{super}(#{@args.inspect})"
+    "#{super}(#{source}, #{mount_point}, #{@named.inspect})"
   end
 end
