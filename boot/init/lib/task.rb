@@ -56,6 +56,7 @@ class Task
   end
 
   def add_dependency(kind, *args)
+    raise NameError.new("No dependency named #{kind}") unless Dependencies.constants.include?(kind.to_sym)
     dependencies << Dependencies.const_get(kind.to_sym).new(*args)
   end
 
