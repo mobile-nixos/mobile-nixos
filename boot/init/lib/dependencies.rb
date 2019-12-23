@@ -52,11 +52,11 @@ module Dependencies
         true
       else
         $logger.debug do
-          @patterns.each do |pattern|
-            unless Dir.glob(pattern).count > 0
-              " -> Dependency #{name} unfulfilled (Pattern #{pattern} does not match paths)"
-            end
-          end
+          patterns = @patterns.reject do |pattern|
+            Dir.glob(pattern).count > 0
+          end.join(", ")
+
+          " -> Dependency #{name} unfulfilled (Pattern #{patterns} does not match paths)"
         end
         false
       end
