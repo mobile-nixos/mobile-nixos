@@ -1,6 +1,6 @@
 module Dependencies
   class BaseDependency
-    def fulfilled()
+    def fulfilled?()
       true
     end
 
@@ -17,11 +17,11 @@ module Dependencies
       @instance = instance
     end
 
-    def fulfilled()
+    def fulfilled?()
       if @instance.ran
         true
       else
-        $logger.debug(" -> Dependency #{name} unfulfilled (task #{@instance.inspect} hasn't run yet)")
+        $logger.debug(" -> Dependency #{name} unfulfilled? (task #{@instance.inspect} hasn't run yet)")
         false
       end
     end
@@ -32,11 +32,11 @@ module Dependencies
       @symbol = symbol
     end
 
-    def fulfilled()
+    def fulfilled?()
       if Tasks.const_get(@symbol).instance.ran
         true
       else
-        $logger.debug(" -> Dependency #{name} unfulfilled (task #{@symbol} hasn't run yet)")
+        $logger.debug(" -> Dependency #{name} unfulfilled? (task #{@symbol} hasn't run yet)")
         false
       end
     end
@@ -47,7 +47,7 @@ module Dependencies
       @patterns = *patterns
     end
 
-    def fulfilled()
+    def fulfilled?()
       if @patterns.all? { |pattern| Dir.glob(pattern).count > 0 }
         true
       else
@@ -56,7 +56,7 @@ module Dependencies
             Dir.glob(pattern).count > 0
           end.join(", ")
 
-          " -> Dependency #{name} unfulfilled (Pattern #{patterns} does not match paths)"
+          " -> Dependency #{name} unfulfilled? (Pattern #{patterns} does not match paths)"
         end
         false
       end

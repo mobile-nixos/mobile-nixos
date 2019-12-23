@@ -60,15 +60,15 @@ class Task
     dependencies << Dependencies.const_get(kind.to_sym).new(*args)
   end
 
-  def dependencies_fulfilled()
-    dependencies.all?(&:fulfilled)
+  def dependencies_fulfilled?()
+    dependencies.all?(&:fulfilled?)
   end
 
   # Internal actual way to run the task
   # This runs the `#run` method.
   def _try_run_task()
     $logger.debug("Looking to run task #{name}...")
-    return unless dependencies_fulfilled
+    return unless dependencies_fulfilled?
     unless @ran
       $logger.info("Running #{name}...")
       run()
