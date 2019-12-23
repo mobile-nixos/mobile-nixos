@@ -4,7 +4,7 @@ class Tasks::UDev < SingletonTask
     add_dependency(:SingletonTask, :Environment)
     add_dependency(:Files, "/dev/null")
     add_dependency(:Files, "/proc/cmdline")
-    @pid = nil
+    add_dependency(:Files, "/run")
   end
 
   def udevadm(*args)
@@ -12,9 +12,20 @@ class Tasks::UDev < SingletonTask
   end
 
   def run()
-    @pid = spawn("systemd-udevd", "--daemon")
+    udevd
     udevadm("trigger", "--action=add")
     udevadm("settle")
+  end
+
+  def udevd()
+    *args = []
+    args << "--debug" if debug?
+    System.run("systemd-udevd", "--daemon", *args)
+  end
+
+  # TODO: Allow configuring its debug state
+  def debug?
+    false
   end
 
   # TODO: teardown
