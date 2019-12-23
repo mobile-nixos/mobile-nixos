@@ -7,10 +7,21 @@ let
     mkExtraUtils
     runCommandNoCC
     udev
+    writeText
   ;
-  inherit (lib) flatten optionals optionalString;
+  inherit (lib)
+    flatten
+    optionalString
+    optionals
+  ;
+  inherit (builtins)
+    toJSON
+  ;
 
   initWrapperRealInit = "/actual-init";
+
+  # FIXME : less hardcoding of what goes in the config...
+  cfg_kernel = config.mobile.boot.stage-1.kernel;
 
   # TODO: define as an option
   # This is a bit buggy:
@@ -61,12 +72,30 @@ let
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} ${initWrapperRealInit}
   '';
 
+  bootConfig = {
+    device = {
+      inherit (device_config) name;
+    };
+    kernel = {
+      inherit (cfg_kernel) modules;
+    };
+    root = {
+      inherit (config.fileSystems."/") device;
+    };
+
+  };
+
+  bootConfigFile = writeText "${device_name}-boot-config" (toJSON bootConfig);
+
   contents =
     (optionals (stage-1 ? contents) (flatten stage-1.contents))
     ++ [
       # Populate /bin/sh to stay POSIXLY compliant.
       # FIXME: Do we care?
       #{ object = "${extraUtils}/bin/sh"; symlink = "/bin/sh"; }
+
+      # The mostly device-specific configuration for the bootloader.
+      { object = bootConfigFile; symlink = "/etc/boot/config"; }
 
       # FIXME: udev/udevRules module.
       { object = udevRules; symlink = "/etc/udev/rules.d"; }
