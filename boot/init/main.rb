@@ -30,8 +30,8 @@ Tasks::Mount.new("/sys", type: "sysfs")
   Tasks::Directory.new(dir)
 end
 
-# FIXME: depend on udev running
 Tasks::Splash.new("stage-1")
+  .add_dependency(:SingletonTask, :UDev)
 
 Tasks::Mount.new("/dev/disks/by-label/NIXOS", "/mnt")
 
