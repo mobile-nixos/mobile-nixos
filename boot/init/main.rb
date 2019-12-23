@@ -19,13 +19,7 @@ Tasks::Mount.new("/dev", type: "devtmpfs")
 Tasks::Mount.new("/proc", type: "proc")
 Tasks::Mount.new("/sys", type: "sysfs")
 [
-  "/proc",
-  "/sys",
-  "/dev",
-  "/tmp",
   "/run",
-  "/lib",
-  "/mnt",
   "/etc/udev",
   "/var/log",
 ].each do |dir|
@@ -35,7 +29,7 @@ end
 Tasks::Splash.new("stage-1")
   .add_dependency(:SingletonTask, :UDev)
 
-Tasks::Mount.new("/dev/disks/by-label/NIXOS", "/mnt")
+Tasks::Mount.new("/dev/disk/by-label/NIXOS_SYSTEM", "/mnt")
 
 Tasks::go()
 
