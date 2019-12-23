@@ -29,7 +29,7 @@ end
 Tasks::Splash.new("stage-1")
   .add_dependency(:SingletonTask, :UDev)
 
-Tasks::Mount.new("/dev/disk/by-label/NIXOS_SYSTEM", "/mnt")
+Tasks::Mount.new($configuration["root"]["device"], "/mnt")
 
 Tasks::go()
 
