@@ -15,7 +15,12 @@ module System
   # @raise [System::CommandNotFound] on exit status 127, commonly used for command not found.
   # @raise [System::CommandError] on any other exit status.
   def self.run(*args)
-    pretty_command = args.shelljoin
+    pretty_command =
+      if args.length == 1
+        args.first
+      else
+        args.shelljoin
+      end
     $logger.debug(" $ #{pretty_command}")
     unless system(*args)
       raise CommandError.new("Could not execute `#{pretty_command}`, status nil") if $?.nil?
