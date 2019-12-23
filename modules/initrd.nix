@@ -91,8 +91,7 @@ let
     (optionals (stage-1 ? contents) (flatten stage-1.contents))
     ++ [
       # Populate /bin/sh to stay POSIXLY compliant.
-      # FIXME: Do we care?
-      #{ object = "${extraUtils}/bin/sh"; symlink = "/bin/sh"; }
+      { object = "${extraUtils}/bin/sh"; symlink = "/bin/sh"; }
 
       # The mostly device-specific configuration for the bootloader.
       { object = bootConfigFile; symlink = "/etc/boot/config"; }
