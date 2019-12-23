@@ -2,11 +2,13 @@
 STAGE = 1
 FAILURE_SLEEP = 10
 
+$configuration = JSON.parse(File.read("/etc/boot/config"));
+
 log("************************")
 log("* Mobile NixOS stage-#{STAGE} *")
 log("************************")
 log("")
-log("TODO: embed build information...")
+log("Built for device #{$configuration["device"]["name"]}")
 log("")
 
 Tasks::Splash.new("stage-0")
