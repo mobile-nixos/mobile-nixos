@@ -42,10 +42,12 @@ module System
   #   @param source [String] (Optional) mount source, defaults to type
   #   @param dest [String] Destination path to mount to
   #   @param type [String] Type of the mount (+-t+).
+  #   @param options [Array<String>] Mount options (+-o+).
   # @overload mount(dest, type:)
   #   @param dest [String] Destination path to mount to
   #   @param type [String] Type of the mount (+-t+).
-  def self.mount(source, dest = nil, type: nil)
+  #   @param options [Array<String>] Mount options (+-o+).
+  def self.mount(source, dest = nil, type: nil, options: nil)
     # Fill-in the "reversed" optional parameters.
     unless dest
       dest = source
@@ -60,6 +62,10 @@ module System
     if type
       args << "-t"
       args << type
+    end
+    if options
+      args << "-o"
+      args << options.join(",")
     end
     args << source
     args << dest
