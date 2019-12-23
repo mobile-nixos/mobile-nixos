@@ -13,9 +13,22 @@ let
   initWrapperRealInit = "/actual-init";
 
   # TODO: define as an option
+  # This is a bit buggy:
+  #  * fast burst of \n-delimited output will not work as expected
+  #  * `printk.devkmsg=on` is required on the kernel cmdline for better results
+  # A better implementation would be to have a binary who's sole purpose is to
+  # duplicate the stdout/stderr to /dev/kmsg while still outputting them to
+  # stdout/stderr as they do currently.
+  #
+  # Reminder: redirecting to kmsg is useful *mainly* for getting data through
+  # console_ramoops on devices without serial and without any other means to
+  # get the initial data out.
+  withKmsg = false;
+
+  # TODO: define as an option
   withStrace = false;
 
-  initWrapperEnabled = withStrace;
+  initWrapperEnabled = withKmsg || withStrace;
 
   device_config = config.mobile.device;
   device_name = device_config.name;
@@ -39,6 +52,11 @@ let
     set -x
 
     export LD_LIBRARY_PATH="${extraUtils}/lib"
+
+    ${optionalString withKmsg ''
+    ${extraUtils}/bin/mknod /.kmsg c 1 11
+    exec > /.kmsg 2>&1
+    ''}
 
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} ${initWrapperRealInit}
   '';
