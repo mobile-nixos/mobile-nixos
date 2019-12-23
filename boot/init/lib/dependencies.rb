@@ -3,6 +3,10 @@ module Dependencies
     def fulfilled()
       true
     end
+
+    def name()
+      self.class.name
+    end
   end
 
   class Boot < BaseDependency
@@ -12,8 +16,14 @@ module Dependencies
     def initialize(symbol)
       @symbol = symbol
     end
+
     def fulfilled()
-      Tasks.const_get(@symbol).instance.ran
+      if Tasks.const_get(@symbol).instance.ran
+        true
+      else
+        $logger.debug(" -> Dependency #{name} unfulfilled (task #{@symbol} hasn't run yet)")
+        false
+      end
     end
   end
 
@@ -21,9 +31,19 @@ module Dependencies
     def initialize(*patterns)
       @patterns = *patterns
     end
+
     def fulfilled()
-      @patterns.all? do |pattern|
-        Dir.glob(pattern).count > 0
+      if @patterns.all? { |pattern| Dir.glob(pattern).count > 0 }
+        true
+      else
+        $logger.debug do
+          @patterns.each do |pattern|
+            unless Dir.glob(pattern).count > 0
+              " -> Dependency #{name} unfulfilled (Pattern #{pattern} does not match paths)"
+            end
+          end
+        end
+        false
       end
     end
   end
