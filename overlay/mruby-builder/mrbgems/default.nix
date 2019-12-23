@@ -164,6 +164,12 @@ rec {
     rev = "528419eefb415203b989650f7b792b3556e3d475";
     sha256 = "05y1l7pprwrnizbbhsgcss0863y4z5fqnz31qsngr344c50v79sh";
   };
+  mruby-singleton = fetchFromGitHub {
+    repo = "mruby-singleton";
+    owner = "ksss";
+    rev = "73dd4bae1a47d82e49b8f85bf27f49ec4462052e";
+    sha256 = "0yyf9vfsm46m2fi46f8w6ympkwzlaqnbpjkfnkzyapf94rg23g6i";
+  };
   # Dependency on mruby-onig-regexp...
   # TODO: See if a naïve shellwords is enough... we only want it to
   #       print out our commands I think.
