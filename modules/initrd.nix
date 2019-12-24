@@ -83,6 +83,10 @@ let
       inherit (config.fileSystems."/") device;
     };
 
+    # Literally transmit some nixos configurations.
+    nixos = {
+      boot.specialFileSystems = config.boot.specialFileSystems;
+    };
   };
 
   bootConfigFile = writeText "${device_name}-boot-config" (toJSON bootConfig);
@@ -193,4 +197,9 @@ let
 in
   {
     system.build.initrd = "${initrd}/initrd";
+    # HACK: as we're using isContainer to bypass some NixOS stuff
+    # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
+    boot.specialFileSystems = {
+      "/sys" = { fsType = "sysfs"; options = [ "nosuid" "noexec" "nodev" ]; };
+    };
   }

@@ -11,13 +11,33 @@ log("")
 
 Tasks::Splash.new("stage-0")
 Tasks::Symlink.new("/proc/mounts", "/etc/mtab")
-Tasks::Mount.new("/dev/pts", type: "devpts")
-  .add_dependency(:Mount, "/dev")
-Tasks::Mount.new("/dev", type: "devtmpfs")
-Tasks::Mount.new("/proc", type: "proc")
-Tasks::Mount.new("/sys", type: "sysfs")
+
+# Create all mount points.
+mount_points = Configuration["nixos"]["boot"]["specialFileSystems"].map do |mount_point, config|
+  task = Tasks::Mount.new(
+    mount_point,
+    type: config["fsType"],
+    options: config["options"],
+  )
+
+  [mount_point, task]
+end.to_h
+
+mount_points.each do |_, target|
+  mount_points.each do |_, higher|
+    next if target == higher
+    # We're using +#mount_point+ on the tasks to use the normalized mount point
+    # names.
+    # If the higher mount point is found at the start of the target mount point.
+    # This will match /dev for /dev/shm, but not the reverse.
+    if target.mount_point.index(higher.mount_point) == 0 then
+      $logger.debug("#{target.mount_point} is under #{higher.mount_point}")
+      target.add_dependency(:Mount, higher.mount_point)
+    end
+  end
+end
+
 [
-  "/run",
   "/etc/udev",
   "/var/log",
 ].each do |dir|
