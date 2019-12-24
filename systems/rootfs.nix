@@ -69,6 +69,7 @@ in
       # TODO: move into the android system type.
       device = "/dev/disk/by-label/NIXOS_SYSTEM";
       fsType = "ext4";
+      autoResize = true;
     };
   };
 }
