@@ -7,16 +7,15 @@ module System
   class MountError < StandardError
   end
 
-  def self.pretty_command(*args)
+  def self.prettify_command(*args)
     args = args.dup
     # Removes the environment hash, if present.
     args.shift if args.first.is_a?(Hash)
-    pretty_command =
-      if args.length == 1
-        args.first
-      else
-        args.shelljoin
-      end
+    if args.length == 1
+      args.first
+    else
+      args.shelljoin
+    end
   end
 
   # Runs and pretty-prints a command. Parameters and shelling-out have the same
@@ -27,7 +26,8 @@ module System
   # @raise [System::CommandNotFound] on exit status 127, commonly used for command not found.
   # @raise [System::CommandError] on any other exit status.
   def self.run(*args)
-    $logger.debug(" $ #{pretty_command(*args)}")
+    pretty_command = prettify_command(*args)
+    $logger.debug(" $ #{pretty_command}")
     unless system(*args)
       raise CommandError.new("Could not execute `#{pretty_command}`, status nil") if $?.nil?
       status = $?.exitstatus
@@ -41,7 +41,7 @@ module System
 
   # Execs and pretty-prints a command.
   def self.exec(*args)
-    $logger.debug(" $ #{pretty_command(*args)}")
+    $logger.debug(" $ #{prettify_command(*args)}")
     Kernel.exec(*args)
   end
 
