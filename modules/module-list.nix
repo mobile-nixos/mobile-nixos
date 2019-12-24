@@ -18,7 +18,6 @@
   ./initrd-fbterm.nix
   ./initrd-fail.nix
   ./initrd-framebuffer.nix
-  ./initrd-growpart.nix
   ./initrd-kernel.nix
   ./initrd-logger.nix
   ./initrd-loop.nix
