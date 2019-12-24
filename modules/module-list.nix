@@ -31,7 +31,6 @@
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks-qualcomm.nix
-  ./stage-2.nix
   ./system-target.nix
   ./system-types.nix
 ]
