@@ -1,6 +1,5 @@
 { config, lib, pkgs, ... }:
 
-with import ../../modules/initrd-order.nix;
 let
   # This device description is a bit configurable through
   # mobile options...
@@ -86,11 +85,6 @@ in
 
   mobile.system.type = "kernel-initrd";
   mobile.boot.stage-1 = {
-    init = (lib.mkOrder BEFORE_READY_INIT ''
-      echo "cmdline:"
-      cat /proc/cmdline
-      echo "Hi there from /init!"
-    '');
     kernel = {
       modular = true;
       inherit modules;
