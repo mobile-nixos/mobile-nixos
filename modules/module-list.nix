@@ -15,7 +15,6 @@
   ./hardware-screen.nix
   ./hardware-soc.nix
   ./initrd-base.nix
-  ./initrd-devices.nix
   ./initrd-fbterm.nix
   ./initrd-fail.nix
   ./initrd-framebuffer.nix
