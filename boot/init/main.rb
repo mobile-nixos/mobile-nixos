@@ -1,6 +1,5 @@
 # TODO: Allow defining depending on stage-0/stage-1.
 STAGE = 1
-FAILURE_SLEEP = 10
 
 log("************************")
 log("* Mobile NixOS stage-#{STAGE} *")
@@ -36,6 +35,4 @@ Tasks::Modules.new(*Configuration["kernel"]["modules"])
 Tasks::go()
 
 $logger.fatal("Tasks all ran, but we're still here...")
-$logger.fatal("Sleeping for #{FAILURE_SLEEP} seconds then exiting...")
-sleep(FAILURE_SLEEP)
-exit(99)
+System.failure("did_not_switch", color: "ff0000")
