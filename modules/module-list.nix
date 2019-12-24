@@ -20,7 +20,6 @@
   ./initrd-framebuffer.nix
   ./initrd-kernel.nix
   ./initrd-loop.nix
-  ./initrd-nc-shell.nix
   ./initrd-network.nix
   ./initrd-shell.nix
   ./initrd-splash.nix
