@@ -7,12 +7,13 @@ class Tasks::Mount < Task
   end
 
   def self.normalize_mountpoint(path)
-    path = path.gsub(/\//, "/")
-    path.sub(/\/$/, "") unless path == "/"
+    path = path.split("/").join("/")
+    path = "/" if path == ""
+    path
   end
 
   def self.register(mount_point, instance)
-    mount_point == normalize_mountpoint(mount_point)
+    mount_point = normalize_mountpoint(mount_point)
     @registry ||= {}
     unless @registry[mount_point].nil? then
       raise ExistingMountTask.new("Mount point task for '#{mount_point}' already exists.")
@@ -60,6 +61,9 @@ module Dependencies
 
     def fulfilled?()
       task = Tasks::Mount.registry[@mount_point]
+      unless task
+        $logger.warn("Missing Mount task for mount point #{@mount_point}")
+      end
       task && task.ran
     end
   end
