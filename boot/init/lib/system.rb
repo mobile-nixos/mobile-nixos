@@ -72,4 +72,15 @@ module System
 
     run("mount", *args)
   end
+
+  def self.failure(code, message="(No details given)", color: "000000")
+    System.run("ply-image", "--clear=0x#{color}", "/sad-phone.png")
+    $logger.fatal("#{code}: #{message}")
+    sleep(10)
+    hard_reboot
+  end
+
+  def self.hard_reboot()
+    File.write("/proc/sysrq-trigger", "b\n")
+  end
 end
