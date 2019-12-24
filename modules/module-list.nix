@@ -19,7 +19,6 @@
   ./initrd-fail.nix
   ./initrd-framebuffer.nix
   ./initrd-kernel.nix
-  ./initrd-logger.nix
   ./initrd-loop.nix
   ./initrd-nc-shell.nix
   ./initrd-network.nix

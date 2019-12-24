@@ -86,7 +86,6 @@ in
 
   mobile.system.type = "kernel-initrd";
   mobile.boot.stage-1 = {
-    redirect-log.targets = lib.mkIf (splash != true) [ "/dev/tty0" ];
     init = (lib.mkOrder BEFORE_READY_INIT ''
       echo "cmdline:"
       cat /proc/cmdline
