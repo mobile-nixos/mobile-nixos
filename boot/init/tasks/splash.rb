@@ -8,7 +8,10 @@ class Tasks::Splash < Task
   end
 
   def run()
+    begin
     System.run("ply-image", "/splash.#{image}.png")
+    rescue System::CommandError
+    end
   end
 
   def name()

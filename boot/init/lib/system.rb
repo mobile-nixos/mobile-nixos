@@ -94,7 +94,10 @@ module System
   end
 
   def self.failure(code, message="(No details given)", color: "000000")
+    begin
     System.run("ply-image", "--clear=0x#{color}", "/sad-phone.png")
+    rescue CommandError
+    end
     $logger.fatal("#{code}: #{message}")
     sleep(10)
     hard_reboot
