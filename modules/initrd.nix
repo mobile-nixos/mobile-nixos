@@ -90,6 +90,10 @@ let
     };
 
     inherit bootFileSystems;
+
+    boot = {
+      inherit (config.mobile.boot.stage-1) fail;
+    };
   };
 
   bootConfigFile = writeText "${device_name}-boot-config" (toJSON bootConfig);

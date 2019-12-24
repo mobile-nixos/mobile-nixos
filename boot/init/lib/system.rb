@@ -99,8 +99,8 @@ module System
     rescue CommandError
     end
     $logger.fatal("#{code}: #{message}")
-    sleep(10)
-    hard_reboot
+    sleep(Configuration["boot"]["fail"]["delay"])
+    hard_reboot if Configuration["boot"]["fail"]["reboot"]
   end
 
   def self.hard_reboot()
