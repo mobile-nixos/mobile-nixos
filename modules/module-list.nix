@@ -25,7 +25,6 @@
   ./initrd-splash.nix
   ./initrd-ssh.nix
   ./initrd-telnet.nix
-  ./initrd-udev.nix
   ./initrd-usb.nix
   ./initrd.nix
   ./mobile-device.nix
