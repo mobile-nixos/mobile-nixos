@@ -24,9 +24,6 @@ let
 
   initWrapperRealInit = "/actual-init";
 
-  # FIXME : less hardcoding of what goes in the config...
-  cfg_kernel = config.mobile.boot.stage-1.kernel;
-
   # TODO: define as an option
   # This is a bit buggy:
   #  * fast burst of \n-delimited output will not work as expected
@@ -81,7 +78,7 @@ let
       inherit (device_config) name;
     };
     kernel = {
-      inherit (cfg_kernel) modules;
+      inherit (config.mobile.boot.stage-1.kernel) modules;
     };
 
     # Literally transmit some nixos configurations.
