@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, utils, ... }:
 
 let
   inherit (pkgs)
@@ -10,11 +10,15 @@ let
     writeText
   ;
   inherit (lib)
+    concatMap
+    concatStringsSep
+    filter
     flatten
     optionalString
     optionals
   ;
   inherit (builtins)
+    listToAttrs
     toJSON
   ;
 
@@ -79,14 +83,13 @@ let
     kernel = {
       inherit (cfg_kernel) modules;
     };
-    root = {
-      inherit (config.fileSystems."/") device;
-    };
 
     # Literally transmit some nixos configurations.
     nixos = {
       boot.specialFileSystems = config.boot.specialFileSystems;
     };
+
+    inherit bootFileSystems;
   };
 
   bootConfigFile = writeText "${device_name}-boot-config" (toJSON bootConfig);
@@ -111,6 +114,13 @@ let
       { object = debugInit; symlink = "/init"; }
     ]
   ;
+
+  # The initrd only has to mount `/` or any FS marked as necessary for
+  # booting (such as the FS containing `/nix/store`, or an FS needed for
+  # mounting `/`, like `/` on a loopback).
+  bootFileSystems = listToAttrs (map (item: { inherit (item._module.args) name; value = item; })
+    (filter utils.fsNeededForBoot config.system.build.fileSystems)
+  );
 
   udevRules = runCommandNoCC "udev-rules" {
     allowedReferences = [ extraUtils ];
