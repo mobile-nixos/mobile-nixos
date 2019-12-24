@@ -1,0 +1,38 @@
+From a1fc7dc653ff247f06ef451f8f2a98b3dd621d08 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 24 Dec 2019 01:08:57 -0500
+Subject: [PATCH] [HACK] Rely on nixos-isms for ./configure
+
+---
+ mrbgem.rake | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
+
+diff --git a/mrbgem.rake b/mrbgem.rake
+index 4f4a0db..14f41f0 100644
+--- a/mrbgem.rake
++++ b/mrbgem.rake
+@@ -3,12 +3,6 @@ MRuby::Gem::Specification.new('mruby-file-stat') do |spec|
+   spec.author  = 'ksss <co000ri@gmail.com>'
+   spec.add_dependency('mruby-time')
+ 
+-  env = {
+-    'CC' => "#{build.cc.command} #{build.cc.flags.join(' ')}",
+-    'CXX' => "#{build.cxx.command} #{build.cxx.flags.join(' ')}",
+-    'LD' => "#{build.linker.command} #{build.linker.flags.join(' ')}",
+-    'AR' => build.archiver.command
+-  }
+   config = "#{build_dir}/config.h"
+ 
+   file config do
+@@ -19,7 +13,7 @@ MRuby::Gem::Specification.new('mruby-file-stat') do |spec|
+         FileUtils.touch "#{build_dir}/config.h", :verbose => true
+       else
+         _pp './configure', dir
+-        system env, "#{dir}/configure"
++        system "#{dir}/configure $configureFlags"
+       end
+     end
+   end
+-- 
+2.23.0
+

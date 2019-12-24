@@ -78,12 +78,14 @@ rec {
     rev = "b4415207ff6ea62360619c89a1cff83259dc4db0";
     sha256 = "12djcwjjw0fygai5kssxbfs3pzh3cpnq07h9m2h5b51jziw380xj";
   };
-  mruby-file-stat = fetchFromGitHub {
+  mruby-file-stat = patched (fetchFromGitHub {
     repo = "mruby-file-stat";
     owner = "ksss";
     rev = "aa474589f065c71d9e39ab8ba976f3bea6f9aac2";
     sha256 = "1clarmr67z133ivkbwla1a42wcjgj638j9w0mlv5n21mhim9rid5";
-  };
+  }) [
+    ./mruby-file-stat/0001-HACK-Rely-on-nixos-isms-for-.-configure.patch
+  ];
   mruby-json = fetchFromGitHub {
     repo = "mruby-json";
     owner = "mattn";
