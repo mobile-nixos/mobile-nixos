@@ -7,11 +7,12 @@ class SwitchRoot < SingletonTask
   end
 
   def find_generation()
-    system_link = File.join(@target, SYSTEM_LINK)
-    if File.symlink?(system_link)
-      return File.readlink(system_link)
+    # The default generation
+    if File.symlink?(File.join(@target, SYSTEM_LINK))
+      return SYSTEM_LINK
     end
 
+    # Otherwise, we need to re-hydrate a system!
     registration = File.join(@target, "nix-path-registration")
     if File.exist?(registration)
       path = File.read(registration)
