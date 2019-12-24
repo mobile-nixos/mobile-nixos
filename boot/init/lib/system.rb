@@ -7,6 +7,18 @@ module System
   class MountError < StandardError
   end
 
+  def self.pretty_command(*args)
+    args = args.dup
+    # Removes the environment hash, if present.
+    args.shift if args.first.is_a?(Hash)
+    pretty_command =
+      if args.length == 1
+        args.first
+      else
+        args.shelljoin
+      end
+  end
+
   # Runs and pretty-prints a command. Parameters and shelling-out have the same
   # meaning as with +Kernel#spawn+; one parameter is shelling-out, multiple is
   # direct +exec+.
@@ -15,13 +27,7 @@ module System
   # @raise [System::CommandNotFound] on exit status 127, commonly used for command not found.
   # @raise [System::CommandError] on any other exit status.
   def self.run(*args)
-    pretty_command =
-      if args.length == 1
-        args.first
-      else
-        args.shelljoin
-      end
-    $logger.debug(" $ #{pretty_command}")
+    $logger.debug(" $ #{pretty_command(*args)}")
     unless system(*args)
       raise CommandError.new("Could not execute `#{pretty_command}`, status nil") if $?.nil?
       status = $?.exitstatus
@@ -30,6 +36,20 @@ module System
       else
         raise CommandError.new("Command failed... `#{pretty_command}` (#{status})")
       end
+    end
+  end
+
+  # Execs and pretty-prints a command.
+  def self.exec(*args)
+    $logger.debug(" $ #{pretty_command(*args)}")
+    Kernel.exec(*args)
+  end
+
+  # Discovers the location of given program name.
+  def self.which(program_name)
+    ENV["PATH"].split(":").each do |path|
+      full = File.join(path, program_name)
+      return full if File.stat(full).executable? && !File.directory?(full)
     end
   end
 
