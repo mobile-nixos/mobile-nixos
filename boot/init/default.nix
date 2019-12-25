@@ -1,4 +1,10 @@
-{ fetchurl, mruby, mrbgems }:
+{ fetchurl
+, mruby
+, mrbgems
+
+# Additional tasks
+, tasks ? []
+}:
 
 let
   ruby_rev = "37457117c941b700b150d76879318c429599d83f";
@@ -29,14 +35,14 @@ mruby.builder {
 
     makeBin init \
       $(find lib -type f | sort) \
-      $(find tasks -type f | sort) \
+      $(get_tasks) \
       main.rb
   '';
 
   # TODO: better way to handle this?
   tasks = [
     "./tasks"
-  ];
+  ] ++ tasks;
 
   gems = with mrbgems; [
     { core = "mruby-exit"; }

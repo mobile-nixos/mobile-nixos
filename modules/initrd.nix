@@ -14,8 +14,10 @@ let
     concatStringsSep
     filter
     flatten
+    mkOption
     optionalString
     optionals
+    types
   ;
   inherit (builtins)
     listToAttrs
@@ -47,7 +49,10 @@ let
 
   stage-1 = config.mobile.boot.stage-1;
 
-  mobile-nixos-init = pkgs.pkgsStatic.callPackage ../boot/init {};
+  mobile-nixos-init = pkgs.pkgsStatic.callPackage ../boot/init {
+    inherit (config.mobile.boot.stage-1) tasks;
+  };
+
   init = "${mobile-nixos-init}/bin/init";
 
   shell = "${extraUtils}/bin/sh";
@@ -207,10 +212,24 @@ let
   };
 in
   {
-    system.build.initrd = "${initrd}/initrd";
-    # HACK: as we're using isContainer to bypass some NixOS stuff
-    # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
-    boot.specialFileSystems = {
-      "/sys" = { fsType = "sysfs"; options = [ "nosuid" "noexec" "nodev" ]; };
+    options = {
+      mobile.boot.stage-1.tasks = mkOption {
+        type = with types; listOf (either package path);
+        default = [];
+        internal = true;
+        description = "
+          Add tasks to the boot/init program.
+          The build system for boot/init will `find -iname '*.rb'` the given paths.
+        ";
+      };
+    };
+
+    config = {
+      system.build.initrd = "${initrd}/initrd";
+      # HACK: as we're using isContainer to bypass some NixOS stuff
+      # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
+      boot.specialFileSystems = {
+        "/sys" = { fsType = "sysfs"; options = [ "nosuid" "noexec" "nodev" ]; };
+      };
     };
   }
