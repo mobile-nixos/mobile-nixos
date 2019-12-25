@@ -45,6 +45,12 @@ module System
     Kernel.exec(*args)
   end
 
+  # Thin wrapper over +Kernel#exec+, but with printing.
+  def self.spawn(*args)
+    $logger.debug(" $ #{prettify_command(*args)} &")
+    Kernel.spawn(*args)
+  end
+
   # Discovers the location of given program name.
   def self.which(program_name)
     ENV["PATH"].split(":").each do |path|
