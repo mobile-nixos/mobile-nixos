@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-with import ./initrd-order.nix;
 
 let
   device_name = config.mobile.device.name;

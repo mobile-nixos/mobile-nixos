@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-with import ./initrd-order.nix;
 
 let
   cfg = config.mobile.boot.stage-1.kernel;
