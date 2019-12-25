@@ -17,7 +17,6 @@
   ./initrd-base.nix
   ./initrd-fbterm.nix
   ./initrd-fail.nix
-  ./initrd-framebuffer.nix
   ./initrd-kernel.nix
   ./initrd-loop.nix
   ./initrd-network.nix
