@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-with import ./initrd-order.nix;
 
 let
   cfg = config.mobile.boot.stage-1.shell;
@@ -29,12 +28,25 @@ in
     };
   };
 
-  config.mobile.boot.stage-1 = {
-    init = lib.mkIf cfg.enable (lib.mkOrder BEFORE_SWITCH_ROOT_INIT ''
-      echo
-      echo "Exit this shell (CTRL+D) to resume booting."
-      echo
-      setsid /bin/sh -c /bin/sh < /dev/${cfg.console} >/dev/${cfg.console} 2>/dev/${cfg.console}
-    '');
+  config.mobile.boot.stage-1 = lib.mkIf cfg.enable {
+    tasks = [
+      (pkgs.writeText "run-shell-task.rb" ''
+        class Tasks::RunShell < SingletonTask
+          def initialize()
+            # Wedge the task between the target "root", and the
+            # actual task we want to prevent running.
+            add_dependency(:Target, :SwitchRoot)
+            SwitchRoot.instance.add_dependency(:Task, self)
+          end
+
+          def run()
+            cmd = %q{setsid /bin/sh -c /bin/sh < /dev/${cfg.console} >/dev/${cfg.console} 2>/dev/${cfg.console}}
+            $logger.debug(" $ #{cmd}")
+            puts("\nExit this shell (CTRL+D) to resume booting.\n")
+            system(cmd)
+          end
+        end
+      '')
+    ];
   };
 }
