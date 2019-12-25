@@ -57,11 +57,6 @@ in
       { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
       { object = "${modulesClosure}/lib/firmware"; symlink = "/lib/firmware"; }
     ];
-    init = lib.mkOrder BEFORE_DEVICE_INIT ''
-      ${
-        lib.concatMapStringsSep "\n" (mod: ''modprobe ${mod}'') cfg.modules
-      }
-    '';
     kernel.modules = [
       # Basic always-needed kernel modules.
       "loop"
