@@ -20,11 +20,24 @@ in
   };
 
   config.mobile.boot.stage-1 = lib.mkIf cfg.enable {
-    init = lib.mkOrder (BEFORE_SWITCH_ROOT_INIT+1) ''
-      echo "Looping here forever..."
-      while true; do
-        sleep 3600 || break
-      done
-    '';
+    tasks = [
+      (pkgs.writeText "loop-task.rb" ''
+        class Tasks::LoopForever < SingletonTask
+          def initialize()
+            # Wedge the task between the target "root", and the
+            # actual task we want to prevent running.
+            add_dependency(:Target, :SwitchRoot)
+            SwitchRoot.instance.add_dependency(:Task, self)
+          end
+
+          def run()
+            puts("\nLooping forever.\n")
+            loop do
+              sleep 3600
+            end
+          end
+        end
+      '')
+    ];
   };
 }
