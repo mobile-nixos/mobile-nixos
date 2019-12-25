@@ -28,7 +28,7 @@
   ./initrd.nix
   ./mobile-device.nix
   ./nixpkgs.nix
-  ./quirks-qualcomm.nix
+  ./quirks/qualcomm/default.nix
   ./system-target.nix
   ./system-types.nix
 ]

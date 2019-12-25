@@ -34,9 +34,7 @@ in
             extraUtils = with pkgs; [
               msm-fb-handle
             ];
-            initFramebuffer = ''
-              msm-fb-handle &
-            '';
+            tasks = [ ./msm-fb-handle-task.rb ];
           };
         })
         (mkIf cfg.msm-fb-refresher.enable {
@@ -44,9 +42,7 @@ in
             extraUtils = with pkgs; [
               msm-fb-refresher
             ];
-            initFramebuffer = ''
-              msm-fb-refresher --loop &
-            '';
+            tasks = [ ./msm-fb-refresher-task.rb ];
           };
         })
       ];
