@@ -38,6 +38,9 @@
       "raid=noautodetect"
       "androidboot.fastboot=1"
       "buildvariant=eng"
+
+      # Using `quiet` fixes early framebuffer init, for stage-1
+      "quiet"
     ];
 
     generate_bootimg = "true";
