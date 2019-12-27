@@ -23,8 +23,22 @@
     dev_keyboard = "";
     flash_method = "fastboot";
 
-    # From TWRP
-    kernel_cmdline="androidboot.hardware=walleye androidboot.console=ttyMSM0 lpm_levels.sleep_disabled=1 user_debug=31 msm_rtb.filter=0x37 ehci-hcd.park=3 service_locator.enable=1 swiotlb=2048 firmware_class.path=/vendor/firmware loop.max_part=7 raid=noautodetect androidboot.fastboot=1 buildvariant=eng";
+    kernel_cmdline = lib.concatStringsSep " " [
+      # From TWRP
+      "androidboot.hardware=walleye"
+      "androidboot.console=ttyMSM0"
+      "lpm_levels.sleep_disabled=1"
+      "user_debug=31"
+      "msm_rtb.filter=0x37"
+      "ehci-hcd.park=3"
+      "service_locator.enable=1"
+      "swiotlb=2048"
+      "firmware_class.path=/vendor/firmware"
+      "loop.max_part=7"
+      "raid=noautodetect"
+      "androidboot.fastboot=1"
+      "buildvariant=eng"
+    ];
 
     generate_bootimg = "true";
     bootimg_qcdt = false;
