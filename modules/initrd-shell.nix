@@ -36,7 +36,7 @@ in
             # Wedge the task between the target "root", and the
             # actual task we want to prevent running.
             add_dependency(:Target, :SwitchRoot)
-            SwitchRoot.instance.add_dependency(:Task, self)
+            Tasks::SwitchRoot.instance.add_dependency(:Task, self)
           end
 
           def run()

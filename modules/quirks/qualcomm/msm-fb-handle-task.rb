@@ -1,6 +1,7 @@
 class Tasks::MSMFBHandle < SingletonTask
   def initialize()
-    add_dependency(:SingletonTask, :Graphics)
+    Targets[:Graphics].add_dependency(:Task, self)
+    add_dependency(:Task, Tasks::Graphics.instance)
   end
 
   def run()
