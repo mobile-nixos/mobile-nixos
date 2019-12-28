@@ -1,9 +1,13 @@
 class Tasks::SwitchRoot < SingletonTask
-  # Relative to root
+  # Relative to root.
   SYSTEM_LINK = "/nix/var/nix/profiles/system"
+
+  # Where the system will be mounted.
+  SYSTEM_MOUNT_POINT = "/mnt"
+
   def initialize()
     add_dependency(:Target, :SwitchRoot)
-    @target = "/mnt"
+    @target = SYSTEM_MOUNT_POINT
   end
 
   def find_generation()

@@ -35,7 +35,7 @@ module Mounting
   # Dependencies on other mount points is being handled here.
   def self.create_boot_mount_points()
     mount_points = Configuration["bootFileSystems"].map do |mount_point, config|
-      mount_point = File.join("/mnt", mount_point)
+      mount_point = File.join(Tasks::SwitchRoot::SYSTEM_MOUNT_POINT, mount_point)
 
       device = 
         if config["label"]
