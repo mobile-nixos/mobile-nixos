@@ -25,22 +25,8 @@ end
 module Targets
   def self.[](name)
     name = name.to_sym
-    $logger.debug("Asking for target #{name}")
     @targets ||= {}
     @targets[name] = Tasks::Target.new(name) unless @targets[name]
     @targets[name]
-  end
-end
-
-module Dependencies
-  class Target < BaseDependency
-    def initialize(name)
-      @name = name.to_sym
-    end
-
-    def fulfilled?()
-      task = Targets[@name]
-      task && task.ran
-    end
   end
 end

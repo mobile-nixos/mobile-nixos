@@ -60,11 +60,18 @@ module Dependencies
     end
 
     def fulfilled?()
-      task = Tasks::Mount.registry[@mount_point]
       unless task
         $logger.warn("Missing Mount task for mount point #{@mount_point}")
       end
       task && task.ran
+    end
+
+    def depends_on?(other)
+      task.depends_on?(other)
+    end
+
+    def task()
+      Tasks::Mount.registry[@mount_point]
     end
   end
 end

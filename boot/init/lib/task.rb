@@ -24,6 +24,11 @@ module Tasks
     end
     @singletons_to_be_instantiated = []
 
+    # Sort tasks to reduce the amount of loops it needs to fulfill them all.
+    # It's only a reduction due to files, mounts and devices being
+    # unpredictable!
+    @tasks.sort!
+
     until @tasks.all?(&:ran) do
       $logger.debug("Tasks resolution loop start")
       @tasks
@@ -55,6 +60,24 @@ class Task
 
   def self.inherited(subclass)
     $logger.debug("#{subclass.name} created...")
+  end
+
+  # Sort first by dependencies, then by name, then by object_id
+  # (for stable sort order)
+  def <=>(other)
+    return -1 if other.depends_on?(self)
+    return  1 if depends_on?(other)
+
+    by_name = name <=> other.name
+    return by_name unless by_name == 0
+
+    object_id <=> other.object_id
+  end
+
+  def depends_on?(other)
+    dependencies.any? do |dependency|
+      dependency.depends_on?(other)
+    end
   end
 
   def add_dependency(kind, *args)
