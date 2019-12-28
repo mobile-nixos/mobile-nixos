@@ -35,7 +35,7 @@ class Tasks::Mount < Task
       @source = named[:type]
       @mount_point = source
     end
-    add_dependency(:SingletonTask, :Environment)
+    add_dependency(:Target, :Environment)
     self.class.register(@mount_point, self)
   end
 

@@ -3,7 +3,7 @@ class Tasks::Splash < Task
   attr_reader :image
 
   def initialize(image)
-    add_dependency(:SingletonTask, :Graphics)
+    add_dependency(:Target, :Graphics)
     @image = image
   end
 

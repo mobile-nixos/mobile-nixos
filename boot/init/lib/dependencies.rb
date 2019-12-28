@@ -9,9 +9,6 @@ module Dependencies
     end
   end
 
-  class Boot < BaseDependency
-  end
-
   class Task < BaseDependency
     def initialize(instance)
       @instance = instance
@@ -22,21 +19,6 @@ module Dependencies
         true
       else
         $logger.debug(" -> Dependency #{name} unfulfilled? (task #{@instance.inspect} hasn't run yet)")
-        false
-      end
-    end
-  end
-
-  class SingletonTask < BaseDependency
-    def initialize(symbol)
-      @symbol = symbol
-    end
-
-    def fulfilled?()
-      if Tasks.const_get(@symbol).instance.ran
-        true
-      else
-        $logger.debug(" -> Dependency #{name} unfulfilled? (task #{@symbol} hasn't run yet)")
         false
       end
     end

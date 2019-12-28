@@ -11,6 +11,9 @@ class Tasks::Graphics < SingletonTask
     # This is only incidental to the fact that /dev/fb0 wouldn't exist for
     # users of the "Graphics" dependency.
     add_dependency(:Mount, "/dev")
+
+    # Make the Graphics target depend on this task.
+    Targets[:Graphics].add_dependency(:Task, self)
   end
 
   def run()

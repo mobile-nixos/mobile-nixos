@@ -1,7 +1,6 @@
 # Adds a minimal set of files required for logging-in.
 class Tasks::LoginEnvironment < SingletonTask
   def initialize()
-    add_dependency(:Boot)
   end
 
   def run()

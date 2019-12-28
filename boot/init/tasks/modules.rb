@@ -2,7 +2,7 @@ class Tasks::Modules < Task
   MODULES_PATH = "/lib/modules"
   def initialize(*modules)
     add_dependency(:Files, MODULES_PATH)
-    add_dependency(:SingletonTask, :Environment)
+    add_dependency(:Target, :Environment)
     @modules = modules
   end
 

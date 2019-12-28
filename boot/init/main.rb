@@ -28,7 +28,7 @@ Mounting.create_boot_mount_points()
 end
 
 Tasks::Splash.new("stage-1")
-  .add_dependency(:SingletonTask, :UDev)
+  .add_dependency(:Target, :Devices)
 
 Tasks::Modules.new(*Configuration["kernel"]["modules"])
 

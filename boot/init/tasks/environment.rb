@@ -3,7 +3,8 @@
 # PATH to extraUtils.
 class Tasks::Environment < SingletonTask
   def initialize()
-    add_dependency(:Boot)
+    # Make the Environment target depend on this task.
+    Targets[:Environment].add_dependency(:Task, self)
   end
 
   def run()

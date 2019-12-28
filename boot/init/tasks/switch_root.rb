@@ -1,4 +1,4 @@
-class SwitchRoot < SingletonTask
+class Tasks::SwitchRoot < SingletonTask
   # Relative to root
   SYSTEM_LINK = "/nix/var/nix/profiles/system"
   def initialize()
