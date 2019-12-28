@@ -17,4 +17,8 @@ class Tasks::Splash < Task
   def name()
     "#{super}(#{image})"
   end
+
+  def ux_priority()
+    -100
+  end
 end

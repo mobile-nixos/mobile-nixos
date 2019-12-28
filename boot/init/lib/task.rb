@@ -68,6 +68,9 @@ class Task
     return -1 if other.depends_on?(self)
     return  1 if depends_on?(other)
 
+    by_ux_priority = ux_priority <=> other.ux_priority
+    return by_ux_priority unless by_ux_priority == 0 
+
     by_name = name <=> other.name
     return by_name unless by_name == 0
 
@@ -105,6 +108,16 @@ class Task
   def dependencies()
     @dependencies ||= []
     @dependencies
+  end
+
+  # This allows a task to be ordered before other tasks, because it is used to
+  # enhance the UX of the boot process. Assume this will be compared with +<=>+.
+  # This should seldom be used, and mainly for tasks that show the progress of
+  # the boot process.
+  # (For internal use.)
+  # @internal
+  def ux_priority()
+    0
   end
 end
 
