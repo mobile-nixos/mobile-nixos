@@ -19,7 +19,8 @@ module Tasks
   def self.go()
     # Registers tasks that still needs to be instantiated
     @singletons_to_be_instantiated.each do |klass|
-      register(klass.instance)
+      # Their mere existence registers them.
+      klass.instance
     end
     @singletons_to_be_instantiated = []
 
