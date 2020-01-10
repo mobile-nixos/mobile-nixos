@@ -8,6 +8,7 @@ in
 {
   config.mobile.boot.stage-1 = {
     extraUtils = with pkgs; [
+      hardshutdown
     ];
   };
 }
