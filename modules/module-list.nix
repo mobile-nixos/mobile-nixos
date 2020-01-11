@@ -19,7 +19,6 @@
   ./initrd-fail.nix
   ./initrd-kernel.nix
   ./initrd-logs.nix
-  ./initrd-loop.nix
   ./initrd-network.nix
   ./initrd-shell.nix
   ./initrd-splash.nix
