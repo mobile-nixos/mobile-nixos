@@ -20,8 +20,12 @@ module Mounting
   def self.create_special_mount_points()
     # Create all mount points.
     mount_points = Configuration["nixos"]["boot"]["specialFileSystems"].map do |mount_point, config|
+      args = []
+      args << config["device"] if config["device"]
+      args << mount_point
+
       task = Tasks::Mount.new(
-        mount_point,
+        *args,
         type: config["fsType"],
         options: config["options"],
       )
