@@ -62,4 +62,9 @@
   };
 
   mobile.system.type = "android";
+
+  # Google
+  mobile.usb.idVendor = "18D1";
+  # "Nexus 4"
+  mobile.usb.idProduct = "D001";
 }
