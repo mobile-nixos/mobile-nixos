@@ -51,6 +51,8 @@
     flash_offset_second = "0x00f00000";
     flash_offset_tags = "0x00000100";
     flash_pagesize = "4096";
+
+    ab_partitions = true;
   };
 
   mobile.hardware = {
