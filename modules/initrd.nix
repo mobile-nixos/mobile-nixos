@@ -78,27 +78,7 @@ let
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} ${initWrapperRealInit}
   '';
 
-  bootConfig = {
-    device = {
-      inherit (device_config) name;
-    };
-    kernel = {
-      inherit (config.mobile.boot.stage-1.kernel) modules;
-    };
-
-    # Literally transmit some nixos configurations.
-    nixos = {
-      boot.specialFileSystems = config.boot.specialFileSystems;
-    };
-
-    inherit bootFileSystems;
-
-    boot = {
-      inherit (config.mobile.boot.stage-1) fail;
-    };
-  };
-
-  bootConfigFile = writeText "${device_name}-boot-config" (toJSON bootConfig);
+  bootConfigFile = writeText "${device_name}-boot-config" (toJSON config.mobile.boot.stage-1.bootConfig);
 
   contents =
     (optionals (stage-1 ? contents) (flatten stage-1.contents))
@@ -222,14 +202,42 @@ in
           The build system for boot/init will `find -iname '*.rb'` the given paths.
         ";
       };
+      mobile.boot.stage-1.bootConfig = mkOption {
+        type = types.attrs;
+        default = {};
+        internal = true;
+        description = ''
+          The things being put in the JSON configuration file in stage-1.
+        '';
+      };
     };
 
     config = {
       system.build.initrd = "${initrd}/initrd";
-      # HACK: as we're using isContainer to bypass some NixOS stuff
-      # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
       boot.specialFileSystems = {
+        # HACK: as we're using isContainer to bypass some NixOS stuff
+        # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
         "/sys" = { fsType = "sysfs"; options = [ "nosuid" "noexec" "nodev" ]; };
+      };
+
+      mobile.boot.stage-1.bootConfig = {
+        device = {
+          inherit (device_config) name;
+        };
+        kernel = {
+          inherit (config.mobile.boot.stage-1.kernel) modules;
+        };
+
+        # Literally transmit some nixos configurations.
+        nixos = {
+          boot.specialFileSystems = config.boot.specialFileSystems;
+        };
+
+        inherit bootFileSystems;
+
+        boot = {
+          inherit (config.mobile.boot.stage-1) fail;
+        };
       };
     };
   }
