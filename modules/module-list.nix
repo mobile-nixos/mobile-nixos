@@ -24,6 +24,7 @@
   ./initrd-splash.nix
   ./initrd-ssh.nix
   ./initrd-usb.nix
+  ./initrd-vendor.nix
   ./initrd.nix
   ./mobile-device.nix
   ./nixpkgs.nix
