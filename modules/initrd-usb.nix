@@ -3,6 +3,7 @@
 with lib;
 
 let
+  device_info = config.mobile.device.info;
   cfg = config.mobile.boot.stage-1;
   device_name = device_config.name;
   device_config = config.mobile.device;
@@ -27,6 +28,20 @@ in
       '';
     };
   };
+  options.mobile.usb = {
+    idVendor = mkOption {
+      type = types.str;
+      description = ''
+        USB vendor ID for the USB gadget.
+      '';
+    };
+    idProduct = mkOption {
+      type = types.str;
+      description = ''
+        USB product ID for the USB gadget.
+      '';
+    };
+  };
 
   config = lib.mkIf cfg.usb.enable {
     boot.specialFileSystems = {
@@ -48,9 +63,16 @@ in
         ++ optional cfg.networking.enable "rndis"
       ;
       tasks = [
+        ./stage-1/tasks/usb-gadget-task.rb
       ];
       bootConfig = {
         boot.usb.features = cfg.usb.features;
+        boot.usb.functions = builtins.listToAttrs (
+          builtins.map (feature: { name = feature; value = device_info.gadgetfs.functions."${feature}"; }) cfg.usb.features
+        );
+        usb = {
+          inherit (config.mobile.usb) idVendor idProduct;
+        };
       };
     };
   };
