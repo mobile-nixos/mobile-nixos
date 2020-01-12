@@ -30,7 +30,11 @@ class Tasks::Mount < Task
     if mount_point
       @source = source
       @mount_point = mount_point
-      add_dependency(:Files, source)
+      # Only add a dependency for an absolute path.
+      # Otherwise we would wait on the file "tmpfs" for tmpfs, and such.
+      if source.match(%{^/})
+        add_dependency(:Files, source)
+      end
     else
       @source = named[:type]
       @mount_point = source
