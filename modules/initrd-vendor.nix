@@ -12,14 +12,8 @@
 let
   device_info = config.mobile.device.info;
   vendor_device =
-    if config.mobile.system.type == "android" then
-      if device_info ? ab_partitions && device_info.ab_partitions then
-        # Force slot "A" on A/B, we would recommend end-users to flash the most
-        # compatible vendor partition to both slots anyway.
-        "/dev/disk/by-partlabel/vendor_a"
-      else
-        # Assume "vendor" partlabel on other android devices.
-        "/dev/disk/by-partlabel/vendor"
+    if device_info ? vendor_partition
+    then device_info.vendor_partition
     else null
   ;
 in
