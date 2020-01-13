@@ -49,5 +49,11 @@ rescue => e
   # Leave some time for the $logger.fatals to flush before the kernel crashes.
   sleep(1)
 
-  exit 99
+  # Users with access to serial debug may prefer crashing to the bootloader.
+  # Though, crashing the kernel is *required* for console ramoops to be present.
+  if Configuration["boot"]["crashToBootloader"] then
+    System.run("reboot bootloader")
+  else
+    exit 99
+  end
 end

@@ -224,6 +224,19 @@ in
           The things being put in the JSON configuration file in stage-1.
         '';
       };
+      mobile.boot.stage-1.crashToBootloader = mkOption {
+        type = types.bool;
+        default = false;
+        description = ''
+          When the stage-1 bootloader crashes, prefer rebooting directly to
+          bootloader rather than panic by killing init.
+
+          This may be preferrable for devices with direct serial access.
+
+          Note that console ramoops requires the kernel to panic, this should
+          be set to false if you rely on console ramoops to debug issues.
+        '';
+      };
     };
 
     config = {
@@ -250,7 +263,7 @@ in
         inherit bootFileSystems;
 
         boot = {
-          inherit (config.mobile.boot.stage-1) fail;
+          inherit (config.mobile.boot.stage-1) fail crashToBootloader;
         };
       };
     };
