@@ -166,11 +166,13 @@ class Tasks::SetupGadgetMode < SingletonTask
   end
 
   def run()
+    mode = Configuration["usb"]["mode"]
     gadget =
-      if File.exist?(System::ConfigFSUSB::CONFIGFS_USB)
+      case mode
+      when "gadgetfs"
         log("Configuring CONFIGFS USB Gadget.")
         gadget = System::ConfigFSUSB::Gadget.new("g1")
-      elsif File.exist?(System::AndroidUSB::ANDROID_USB)
+      when "android_usb"
         log("Configuring ANDROID_USB Gadget.")
         gadget = System::AndroidUSB.instance()
       else

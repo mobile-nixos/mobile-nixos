@@ -10,7 +10,6 @@ let
   system_type = config.mobile.system.type;
 in
 {
-  # FIXME Generic USB gadget support to come.
   options.mobile.boot.stage-1.usb = {
     enable = mkOption {
       type = types.bool;
@@ -41,6 +40,13 @@ in
         USB product ID for the USB gadget.
       '';
     };
+    mode = mkOption {
+      type = types.nullOr (types.enum [ "android_usb" "gadgetfs" ]);
+      default = null;
+      description = ''
+        The USB gadget implementation the device uses.
+      '';
+    };
   };
 
   config = lib.mkIf cfg.usb.enable {
@@ -54,7 +60,7 @@ in
       };
     };
 
-    mobile.boot.stage-1 = lib.mkIf cfg.usb.enable {
+    mobile.boot.stage-1 = lib.mkIf (cfg.usb.enable && (config.mobile.usb.mode != null)) {
       kernel.modules = [
         "configfs"
       ];
@@ -71,7 +77,7 @@ in
           builtins.map (feature: { name = feature; value = device_info.gadgetfs.functions."${feature}"; }) cfg.usb.features
         ));
         usb = {
-          inherit (config.mobile.usb) idVendor idProduct;
+          inherit (config.mobile.usb) idVendor idProduct mode;
         };
       };
     };
