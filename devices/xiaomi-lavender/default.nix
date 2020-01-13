@@ -59,6 +59,7 @@
     };
   };
 
+  mobile.usb.mode = "gadgetfs";
   # FIXME: attribute to sources.
   mobile.usb.idVendor  = "2717"; # Xiaomi Communications Co., Ltd.
   mobile.usb.idProduct = "FF80"; # Mi/Redmi series (RNDIS)
