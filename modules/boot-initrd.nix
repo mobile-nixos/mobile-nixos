@@ -39,11 +39,5 @@ with lib;
         See `makeInitrd` for use of `contents`.
       '';
     };
-    stage-1.init = mkOption {
-      type = types.lines;
-      description = ''
-        Lines that will build out the /init script.
-      '';
-    };
   };
 }
