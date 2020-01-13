@@ -44,6 +44,7 @@
     };
   };
 
+  mobile.usb.mode = "android_usb";
   # Google
   mobile.usb.idVendor = "18D1";
   # "Nexus 4"
