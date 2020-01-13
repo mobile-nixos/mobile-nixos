@@ -1,3 +1,4 @@
+begin
 # TODO: Allow defining depending on stage-0/stage-1.
 STAGE = 1
 
@@ -36,3 +37,17 @@ Tasks::go()
 
 $logger.fatal("Tasks all ran, but we're still here...")
 System.failure("did_not_switch", color: "ff0000")
+
+rescue => e
+  3.times do
+    $logger.fatal("********************")
+  end
+  $logger.fatal("Handling exception")
+  $logger.fatal(e.inspect)
+  $logger.fatal("`init` will exit and the kernel will crash.")
+  $logger.fatal("********************")
+  # Leave some time for the $logger.fatals to flush before the kernel crashes.
+  sleep(1)
+
+  exit 99
+end
