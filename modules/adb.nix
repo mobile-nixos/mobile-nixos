@@ -26,19 +26,34 @@ with lib;
     mobile.boot.stage-1 = {
       usb.features = [ "ffs" ];
 
-      init = lib.mkOrder AFTER_DEVICE_INIT ''
-        (
-        mkdir -p /dev/usb-ffs/adb
-        mount -t functionfs adb /dev/usb-ffs/adb/
-        sleep 0.1
-        adbd &
-        )
-      '';
+      tasks = [
+        (pkgs.writeText "adbd-task.rb" ''
+          class Tasks::ADBD < SingletonTask
+            def initialize()
+              add_dependency(:Mount, "/dev/usb-ffs/adb")
+              Targets[:SwitchRoot].add_dependency(:Task, self)
+            end
+            
+            def run()
+              System.spawn("adbd")
+            end
+          end
+        '')
+      ];
 
       extraUtils = with pkgs; [{
         package = adbd;
         extraCommand = ''cp -fpv "${glibc.out}"/lib/libnss_files.so.* "$out"/lib/'';
       }];
+    };
+
+    boot.specialFileSystems = {
+      # This is required for gadgetfs configuration.
+      "/dev/usb-ffs/adb" = {
+        device = "adb";
+        fsType = "functionfs";
+        options = [ "nosuid" "noexec" "nodev" ];
+      };
     };
 
     boot.postBootCommands = ''
