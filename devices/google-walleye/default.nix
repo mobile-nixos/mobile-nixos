@@ -53,6 +53,7 @@
     flash_pagesize = "4096";
 
     ab_partitions = true;
+    vendor_partition = "/dev/disk/by-partlabel/vendor_a";
     gadgetfs.functions = {
       rndis = "gsi.rndis";
       # FIXME: This is the right function name, but doesn't work.
