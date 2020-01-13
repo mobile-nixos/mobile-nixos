@@ -75,6 +75,13 @@ module Dependencies
     end
   end
 
+  # Checks in sysfs for the given network interface names.
+  class NetworkInterface < Files
+    def initialize(*names)
+      super(*names.map { |name| File.join("/sys/class/net", name) })
+    end
+  end
+
   class Target < BaseDependency
     def initialize(name)
       @name = name.to_sym
