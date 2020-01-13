@@ -5,6 +5,9 @@ with lib;
 let
   device_name = config.mobile.device.name;
   cfg = config.mobile.boot.stage-1.ssh;
+  banner = pkgs.writeText "${device_name}-banner" ''
+    From a mobile-nixos device ${device_name}
+  '';
 in
 {
   options.mobile.boot.stage-1.ssh = {
@@ -19,20 +22,39 @@ in
   };
 
   config.mobile.boot.stage-1 = lib.mkIf cfg.enable {
-    init = lib.mkOrder SERVICES_INIT ''
-      #
-      # Oh boy, that's insecure!
-      #
-      passwd -u root
-      passwd -d root
-      echo "From a mobile-nixos device ${device_name}" >> /etc/banner
-
-      mkdir -p /etc/dropbear/
-
-      # THIS IS HIGHLY INSECURE
-      # This allows blank login passwords.
-      dropbear -ERB -b /etc/banner
-    '';
+    tasks = [
+      # Oh boy, that's insecure! (As documented.)
+      (pkgs.writeText "insecure-root-password-task.rb" ''
+        class Tasks::InsecureRootPassword < SingletonTask
+          def initialize()
+            add_dependency(:Target, :Environment)
+          end
+          
+          def run()
+            # Puts a blank password for the root user.
+            System.run("passwd", "-d", "root")
+          end
+        end
+      '')
+      (pkgs.writeText "dropbear-sshd-task.rb" ''
+        class Tasks::DropbearSSHD < SingletonTask
+          def initialize()
+            add_dependency(:Target, :Networking)
+            Targets[:SwitchRoot].add_dependency(:Task, self)
+          end
+          
+          def run()
+            FileUtils.mkdir_p("/etc/dropbear")
+            # THIS IS HIGHLY INSECURE
+            # This allows blank login passwords.
+            System.spawn("dropbear", "-ERB", "-b", "/etc/banner")
+          end
+        end
+      '')
+    ];
+    contents = [
+      { object = banner; symlink = "/etc/banner"; }
+    ];
     extraUtils = with pkgs; [
       { package = dropbear; extraCommand = "cp -fpv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
     ];
