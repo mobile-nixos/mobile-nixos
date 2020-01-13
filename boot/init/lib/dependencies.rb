@@ -32,6 +32,22 @@ module Dependencies
     end
   end
 
+  # When any of the dependencies given have been fulfilled, this dependency
+  # will be fulfilled.
+  class Any < BaseDependency
+    def initialize(*dependencies)
+      @dependencies = dependencies
+    end
+
+    def fulfilled?()
+      @dependencies.any? { |dependency| dependency.fulfilled? }
+    end
+
+    def depends_on?(other)
+      @dependencies.any? { |dependency| dependency.depends_on?(other) }
+    end
+  end
+
   class Files < BaseDependency
     def initialize(*patterns)
       @patterns = *patterns
