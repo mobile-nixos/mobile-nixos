@@ -67,9 +67,9 @@ in
       ];
       bootConfig = {
         boot.usb.features = cfg.usb.features;
-        boot.usb.functions = builtins.listToAttrs (
+        boot.usb.functions = mkIf (device_info ? gadgetfs) (builtins.listToAttrs (
           builtins.map (feature: { name = feature; value = device_info.gadgetfs.functions."${feature}"; }) cfg.usb.features
-        );
+        ));
         usb = {
           inherit (config.mobile.usb) idVendor idProduct;
         };

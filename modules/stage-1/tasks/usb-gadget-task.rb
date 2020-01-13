@@ -103,10 +103,57 @@ module System::ConfigFSUSB
   end
 end
 
-# This task detects which gadget mode to use, and sets it up.
-class Tasks::SetupGadgetMode < SingletonTask
+class System::AndroidUSB
+  include Singleton
+  attr_accessor :features
+
   ANDROID_USB  = "/sys/class/android_usb"
 
+  def path_prefix()
+    File.join(ANDROID_USB, "android0")
+  end
+
+  def id_vendor=(value)
+    set_id("idVendor", value)
+  end
+
+  def id_product=(value)
+    set_id("idProduct", value)
+  end
+
+  def manufacturer=(value)
+    set_string("iManufacturer", value)
+  end
+
+  def product=(value)
+    set_string("iProduct", value)
+  end
+
+  def serial_number=(value)
+    set_string("iSerial", value)
+  end
+
+  def set_id(kind, value)
+    value = ["0", value.sub(/^0x/, "")].join("x")
+    File.write(File.join(path_prefix, kind), value)
+  end
+
+  def set_string(name, value)
+    File.write(File.join(path_prefix, name), value)
+  end
+
+  def activate!()
+    File.write(File.join(path_prefix, "enable"), "0")
+    File.write(File.join(path_prefix, "bDeviceClass"), "0")
+    File.write(File.join(path_prefix, "functions"), @features.join(","))
+    sleep(0.1)
+    File.write(File.join(path_prefix, "enable"), "1")
+    sleep(0.1)
+  end
+end
+
+# This task detects which gadget mode to use, and sets it up.
+class Tasks::SetupGadgetMode < SingletonTask
   def initialize()
     add_dependency(:Mount, "/sys")
     add_dependency(:Mount, System::ConfigFSUSB::CONFIGFS)
@@ -119,18 +166,18 @@ class Tasks::SetupGadgetMode < SingletonTask
   end
 
   def run()
-    if File.exist?(System::ConfigFSUSB::CONFIGFS_USB)
-      run_configfs_usb
-    elsif File.exist?(ANDROID_USB)
-      run_androidusb
-    else
-      log("No way to configure USB Gadget found.")
-    end
-  end
+    gadget =
+      if File.exist?(System::ConfigFSUSB::CONFIGFS_USB)
+        log("Configuring CONFIGFS USB Gadget.")
+        gadget = System::ConfigFSUSB::Gadget.new("g1")
+      elsif File.exist?(System::AndroidUSB::ANDROID_USB)
+        log("Configuring ANDROID_USB Gadget.")
+        gadget = System::AndroidUSB.instance()
+      else
+        log("No way to configure USB Gadget found.")
+        return
+      end
 
-  def run_configfs_usb()
-    log("Configuring CONFIGFS USB Gadget.")
-    gadget = System::ConfigFSUSB::Gadget.new("g1")
     gadget.id_vendor = Configuration["usb"]["idVendor"]
     gadget.id_product = Configuration["usb"]["idProduct"]
     gadget.product = Configuration["device"]["name"]
@@ -139,9 +186,5 @@ class Tasks::SetupGadgetMode < SingletonTask
     gadget.serial_number = "0123456789"
     gadget.features = Configuration["boot"]["usb"]["features"]
     gadget.activate!
-  end
-
-  def run_android_usb()
-    log("Configuring ANDROID_USB Gadget.")
   end
 end
