@@ -6,7 +6,7 @@ with lib;
   options.mobile.adbd = {
     enable = mkOption {
       type = types.bool;
-      default = config.mobile.system.type == "android";
+      default = false;
       description = ''
         Enables adbd on the device.
       '';
