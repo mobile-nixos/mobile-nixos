@@ -71,6 +71,7 @@
 
   mobile.system.type = "android";
 
+  mobile.usb.mode = "gadgetfs";
   # Google
   mobile.usb.idVendor = "18D1";
   # "Nexus 4"
