@@ -18,7 +18,7 @@ in
   config = mkMerge [
     {
       # Ensures we don't quit stage-1
-      mobile.boot.stage-1.loop-forever.enable = true;
+      mobile.boot.stage-1.shell.enable = true;
 
       # Enables networking and ssh in stage-1 !
       mobile.boot.stage-1.networking.enable = true;
