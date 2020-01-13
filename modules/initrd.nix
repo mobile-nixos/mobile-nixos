@@ -24,6 +24,20 @@ let
     toJSON
   ;
 
+  JSONValue = with lib.types; let
+    valueType = nullOr (oneOf [
+      bool
+      int
+      float
+      str
+      (lazyAttrsOf valueType)
+      (listOf valueType)
+    ]) // {
+      description = "JSON value";
+      emptyValue.value = {};
+    };
+  in valueType;
+
   initWrapperRealInit = "/actual-init";
 
   # TODO: define as an option
@@ -203,7 +217,7 @@ in
         ";
       };
       mobile.boot.stage-1.bootConfig = mkOption {
-        type = types.attrs;
+        type = JSONValue;
         default = {};
         internal = true;
         description = ''
