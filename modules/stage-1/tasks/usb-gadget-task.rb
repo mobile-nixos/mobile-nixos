@@ -190,3 +190,25 @@ class Tasks::SetupGadgetMode < SingletonTask
     gadget.activate!
   end
 end
+
+# This task is a bit hacky.
+# It ensures ffs aliases are being configured before the functionfs mounts.
+# This is because otherwise, on some devices, it fails.
+class Tasks::SetupFFSAlias < SingletonTask
+  ALIASES_PATH = "/sys/class/android_usb/android0/f_ffs/aliases"
+  def initialize()
+    @with_ffs = false
+    add_dependency(:Mount, "/sys")
+    mount_task = Tasks::Mount.registry["/dev/usb-ffs/adb"]
+    if mount_task
+      @with_ffs = true
+      mount_task.add_dependency(:Task, self)
+    end
+  end
+
+  def run()
+    if @with_ffs and File.exist?(ALIASES_PATH)
+      File.write(ALIASES_PATH, "adb")
+    end
+  end
+end
