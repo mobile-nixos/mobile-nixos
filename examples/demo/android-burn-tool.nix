@@ -35,7 +35,7 @@ in
             # This can fail to write, ignore...
             begin
               max = File.read("/sys/class/leds/#{file}/max_brightness").to_i
-              File.write("/sys/class/leds/#{file}/brightness", (max * 0.1).to_i)
+              System.write("/sys/class/leds/#{file}/brightness", (max * 0.1).to_i)
             rescue
             end
           end
