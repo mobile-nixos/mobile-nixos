@@ -115,6 +115,6 @@ module System
   end
 
   def self.hard_reboot()
-    File.write("/proc/sysrq-trigger", "b\n")
+    System.write("/proc/sysrq-trigger", "b\n")
   end
 end
