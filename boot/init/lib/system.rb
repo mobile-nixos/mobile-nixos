@@ -59,6 +59,11 @@ module System
     end
   end
 
+  def self.write(file, contents)
+    $logger.debug("echo #{contents.to_json} > #{file}")
+    File.write(file, contents)
+  end
+
   # Mounts a filesystem of type +type+ on +dest+.
   #
   # The +source+ parameter is optional, though kept first to keep a coherent
