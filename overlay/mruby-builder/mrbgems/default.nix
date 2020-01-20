@@ -179,13 +179,4 @@ rec {
     rev = "73dd4bae1a47d82e49b8f85bf27f49ec4462052e";
     sha256 = "0yyf9vfsm46m2fi46f8w6ympkwzlaqnbpjkfnkzyapf94rg23g6i";
   };
-  # Dependency on mruby-onig-regexp...
-  # TODO: See if a naïve shellwords is enough... we only want it to
-  #       print out our commands I think.
-  #mruby-shellwords = fetchFromGitHub {
-  #  repo = "mruby-shellwords";
-  #  owner = "k0kubun";
-  #  rev = "2a284d99b2121615e43d6accdb0e4cde1868a0d8";
-  #  sha256 = "1vkk1v39h6fi4ysg4pdvp5a02l13l5807cjvb9nzra1z2lwg42li";
-  #};
 }
