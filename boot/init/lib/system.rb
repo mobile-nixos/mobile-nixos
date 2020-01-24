@@ -110,6 +110,7 @@ module System
     rescue CommandError
     end
     $logger.fatal("#{code}: #{message}")
+    shell if respond_to?(:shell)
     sleep(Configuration["boot"]["fail"]["delay"])
     hard_reboot if Configuration["boot"]["fail"]["reboot"]
   end

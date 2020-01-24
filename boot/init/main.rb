@@ -48,6 +48,7 @@ rescue => e
   $logger.fatal("********************")
   # Leave some time for the $logger.fatals to flush before the kernel crashes.
   sleep(1)
+  System.shell if System.respond_to?(:shell)
 
   # Users with access to serial debug may prefer crashing to the bootloader.
   # Though, crashing the kernel is *required* for console ramoops to be present.
