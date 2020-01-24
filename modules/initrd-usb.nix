@@ -49,7 +49,7 @@ in
     };
   };
 
-  config = lib.mkIf cfg.usb.enable {
+  config = lib.mkIf (config.mobile.usb.mode != null && cfg.usb.enable) {
     boot.specialFileSystems = {
       # This is required for gadgetfs configuration.
       "/sys/kernel/config" = {
