@@ -39,6 +39,7 @@ $logger.fatal("Tasks all ran, but we're still here...")
 System.failure("did_not_switch", color: "ff0000")
 
 rescue => e
+  System.sad_phone("765300")
   3.times do
     $logger.fatal("********************")
   end

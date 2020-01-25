@@ -104,11 +104,15 @@ module System
     run("mount", *args)
   end
 
-  def self.failure(code, message="(No details given)", color: "000000")
+  def self.sad_phone(color)
     begin
-    System.run("ply-image", "--clear=0x#{color}", "/sad-phone.png")
+      System.run("ply-image", "--clear=0x#{color}", "/sad-phone.png")
     rescue CommandError
     end
+  end
+
+  def self.failure(code, message="(No details given)", color: "000000")
+    sad_phone(color)
     $logger.fatal("#{code}: #{message}")
     shell if respond_to?(:shell)
     sleep(Configuration["boot"]["fail"]["delay"])
