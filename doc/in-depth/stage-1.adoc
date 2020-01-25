@@ -19,6 +19,7 @@ error has been codified as a background color.
  * Yellow (`0xFFFF00`) means that mounting the root filesystem was not possible.
  * Fuchsia (`0xFF00FF`) means that mounting succeeded, but no compatible generation was found to boot.
  * Red (`0xFF0000`) means that executing (`exec`) and switching to the found generation's init failed.
+ * Brown (`0x95681C`) means an uncontrolled abort happened.
 
 It may happen that the boot seemingly or actually hangs before a "sad phone"
 screen appears. In those instances, it means something else earlier kept the
