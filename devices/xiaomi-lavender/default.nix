@@ -45,7 +45,7 @@
     gadgetfs.functions = {
       rndis = "rndis_bam.rndis";
       # FIXME: This is likely the right function name, but doesn't work.
-      # ffs = "ffs.usb0";
+      # adb = "ffs.usb0";
     };
   };
   mobile.hardware = {

@@ -24,7 +24,7 @@ with lib;
     ];
 
     mobile.boot.stage-1 = {
-      usb.features = [ "ffs" ];
+      usb.features = [ "adb" ];
 
       tasks = [
         (pkgs.writeText "adbd-task.rb" ''

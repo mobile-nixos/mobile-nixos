@@ -57,7 +57,7 @@
     gadgetfs.functions = {
       rndis = "gsi.rndis";
       # FIXME: This is the right function name, but doesn't work.
-      # ffs = "ffs.usb0";
+      # adb = "ffs.usb0";
     };
   };
 
