@@ -106,19 +106,12 @@ end
 class System::AndroidUSB
   include Singleton
   attr_accessor :features
+  attr_accessor :id_vendor, :id_product
 
   ANDROID_USB  = "/sys/class/android_usb"
 
   def path_prefix()
     File.join(ANDROID_USB, "android0")
-  end
-
-  def id_vendor=(value)
-    set_id("idVendor", value)
-  end
-
-  def id_product=(value)
-    set_id("idProduct", value)
   end
 
   def manufacturer=(value)
@@ -134,7 +127,7 @@ class System::AndroidUSB
   end
 
   def set_id(kind, value)
-    value = ["0", value.sub(/^0x/, "")].join("x")
+    value = value.sub(/^0x/, "")
     System.write(File.join(path_prefix, kind), value)
   end
 
@@ -144,7 +137,11 @@ class System::AndroidUSB
 
   def activate!()
     System.write(File.join(path_prefix, "enable"), "0")
+    set_id("idVendor", @id_vendor)
+    set_id("idProduct", @id_product)
     System.write(File.join(path_prefix, "bDeviceClass"), "0")
+    System.write(File.join(path_prefix, "bDeviceSubClass"), "0")
+    System.write(File.join(path_prefix, "bDeviceProtocol"), "0")
     System.write(File.join(path_prefix, "functions"), @features.join(","))
     sleep(0.1)
     System.write(File.join(path_prefix, "enable"), "1")
