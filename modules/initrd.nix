@@ -190,11 +190,8 @@ let
     }]
     ++ optionals withStrace [
       {
-        package = runCommandNoCC "empty" {} "mkdir -p $out";
-        extraCommand = with pkgs; ''
-          copy_bin_and_libs ${strace}/bin/strace
-          cp -fpv ${glibc.out}/lib/libgcc_s.so* $out/lib
-        '';
+        # Remove libunwind, allows us to skip requiring libgcc_s
+        package = pkgs.strace.overrideAttrs(old: { buildInputs = []; });
       }
     ]
     ;
