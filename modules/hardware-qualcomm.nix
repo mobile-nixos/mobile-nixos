@@ -43,31 +43,31 @@ in
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
         system.system = "aarch64-linux";
-        quirks.qualcomm.msm-fb-handle.enable = true;
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8953.enable {
         system.system = "aarch64-linux";
-        quirks.qualcomm.msm-fb-handle.enable = true;
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8996.enable {
         system.system = "aarch64-linux";
-        quirks.qualcomm.msm-fb-handle.enable = true;
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8998.enable {
         system.system = "aarch64-linux";
-        quirks.qualcomm.msm-fb-handle.enable = true;
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-sdm660.enable {
         system.system = "aarch64-linux";
-        quirks.qualcomm.msm-fb-handle.enable = true;
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
