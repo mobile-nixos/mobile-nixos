@@ -64,6 +64,38 @@ module System
     File.write(file, contents)
   end
 
+  # Lists all mount points.
+  # This handles temporarily mounting /proc if required.
+  # This will hide /proc in those instances.
+  # The return format is a hash, with keys being mount point paths,
+  # and values being their respective line from /proc/mounts.
+  def self.mount_points()
+    # This is the most horrible hack :(
+    mounted_proc = false
+    unless File.exists?("/proc/mounts")
+      $logger.debug("Temporarily mounting /proc...")
+      FileUtils.mkdir_p("/proc")
+      run("mount", "-t", "proc", "proc", "/proc")
+      mounted_proc = true
+    end
+    result = File.read("/proc/mounts").split("\n")
+    run("umount", "-f", "/proc") if mounted_proc
+
+    result = result.map do |line|
+      [
+        # Safe to split by space, spaces are escaped in the mount point.
+        # "/tmp/test a b" ->> tmpfs /tmp/test\040a\040b tmpfs rw,relatime 0 0
+        line.split(" ")[1].gsub('\040', " "),
+        line
+      ]
+    end.to_h
+
+    # We mounted /proc? Hide it! We've now unmounted it.
+    result.delete("/proc") if mounted_proc
+
+    result
+  end
+
   # Mounts a filesystem of type +type+ on +dest+.
   #
   # The +source+ parameter is optional, though kept first to keep a coherent
@@ -101,7 +133,16 @@ module System
     args << source
     args << dest
 
-    run("mount", *args)
+    # We may have some mountpoints already mounted from, e.g. early logging in
+    # /run/log... If we're not careful we will mount over the existing mount
+    # point and hide the resulting files.
+    # Side-step by re-mounting to have the appropriate options.
+    if mount_points.keys.include?(dest)
+      $logger.debug("#{dest} already mounted, remounting.")
+      run("mount", "-o", "remount", *args)
+    else
+      run("mount", *args)
+    end
   end
 
   def self.sad_phone(color)
