@@ -10,6 +10,7 @@ let
   };
 in
   {
+    inherit (system-build) build;
     inherit (system-build.build)
       # Android devices
       android-bootimg android-device
