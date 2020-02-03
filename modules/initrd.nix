@@ -237,6 +237,7 @@ in
     };
 
     config = {
+      system.build.extraUtils = extraUtils;
       system.build.initrd = "${initrd}/initrd";
       boot.specialFileSystems = {
         # HACK: as we're using isContainer to bypass some NixOS stuff
