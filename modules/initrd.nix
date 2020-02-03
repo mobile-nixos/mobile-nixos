@@ -38,25 +38,18 @@ let
     };
   in valueType;
 
-  initWrapperRealInit = "/actual-init";
+  inherit (config.mobile.boot.stage-1) earlyInitScripts;
 
-  # TODO: define as an option
-  # This is a bit buggy:
-  #  * fast burst of \n-delimited output will not work as expected
-  #  * `printk.devkmsg=on` is required on the kernel cmdline for better results
-  # A better implementation would be to have a binary who's sole purpose is to
-  # duplicate the stdout/stderr to /dev/kmsg while still outputting them to
-  # stdout/stderr as they do currently.
-  #
-  # Reminder: redirecting to kmsg is useful *mainly* for getting data through
-  # console_ramoops on devices without serial and without any other means to
-  # get the initial data out.
-  withKmsg = false;
+  # Whether we "wrap" our init in a shell script with additional harnesses.
+  initWrapperEnabled = withStrace || (earlyInitScripts != "");
+
+  # Where we install the "real" init program.
+  # We are wrapping it with a minimal shell script to do some early accounting,
+  # mainly for the boot logs.
+  initWrapperRealInit = "/stage-1-init";
 
   # TODO: define as an option
   withStrace = false;
-
-  initWrapperEnabled = withKmsg || withStrace;
 
   device_config = config.mobile.device;
   device_name = device_config.name;
@@ -79,15 +72,7 @@ let
     echo "***************************************"
     echo
 
-    PS4="=> "
-    set -x
-
-    export LD_LIBRARY_PATH="${extraUtils}/lib"
-
-    ${optionalString withKmsg ''
-    ${extraUtils}/bin/mknod /.kmsg c 1 11
-    exec > /.kmsg 2>&1
-    ''}
+    ${earlyInitScripts}
 
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} ${initWrapperRealInit}
   '';
@@ -233,6 +218,18 @@ in
           Note that console ramoops requires the kernel to panic, this should
           be set to false if you rely on console ramoops to debug issues.
         '';
+      };
+      mobile.boot.stage-1.earlyInitScripts = mkOption {
+        type = types.lines;
+        default = "";
+        description = ''
+          Additional shell commands to run before the actual init.
+
+          Prefer writing a task. This should be used mainly to redirect logging,
+          or do setup that is otherwise impossible in the init, like running it 
+          against strace.
+        '';
+        internal = true;
       };
     };
 
