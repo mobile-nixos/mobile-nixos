@@ -16,7 +16,7 @@ let
 in
 mruby.builder {
   pname = "mobile-nixos-init";
-  version = "0.0-unstable";
+  version = "0.1.0";
 
   src = ./.;
 
@@ -39,7 +39,6 @@ mruby.builder {
       main.rb
   '';
 
-  # TODO: better way to handle this?
   tasks = [
     "./tasks"
   ] ++ tasks;
