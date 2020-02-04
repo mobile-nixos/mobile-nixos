@@ -60,9 +60,13 @@ module Mounting
       # TODO: Handle failures gracefully
       # init_fail FFFF00 root_mount_failure "Could not mount root filesystem"
 
-      # TODO: Add autoResize handling here!
-      # (It will add a dependency on its own task, to the mount task.)
-      # (Its own task is a new task type.)
+      if config["autoResize"]
+        resize_task = Tasks::AutoResize.new(
+          device,
+          type: config["fsType"],
+        )
+        task.add_dependency(:Task, resize_task)
+      end
 
       # Makes sure switching root waits until *all* mount points needed for
       # boot are fulfilled.
