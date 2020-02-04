@@ -22,6 +22,8 @@ stdenv.mkDerivation {
   ];
 
   buildPhase = ''
+    export LANG=C.UTF-8
+
     # Removes the internal notes.
     rm -f README.md
 

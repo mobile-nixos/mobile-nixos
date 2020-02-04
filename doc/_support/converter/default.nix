@@ -1,4 +1,4 @@
-{ stdenv, bundlerEnv }:
+{ stdenv, bundlerEnv, glibcLocales }:
 
 let
   env =
@@ -24,6 +24,9 @@ in
     buildInputs = [
       env
       env.wrappedRuby
+    ];
+    propagatedBuildInputs = [
+      glibcLocales
     ];
     installPhase = ''
       mkdir -vp $out/
