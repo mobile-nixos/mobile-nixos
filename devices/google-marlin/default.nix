@@ -43,5 +43,11 @@
     };
   };
 
+  mobile.usb.mode = "android_usb";
+  # Google
+  mobile.usb.idVendor = "18D1";
+  # "Pixel" rndis+adb
+  mobile.usb.idProduct = "4EE4";
+
   mobile.system.type = "android";
 }

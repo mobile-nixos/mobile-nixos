@@ -51,6 +51,14 @@
     flash_offset_second = "0x00f00000";
     flash_offset_tags = "0x00000100";
     flash_pagesize = "4096";
+
+    ab_partitions = true;
+    vendor_partition = "/dev/disk/by-partlabel/vendor_a";
+    gadgetfs.functions = {
+      rndis = "gsi.rndis";
+      # FIXME: This is the right function name, but doesn't work.
+      # adb = "ffs.usb0";
+    };
   };
 
   mobile.hardware = {
@@ -62,4 +70,10 @@
   };
 
   mobile.system.type = "android";
+
+  mobile.usb.mode = "gadgetfs";
+  # Google
+  mobile.usb.idVendor = "18D1";
+  # "Nexus 4"
+  mobile.usb.idProduct = "D001";
 }

@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-with import ./initrd-order.nix;
 
 let
   cfg = config.mobile.boot.stage-1.networking;
@@ -9,7 +8,6 @@ let
   hostIP = cfg.hostIP;
 in
 {
-  # FIXME : this is probably incomplete.
   options.mobile.boot.stage-1.networking = {
     enable = mkOption {
       type = types.bool;
@@ -35,36 +33,11 @@ in
   };
 
   config.mobile.boot.stage-1 = lib.mkIf cfg.enable {
-    init = lib.mkOrder NETWORK_INIT ''
-      start_udhcpd() {
-        # Only run once
-        [ -e /etc/udhcpd.conf ] && return
-
-        # Get usb interface
-        INTERFACE=""
-        ifconfig rndis0 "${IP}" && INTERFACE=rndis0
-        if [ -z $INTERFACE ]; then
-          ifconfig usb0 "${IP}" && INTERFACE=usb0
-        fi
-        if [ -z $INTERFACE ]; then
-          ifconfig eth0 "${IP}" && INTERFACE=eth0
-        fi
-        # Create /etc/udhcpd.conf
-        {
-          echo "start ${hostIP}"
-          echo "end ${hostIP}"
-          echo "auto_time 0"
-          echo "decline_time 0"
-          echo "conflict_time 0"
-          echo "lease_file /var/udhcpd.leases"
-          echo "interface $INTERFACE"
-          echo "option subnet 255.255.255.0"
-        } >/etc/udhcpd.conf
-        echo "Start the dhcpcd daemon (forks into background)"
-        udhcpd
-      }
-
-      start_udhcpd
-    '';
+    tasks = [
+      ./stage-1/tasks/dhcpd-task.rb
+    ];
+    bootConfig = {
+      boot.networking = cfg;
+    };
   };
 }

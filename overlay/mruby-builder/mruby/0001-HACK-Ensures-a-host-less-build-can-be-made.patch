@@ -1,0 +1,36 @@
+From 8a1e99975511e178a5a2b8bea8ba3517f71fab61 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Wed, 11 Dec 2019 21:23:11 -0500
+Subject: [PATCH] HACK: Ensures a host-less build can be made
+
+---
+ Rakefile | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/Rakefile b/Rakefile
+index 69c7d4c8..86183c86 100644
+--- a/Rakefile
++++ b/Rakefile
+@@ -45,7 +45,10 @@ task :default => :all
+ 
+ bin_path = ENV['INSTALL_DIR'] || "#{MRUBY_ROOT}/bin"
+ 
+-depfiles = MRuby.targets['host'].bins.map do |bin|
++depfiles = []
++
++unless ENV["SKIP_HOST"] then
++depfiles += MRuby.targets['host'].bins.map do |bin|
+   install_path = MRuby.targets['host'].exefile("#{bin_path}/#{bin}")
+   source_path = MRuby.targets['host'].exefile("#{MRuby.targets['host'].build_dir}/bin/#{bin}")
+ 
+@@ -55,6 +58,7 @@ depfiles = MRuby.targets['host'].bins.map do |bin|
+ 
+   install_path
+ end
++end
+ 
+ MRuby.each_target do |target|
+   gems.map do |gem|
+-- 
+2.23.0
+

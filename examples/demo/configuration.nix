@@ -57,8 +57,6 @@ in
           exec ${pkgs.firefox}/bin/firefox "$@"
         '')
         sgtpuzzles
-        hard-reboot
-        hard-shutdown
       ];
 
       # Hacky way to setup an initial brightness

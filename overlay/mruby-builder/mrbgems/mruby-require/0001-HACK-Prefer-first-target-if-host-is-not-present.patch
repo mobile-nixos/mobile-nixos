@@ -1,0 +1,36 @@
+From 9b30b9c9d73ce25de5179680be124eb903b64307 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 20 Dec 2019 20:33:46 -0500
+Subject: [PATCH] [HACK] Prefer `#first` target if "host" is not present
+
+---
+ mrbgem.rake | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/mrbgem.rake b/mrbgem.rake
+index b152e80..9192876 100644
+--- a/mrbgem.rake
++++ b/mrbgem.rake
+@@ -58,8 +58,17 @@ MRuby::Gem::Specification.new('mruby-require') do |spec|
+     white_list = ["mruby-require", "mruby-test", "mruby-bin-mrbc"]
+ 	@bundled    = gems_uniq.reject {|g| compiled_in.include?(g.name)}
+ 	gems.reject! {|g| !compiled_in.include?(g.name) and !white_list.include?(g.name)}
+-    libmruby_libs      = MRuby.targets["host"].linker.libraries
+-    libmruby_lib_paths = MRuby.targets["host"].linker.library_paths
++
++    # Assumes host is desired if host exists.
++    target = MRuby.targets["host"] if MRuby.targets["host"]
++
++    # Otherwise the value of any first entry.
++    target ||= MRuby.targets.first.last
++
++    # Uses that linker for libraries and library path info.
++    libmruby_libs      = target.linker.libraries
++    libmruby_lib_paths = target.linker.library_paths
++
+     gems_uniq.each do |g|
+       unless g.name == "mruby-require"
+         begin
+-- 
+2.23.0
+

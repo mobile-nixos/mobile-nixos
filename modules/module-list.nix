@@ -15,27 +15,20 @@
   ./hardware-screen.nix
   ./hardware-soc.nix
   ./initrd-base.nix
-  ./initrd-devices.nix
   ./initrd-fbterm.nix
   ./initrd-fail.nix
-  ./initrd-framebuffer.nix
-  ./initrd-growpart.nix
   ./initrd-kernel.nix
-  ./initrd-logger.nix
-  ./initrd-loop.nix
-  ./initrd-nc-shell.nix
+  ./initrd-logs.nix
   ./initrd-network.nix
   ./initrd-shell.nix
   ./initrd-splash.nix
   ./initrd-ssh.nix
-  ./initrd-telnet.nix
-  ./initrd-udev.nix
   ./initrd-usb.nix
+  ./initrd-vendor.nix
   ./initrd.nix
   ./mobile-device.nix
   ./nixpkgs.nix
-  ./quirks-qualcomm.nix
-  ./stage-2.nix
+  ./quirks/qualcomm/default.nix
   ./system-target.nix
   ./system-types.nix
 ]

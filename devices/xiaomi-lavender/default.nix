@@ -41,6 +41,12 @@
     flash_offset_tags = "0x00000100";
     flash_pagesize = "4096";
 
+    vendor_partition = "/dev/disk/by-partlabel/vendor";
+    gadgetfs.functions = {
+      rndis = "rndis_bam.rndis";
+      # FIXME: This is likely the right function name, but doesn't work.
+      # adb = "ffs.usb0";
+    };
   };
   mobile.hardware = {
     soc = "qualcomm-sdm660";
@@ -52,6 +58,11 @@
       width = 1080; height = 2340;
     };
   };
+
+  mobile.usb.mode = "gadgetfs";
+  # FIXME: attribute to sources.
+  mobile.usb.idVendor  = "2717"; # Xiaomi Communications Co., Ltd.
+  mobile.usb.idProduct = "FF80"; # Mi/Redmi series (RNDIS)
 
   mobile.system.type = "android";
 }

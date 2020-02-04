@@ -1,16 +1,15 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-with import ./initrd-order.nix;
 
 let
+  device_info = config.mobile.device.info;
   cfg = config.mobile.boot.stage-1;
   device_name = device_config.name;
   device_config = config.mobile.device;
   system_type = config.mobile.system.type;
 in
 {
-  # FIXME Generic USB gadget support to come.
   options.mobile.boot.stage-1.usb = {
     enable = mkOption {
       type = types.bool;
@@ -28,31 +27,59 @@ in
       '';
     };
   };
+  options.mobile.usb = {
+    idVendor = mkOption {
+      type = types.str;
+      description = ''
+        USB vendor ID for the USB gadget.
+      '';
+    };
+    idProduct = mkOption {
+      type = types.str;
+      description = ''
+        USB product ID for the USB gadget.
+      '';
+    };
+    mode = mkOption {
+      type = types.nullOr (types.enum [ "android_usb" "gadgetfs" ]);
+      default = null;
+      description = ''
+        The USB gadget implementation the device uses.
+      '';
+    };
+  };
 
-  config.mobile.boot.stage-1 = lib.mkIf cfg.usb.enable {
-    usb.features = []
-      ++ optional cfg.networking.enable "rndis"
-    ;
+  config = lib.mkIf (config.mobile.usb.mode != null && cfg.usb.enable) {
+    boot.specialFileSystems = {
+      # This is required for gadgetfs configuration.
+      "/sys/kernel/config" = {
+        # FIXME: remove once added to <nixpkgs/nixos/modules/tasks/filesystems.nix> specialFSTypes
+        device = "configfs";
+        fsType = "configfs";
+        options = [ "nosuid" "noexec" "nodev" ];
+      };
+    };
 
-    # TODO: Only run, when we have the android usb driver
-    init = lib.mkOrder AFTER_DEVICE_INIT ''
-      # Setting up Android-specific USB.
-      (
-      SYS=/sys/class/android_usb/android0
-      if [ -e "$SYS" ]; then
-        printf "%s" "0"    > "$SYS/enable"
-        printf "%s" "18D1" > "$SYS/idVendor"
-        printf "%s" "D001" > "$SYS/idProduct"
-        printf "%s" "0"    > "$SYS/bDeviceClass"
-        printf "%s" "${concatStringsSep "," cfg.usb.features}" > "$SYS/functions"
-        printf "%s" "mobile-nixos" > "$SYS/iManufacturer"
-        printf "%s" "${device_name}" > "$SYS/iProduct"
-        printf "%s" "0123456789" > "$SYS/iSerial"
+    mobile.boot.stage-1 = lib.mkIf (cfg.usb.enable && (config.mobile.usb.mode != null)) {
+      kernel.modules = [
+        "configfs"
+      ];
 
-        sleep 0.1
-        printf "%s" "1" > "$SYS/enable"
-      fi
-      )
-    '';
+      usb.features = []
+        ++ optional cfg.networking.enable "rndis"
+      ;
+      tasks = [
+        ./stage-1/tasks/usb-gadget-task.rb
+      ];
+      bootConfig = {
+        boot.usb.features = cfg.usb.features;
+        boot.usb.functions = mkIf (device_info ? gadgetfs) (builtins.listToAttrs (
+          builtins.map (feature: { name = feature; value = device_info.gadgetfs.functions."${feature}"; }) cfg.usb.features
+        ));
+        usb = {
+          inherit (config.mobile.usb) idVendor idProduct mode;
+        };
+      };
+    };
   };
 }

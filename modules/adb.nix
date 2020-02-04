@@ -1,13 +1,12 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-with import ./initrd-order.nix;
 
 {
   options.mobile.adbd = {
     enable = mkOption {
       type = types.bool;
-      default = config.mobile.system.type == "android";
+      default = false;
       description = ''
         Enables adbd on the device.
       '';
@@ -25,21 +24,36 @@ with import ./initrd-order.nix;
     ];
 
     mobile.boot.stage-1 = {
-      usb.features = [ "ffs" ];
+      usb.features = [ "adb" ];
 
-      init = lib.mkOrder AFTER_DEVICE_INIT ''
-        (
-        mkdir -p /dev/usb-ffs/adb
-        mount -t functionfs adb /dev/usb-ffs/adb/
-        sleep 0.1
-        adbd &
-        )
-      '';
+      tasks = [
+        (pkgs.writeText "adbd-task.rb" ''
+          class Tasks::ADBD < SingletonTask
+            def initialize()
+              add_dependency(:Mount, "/dev/usb-ffs/adb")
+              Targets[:SwitchRoot].add_dependency(:Task, self)
+            end
+            
+            def run()
+              System.spawn("adbd")
+            end
+          end
+        '')
+      ];
 
       extraUtils = with pkgs; [{
         package = adbd;
         extraCommand = ''cp -fpv "${glibc.out}"/lib/libnss_files.so.* "$out"/lib/'';
       }];
+    };
+
+    boot.specialFileSystems = {
+      # This is required for gadgetfs configuration.
+      "/dev/usb-ffs/adb" = {
+        device = "adb";
+        fsType = "functionfs";
+        options = [ "nosuid" "noexec" "nodev" ];
+      };
     };
 
     boot.postBootCommands = ''

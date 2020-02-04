@@ -14,5 +14,6 @@ import nixpkgs {
   inherit crossSystem;
   overlays = [
     (import ./overlay.nix)
+    (import ./mruby-builder/overlay.nix)
   ];
 }

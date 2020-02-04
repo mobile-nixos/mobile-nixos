@@ -29,7 +29,7 @@ screen means that the user will need to check what is up.
 The command will look like:
 
 ```
-dd if=system.img bs=2M status=progress | bin/ssh-initrd dd of=/dev/userdata bs=2M
+dd if=system.img bs=2M status=progress | bin/ssh-initrd dd of=/dev/[...] bs=2M
 ```
 
 ## Booting
