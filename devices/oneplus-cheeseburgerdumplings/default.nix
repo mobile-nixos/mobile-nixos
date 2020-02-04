@@ -1,10 +1,10 @@
 { config, lib, pkgs, ... }:
 
 {
-	mobile.device.name = "oneplus-cheeseburger";
+	mobile.device.name = "oneplus-cheeseburgerdumplings";
 	mobile.device.info = rec {
 		format_version = "0";
-		name = "OnePlus OnePlus 5";
+		name = "OnePlus OnePlus 5/5T";
 		manufacturer = "OnePlus";
 		date = "";
 		dtb = "";
@@ -33,7 +33,7 @@
 		soc = "qualcomm-msm8998";
 		ram = 1024 * 6;
 		screen = {
-			width = 1080; height = 1920;
+			width = 2160; height = 1920;
 		};
 	};
 

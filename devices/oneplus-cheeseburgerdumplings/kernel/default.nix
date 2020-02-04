@@ -24,6 +24,7 @@ in
 		};
 
 	patches = [
+		./01_more_precise_arch.patch # May not be needed in future
 		./0001-use-relative-header-includes.patch
 		./0002-fix-TRACE_INCLUDE_PATH-paths.patch
 		./0003-fix-synaptics_s3320-touchscreen-driver-input.patch
