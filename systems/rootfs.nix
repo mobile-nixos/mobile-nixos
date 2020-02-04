@@ -72,4 +72,11 @@ in
       autoResize = true;
     };
   };
+
+  # FIXME: Move this in a proper module + task for the filesystem.
+  # This is a "wrong" assumption, that only holds through since we are setting
+  # fileSystems."/".autoResize to true here.
+  mobile.boot.stage-1.extraUtils = with pkgs; [
+    { package = e2fsprogs; }
+  ];
 }
