@@ -181,13 +181,13 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     runHook preBuild
     cp -vf ${mruby-config} build_config.rb
-    ruby ./minirake -v
+    ruby ./minirake -v -j$NIX_BUILD_CORES
     runHook postBuild
   '';
 
   checkPhase = ''
     runHook preCheck
-    ruby ./minirake test
+    ruby ./minirake test -j$NIX_BUILD_CORES
     runHook postCheck
   '';
 
@@ -213,4 +213,6 @@ stdenv.mkDerivation rec {
   passthru = {
     inherit linkerFlags compilerFlags;
   };
+
+  enableParallelBuilding = true;
 }
