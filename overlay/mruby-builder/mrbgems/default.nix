@@ -8,8 +8,9 @@ let
     # "Static" name. Just like source packages.
     name = attrs.src.name;
 
-    # Skip, as it may be accidentally triggered.
+    # Skip these, as they may be accidentally triggered.
     configurePhase = ":";
+    buildPhase = ":";
 
     installPhase = ''
       runHook prePatch
