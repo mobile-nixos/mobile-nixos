@@ -13,12 +13,8 @@ let
     buildPhase = ":";
 
     installPhase = ''
-      runHook prePatch
-
       echo " :: Copying mrbgem"
       cp -vr . $out
-
-      runHook postPatch
     '';
   } // attrs);
 in
