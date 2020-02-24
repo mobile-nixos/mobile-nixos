@@ -106,6 +106,10 @@ rec {
     ];
 
     postPatch = ''
+      # Uh... they are testing that they are not implementing something.
+      # Though it may be implemented anywya!
+      rm -vf test/io.rb
+
       substituteInPlace test/file-stat.rb \
         --replace 'dir = __FILE__[0..-18] # 18 = /test/file-stat.rb' \
         'skip "Fails in Nix sandbox"'
