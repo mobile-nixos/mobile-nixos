@@ -252,4 +252,15 @@ rec {
 
     meta.licenses = licenses.mit;
   };
+
+  mruby-time-strftime = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-time-strftime";
+      owner = "monochromegane";
+      rev = "ea8a77504f43fe9f985529b987f3d88bf2a2291a";
+      sha256 = "1yh6sd7m4kqljp30yp6sy3zj6669bvzcans7vvla2rrzm0vdghlk";
+    };
+
+    meta.licenses = licenses.mit;
+  };
 }
