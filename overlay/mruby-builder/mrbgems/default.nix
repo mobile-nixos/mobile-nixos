@@ -51,6 +51,7 @@ rec {
       mruby-dir
       mruby-errno
       mruby-file-stat
+      mruby-regexp-pcre
     ];
 
     meta.license = licenses.mit;
