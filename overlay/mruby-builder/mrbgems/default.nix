@@ -227,6 +227,7 @@ rec {
     patches = [
       ./mruby-require/0001-HACK-Skip-turning-gems-to-library-for-tests-output.patch
       ./mruby-require/0001-HACK-Prefer-first-target-if-host-is-not-present.patch
+      ./mruby-require/0001-Skip-realpath-on-absolute-paths.patch
     ];
 
     meta.license = licenses.mit;
