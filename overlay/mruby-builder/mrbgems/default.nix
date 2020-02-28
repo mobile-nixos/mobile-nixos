@@ -2,7 +2,8 @@
 
 let
   inherit (lib) licenses;
-
+in
+rec {
   # Thin wrapper over stdenvNoCC.mkDerivation.
   mkGem = attrs: stdenvNoCC.mkDerivation ({
     # "Static" name. Just like source packages.
@@ -17,8 +18,7 @@ let
       cp -vr . $out
     '';
   } // attrs);
-in
-rec {
+
   mruby-dir = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-dir";
