@@ -7,7 +7,7 @@ rec {
   # Thin wrapper over stdenvNoCC.mkDerivation.
   mkGem = attrs: stdenvNoCC.mkDerivation ({
     # "Static" name. Just like source packages.
-    name = attrs.src.name;
+    name = if attrs.src ? name then attrs.src.name else "source";
 
     # Skip these, as they may be accidentally triggered.
     configurePhase = ":";
