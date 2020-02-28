@@ -97,20 +97,6 @@ let
   gemBuildInputs = concatGemAttr "gemBuildInputs" gems;
   gemNativeBuildInputs = concatGemAttr "gemNativeBuildInputs" gems;
 
-  compilerFlags = [
-    "-std=c99"
-    "-Os"
-  ]
-  ++ concatGemAttr "compilerFlags" gems
-  ;
-
-  linkerFlags = [
-    "-lm"
-    "-lmruby"
-  ]
-  ++ concatGemAttr "linkerFlags" gems
-  ;
-
   shared-config = ''
       # Gemboxes
       ${concatMapStringsSep "\n" (box: "conf.gembox '${box}'") gemBoxes'}
@@ -217,10 +203,6 @@ stdenv.mkDerivation rec {
     maintainers = [ maintainers.nicknovitski ];
     license = licenses.mit;
     platforms = platforms.unix;
-  };
-
-  passthru = {
-    inherit linkerFlags compilerFlags;
   };
 
   enableParallelBuilding = true;

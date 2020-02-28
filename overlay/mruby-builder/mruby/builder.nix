@@ -43,14 +43,21 @@ in
   buildPhase = ''
     runHook preBuild
 
+    . ${mruby}/nix-support/mruby_linker_flags.sh
+
     CFLAGS+=(
       "-I${mruby}/include"
-      ${concatStringsSep "\n" mruby.compilerFlags}
+      "''${mrb_cflags[@]}"
     )
 
     LDFLAGS+=(
       "-L${mruby}/lib"
-      ${concatStringsSep "\n" mruby.linkerFlags}
+      "-lmruby"
+      "''${mrb_linker_flags[@]}"
+      "''${mrb_linker_flags_before_libraries[@]}"
+      "''${mrb_linker_library_paths_flags[@]}"
+      "''${mrb_linker_libraries_flags[@]}"
+      "''${mrb_linker_flags_after_libraries[@]}"
     )
 
     makeBin() {

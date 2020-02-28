@@ -227,10 +227,6 @@ rec {
       ./mruby-require/0001-HACK-Prefer-first-target-if-host-is-not-present.patch
     ];
 
-    linkerFlags = [
-      "-ldl"
-    ];
-
     meta.license = licenses.mit;
   };
 
