@@ -167,6 +167,7 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
+    ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
   ];
 
   nativeBuildInputs = [ ruby bison ];
@@ -182,6 +183,7 @@ stdenv.mkDerivation rec {
     runHook preBuild
     cp -vf ${mruby-config} build_config.rb
     ruby ./minirake -v -j$NIX_BUILD_CORES
+    ruby ./minirake -v dump_linker_flags
     runHook postBuild
   '';
 
@@ -200,6 +202,8 @@ stdenv.mkDerivation rec {
     cp -R build/${targetName}/bin $out
     cp -R build/${targetName}/lib $out
     cp -R include $out
+    mkdir -p $out/nix-support
+    cp mruby_linker_flags.sh $out/nix-support/
   '';
 
   meta = with stdenv.lib; {
