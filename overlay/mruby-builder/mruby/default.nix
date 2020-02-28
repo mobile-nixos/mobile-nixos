@@ -91,6 +91,7 @@ let
   gemBoxes' = optionals useDefaults defaultGemBoxes ++ gemBoxes;
 
   gemBuildInputs = concatGemAttr "gemBuildInputs" gems;
+  gemNativeBuildInputs = concatGemAttr "gemNativeBuildInputs" gems;
 
   compilerFlags = [
     "-std=c99"
@@ -170,7 +171,7 @@ stdenv.mkDerivation rec {
     ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
   ];
 
-  nativeBuildInputs = [ ruby bison ];
+  nativeBuildInputs = [ ruby bison ] ++ gemNativeBuildInputs;
   buildInputs = gemBuildInputs;
 
   # Necessary so it uses `gcc` instead of `ld` for linking.
