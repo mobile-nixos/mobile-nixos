@@ -87,7 +87,11 @@ let
 
   gemsForGems = concatGemAttr "requiredGems" gems;
 
-  gems' = optionals useDefaults defaultGems ++ gems ++ gemsForGems;
+  # Gems for gems needs to be set before gems.
+  # This is because `mruby-require` has weird semantics in the gems listing.
+  # More in-depth handling of gems is required if we want to properly handle
+  # dependencies mruby-require transforms as shared libraries.
+  gems' = optionals useDefaults defaultGems ++ gemsForGems ++ gems;
   gemBoxes' = optionals useDefaults defaultGemBoxes ++ gemBoxes;
 
   gemBuildInputs = concatGemAttr "gemBuildInputs" gems;
