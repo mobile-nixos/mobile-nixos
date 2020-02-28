@@ -40,13 +40,16 @@ let
 
   inherit (config.mobile.boot.stage-1) earlyInitScripts;
 
-  # Whether we "wrap" our init in a shell script with additional harnesses.
-  initWrapperEnabled = withStrace || (earlyInitScripts != "");
+  # The script loader
+  loader = "${mobile-nixos-init}/bin/loader";
+
+  # The init "script"
+  initScript = "${mobile-nixos-init}/libexec/init.mrb";
 
   # Where we install the "real" init program.
   # We are wrapping it with a minimal shell script to do some early accounting,
   # mainly for the boot logs.
-  initWrapperRealInit = "/stage-1-init";
+  loaderPath = "/loader";
 
   # TODO: define as an option
   withStrace = false;
@@ -60,10 +63,8 @@ let
     inherit (config.mobile.boot.stage-1) tasks;
   };
 
-  init = "${mobile-nixos-init}/bin/init";
-
   shell = "${extraUtils}/bin/sh";
-  debugInit = pkgs.writeScript "debug-init" ''
+  initWrapper = pkgs.writeScript "init-wrapper" ''
     #!${shell}
 
     echo
@@ -74,7 +75,9 @@ let
 
     ${earlyInitScripts}
 
-    exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} ${initWrapperRealInit}
+    exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} \
+      ${loaderPath} \
+      /init.mrb
   '';
 
   bootConfigFile = writeText "${device_name}-boot-config" (toJSON config.mobile.boot.stage-1.bootConfig);
@@ -90,13 +93,11 @@ let
 
       # FIXME: udev/udevRules module.
       { object = udevRules; symlink = "/etc/udev/rules.d"; }
-    ]
-    ++ optionals (!initWrapperEnabled) [
-      { object = init; symlink = "/init"; }
-    ]
-    ++ optionals initWrapperEnabled [
-      { object = init; symlink = initWrapperRealInit; }
-      { object = debugInit; symlink = "/init"; }
+
+      # Init components
+      { object = loader; symlink = loaderPath; }
+      { object = initWrapper; symlink = "/init"; }
+      { object = initScript; symlink = "/init.mrb"; }
     ]
   ;
 
