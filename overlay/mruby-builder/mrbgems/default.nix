@@ -119,6 +119,17 @@ rec {
     meta.license = licenses.mit;
   };
 
+  mruby-inotify = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-inotify";
+      owner = "projectivetech";
+      rev = "cd00265532384f5eb71bb343eaad1a11d5041db3";
+      sha256 = "1h9cmam6grz32ry0gi17nimv4m7crn8jggmicgd0cz1g7kscsw5a";
+    };
+
+    meta.license = licenses.mit; # See mrbgem.rake
+  };
+
   mruby-json = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-json";
