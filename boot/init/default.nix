@@ -33,9 +33,16 @@ mruby.builder {
       done | sort
     }
 
-    makeBin init \
+    # This is the "script" that will be loaded.
+    mrbc -o init.mrb \
       $(find lib -type f | sort) \
       $(get_tasks) \
+      init.rb
+    mkdir -p $out/libexec
+    cp init.mrb $out/libexec/init.mrb
+
+    # We're building a script loader here.
+    makeBin loader \
       main.rb
   '';
 
