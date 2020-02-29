@@ -1,0 +1,39 @@
+= Notes about boot on Android-Based Devices
+include::_support/common.inc[]
+
+Some unordered thoughts about boot on Android-based devices
+
+== Common boot/recovery build
+
+We are building both `boot.img` and `recovery.img` deliberately as being the
+same configuration, except for one forcing the generation selection menu to be
+shown.
+
+This allows us to have better homogeneity for the build process as "Boot as
+recovery" devices would need to be handled otherwise.
+
+This means that the only difference between a `boot.img` and `recovery.img` for
+those older devices is a configuration line in `/etc/boot/config` that states
+the image is built as recovery. Everything else is the same exact build.
+
+_"Boot as recovery"_ devices, instead, rely solely on the lack of
+`skip_initramfs` in the kernel command-line to switch between the two boot
+flows.
+
+=== Recovery as pseudo-A/B
+
+For devices that are not _"Boot as recovery"_, this setup has the added benefit
+that the recovery partition is always a fully functional stage-1 able to boot
+in the system.
+
+Tinkering on-device is, thus, less scary as one can flash a boot.img knowing
+that they can reboot to recovery if it fails to do a proper full boot.
+
+It is recommended to flash `boot.img` first, validate it works, and then to
+flash `recovery.img` if you are not in a situation where you can trivially
+recovery a broken boot.
+
+
+== Links
+
+* https://source.android.com/devices/tech/ota/ab/ab_implement
