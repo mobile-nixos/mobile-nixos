@@ -1,0 +1,62 @@
+= Boot Process
+include::_support/common.inc[]
+
+“How does Mobile NixOS boot?”
+
+This is what this documentation topic tries to describe. This is for end-users.
+
+For developers, see in-depth topics.
+
+
+== Booting Mobile NixOS
+
+Most devices targeted by Mobile NixOS are intended to boot only one kernel at
+a time, with one stage-1, and one system.
+
+NixOS, in turn, shines when a system can choose a _generation_, which has its
+own kernel, stage-1, and system build.
+
+Mobile NixOS, at this point in time, sits on the halfway point. The user cannot
+choose which generation a kernel and stage-1 comes from, but can boot a
+specific generation.
+
+
+== Booting a specific generation
+
+This is done through booting in "recovery mode". This will stop the stage-1
+process before it jumps into the default generation, and will allow you to
+select a system to boot into.
+
+The method to enter recovery mode depends on your device
+
+=== Android-based devices
+
+Android-based devices can be booted in their respective recovery mode.
+
+When the device is a _"Boot as recovery"_ system, no other setup than flashing
+the boot partition is required. _"Boot as recovery"_ systems are generally newer
+Android-based devices.
+
+When the device is not a _"Boot as recovery"_, or still uses a recovery
+partition, you will need to flash a recovery image to the recovery partition.
+
+....
+nix-build --argstr device $DEVICE -A build.android-recovery
+fastboot flash recovery result
+....
+
+=== All other devices
+
+_Including the default boot partition for Android-based devices._
+
+When the boot process is about to switch to the system, if any of the following
+keys are held, it will instead show the recovery menu.
+
+* Volume up
+* Volume down
+* Left shift
+* Right shift
+* Left control
+* Right control
+* Escape
+
