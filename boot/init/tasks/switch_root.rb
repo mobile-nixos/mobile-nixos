@@ -118,12 +118,31 @@ class Tasks::SwitchRoot < SingletonTask
       boot_as_recovery_wants_recovery
   end
 
+  def is_boot_interrupted()
+    keys = [
+      "KEY_VOLUMEUP",
+      "KEY_VOLUMEDOWN",
+      "KEY_LEFTCTRL",
+      "KEY_RIGHTCTRL",
+      "KEY_LEFTSHIFT",
+      "KEY_RIGHTSHIFT",
+      "KEY_ESC", # QEMU doesn't pass through CTRL and SHIFT as expected here...
+    ]
+
+    # Do *not* use System.run as it would fail the boot on return value != 0
+    system($PROGRAM_NAME, "/applets/key-held.mrb", *keys)
+
+    # It returns `0` on key being held.
+    $?.exitstatus == 0
+  end
+
   # Checks if the user wants to select a generation.
   def user_wants_selection()
     [
       # Booted a recovery partition.
       is_recovery,
-      # TODO: Check for held [VOL UP, VOL DOWN, CTRL].any keys (needs some mruby evdev bindings or a simple C tool to list held keys)
+      # Or signaling the boot selection menu should be shown.
+      is_boot_interrupted,
     ].any?
   end
 
