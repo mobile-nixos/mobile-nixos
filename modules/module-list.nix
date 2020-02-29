@@ -15,6 +15,7 @@
   ./hardware-screen.nix
   ./hardware-soc.nix
   ./initrd-base.nix
+  ./initrd-boot-gui.nix
   ./initrd-fbterm.nix
   ./initrd-fail.nix
   ./initrd-kernel.nix
