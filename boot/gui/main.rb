@@ -22,8 +22,8 @@ if Args.get(:resolution)
     $stderr.puts "--resolution <width>x<height>"
     exit 2
   end
-  LVGL::Hacks.monitor_width = ARGV.first.to_i
-  LVGL::Hacks.monitor_height = ARGV.last.to_i
+  LVGL::Hacks.monitor_width = pair.first.to_i
+  LVGL::Hacks.monitor_height = pair.last.to_i
 else
   LVGL::Hacks.monitor_width = 720
   LVGL::Hacks.monitor_height = 1280
