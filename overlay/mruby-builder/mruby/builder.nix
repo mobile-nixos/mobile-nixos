@@ -31,34 +31,6 @@ let
   mruby = mruby'.override({
     inherit gems;
   });
-  stub = writeText "mruby-stub.c" ''
-    #include <mruby.h>
-    #include <mruby/irep.h>
-    #include "irep.c"
-    #include <stdlib.h>
-
-    int
-    main(void)
-    {
-      mrb_state *mrb = mrb_open();
-      if (!mrb) {
-          /* handle error */
-          printf("[FATAL] Could not open mruby.\n");
-          exit(1);
-      }
-      mrb_load_irep(mrb, ruby_irep);
-
-      if (mrb->exc) {
-          mrb_print_backtrace(mrb);
-          mrb_print_error(mrb);
-          mrb_close(mrb);
-          exit(1);
-      }
-
-      mrb_close(mrb);
-      return 0;
-    }
-  '';
 in
   stdenv.mkDerivation ((
     builtins.removeAttrs attrs ["gems"]
@@ -71,14 +43,21 @@ in
   buildPhase = ''
     runHook preBuild
 
+    . ${mruby}/nix-support/mruby_linker_flags.sh
+
     CFLAGS+=(
       "-I${mruby}/include"
-      ${concatStringsSep "\n" mruby.compilerFlags}
+      "''${mrb_cflags[@]}"
     )
 
     LDFLAGS+=(
       "-L${mruby}/lib"
-      ${concatStringsSep "\n" mruby.linkerFlags}
+      "-lmruby"
+      "''${mrb_linker_flags[@]}"
+      "''${mrb_linker_flags_before_libraries[@]}"
+      "''${mrb_linker_library_paths_flags[@]}"
+      "''${mrb_linker_libraries_flags[@]}"
+      "''${mrb_linker_flags_after_libraries[@]}"
     )
 
     makeBin() {
@@ -95,7 +74,7 @@ in
         "$@"
       )
 
-      [ ! -f stub.c ] && cp -f ${stub} stub.c
+      [ ! -f stub.c ] && cp -f ${./stub.c} stub.c
 
       echo " :: Compiling with stub"
       (set -x

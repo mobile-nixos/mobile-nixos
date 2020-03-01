@@ -2,26 +2,23 @@
 
 let
   inherit (lib) licenses;
-
+in
+rec {
   # Thin wrapper over stdenvNoCC.mkDerivation.
   mkGem = attrs: stdenvNoCC.mkDerivation ({
     # "Static" name. Just like source packages.
-    name = attrs.src.name;
+    name = if attrs.src ? name then attrs.src.name else "source";
 
-    # Skip, as it may be accidentally triggered.
+    # Skip these, as they may be accidentally triggered.
     configurePhase = ":";
+    buildPhase = ":";
 
     installPhase = ''
-      runHook prePatch
-
       echo " :: Copying mrbgem"
       cp -vr . $out
-
-      runHook postPatch
     '';
   } // attrs);
-in
-rec {
+
   mruby-dir = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-dir";
@@ -54,6 +51,7 @@ rec {
       mruby-dir
       mruby-errno
       mruby-file-stat
+      mruby-regexp-pcre
     ];
 
     meta.license = licenses.mit;
@@ -109,12 +107,27 @@ rec {
     ];
 
     postPatch = ''
+      # Uh... they are testing that they are not implementing something.
+      # Though it may be implemented anywya!
+      rm -vf test/io.rb
+
       substituteInPlace test/file-stat.rb \
         --replace 'dir = __FILE__[0..-18] # 18 = /test/file-stat.rb' \
         'skip "Fails in Nix sandbox"'
     '';
 
     meta.license = licenses.mit;
+  };
+
+  mruby-inotify = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-inotify";
+      owner = "projectivetech";
+      rev = "cd00265532384f5eb71bb343eaad1a11d5041db3";
+      sha256 = "1h9cmam6grz32ry0gi17nimv4m7crn8jggmicgd0cz1g7kscsw5a";
+    };
+
+    meta.license = licenses.mit; # See mrbgem.rake
   };
 
   mruby-json = mkGem {
@@ -225,10 +238,7 @@ rec {
     patches = [
       ./mruby-require/0001-HACK-Skip-turning-gems-to-library-for-tests-output.patch
       ./mruby-require/0001-HACK-Prefer-first-target-if-host-is-not-present.patch
-    ];
-
-    linkerFlags = [
-      "-ldl"
+      ./mruby-require/0001-Skip-realpath-on-absolute-paths.patch
     ];
 
     meta.license = licenses.mit;
@@ -251,6 +261,17 @@ rec {
       owner = "ksss";
       rev = "73dd4bae1a47d82e49b8f85bf27f49ec4462052e";
       sha256 = "0yyf9vfsm46m2fi46f8w6ympkwzlaqnbpjkfnkzyapf94rg23g6i";
+    };
+
+    meta.licenses = licenses.mit;
+  };
+
+  mruby-time-strftime = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-time-strftime";
+      owner = "monochromegane";
+      rev = "ea8a77504f43fe9f985529b987f3d88bf2a2291a";
+      sha256 = "1yh6sd7m4kqljp30yp6sy3zj6669bvzcans7vvla2rrzm0vdghlk";
     };
 
     meta.licenses = licenses.mit;

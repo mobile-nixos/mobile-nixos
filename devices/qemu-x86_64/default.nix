@@ -70,10 +70,15 @@ in
   mobile.device.info = device_info // {
     # TODO : make kernel part of options.
     inherit kernel;
-    kernel_cmdline = "console=tty1 console=ttyS0 vga=${MODE.vga}" 
+    kernel_cmdline = lib.concatStringsSep " " ([
+      "console=tty1"
+      "console=ttyS0"
+      "vga=${MODE.vga}" 
+      "vt.global_cursor_default=0"
+    ]
     # TODO : make cmdline configurable outside device.info (device.info would be used for device-specifics only)
-    + lib.optionalString splash " quiet vt.global_cursor_default=0"
-    ;
+    ++ lib.optional splash "quiet"
+    );
   };
   mobile.hardware = {
     soc = "generic-x86_64";

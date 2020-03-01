@@ -16,7 +16,7 @@ let
   cmdline = device_info.kernel_cmdline;
 in
 stdenv.mkDerivation {
-  name = "nixos-mobile_${device_name}_boot.img";
+  name = "mobile-nixos_${device_name}-kernel-initrd";
 
   src = builtins.filterSource (path: type: false) ./.;
   unpackPhase = "true";

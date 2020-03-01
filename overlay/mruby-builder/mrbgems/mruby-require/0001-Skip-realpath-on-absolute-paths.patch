@@ -1,0 +1,36 @@
+From d73aaa4b4a7f639ffc59bd6324b2f95319044201 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 27 Feb 2020 17:45:24 -0500
+Subject: [PATCH] Skip realpath on absolute paths
+
+Opening the file with stray `.` and `..` on an absolute path is not
+an issue. This only serves to satiate the compulsiveness of some
+developers.
+
+This allows mruby-require to work during early boot in systems that
+do not have /proc mounted yet, and are using musl libc. The musl libc
+requires /proc to be mounted for realpath to wor.
+---
+ src/mrb_require.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/src/mrb_require.c b/src/mrb_require.c
+index 41bf951..17b1e1b 100644
+--- a/src/mrb_require.c
++++ b/src/mrb_require.c
+@@ -171,6 +171,12 @@ find_file_check(mrb_state *mrb, mrb_value path, mrb_value fname, mrb_value ext)
+   }
+   debug("filepath: %s\n", RSTRING_PTR(filepath));
+ 
++  // We don't need to deal with `realpath` as we have an absolute path.
++  // Sure, we may have . and .. in the path, but that's not relevant to our use case.
++  if (RSTRING_PTR(fname)[0] == '/') {
++    return filepath;
++  }
++
+   if (realpath(RSTRING_CSTR(mrb, filepath), fpath) == NULL) {
+     return mrb_nil_value();
+   }
+-- 
+2.23.1
+

@@ -33,9 +33,16 @@ mruby.builder {
       done | sort
     }
 
-    makeBin init \
+    # This is the "script" that will be loaded.
+    mrbc -o init.mrb \
       $(find lib -type f | sort) \
       $(get_tasks) \
+      init.rb
+    mkdir -p $out/libexec
+    cp init.mrb $out/libexec/init.mrb
+
+    # We're building a script loader here.
+    makeBin loader \
       main.rb
   '';
 
@@ -47,13 +54,20 @@ mruby.builder {
     { core = "mruby-exit"; }
     { core = "mruby-io"; }
     { core = "mruby-sleep"; }
+    { core = "mruby-time"; }
     mruby-dir
     mruby-dir-glob
     mruby-env
+    mruby-file-stat
     mruby-json
     mruby-logger
+    mruby-lvgui
     mruby-open3
     mruby-regexp-pcre
     mruby-singleton
+    mruby-time-strftime
+
+    # This needs to be the last gem
+    mruby-require
   ];
 }

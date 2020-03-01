@@ -87,24 +87,15 @@ let
 
   gemsForGems = concatGemAttr "requiredGems" gems;
 
-  gems' = optionals useDefaults defaultGems ++ gems ++ gemsForGems;
+  # Gems for gems needs to be set before gems.
+  # This is because `mruby-require` has weird semantics in the gems listing.
+  # More in-depth handling of gems is required if we want to properly handle
+  # dependencies mruby-require transforms as shared libraries.
+  gems' = optionals useDefaults defaultGems ++ gemsForGems ++ gems;
   gemBoxes' = optionals useDefaults defaultGemBoxes ++ gemBoxes;
 
   gemBuildInputs = concatGemAttr "gemBuildInputs" gems;
-
-  compilerFlags = [
-    "-std=c99"
-    "-Os"
-  ]
-  ++ concatGemAttr "compilerFlags" gems
-  ;
-
-  linkerFlags = [
-    "-lm"
-    "-lmruby"
-  ]
-  ++ concatGemAttr "linkerFlags" gems
-  ;
+  gemNativeBuildInputs = concatGemAttr "gemNativeBuildInputs" gems;
 
   shared-config = ''
       # Gemboxes
@@ -167,9 +158,10 @@ stdenv.mkDerivation rec {
 
   patches = [
     ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
+    ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
   ];
 
-  nativeBuildInputs = [ ruby bison ];
+  nativeBuildInputs = [ ruby bison ] ++ gemNativeBuildInputs;
   buildInputs = gemBuildInputs;
 
   # Necessary so it uses `gcc` instead of `ld` for linking.
@@ -181,13 +173,14 @@ stdenv.mkDerivation rec {
   buildPhase = ''
     runHook preBuild
     cp -vf ${mruby-config} build_config.rb
-    ruby ./minirake -v
+    ruby ./minirake -v -j$NIX_BUILD_CORES
+    ruby ./minirake -v dump_linker_flags
     runHook postBuild
   '';
 
   checkPhase = ''
     runHook preCheck
-    ruby ./minirake test
+    ruby ./minirake test -j$NIX_BUILD_CORES
     runHook postCheck
   '';
 
@@ -200,6 +193,8 @@ stdenv.mkDerivation rec {
     cp -R build/${targetName}/bin $out
     cp -R build/${targetName}/lib $out
     cp -R include $out
+    mkdir -p $out/nix-support
+    cp mruby_linker_flags.sh $out/nix-support/
   '';
 
   meta = with stdenv.lib; {
@@ -210,7 +205,5 @@ stdenv.mkDerivation rec {
     platforms = platforms.unix;
   };
 
-  passthru = {
-    inherit linkerFlags compilerFlags;
-  };
+  enableParallelBuilding = true;
 }

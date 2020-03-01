@@ -1,6 +1,7 @@
 { device_config
 , initrd
 , pkgs
+, name ? "boot.img"
 }:
 let
   inherit (pkgs) buildPackages;
@@ -15,7 +16,7 @@ let
   cmdline = device_info.kernel_cmdline;
 in
 pkgs.stdenv.mkDerivation {
-  name = "nixos-mobile_${device_name}_boot.img";
+  name = "mobile-nixos_${device_name}_${name}";
 
   src = builtins.filterSource (path: type: false) ./.;
   unpackPhase = "true";

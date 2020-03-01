@@ -1,0 +1,68 @@
+From 3a7034f2fd1060b2a1fc9d015f6df7fe73f18cf6 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 24 Feb 2020 20:01:47 -0500
+Subject: [PATCH] Nixpkgs: dump linker flags for re-use
+
+Dumping the flags the build-system used is useful to allow re-using them
+to compile custom binaries, via mrbc + custom gcc invocations.
+
+Actually using the flags as defined by gems and mruby is much better
+than hoping we're not forgetting to define some in the project-specific
+builder.
+---
+ Rakefile | 42 ++++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 42 insertions(+)
+
+diff --git a/Rakefile b/Rakefile
+index 28e2d75c..5a13046a 100644
+--- a/Rakefile
++++ b/Rakefile
+@@ -157,3 +157,45 @@ task :deep_clean => ["clean", "clean_doc"] do
+   end
+   puts "Cleaned up mrbgems build folder"
+ end
++
++desc "Output linker flags"
++task :dump_linker_flags do
++  # This assumes the first defined target is the desired one.
++  # [{ host: ...   }]
++  #  ^first  ^last
++  target = MRuby.targets.first.last
++  require "shellwords"
++
++  File.open("mruby_linker_flags.sh", "w") do |file|
++    file.puts "mrb_cflags=("
++    file.puts target.cc.all_flags
++    file.puts ")"
++    file.puts ""
++    [:flags, :flags_before_libraries, :flags_after_libraries, :libraries, :library_paths].each do |sym|
++      contents = [
++        target.linker.send(sym),
++        *target.gems.map { |g| g.linker.send(sym) },
++      ].flatten
++      file.puts "mrb_linker_#{sym}=("
++      file.puts contents.shelljoin
++      file.puts ")"
++      file.puts ""
++    end
++    contents = [
++      target.linker.libraries,
++      *target.gems.map { |g| g.linker.libraries },
++    ].flatten
++    file.puts "mrb_linker_libraries_flags=("
++    file.puts contents.map{|lib| "-l#{lib}"}.shelljoin
++    file.puts ")"
++    file.puts ""
++    contents = [
++      target.linker.library_paths,
++      *target.gems.map { |g| g.linker.library_paths },
++    ].flatten
++    file.puts "mrb_linker_library_paths_flags=("
++    file.puts contents.map{|lib| "-L#{lib}"}.shelljoin
++    file.puts ")"
++    file.puts ""
++  end
++end
+-- 
+2.23.1
+
