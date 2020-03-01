@@ -10,6 +10,9 @@ REFRESH_RATE = 120
 NIXOS_LIGHT_HUE = 205
 NIXOS_DARK_HUE  = 220
 
+# File with boot selection
+SELECTIONS = "/run/boot/selection.json"
+
 # Define the arguments
 Args.define({
   resolution: nil,
@@ -281,15 +284,17 @@ end
 
 # Generations tab
 
-JSON.parse(File.read("/run/boot/selection.json")).each do |selection|
-  ui.button(selection["name"], page: :generations).tap do |btn|
-    btn.event_handler = ->(event) do
-      case event
-      when LVGL::EVENT::CLICKED
-        File.write("/run/boot/choice", selection["id"])
-        exit 0
-      end
-    end
+if File.exist?(SELECTIONS)
+  JSON.parse(File.read(SELECTIONS)).each do |selection|
+	ui.button(selection["name"], page: :generations).tap do |btn|
+	  btn.event_handler = ->(event) do
+		case event
+		when LVGL::EVENT::CLICKED
+		  File.write("/run/boot/choice", selection["id"])
+		  exit 0
+		end
+	  end
+	end
   end
 end
 
