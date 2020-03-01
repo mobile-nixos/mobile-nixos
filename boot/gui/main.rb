@@ -236,9 +236,7 @@ ui = UI.new
 
 def run(*cmd)
   $stderr.puts " $ " + cmd.join(" ")
-  # TODO: better introspection to allow the app to know it is running in a
-  # simulated environment, and dry-run in simulator.
-  system(*cmd)
+  system(*cmd) unless LVGL::Hacks.simulator?
 end
 
 # TODO: wait ~0.3s for the animation before doing the button actions.
