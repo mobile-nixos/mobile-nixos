@@ -43,6 +43,9 @@
 
     # This device adds skip_initramfs to cmdline for normal boots
     boot_as_recovery = true;
+    # Though this device has "boot_as_recovery", it still has a classic
+    # recovery partition for recovery. Go figure.
+    has_recovery_partition = true;
 
     vendor_partition = "/dev/disk/by-partlabel/vendor";
     gadgetfs.functions = {
