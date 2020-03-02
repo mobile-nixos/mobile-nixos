@@ -5,7 +5,7 @@
 }:
 
 let
-  loader = callPackage ../init {
+  loader = callPackage ../script-loader {
     mrbgems = mrbgems // {
       mruby-lvgui = callPackage ../../overlay/mruby-builder/mrbgems/mruby-lvgui {
         withSimulator = true;
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
 
   src = lib.cleanSource ./.;
 
-  buildInputs = [
+  nativeBuildInputs = [
     loader.mruby
   ];
 
