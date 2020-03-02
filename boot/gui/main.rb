@@ -10,6 +10,9 @@ REFRESH_RATE = 120
 NIXOS_LIGHT_HUE = 205
 NIXOS_DARK_HUE  = 220
 
+# File with boot selection
+SELECTIONS = "/run/boot/selection.json"
+
 # Define the arguments
 Args.define({
   resolution: nil,
@@ -22,8 +25,8 @@ if Args.get(:resolution)
     $stderr.puts "--resolution <width>x<height>"
     exit 2
   end
-  LVGL::Hacks.monitor_width = ARGV.first.to_i
-  LVGL::Hacks.monitor_height = ARGV.last.to_i
+  LVGL::Hacks.monitor_width = pair.first.to_i
+  LVGL::Hacks.monitor_height = pair.last.to_i
 else
   LVGL::Hacks.monitor_width = 720
   LVGL::Hacks.monitor_height = 1280
@@ -79,7 +82,12 @@ class Clock < Widget
   end
 
   def update_clock()
-    set_text(Time.now.strftime("%T"))
+    now = Time.now
+    set_text([
+      :hour,
+      :min,
+      :sec,
+    ].map{|fn| now.send(fn).to_s.rjust(2, "0") }.join(":"))
   end
 end
 
@@ -233,9 +241,7 @@ ui = UI.new
 
 def run(*cmd)
   $stderr.puts " $ " + cmd.join(" ")
-  # TODO: better introspection to allow the app to know it is running in a
-  # simulated environment, and dry-run in simulator.
-  system(*cmd)
+  system(*cmd) unless LVGL::Hacks.simulator?
 end
 
 # TODO: wait ~0.3s for the animation before doing the button actions.
@@ -281,15 +287,17 @@ end
 
 # Generations tab
 
-JSON.parse(File.read("/run/boot/selection.json")).each do |selection|
-  ui.button(selection["name"], page: :generations).tap do |btn|
-    btn.event_handler = ->(event) do
-      case event
-      when LVGL::EVENT::CLICKED
-        File.write("/run/boot/choice", selection["id"])
-        exit 0
-      end
-    end
+if File.exist?(SELECTIONS)
+  JSON.parse(File.read(SELECTIONS)).each do |selection|
+	ui.button(selection["name"], page: :generations).tap do |btn|
+	  btn.event_handler = ->(event) do
+		case event
+		when LVGL::EVENT::CLICKED
+		  File.write("/run/boot/choice", selection["id"])
+		  exit 0
+		end
+	  end
+	end
   end
 end
 

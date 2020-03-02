@@ -41,8 +41,8 @@ When the device is not a _"Boot as recovery"_, or still uses a recovery
 partition, you will need to flash a recovery image to the recovery partition.
 
 ....
-nix-build --argstr device $DEVICE -A build.android-recovery
-fastboot flash recovery result
+ $ nix-build --argstr device $DEVICE -A build.android-recovery
+ $ fastboot flash recovery result
 ....
 
 === All other devices
@@ -60,3 +60,11 @@ keys are held, it will instead show the recovery menu.
 * Right control
 * Escape
 
+== Testing the boot GUI
+
+The simulator can be launched using the following commands:
+
+....
+ $ nix-build --argstr device qemu-x86_64 -A pkgs.boot-gui-simulator
+ $ result/bin/simulator --resolution 1080x1920
+....

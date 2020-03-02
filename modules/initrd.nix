@@ -41,7 +41,7 @@ let
   inherit (config.mobile.boot.stage-1) earlyInitScripts;
 
   # The script loader
-  loader = "${mobile-nixos-init}/bin/loader";
+  loader = "${mobile-nixos-script-loader}/bin/loader";
 
   # The init "script"
   initScript = "${mobile-nixos-init}/libexec/init.mrb";
@@ -59,7 +59,9 @@ let
 
   stage-1 = config.mobile.boot.stage-1;
 
+  mobile-nixos-script-loader = pkgs.pkgsStatic.callPackage ../boot/script-loader {};
   mobile-nixos-init = pkgs.pkgsStatic.callPackage ../boot/init {
+    script-loader = mobile-nixos-script-loader;
     inherit (config.mobile.boot.stage-1) tasks;
   };
 

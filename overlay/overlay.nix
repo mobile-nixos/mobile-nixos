@@ -61,6 +61,13 @@ in
     bootlogd = callPackage ./bootlogd {};
 
     #
+    # Mobile NixOS only stuff
+    # -----------------------
+    #
+
+    boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
+
+    #
     # Hacks
     # -----
     #

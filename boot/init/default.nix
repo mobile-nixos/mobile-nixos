@@ -1,6 +1,8 @@
-{ fetchurl
-, mruby
+{ stdenv
+, fetchurl
 , mrbgems
+, mruby
+, script-loader
 
 # Additional tasks
 , tasks ? []
@@ -14,20 +16,24 @@ let
     sha256 = "197g7qvrrijmajixa2h9c4jw26l36y8ig6qjb5d43qg4qykhqfcx";
   };
 in
-mruby.builder {
+stdenv.mkDerivation {
   pname = "mobile-nixos-init";
   version = "0.1.0";
 
   src = ./.;
 
+  nativeBuildInputs = [
+    mruby
+  ];
+
   postPatch = ''
     cp ${shellwords} lib/0001_shellwords.rb
   '';
 
-  # Sorting ensures a stable lexicographic import order.
-  # Otherwise the compiler could accidentally be flaky.
   buildPhase = ''
     get_tasks() {
+      # Sorting ensures a stable lexicographic import order.
+      # Otherwise the compiler could accidentally be flaky.
       for s in $tasks; do
         find $s -type f -iname '*.rb'
       done | sort
@@ -38,36 +44,14 @@ mruby.builder {
       $(find lib -type f | sort) \
       $(get_tasks) \
       init.rb
-    mkdir -p $out/libexec
-    cp init.mrb $out/libexec/init.mrb
+  '';
 
-    # We're building a script loader here.
-    makeBin loader \
-      main.rb
+  installPhase = ''
+    mkdir -p $out
+    install -D -t $out/libexec/ init.mrb
   '';
 
   tasks = [
     "./tasks"
   ] ++ tasks;
-
-  gems = with mrbgems; [
-    { core = "mruby-exit"; }
-    { core = "mruby-io"; }
-    { core = "mruby-sleep"; }
-    { core = "mruby-time"; }
-    mruby-dir
-    mruby-dir-glob
-    mruby-env
-    mruby-file-stat
-    mruby-json
-    mruby-logger
-    mruby-lvgui
-    mruby-open3
-    mruby-regexp-pcre
-    mruby-singleton
-    mruby-time-strftime
-
-    # This needs to be the last gem
-    mruby-require
-  ];
 }

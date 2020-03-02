@@ -3,7 +3,6 @@
 , fetchFromGitHub
 , pkg-config
 , libevdev
-, nix-gitignore
 , SDL2
 , withSimulator ? false
 }:
@@ -18,7 +17,6 @@ in
     pname = "mobile-nixos-early-boot-gui";
     version = "2020-02-05";
 
-    #src = nix-gitignore.gitignoreSource [] ./.;
     src = fetchFromGitHub {
       fetchSubmodules = true;
       repo = "lvgui";
@@ -26,6 +24,13 @@ in
       rev = "27ce1511c3c30ed0921fb92504337f1917ab0943";
       sha256 = "1vdahc0lymzprnlckdxcba9p78gqymvsy3bhmyqzjx68r8xcd985";
     };
+
+    # Document `LVGL_ENV_SIMULATOR` in the built headers.
+    # This allows the mrbgem to know about it.
+    # (In reality this should be part of a ./configure step or something similar.)
+    postPatch = ''
+      sed -i"" '/^#define LV_CONF_H/a #define LVGL_ENV_SIMULATOR ${if withSimulator then "1" else "0"}' lv_conf.h
+    '';
 
     nativeBuildInputs = [
       pkg-config
