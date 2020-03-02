@@ -82,7 +82,12 @@ class Clock < Widget
   end
 
   def update_clock()
-    set_text(Time.now.strftime("%T"))
+    now = Time.now
+    set_text([
+      :hour,
+      :min,
+      :sec,
+    ].map{|fn| now.send(fn).to_s.rjust(2, "0") }.join(":"))
   end
 end
 
