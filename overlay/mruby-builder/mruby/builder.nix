@@ -96,5 +96,9 @@ in
     runHook postBuild
   '';
 
+  passthru = {
+    inherit mruby;
+  };
+
   installPhase = ":";
 })
