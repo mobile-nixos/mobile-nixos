@@ -57,7 +57,10 @@ stdenv.mkDerivation {
       --styles-dir="${styles}" \
       --output-dir="$out"
 
-    rsync --prune-empty-dirs --verbose --archive --include="*.jpeg" --include="*/" --exclude="*" . $out/
+    rsync --prune-empty-dirs --verbose --archive \
+      --include="*.jpeg" \
+      --include="*.png" \
+      --include="*/" --exclude="*" . $out/
   '';
 
   dontInstall = true;
