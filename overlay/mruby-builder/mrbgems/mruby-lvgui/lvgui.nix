@@ -1,8 +1,8 @@
 { stdenv
+, pkgs
 , lib
 , fetchFromGitHub
 , pkg-config
-, libevdev
 , SDL2
 , withSimulator ? false
 }:
@@ -12,6 +12,15 @@ let
   simulatorDeps = [
     SDL2
   ];
+
+  # Allow libevdev to cross-compile.
+  libevdev = (pkgs.libevdev.override({
+    python3 = null;
+  })).overrideAttrs({nativeBuildsInputs ? [], ...}: {
+    nativeBuildInputs = nativeBuildsInputs ++ [
+      pkgs.buildPackages.python3
+    ];
+  });
 in
   stdenv.mkDerivation {
     pname = "mobile-nixos-early-boot-gui";
@@ -21,8 +30,8 @@ in
       fetchSubmodules = true;
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "27ce1511c3c30ed0921fb92504337f1917ab0943";
-      sha256 = "1vdahc0lymzprnlckdxcba9p78gqymvsy3bhmyqzjx68r8xcd985";
+      rev = "a3412d9e2a8d1c7a23b48cf2cdf2c39cf4009651";
+      sha256 = "1ibdjnqjacw27wmdg1fir4isffq2v87ml382f4g76ldmi5za0n9l";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
@@ -65,7 +74,7 @@ in
       Name: lvgui
       Description: LVGL-based GUI library
       Version: $version
-      Requires: ${optionalString withSimulator "sdl2"}
+      Requires: ${optionalString withSimulator "sdl2"} ${optionalString (!withSimulator) "libevdev"}
 
       Cflags: -I$out/include
       Libs: $out/lib/liblvgui.a
