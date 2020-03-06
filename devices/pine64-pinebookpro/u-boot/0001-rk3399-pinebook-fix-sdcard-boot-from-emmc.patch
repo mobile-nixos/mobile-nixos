@@ -1,0 +1,46 @@
+From 2778aa7cb70946c4729ed6ae13dea5bd1cc688dc Mon Sep 17 00:00:00 2001
+From: dhivael <dhivael.git@eno.space>
+Date: Sat, 11 Jan 2020 15:02:44 +0100
+Subject: [PATCH 1/6] rk3399: pinebook: fix sdcard boot from emmc
+
+booting from emmc does not set all DT properties required for the sd
+slot to function properly. this is a copy of the linux DT configuration
+for the slot now.
+---
+ arch/arm/dts/rk3399-pinebook-pro.dts | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
+
+diff --git a/arch/arm/dts/rk3399-pinebook-pro.dts b/arch/arm/dts/rk3399-pinebook-pro.dts
+index 85ce0206d74..1234f715c1e 100644
+--- a/arch/arm/dts/rk3399-pinebook-pro.dts
++++ b/arch/arm/dts/rk3399-pinebook-pro.dts
+@@ -65,6 +65,8 @@
+ 		clock-names = "ext_clock";
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&wifi_enable_h>;
++		power-off-delay-us = <500000>;
++		post-power-on-delay-ms = <100>;
+ 
+ 		/*
+ 		 * On the module itself this is one of these (depending
+@@ -503,8 +505,16 @@
+ 
+ &sdmmc {
+ 	bus-width = <4>;
+-	status = "okay";
++	cap-mmc-highspeed;
++	cap-sd-highspeed;
++	cd-gpios = <&gpio0 RK_PA7 GPIO_ACTIVE_LOW>;
++	disable-wp;
++	sd-uhs-sdr104;
+ 	max-frequency = <20000000>;
++	vqmmc-supply = <&vcc_sdio>;
++	pinctrl-names = "default";
++	pinctrl-0 = <&sdmmc_clk &sdmmc_cmd &sdmmc_bus4>;
++	status = "okay";
+ };
+ 
+ &sdhci {
+-- 
+2.23.1
+

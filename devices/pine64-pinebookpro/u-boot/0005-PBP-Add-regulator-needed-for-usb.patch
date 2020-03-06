@@ -1,0 +1,76 @@
+From fd41e9330cf1635fa3bf4dabdfac42ee1bba963c Mon Sep 17 00:00:00 2001
+From: Emmanuel Vadot <manu@freebsd.org>
+Date: Tue, 31 Dec 2019 22:13:03 +0100
+Subject: [PATCH 5/6]  PBP: Add regulator needed for usb
+
+The schematics indicate that the vcc3v3_s0 voltage is controlled by
+the LDO2 of the RK808 but this isn't true.
+It's controller by a gpio (named lcdvcc_en).
+Remove the name from the RK808 regulator and add a regulator-fixed
+controller by this gpio.
+
+Signed-off-by: Emmanuel Vadot <manu@freebsd.org>
+---
+ arch/arm/dts/rk3399-pinebook-pro.dts | 21 +++++++++++++++++++--
+ 1 file changed, 19 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm/dts/rk3399-pinebook-pro.dts b/arch/arm/dts/rk3399-pinebook-pro.dts
+index 1234f715c1e..f334f9e8ef2 100644
+--- a/arch/arm/dts/rk3399-pinebook-pro.dts
++++ b/arch/arm/dts/rk3399-pinebook-pro.dts
+@@ -125,6 +125,16 @@
+ 		regulator-always-on;
+ 	};
+ 
++	vcc3v3_s0: vcc3v3-s0-regulator {
++		compatible = "regulator-fixed";
++		enable-active-high;
++		gpio = <&gpio1 RK_PC6 GPIO_ACTIVE_HIGH>;
++		pinctrl-names = "default";
++		pinctrl-0 = <&lcdvcc_en>;
++		regulator-name = "vcc3v3_s0";
++		regulator-always-on;
++	};
++
+ 	vcc_sys: vcc-sys {
+ 		compatible = "regulator-fixed";
+ 		regulator-name = "vcc_sys";
+@@ -347,8 +357,8 @@
+ 				};
+ 			};
+ 
+-			vcc3v3_s0: SWITCH_REG2 {
+-				regulator-name = "vcc3v3_s0";
++			unused: SWITCH_REG2 {
++				regulator-name = "SWITCH_REG2";
+ 				regulator-always-on;
+ 				regulator-boot-on;
+ 				regulator-state-mem {
+@@ -484,6 +494,11 @@
+ 		host_usb3_drv: host-usb3-drv {
+ 			rockchip,pins = <1 RK_PB5 RK_FUNC_GPIO &pcfg_pull_none>;
+ 		};
++
++		/* Shared between LCD and usb */
++		lcdvcc_en: lcdvcc-en {
++			rockchip,pins = <1 RK_PC6 RK_FUNC_GPIO &pcfg_pull_none>;
++		};
+ 	};
+ };
+ 
+@@ -581,10 +596,12 @@
+ };
+ 
+ &usb_host1_ehci {
++	phy-supply = <&vcc3v3_s0>;
+ 	status = "okay";
+ };
+ 
+ &usb_host1_ohci {
++	phy-supply = <&vcc3v3_s0>;
+ 	status = "okay";
+ };
+ 
+-- 
+2.23.1
+

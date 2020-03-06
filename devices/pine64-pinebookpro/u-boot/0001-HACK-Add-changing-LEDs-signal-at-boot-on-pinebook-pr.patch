@@ -1,0 +1,25 @@
+From a737fd023f4f98d7789e9aafbe938acb78e4c191 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 6 Jan 2020 20:16:27 -0500
+Subject: [PATCH] HACK: Add changing LEDs signal at boot on pinebook pro
+
+---
+ include/configs/pinebook_pro_rk3399.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/configs/pinebook_pro_rk3399.h b/include/configs/pinebook_pro_rk3399.h
+index f383becbf8..749713c025 100644
+--- a/include/configs/pinebook_pro_rk3399.h
++++ b/include/configs/pinebook_pro_rk3399.h
+@@ -9,6 +9,8 @@
+ #define __PINEBOOKPRO_RK3399_H
+ 
+ #define ROCKCHIP_DEVICE_SETTINGS \
++		"beep_boop=led work on; led standby on; sleep 0.1; led work off; sleep 0.1; led work on; sleep 0.1; led standby off; sleep 0.1; led standby on\0" \
++		"bootcmd=run beep_boop; run distro_bootcmd\0" \
+ 		"stdin=serial,usbkbd\0" \
+ 		"stdout=serial,vidconsole\0" \
+ 		"stderr=serial,vidconsole\0"
+-- 
+2.23.0
+

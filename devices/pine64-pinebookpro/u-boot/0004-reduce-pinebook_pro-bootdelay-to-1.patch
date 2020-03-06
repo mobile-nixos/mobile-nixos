@@ -1,0 +1,25 @@
+From b3e8d27cca05508cddeda534956f13e88f2428cd Mon Sep 17 00:00:00 2001
+From: dhivael <dhivael.git@eno.space>
+Date: Sat, 11 Jan 2020 15:12:34 +0100
+Subject: [PATCH 4/6] reduce pinebook_pro bootdelay to 1
+
+---
+ configs/pinebook_pro-rk3399_defconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/configs/pinebook_pro-rk3399_defconfig b/configs/pinebook_pro-rk3399_defconfig
+index 28577256e70..a11a10243c5 100644
+--- a/configs/pinebook_pro-rk3399_defconfig
++++ b/configs/pinebook_pro-rk3399_defconfig
+@@ -36,7 +36,7 @@ CONFIG_DEFAULT_DEVICE_TREE="rk3399-pinebook-pro"
+ CONFIG_OF_SPL_REMOVE_PROPS="pinctrl-0 pinctrl-names clock-names interrupt-parent assigned-clocks assigned-clock-rates assigned-clock-parents"
+ CONFIG_ROCKCHIP_GPIO=y
+ CONFIG_SYS_I2C_ROCKCHIP=y
+-CONFIG_BOOTDELAY=3
++CONFIG_BOOTDELAY=1
+ CONFIG_LED=y
+ CONFIG_LED_GPIO=y
+ CONFIG_MISC=y
+-- 
+2.23.1
+
