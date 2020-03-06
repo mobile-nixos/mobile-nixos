@@ -15,6 +15,7 @@ in
     ./system-types/depthcharge.nix
     ./system-types/kernel-initrd.nix
     ./system-types/android.nix
+    ./system-types/u-boot.nix
   ];
 
   options.mobile = {
