@@ -289,15 +289,18 @@ end
 
 if File.exist?(SELECTIONS)
   JSON.parse(File.read(SELECTIONS)).each do |selection|
-	ui.button(selection["name"], page: :generations).tap do |btn|
-	  btn.event_handler = ->(event) do
-		case event
-		when LVGL::EVENT::CLICKED
-		  File.write("/run/boot/choice", selection["id"])
-		  exit 0
-		end
-	  end
-	end
+    ui.button(selection["name"], page: :generations).tap do |btn|
+      btn.event_handler = ->(event) do
+        case event
+        when LVGL::EVENT::CLICKED
+          File.write("/run/boot/choice", selection["id"])
+
+          # Put back the console on the framebuffer
+          VTConsole.map_console(1)
+          exit 0
+        end
+      end
+    end
   end
 end
 
@@ -305,8 +308,4 @@ end
 while true
   LVGL::Hacks::LVTask.handle_tasks
   sleep(1.0/REFRESH_RATE)
-  # TODO : Allow exiting!
 end
-
-# Put back the console on the framebuffer
-VTConsole.map_console(1)
