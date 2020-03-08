@@ -189,6 +189,20 @@ let
     name = "initrd-${device_config.name}";
     inherit contents;
   };
+
+  # ncdu -f result/initrd.ncdu
+  initrd-meta = pkgs.runCommandNoCC "initrd-${device_config.name}-meta" {
+    nativeBuildInputs = with pkgs.buildPackages; [
+      ncdu
+      cpio
+    ];
+  } ''
+    mkdir initrd
+    (cd initrd; gzip -cd ${initrd}/initrd | cpio -i)
+
+    mkdir -p $out
+    ncdu -0x -o $out/initrd.ncdu ./initrd
+  '';
 in
   {
     options = {
@@ -239,6 +253,7 @@ in
     config = {
       system.build.extraUtils = extraUtils;
       system.build.initrd = "${initrd}/initrd";
+      system.build.initrd-meta = initrd-meta;
       boot.specialFileSystems = {
         # HACK: as we're using isContainer to bypass some NixOS stuff
         # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
