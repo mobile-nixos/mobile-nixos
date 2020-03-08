@@ -2,6 +2,7 @@
 , lib
 , callPackage
 , mrbgems
+, mruby
 }:
 
 let
@@ -20,7 +21,7 @@ stdenv.mkDerivation {
   src = lib.cleanSource ./.;
 
   nativeBuildInputs = [
-    loader.mruby
+    mruby
   ];
 
   buildPhase = ''
