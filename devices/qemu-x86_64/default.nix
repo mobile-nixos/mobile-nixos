@@ -75,10 +75,8 @@ in
       "console=ttyS0"
       "vga=${MODE.vga}" 
       "vt.global_cursor_default=0"
-    ]
-    # TODO : make cmdline configurable outside device.info (device.info would be used for device-specifics only)
-    ++ lib.optional splash "quiet"
-    );
+      "quiet"
+    ]);
   };
   mobile.hardware = {
     soc = "generic-x86_64";
