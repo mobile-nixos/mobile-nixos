@@ -11,12 +11,19 @@ let
   boot-splash = pkgs.runCommand "boot-splash.mrb" {} ''
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/gui}/lib/*.rb ${../boot/splash}/main.rb
   '';
+  boot-error = pkgs.runCommand "boot-error.mrb" {} ''
+    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/gui}/lib/*.rb ${../boot/error}/main.rb
+  '';
 in
 {
   mobile.boot.stage-1.contents = with pkgs; [
     {
       object = (builtins.path { path = ../artwork/logo/logo.white.svg; });
       symlink = "/etc/logo.svg";
+    }
+    {
+      object = boot-error;
+      symlink = "/applets/boot-error.mrb";
     }
     {
       object = boot-splash;
