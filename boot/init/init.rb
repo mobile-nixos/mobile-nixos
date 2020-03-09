@@ -13,7 +13,7 @@ log("")
 # To these tasks, add all Singleton tasks found under tasks/*
 
 # Without any added dependency, show a first splash ASAP
-Tasks::Splash.new("stage-0")
+Tasks::Splash.new("/etc/logo.svg")
 
 # Some software (mainly extfs tools) bark angrily and fail when this is missing.
 Tasks::Symlink.new("/proc/mounts", "/etc/mtab")
@@ -27,9 +27,6 @@ Mounting.create_boot_mount_points()
 ].each do |dir|
   Tasks::Directory.new(dir)
 end
-
-Tasks::Splash.new("stage-1")
-  .add_dependency(:Target, :Devices)
 
 Tasks::Modules.new(*Configuration["kernel"]["modules"])
 
