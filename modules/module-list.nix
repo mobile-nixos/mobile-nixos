@@ -22,7 +22,6 @@
   ./initrd-logs.nix
   ./initrd-network.nix
   ./initrd-shell.nix
-  ./initrd-splash.nix
   ./initrd-ssh.nix
   ./initrd-usb.nix
   ./initrd-vendor.nix
