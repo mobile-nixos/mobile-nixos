@@ -13,7 +13,7 @@ log("")
 # To these tasks, add all Singleton tasks found under tasks/*
 
 # Without any added dependency, show a first splash ASAP
-Tasks::Splash.new("stage-0")
+Tasks::Splash.new("/etc/logo.svg")
 
 # Some software (mainly extfs tools) bark angrily and fail when this is missing.
 Tasks::Symlink.new("/proc/mounts", "/etc/mtab")
@@ -28,9 +28,6 @@ Mounting.create_boot_mount_points()
   Tasks::Directory.new(dir)
 end
 
-Tasks::Splash.new("stage-1")
-  .add_dependency(:Target, :Devices)
-
 Tasks::Modules.new(*Configuration["kernel"]["modules"])
 
 Tasks::go()
@@ -39,7 +36,7 @@ $logger.fatal("Tasks all ran, but we're still here...")
 System.failure("did_not_switch", color: "ff0000")
 
 rescue => e
-  System.sad_phone("765300")
+  System.sad_phone("765300", "Uncaught Exception", e.inspect)
   3.times do
     $logger.fatal("********************")
   end

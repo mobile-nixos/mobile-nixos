@@ -3,7 +3,6 @@
 let
   inherit (lib) mkIf mkOption types;
 
-  withSplash = config.mobile.boot.stage-1.splash.enable;
   cfg = config.mobile.boot.stage-1.fail;
 in
 {
@@ -26,11 +25,11 @@ in
     };
   };
 
-  config = mkIf cfg.reboot {
-    mobile.boot.stage-1.contents = mkIf withSplash [
+  config = {
+    mobile.boot.stage-1.contents = [
       {
-        object = (builtins.path { path = ../artwork/sad-phone.png; });
-        symlink = "/sad-phone.png";
+        object = (builtins.path { path = ../artwork/sad-phone.svg; });
+        symlink = "/sad-phone.svg";
       }
     ];
   };

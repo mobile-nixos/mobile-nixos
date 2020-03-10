@@ -9,7 +9,8 @@ class Tasks::Splash < Task
 
   def run()
     begin
-    System.run("ply-image", "/splash.#{image}.png")
+      System.run($PROGRAM_NAME, "/applets/boot-splash.mrb", image)
+    # Don't fail the boot if the splash fails
     rescue System::CommandError
     end
   end

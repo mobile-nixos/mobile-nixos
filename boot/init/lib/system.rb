@@ -145,16 +145,17 @@ module System
     end
   end
 
-  def self.sad_phone(color)
+  def self.sad_phone(color, code, message)
     begin
-      System.run("ply-image", "--clear=0x#{color}", "/sad-phone.png")
-    rescue CommandError
+      System.run($PROGRAM_NAME, "/applets/boot-error.mrb", color, code, message)
+    rescue CommandError => e
+      $logger.fatal(e.inspect)
     end
   end
 
   def self.failure(code, message="(No details given)", color: "000000")
-    sad_phone(color)
     $logger.fatal("#{code}: #{message}")
+    sad_phone(color, code, message)
     shell if respond_to?(:shell)
     sleep(Configuration["boot"]["fail"]["delay"])
     hard_reboot if Configuration["boot"]["fail"]["reboot"]
