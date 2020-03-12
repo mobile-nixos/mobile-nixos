@@ -26,7 +26,8 @@ in
 , configuration ? default_configuration
 }:
 let
-  inherit (pkgs'.lib) optional;
+  inherit (pkgs'.lib) optional strings;
+  inherit (strings) concatStringsSep stringAsChars;
 
   # Either use:
   #   The given `device`.
@@ -52,8 +53,18 @@ let
   installer-eval = evalWith [
     ./profiles/installer.nix
   ];
+
+  # Makes a mostly useless header.
+  # This is mainly useful for batch evals.
+  header = str:
+    let
+      str' = "* ${str} *";
+      line = stringAsChars (x: "*") str';
+    in
+    builtins.trace (concatStringsSep "\ntrace: " [line str' line])
+  ;
 in
-{
+header "Evaluating device: ${device}" {
   # The build artifacts from the modules system.
   inherit (eval.config.system) build;
 
