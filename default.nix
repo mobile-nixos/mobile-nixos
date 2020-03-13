@@ -4,13 +4,13 @@ let
   deviceFromEnv = builtins.getEnv "MOBILE_NIXOS_DEVICE";
 
   # Selection of the configuration can by made either through NIX_PATH,
-  # through local.nixx or as a parameter.
+  # through local.nix or as a parameter.
   default_configuration =
     let
       configPathFromNixPath = (builtins.tryEval <mobile-nixos-configuration>).value;
     in
     if configPathFromNixPath != false then [ configPathFromNixPath ]
-    else if (builtins.pathExists ./local.nix) then [ (import ./local.nix) ]
+    else if (builtins.pathExists ./local.nix) then builtins.trace "WARNING: evaluation includes ./local.nix" [ (import ./local.nix) ]
     else []
   ;
 
