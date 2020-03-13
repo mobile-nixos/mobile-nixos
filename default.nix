@@ -26,6 +26,8 @@ in
   # See usage in examples folder.
   device ? null
 , configuration ? default_configuration
+  # Internally used to tack on configuration by release.nix
+, additionalConfiguration ? []
 }:
 let
   # Either use:
@@ -47,7 +49,9 @@ let
       if device ? special
       then [ device.config ]
       else [ (import (./. + "/devices/${final_device}" )) ]
-      ++ modules;
+      ++ modules
+      ++ [ additionalConfiguration ]
+    ;
   };
 
   # The "default" eval.
