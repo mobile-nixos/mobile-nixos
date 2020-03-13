@@ -1,6 +1,13 @@
+let
+  all-devices =
+    builtins.filter
+      (d: builtins.pathExists (./. + "/devices/${d}/default.nix"))
+      (builtins.attrNames (builtins.readDir ./devices))
+  ;
+in
 { mobile-nixos ? builtins.fetchGit ./.
 # By default, builds all devices.
-, devices ? (import ./all-devices.nix)
+, devices ? all-devices
 # By default, assume we eval only for currentSystem
 , systems ? [ builtins.currentSystem ]
 # nixpkgs is also an input, used as `<nixpkgs>` in the system configuration.
