@@ -9,7 +9,7 @@
 let
   # We require some `lib` stuff in here.
   # Pick a lib from the ambient <nixpkgs>.
-  inherit (import <nixpkgs> {}) lib;
+  inherit (import <nixpkgs> {}) lib releaseTools;
 
   # Given a device compatible with `default.nix`, eval.
   evalFor = evalWithConfiguration {};
@@ -99,12 +99,6 @@ let
       }) shouldEvalOn.${system}
     )
   ;
-in
-{
-  # Overlays build native, and cross, according to shouldEvalOn
-  overlay = lib.genAttrs systems (system:
-    (evalForSystem system)
-  );
 
   # `device` here is indexed by the system it's being built on first.
   # FIXME: can we better filter this?
@@ -115,4 +109,35 @@ in
       } device).build.default
     )
   );
+in
+{
+  inherit device;
+
+  # Overlays build native, and cross, according to shouldEvalOn
+  overlay = lib.genAttrs systems (system:
+    (evalForSystem system)
+  );
+
+  tested = let
+    hasSystem = name: lib.lists.any (el: el == name) systems;
+
+    constituents =
+      lib.optionals (hasSystem "x86_64-linux") [
+        device.qemu-x86_64.x86_64-linux              # VM
+        # Cross builds
+        device.asus-z00t.x86_64-linux                # Android
+        device.asus-dumo.x86_64-linux                # Depthcharge
+      ]
+      ++ lib.optionals (hasSystem "aarch64-linux") [
+        device.asus-z00t.aarch64-linux               # Android
+        device.asus-dumo.aarch64-linux               # Depthcharge
+      ];
+  in
+  releaseTools.aggregate {
+    name = "mobile-nixos-tested";
+    inherit constituents;
+    meta = {
+      description = "Representative subset of devices that have to succeed.";
+    };
+  };
 }
