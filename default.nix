@@ -16,6 +16,8 @@ let
 
   # "a" nixpkgs we're using for its lib.
   pkgs' = import <nixpkgs> {};
+  inherit (pkgs'.lib) optional strings;
+  inherit (strings) concatStringsSep stringAsChars;
 in
 {
   # The identifier of the device this should be built for.
@@ -26,9 +28,6 @@ in
 , configuration ? default_configuration
 }:
 let
-  inherit (pkgs'.lib) optional strings;
-  inherit (strings) concatStringsSep stringAsChars;
-
   # Either use:
   #   The given `device`.
   #   The environment variable.
