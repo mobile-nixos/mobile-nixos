@@ -12,7 +12,10 @@ let
   inherit (import <nixpkgs> {}) lib;
 
   # Given a device compatible with `default.nix`, eval.
-  evalFor = device: (import ./. { inherit device; });
+  evalFor = evalWithConfiguration {};
+  evalWithConfiguration = additionalConfiguration: device:
+    import ./. { inherit device additionalConfiguration; }
+  ;
 
   # Systems we should eval for, per host system.
   # Non-native will be assumed cross.
@@ -103,5 +106,14 @@ in
         (evalForSystem system)
       )
   ;
-  device = lib.genAttrs devices (device: (evalFor device).build.default);
+
+  # `device` here is indexed by the system it's being built on first.
+  # FIXME: can we better filter this?
+  device = lib.genAttrs devices (device:
+    lib.genAttrs systems (system:
+      (evalWithConfiguration {
+        nixpkgs.localSystem = knownSystems.${system};
+      } device).build.default
+    )
+  );
 }
