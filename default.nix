@@ -31,7 +31,8 @@ let
   # Either use:
   #   The given `device`.
   #   The environment variable.
-  final_device = if device != null then device
+  final_device =
+    if device != null then device
     else if deviceFromEnv == "" then
     throw "Please pass a device name or set the MOBILE_NIXOS_DEVICE environment variable."
     else deviceFromEnv
@@ -39,10 +40,14 @@ let
 
   # Evaluates NixOS, mobile-nixos and the device config with the given
   # additional modules.
+  # Note that we can receive a "special" configuration, used internally by
+  # `release.nix` and not part of the public API.
   evalWith = modules: import ./lib/eval-config.nix {
-    modules = [
-      (import (./. + "/devices/${final_device}" ))
-    ] ++ modules;
+    modules =
+      if device ? special
+      then [ device.config ]
+      else [ (import (./. + "/devices/${final_device}" )) ]
+      ++ modules;
   };
 
   # The "default" eval.
@@ -63,7 +68,12 @@ let
     builtins.trace (concatStringsSep "\ntrace: " [line str' line])
   ;
 in
-header "Evaluating device: ${device}" {
+  (
+    if device ? special
+    then header "Evaluating: ${device.name}"
+    else header "Evaluating device: ${device}"
+  )
+{
   # The build artifacts from the modules system.
   inherit (eval.config.system) build;
 
