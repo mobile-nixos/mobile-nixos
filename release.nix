@@ -101,11 +101,10 @@ let
   ;
 in
 {
-  overlay =
-    lib.genAttrs systems (system:
-        (evalForSystem system)
-      )
-  ;
+  # Overlays build native, and cross, according to shouldEvalOn
+  overlay = lib.genAttrs systems (system:
+    (evalForSystem system)
+  );
 
   # `device` here is indexed by the system it's being built on first.
   # FIXME: can we better filter this?
