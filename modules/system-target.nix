@@ -3,6 +3,7 @@
 with lib;
 let
   cfg = config.mobile.system;
+  inherit (config.nixpkgs) localSystem;
 
   # Mapping from system types to config types
   # A simplified view of <nixpkgs/lib/systems/examples.nix>
@@ -49,10 +50,10 @@ in
     nixpkgs.crossSystem = lib.mkIf
       (
         let
-          result = selectedPlatform.system != builtins.currentSystem;
+          result = selectedPlatform.system != localSystem.system;
         in
         builtins.trace
-        "Building with crossSystem?: ${selectedPlatform.system} != ${builtins.currentSystem} → ${if result then "we are" else "we're not"}."
+        "Building with crossSystem?: ${selectedPlatform.system} != ${localSystem.system} → ${if result then "we are" else "we're not"}."
         result
       )
       (
