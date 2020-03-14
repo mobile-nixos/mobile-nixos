@@ -27,7 +27,7 @@ in
   device ? null
 , configuration ? default_configuration
   # Internally used to tack on configuration by release.nix
-, additionalConfiguration ? []
+, additionalConfiguration ? {}
 }:
 let
   # Either use:
