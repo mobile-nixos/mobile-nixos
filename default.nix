@@ -4,18 +4,20 @@ let
   deviceFromEnv = builtins.getEnv "MOBILE_NIXOS_DEVICE";
 
   # Selection of the configuration can by made either through NIX_PATH,
-  # through local.nixx or as a parameter.
+  # through local.nix or as a parameter.
   default_configuration =
     let
       configPathFromNixPath = (builtins.tryEval <mobile-nixos-configuration>).value;
     in
     if configPathFromNixPath != false then [ configPathFromNixPath ]
-    else if (builtins.pathExists ./local.nix) then [ (import ./local.nix) ]
+    else if (builtins.pathExists ./local.nix) then builtins.trace "WARNING: evaluation includes ./local.nix" [ (import ./local.nix) ]
     else []
   ;
 
   # "a" nixpkgs we're using for its lib.
   pkgs' = import <nixpkgs> {};
+  inherit (pkgs'.lib) optional strings;
+  inherit (strings) concatStringsSep stringAsChars;
 in
 {
   # The identifier of the device this should be built for.
@@ -24,14 +26,15 @@ in
   # See usage in examples folder.
   device ? null
 , configuration ? default_configuration
+  # Internally used to tack on configuration by release.nix
+, additionalConfiguration ? []
 }:
 let
-  inherit (pkgs'.lib) optional;
-
   # Either use:
   #   The given `device`.
   #   The environment variable.
-  final_device = if device != null then device
+  final_device =
+    if device != null then device
     else if deviceFromEnv == "" then
     throw "Please pass a device name or set the MOBILE_NIXOS_DEVICE environment variable."
     else deviceFromEnv
@@ -39,10 +42,16 @@ let
 
   # Evaluates NixOS, mobile-nixos and the device config with the given
   # additional modules.
+  # Note that we can receive a "special" configuration, used internally by
+  # `release.nix` and not part of the public API.
   evalWith = modules: import ./lib/eval-config.nix {
-    modules = [
-      (import (./. + "/devices/${final_device}" ))
-    ] ++ modules;
+    modules =
+      if device ? special
+      then [ device.config ]
+      else [ (import (./. + "/devices/${final_device}" )) ]
+      ++ modules
+      ++ [ additionalConfiguration ]
+    ;
   };
 
   # The "default" eval.
@@ -52,7 +61,22 @@ let
   installer-eval = evalWith [
     ./profiles/installer.nix
   ];
+
+  # Makes a mostly useless header.
+  # This is mainly useful for batch evals.
+  header = str:
+    let
+      str' = "* ${str} *";
+      line = stringAsChars (x: "*") str';
+    in
+    builtins.trace (concatStringsSep "\ntrace: " [line str' line])
+  ;
 in
+  (
+    if device ? special
+    then header "Evaluating: ${device.name}"
+    else header "Evaluating device: ${device}"
+  )
 {
   # The build artifacts from the modules system.
   inherit (eval.config.system) build;

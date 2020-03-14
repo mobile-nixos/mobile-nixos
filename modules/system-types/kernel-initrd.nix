@@ -28,9 +28,10 @@ in
       { mobile.system.types = [ "kernel-initrd" ]; }
 
       (lib.mkIf enabled {
-        system.build = {
+        system.build = rec {
           inherit system;
           mobile-installer = system;
+          default = vm;
           vm = pkgs.writeScript "run-vm-${device_name}" ''
             #!${pkgs.runtimeShell}
             PS4=" $ "
