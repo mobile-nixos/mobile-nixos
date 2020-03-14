@@ -8,6 +8,7 @@
   ./_nixos-disintegration
   ./adb.nix
   ./boot-initrd.nix
+  ./cross-workarounds.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix
   ./hardware-ram.nix
