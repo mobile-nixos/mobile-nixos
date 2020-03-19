@@ -11,7 +11,9 @@ stdenv
 }:
 
 let
-  inherit (stdenv) targetPlatform;
+  inherit (stdenv) targetPlatform buildPlatform;
+  libPrefix = if targetPlatform == buildPlatform then ""
+    else stdenv.targetPlatform.config;
 in
 stdenv.mkDerivation {
   pname = "libhybris";
@@ -34,6 +36,11 @@ stdenv.mkDerivation {
     substituteInPlace configure \
       --replace "/usr/bin/file" "${file}/bin/file"
   '';
+
+  NIX_LDFLAGS = [
+    # For libsupc++.a
+    "-L${stdenv.cc.cc.out}/${libPrefix}/lib/"
+  ];
 
   configureFlags = [
     "--with-android-headers=${android-headers}/include/android/"
