@@ -15,22 +15,15 @@ in
 		file = "Image.gz-dtb";
 		hasDTB = true;
 				
-		version = "4.4.211-lineage";
+		version = "5.6-rc6";
 		src = fetchFromGitHub {
-			owner = "android-linux-stable";
-			repo = "op5";
-			rev = "607bd717e602f6326ad40974d2f382db183633d2";
+			owner = "JamiKettunen";
+			repo = "linux-mainline-oneplus5";
+			rev = "23fbecc56ba4f3828f7adf59f81e891a3a7e6764";
 			sha256 = "0kxg1fj8y7r8fpzj86y2v7kkwxcmr0wx282lhrmpkjwyj9cs6wh9";
 		};
 
 	patches = [
-		./01_more_precise_arch.patch # May not be needed in future
-		./0001-use-relative-header-includes.patch
-		./0002-fix-TRACE_INCLUDE_PATH-paths.patch
-		./0003-fix-synaptics_s3320-touchscreen-driver-input.patch
-		./0004-disable-interfering-bt_power-rfkill.patch
-		./0005-update-msm8998-qpnp-rtc-driver-src-with-sm8150.patch
-		./0006-disable-various-spammy-driver-logging.patch
 	];
 
 	
