@@ -106,9 +106,9 @@ let
   # The initrd only has to mount `/` or any FS marked as necessary for
   # booting (such as the FS containing `/nix/store`, or an FS needed for
   # mounting `/`, like `/` on a loopback).
-  bootFileSystems = listToAttrs (map (item: { inherit (item._module.args) name; value = item; })
-    (filter utils.fsNeededForBoot config.system.build.fileSystems)
-  );
+  bootFileSystems' = filter utils.fsNeededForBoot config.system.build.fileSystems;
+  # Converts from list of attrsets, to an attrset indexed by mountPoint.
+  bootFileSystems = listToAttrs (map (item: { name = item.mountPoint; value = item; }) bootFileSystems');
 
   udevRules = runCommandNoCC "udev-rules" {
     allowedReferences = [ extraUtils ];
