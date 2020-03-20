@@ -10,7 +10,7 @@ let
 	inherit (buildPackages) dtc;
 in
 		   
-	(mobile-nixos.kernel-builder-gcc6 {
+	(mobile-nixos.kernel-builder {
 		configfile = ./config.aarch64;
 		file = "Image.gz-dtb";
 		hasDTB = true;

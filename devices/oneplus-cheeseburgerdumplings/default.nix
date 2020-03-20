@@ -2,13 +2,11 @@
 
 {
 	mobile.device.name = "oneplus-cheeseburgerdumplings";
-	device = "oneplus-dumpling";
 	mobile.device.info = rec {
 		format_version = "0";
 		name = "OnePlus OnePlus 5/5T";
 		manufacturer = "OnePlus";
 		date = "";
-		dtb = "${kernel}/arch/arm64/boot/dts/qcom/msm8998-${device}";
 		modules_initfs = "";
 		arch = "aarch64";
 		keyboard = false;
