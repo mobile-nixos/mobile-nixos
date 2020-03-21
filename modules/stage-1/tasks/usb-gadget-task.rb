@@ -7,6 +7,11 @@ module System::ConfigFSUSB
       # Activate the IPA stuff... ugh.
       System.write("/dev/ipa", 1)
     end
+
+    def self.mass_storage_0(function_dir)
+      device = Configuration["storage"]["internal"]
+      System.write(File.join(function_dir, "lun.0/file"), device)
+    end
   end
 
   # This is a bit underdocumented in the configfs and gadgetfs docs, but this
@@ -181,6 +186,11 @@ class Tasks::SetupGadgetMode < SingletonTask
       add_dependency(:Mount, "/vendor")
     end
     Targets[:SwitchRoot].add_dependency(:Task, self)
+
+    # TODO: Decouple dependencies from features.
+    if Configuration["boot"]["usb"]["features"].any?("mass_storage")
+      add_dependency(:Files, Configuration["storage"]["internal"])
+    end
   end
 
   def gadget()
