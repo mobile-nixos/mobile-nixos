@@ -3,7 +3,7 @@ module System::ConfigFSUSB
   CONFIGFS_USB = File.join(CONFIGFS, "usb_gadget")
 
   module Quirks
-    def self.gsi_rndis()
+    def self.gsi_rndis(function_dir)
       # Activate the IPA stuff... ugh.
       System.write("/dev/ipa", 1)
     end
@@ -83,10 +83,11 @@ module System::ConfigFSUSB
         function_dir = File.join(path_prefix, "functions", function_name)
         feature_dir = File.join(config_dir, feature)
         FileUtils.mkdir_p(function_dir)
-        File.symlink(function_dir, feature_dir)
+        System.symlink(function_dir, feature_dir)
 
         quirk_name = function_name.gsub(/\./, "_").to_sym
-        Quirks.send(quirk_name) if Quirks.respond_to?(quirk_name)
+        $logger.debug("Looking for quirk: #{quirk_name}")
+        Quirks.send(quirk_name, function_dir) if Quirks.respond_to?(quirk_name)
       end
 
       # Then, attach to the USB driver.
