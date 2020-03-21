@@ -38,6 +38,19 @@
 
   mobile.system.type = "u-boot";
 
+  mobile.usb.mode = "gadgetfs";
+
+  # FIXME: This should really be something owned by Pine64
+  # http://pid.codes/1209/
+  mobile.usb.idVendor = "1209";
+  # "common tasks, such as testing, generic USB-CDC devices, etc."
+  mobile.usb.idProduct = "0069";
+
+  mobile.usb.gadgetfs.functions = {
+    rndis = "rndis.usb0";
+    mass_storage = "mass_storage.0";
+  };
+
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};
