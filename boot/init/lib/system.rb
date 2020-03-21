@@ -84,8 +84,13 @@ module System
   end
 
   def self.write(file, contents)
-    $logger.debug("echo #{contents.to_json} > #{file}")
+    $logger.debug(" $ echo #{contents.to_json} > #{file}")
     File.write(file, contents)
+  end
+
+  def self.symlink(source, destination)
+    $logger.debug(" $ ln -s #{source} #{destination}")
+    File.symlink(source, destination)
   end
 
   # Lists all mount points.
