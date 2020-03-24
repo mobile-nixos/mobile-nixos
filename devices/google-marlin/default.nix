@@ -23,7 +23,18 @@
     dev_keyboard = "";
     flash_method = "fastboot";
 
-    kernel_cmdline = "console=ttyHSL0,115200,n8 androidboot.console=ttyHSL0 androidboot.hardware=marlin user_debug=31 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=32M@0-0xffffffff loop.max_part=7 buildvariant=eng";
+    kernel_cmdline = lib.concatStringsSep " " [
+      "console=ttyHSL0,115200,n8"
+      "androidboot.console=ttyHSL0"
+      "androidboot.hardware=marlin"
+      "user_debug=31"
+      "ehci-hcd.park=3"
+      "lpm_levels.sleep_disabled=1"
+      "cma=32M@0-0xffffffff"
+      "loop.max_part=7"
+      "buildvariant=eng"
+      "firmware_class.path=/vendor/firmware"
+    ];
 
     generate_bootimg = true;
     bootimg_qcdt = false;
@@ -38,6 +49,7 @@
     boot_as_recovery = true;
 
     ab_partitions = true;
+    vendor_partition = "/dev/disk/by-partlabel/vendor_a";
   };
 
   mobile.hardware = {
