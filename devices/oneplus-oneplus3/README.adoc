@@ -1,0 +1,18 @@
+= Oneplus Oneplus 3
+include::_support/common.inc[]
+:sitemap_index: true
+
+== Device-specific note
+
+Using `fastboot` to burn system.img to the userdata partition will fail.
+
+It seems like it flashes successfully like other devices do, but the flashed
+image will not boot.
+
+The current workaround is to `fastboot boot` TWRP and use `dd` through `adb` to
+flash the image.
+
+```
+ $ cat .../.system.img | adb shell dd of=/dev/block/by-name/userdata bs=8m
+```
+
