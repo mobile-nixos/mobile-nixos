@@ -1,4 +1,5 @@
-#!/usr/bin/env bash
+#!/usr/bin/env nix-shell
+#!nix-shell -p ruby -i ruby
 
 # This script is expected to be used to copy back the `kernel-builder` built
 # linux configuration to the kernel's source directory.
@@ -8,27 +9,7 @@
 #  - Changing configuration options
 #  - Changing the kernel version
 
-set -e
-set -u
-PS4=" $ "
+ROOT = File.join(__dir__, "..")
+exec(File.join(ROOT, "bin", "menuconfig"), "--only-save", *ARGV)
 
-if (( $# != 2 )); then
-	echo "Usage: bin/kernel-normalize-config <device-name> <output>"
-	exit 1
-fi
-
-device="$1"; shift
-out="$1"; shift
-
-set -x
-
-build() {
-	nix-build --no-out-link -A config.mobile.device.info.kernel --argstr device "$device"
-}
-
-# The first one actively rebuilds to get the config...
-cp "$(build)/build.config" "$out"
-# This one rebuilds with the (assumedly) normalized config
-cp "$(build)/build.config" "$out"
-# This last copy and build is likely useless. Though it's a quick no-op
-cp "$(build)/build.config" "$out"
+# vim: ft=ruby
