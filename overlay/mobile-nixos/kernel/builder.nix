@@ -233,56 +233,91 @@ let kernel = stdenv.mkDerivation {
   passthru = {
     # Patching over this configuration to expose menuconfig.
     menuconfig = kernel.overrideAttrs({nativeBuildInputs ? [] , ...}: {
-      # What, another level of overriding???
-      # This time, it's to get patched sources.
-      # We'll need them at run-time for nconfig.
-      src = kernel.overrideAttrs({...}: {
-        buildPhase = ":";
-        configurePhase = ":";
-        fixupPhase = ":";
-
-        installPhase = ''
-          cp -prf . $out
-        '';
-      });
-
-      patchPhase = "echo 'Skipping, already ran...'";
-
       nativeBuildInputs = nativeBuildInputs ++ [
-        pkgconfig
         ncurses
+        pkgconfig
       ];
-      buildFlags = [ "nconfig" ];
+      buildFlags = [ "nconfig" "V=1" ];
+
+      # TODO: build `nconfig`, but copy the whole source dir
       buildPhase = ''
+        (PS4=" $ "; set -x
+
+        # Hot fixes pkg-config use.
+        export PKG_CONFIG_PATH="${buildPackages.ncurses.dev}/lib/pkgconfig"
+        if [ -e scripts/kconfig/nconf-cfg.sh ]; then
+          sed -i"" \
+            -e 's/$(pkg-config --libs $PKG)/-L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKG)/' \
+            scripts/kconfig/nconf-cfg.sh
+        fi
+
+        cat >> scripts/kconfig/Makefile <<EOF
+
+        run-nconfig:
+        ${"\t"}\$(obj)/nconf \$(silent) \$(Kconfig)
+        EOF
+
+        # Stops `make ...config` from starting the application.
+        cp scripts/kconfig/Makefile scripts/kconfig/Makefile.old
         sed -i"" -e 's/$< .*$(Kconfig)/echo "no-op"/' scripts/kconfig/Makefile
+
+        # Build the ...config application.
         make $buildFlags
+
+        mv scripts/kconfig/Makefile.old scripts/kconfig/Makefile
+        )
       '';
       configurePhase = ":";
       installFlags = [];
 
       # For menuconfig, it would be: "scripts/kconfig/mconf"
+      # A future optimisation could be to filter unneeded files like .c and .h,
+      # and docs. Though generally unneeded, this is a development-only tool.
       installPhase = ''
-        mkdir -p $out/{bin,libexec}
-        cp "scripts/kconfig/nconf" "$out/libexec"
+        (PS4=" $ "; set -x
+
+        cp -prf . $out
+        mkdir -p $out/bin
+
+        find $out/ -iname '*.o' -exec 'rm' '{}' ';'
+
+        (set -u
         cat > $out/bin/nconf <<EOF
         #!${runtimeShell}
         set -e
         set -u
+        PS4=" $ "; set -x
 
         if ((\$# < 1)); then
           echo "Usage: \$0 <config.file>"
           exit 1
         fi
 
+        export KERNEL_TREE=\$(mktemp -d)
+
+        function finish {
+          rm -rf "\$KERNEL_TREE"
+        }
+        trap finish EXIT
+
+
+        rmdir "\$KERNEL_TREE"
+        cp -rf $out "\$KERNEL_TREE"
+        chmod -R +w "\$KERNEL_TREE"
+
+        export PATH="$PATH:${buildPackages.gnumake}/bin"
         export KCONFIG_CONFIG="\$(readlink -f "\$1")"; shift
 
         export SRCARCH="${stdenv.hostPlatform.platform.kernelArch}"
         export ARCH="${stdenv.hostPlatform.platform.kernelArch}"
         export KERNELVERSION="${version}"
-        cd $src
-        exec $out/libexec/nconf $src/Kconfig "\$@"
+        cd "\$KERNEL_TREE"
+        make run-nconfig "\$@"
         EOF
+        )
+
         chmod +x $out/bin/nconf
+        )
       '';
     });
   };
