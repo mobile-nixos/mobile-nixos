@@ -32,6 +32,11 @@
 
 , bison
 , flex
+
+# For menuconfig
+, ncurses
+, pkgconfig
+, runtimeShell
 }:
 
 let
@@ -88,7 +93,8 @@ let
   inherit (stdenv.hostPlatform) platform;
 in
 
-stdenv.mkDerivation {
+# We'll append to this derivation inside passthru.
+let kernel = stdenv.mkDerivation {
   pname = "linux";
   inherit src version file;
 
@@ -223,4 +229,47 @@ stdenv.mkDerivation {
   requiredSystemFeatures = [ "big-parallel" ];
   enableParallelBuilding = true;
   dontStrip = true;
-}
+
+  passthru = {
+    # Patching over this configuration to expose menuconfig.
+    menuconfig = kernel.overrideAttrs({nativeBuildInputs ? [] , ...}: {
+      nativeBuildInputs = nativeBuildInputs ++ [
+        pkgconfig
+        ncurses
+      ];
+      buildFlags = [ "nconfig" ];
+      buildPhase = ''
+        sed -i"" -e 's/$< .*$(Kconfig)/echo "no-op"/' scripts/kconfig/Makefile
+        make $buildFlags
+      '';
+      configurePhase = ":";
+      installFlags = [];
+
+      # For menuconfig, it would be: "scripts/kconfig/mconf"
+      installPhase = ''
+        mkdir -p $out/{bin,libexec}
+        cp "scripts/kconfig/nconf" "$out/libexec"
+        cat > $out/bin/nconf <<EOF
+        #!${runtimeShell}
+        set -e
+        set -u
+
+        if ((\$# < 1)); then
+          echo "Usage: \$0 <config.file>"
+          exit 1
+        fi
+
+        export KCONFIG_CONFIG="\$(readlink -f "\$1")"; shift
+
+        export SRCARCH="${stdenv.hostPlatform.platform.kernelArch}"
+        export ARCH="${stdenv.hostPlatform.platform.kernelArch}"
+        export KERNELVERSION="${version}"
+        cd $src
+        exec $out/libexec/nconf $src/Kconfig "\$@"
+        EOF
+        chmod +x $out/bin/nconf
+      '';
+    });
+  };
+};
+in kernel
