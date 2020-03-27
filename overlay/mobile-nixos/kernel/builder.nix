@@ -233,6 +233,21 @@ let kernel = stdenv.mkDerivation {
   passthru = {
     # Patching over this configuration to expose menuconfig.
     menuconfig = kernel.overrideAttrs({nativeBuildInputs ? [] , ...}: {
+      # What, another level of overriding???
+      # This time, it's to get patched sources.
+      # We'll need them at run-time for nconfig.
+      src = kernel.overrideAttrs({...}: {
+        buildPhase = ":";
+        configurePhase = ":";
+        fixupPhase = ":";
+
+        installPhase = ''
+          cp -prf . $out
+        '';
+      });
+
+      patchPhase = "echo 'Skipping, already ran...'";
+
       nativeBuildInputs = nativeBuildInputs ++ [
         pkgconfig
         ncurses
