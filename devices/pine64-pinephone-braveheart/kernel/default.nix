@@ -15,6 +15,7 @@
     sha256 = "1a4ch2j8hla3xd7rv38ra6bnv14lsnj0srhlh1c8vxxvwywzg815";
   };
   patches = [
+    ./0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch
   ];
 }).overrideAttrs({ postInstall ? "", ... }: {
   installTargets = [ "install" "dtbs" ];
