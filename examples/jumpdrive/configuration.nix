@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  device_info = config.mobile.device.info;
   jumpdrive-gui = pkgs.runCommand "jumpdrive-gui.mrb" {} ''
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out \
       ${../../boot/gui/lib}/*.rb \
@@ -55,6 +56,9 @@ in
     features = [ "mass_storage" ];
   };
 
+  mobile.boot.stage-1.bootConfig = {
+    inherit (device_info) storage;
+  };
   mobile.boot.stage-1.contents = with pkgs; [
     {
       object = jumpdrive-gui;
