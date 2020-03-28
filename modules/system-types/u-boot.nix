@@ -109,7 +109,7 @@ let
     # This has to follow the same order as defined in the u-boot bootloaders...
     # This is not ideal... an alternative solution should be figured out.
     partitions = [
-      (imageBuilder.gap (imageBuilder.size.MiB 30)) # TODO: Allow the SoC to configure this value.
+      (imageBuilder.gap cfg.initialGapSize)
 
       config.system.build.boot-partition
 
@@ -162,6 +162,12 @@ in
         type = types.package;
         description = ''
           Which package handles u-boot for this system.
+        '';
+      };
+      initialGapSize = mkOption {
+        type = types.int;
+        description = ''
+          Size (in bytes) to keep reserved in front of the first partition.
         '';
       };
       additionalCommands = mkOption {
