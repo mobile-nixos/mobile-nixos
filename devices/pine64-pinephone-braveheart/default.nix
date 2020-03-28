@@ -35,4 +35,10 @@
 
   mobile.system.type = "u-boot";
   mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};
+  mobile.quirks.u-boot.additionalCommands = ''
+    # Yellow LED.
+    gpio set 114   # R
+    gpio set 115   # G
+    gpio clear 116 # B
+  '';
 }
