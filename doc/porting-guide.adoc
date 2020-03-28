@@ -9,3 +9,23 @@ In a nutshell, the basic steps are:
 * Finding appropriate the sources (mainly the kernel).
 * Writing the expressions to build said sources.
 
+== Kernel configuration
+
+The kernel can be configured using the following command, where `$DEVICE` is
+the device name.
+
+```
+ $ bin/menuconfig $DEVICE
+```
+
+When importing a configuration from another source, manually editing the kernel
+configuration, or updating the kernel version, it is recommended to run the
+kernel configuration normalization too.
+
+```
+ $ bin/kernel-normalize-config $DEVICE
+```
+
+Be mindful of your `$NIX_PATH` when running these tools. Ensure it points to
+the Nixpkgs checkout you use to work on Mobile NixOS or else it may build the
+toolchain fresh.
