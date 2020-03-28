@@ -38,3 +38,24 @@ U-Boot can be built and then flashed the usual way for Allwinner platforms.
  $ nix-build --argstr device pine64-pinephone-braveheart -A build.u-boot
  $ dd if=result/u-boot-sunxi-with-spl.bin of=/dev/mmcblkX bs=1024 seek=8
 ```
+
+== Usage notes
+
+=== LED
+
+In the default setup, the LED has been configured to show status information.
+Its colour or pattern can be used to infer the status.
+
+During boot:
+
+ * Red as early as possible in our U-Boot build
+ * Yellow when our U-Boot "boot script" ran
+ * Green by the kernel whenever it sets it up
+
+At any time:
+
+ * The red LED will flash on panic
+
+As it does not reset the other LED colours, it may flash green/yellow rather
+than off/red. If applications customize the LED status, it may flash in other
+patterns involving red.
