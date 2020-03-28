@@ -21,6 +21,7 @@ in
 
   extraPatches = [
     (pw "1202024" "0c196zk1s3pq3wdv909sxmjgqpll2hwb817bpbghkfkyyknl96vg")
+    ./0001-HACK-Turn-red-LED-on-for-pinephone.patch
   ];
 
   filesToInstall = ["u-boot-sunxi-with-spl.bin" "u-boot.img" "u-boot.dtb"];
