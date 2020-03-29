@@ -1,3 +1,5 @@
+# Note:
+# Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
   all-devices =
     builtins.filter
