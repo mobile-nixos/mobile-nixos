@@ -191,6 +191,7 @@ in
         inherit boot-partition;
         disk-image = withBootloader;
         u-boot = cfg.package;
+        default = system.build.disk-image;
       };
     })
   ];
