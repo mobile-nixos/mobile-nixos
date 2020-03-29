@@ -1,3 +1,5 @@
+# Note:
+# Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
   all-devices =
     builtins.filter
@@ -91,6 +93,7 @@ let
           special = true;
           inherit name;
           config = {
+            mobile.system.type = "none";
             mobile.hardware.soc = {
               x86_64-linux = "generic-x86_64";
               aarch64-linux = "generic-aarch64";
