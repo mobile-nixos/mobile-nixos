@@ -7,7 +7,7 @@ let
 
   system_type = config.mobile.system.type;
 
-  known_system_types = config.mobile.system.types;
+  known_system_types = config.mobile.system.types ++ [ "none" ];
 in
 {
   imports = [
