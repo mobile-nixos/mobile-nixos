@@ -46,9 +46,9 @@ let
   # `release.nix` and not part of the public API.
   evalWith = modules: import ./lib/eval-config.nix {
     modules =
-      if device ? special
+      (if device ? special
       then [ device.config ]
-      else [ (import (./. + "/devices/${final_device}" )) ]
+      else [ (import (./. + "/devices/${final_device}" )) ])
       ++ modules
       ++ [ additionalConfiguration ]
     ;
