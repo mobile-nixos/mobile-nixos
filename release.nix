@@ -91,6 +91,7 @@ let
           special = true;
           inherit name;
           config = {
+            mobile.system.type = "none";
             mobile.hardware.soc = {
               x86_64-linux = "generic-x86_64";
               aarch64-linux = "generic-aarch64";
