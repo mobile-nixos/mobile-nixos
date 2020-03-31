@@ -4,6 +4,8 @@
 let
   inherit (config.boot) growPartition;
   inherit (lib) optionalString;
+  inherit (config.mobile._internal) compressLargeArtifacts;
+  inherit (pkgs) buildPackages;
 in
 {
   boot.loader.grub.enable = false;
@@ -32,6 +34,21 @@ in
 
       # Give some headroom for initial mounting.
       extraPadding = pkgs.imageBuilder.size.MiB 20;
+
+      # FIXME: See #117, move compression into the image builder.
+      # Zstd can take a long time to complete successfully at high compression
+      # levels. Increasing the compression level could lead to timeouts.
+      postProcess = optionalString compressLargeArtifacts ''
+        (PS4=" $ "; set -x
+        PATH="$PATH:${buildPackages.zstd}/bin"
+        cd $out
+        ls -lh
+        time zstd -10 --rm "$filename"
+        ls -lh
+        )
+      '';
+
+      zstd = compressLargeArtifacts;
     }
   ;
 

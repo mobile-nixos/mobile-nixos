@@ -13,6 +13,10 @@ in
 # By default, assume we eval only for currentSystem
 , systems ? [ builtins.currentSystem ]
 # nixpkgs is also an input, used as `<nixpkgs>` in the system configuration.
+
+# Some additional configuration will be made with this.
+# Mainly to work with some limitations (output size).
+, inNixOSHydra ? false
 }:
 
 let
@@ -79,6 +83,24 @@ let
     }
   ;
 
+  specialConfig = {name, buildingForSystem, system, config ? {}}: {
+    special = true;
+    inherit name;
+    config = lib.mkMerge [
+      config
+      {
+        mobile.device.info = {};
+        mobile.system.type = "none";
+        mobile.hardware.soc = {
+          x86_64-linux = "generic-x86_64";
+          aarch64-linux = "generic-aarch64";
+          armv7l-linux = "generic-armv7l";
+        }.${buildingForSystem};
+        nixpkgs.localSystem = knownSystems.${system};
+      }
+    ];
+  };
+
   # Given a system builds run on, this will return a set of further systems
   # this builds in, either native or cross.
   # The values are `overlayForEval` applied for the pair local/cross systems.
@@ -89,19 +111,7 @@ let
         # "device" name for the eval *and* key used for the set.
         name = if system == buildingForSystem then buildingForSystem else "${buildingForSystem}-cross";
         # "device" eval for our dummy device.
-        eval = evalFor {
-          special = true;
-          inherit name;
-          config = {
-            mobile.system.type = "none";
-            mobile.hardware.soc = {
-              x86_64-linux = "generic-x86_64";
-              aarch64-linux = "generic-aarch64";
-              armv7l-linux = "generic-armv7l";
-            }.${buildingForSystem};
-            nixpkgs.localSystem = knownSystems.${system};
-          };
-        };
+        eval = evalFor (specialConfig {inherit name buildingForSystem system;});
         overlay = overlayForEval eval;
       in {
         inherit name;
@@ -119,9 +129,24 @@ let
       } device).build.default
     )
   );
+
+  examples-demo =
+    let
+      device = (specialConfig {
+        name = "aarch64-linux";
+        buildingForSystem = "aarch64-linux";
+        system = "aarch64-linux";
+        config = {
+          mobile._internal.compressLargeArtifacts = inNixOSHydra;
+        };
+      });
+    in
+    import ./examples/demo { inherit device; };
+  examples-demo-rootfs = examples-demo.build.rootfs;
 in
 {
   inherit device;
+  inherit examples-demo-rootfs;
 
   # Overlays build native, and cross, according to shouldEvalOn
   overlay = lib.genAttrs systems (system:
@@ -141,6 +166,7 @@ in
       ++ lib.optionals (hasSystem "aarch64-linux") [
         device.asus-z00t.aarch64-linux               # Android
         device.asus-dumo.aarch64-linux               # Depthcharge
+        examples-demo-rootfs 
       ];
   in
   releaseTools.aggregate {

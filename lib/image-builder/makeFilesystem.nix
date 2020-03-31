@@ -141,6 +141,10 @@ stdenvNoCC.mkDerivation (args // rec {
     echo "$checkPhase"
     runHook checkPhase
 
+    if [ -n "$postProcess" ]; then
+      echo "-> Running post-processing"
+      runHook postProcess
+    fi
   '';
 
 })
