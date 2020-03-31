@@ -1,3 +1,10 @@
+# What's release.nix?
+# ===================
+#
+# This is mainly intended to be run by the build farm at the foundation's Hydra
+# instance. Though you can use it to run your builds, it is not as ergonomic as
+# using `nix-build` on `./default.nix`.
+#
 # Note:
 # Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
