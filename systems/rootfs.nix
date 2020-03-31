@@ -46,6 +46,13 @@ in
         time zstd -10 --rm "$filename"
         ls -lh
         )
+      '' + ''
+        (PS4=" $ "; set -x
+        mkdir $out/nix-support
+        cat <<EOF > $out/nix-support/hydra-build-products
+        file rootfs${optionalString compressLargeArtifacts "-zstd"} $out/$filename${optionalString compressLargeArtifacts ".zst"}
+        EOF
+        )
       '';
 
       zstd = compressLargeArtifacts;
