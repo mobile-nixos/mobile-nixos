@@ -83,20 +83,22 @@ let
     }
   ;
 
-  specialConfig = {name, buildingForSystem, system}: {
+  specialConfig = {name, buildingForSystem, system, config ? {}}: {
     special = true;
     inherit name;
-    config = {
-      mobile._internal.compressLargeArtifacts = inNixOSHydra;
-      mobile.device.info = {};
-      mobile.system.type = "none";
-      mobile.hardware.soc = {
-        x86_64-linux = "generic-x86_64";
-        aarch64-linux = "generic-aarch64";
-        armv7l-linux = "generic-armv7l";
-      }.${buildingForSystem};
-      nixpkgs.localSystem = knownSystems.${system};
-    };
+    config = lib.mkMerge [
+      config
+      {
+        mobile.device.info = {};
+        mobile.system.type = "none";
+        mobile.hardware.soc = {
+          x86_64-linux = "generic-x86_64";
+          aarch64-linux = "generic-aarch64";
+          armv7l-linux = "generic-armv7l";
+        }.${buildingForSystem};
+        nixpkgs.localSystem = knownSystems.${system};
+      }
+    ];
   };
 
   # Given a system builds run on, this will return a set of further systems
@@ -134,6 +136,9 @@ let
         name = "aarch64-linux";
         buildingForSystem = "aarch64-linux";
         system = "aarch64-linux";
+        config = {
+          mobile._internal.compressLargeArtifacts = inNixOSHydra;
+        };
       });
     in
     import ./examples/demo { inherit device; };
