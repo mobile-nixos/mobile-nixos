@@ -28,6 +28,7 @@
   ./initrd-usb.nix
   ./initrd-vendor.nix
   ./initrd.nix
+  ./internal.nix
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks/qualcomm/default.nix
