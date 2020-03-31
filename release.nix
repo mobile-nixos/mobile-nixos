@@ -13,6 +13,10 @@ in
 # By default, assume we eval only for currentSystem
 , systems ? [ builtins.currentSystem ]
 # nixpkgs is also an input, used as `<nixpkgs>` in the system configuration.
+
+# Some additional configuration will be made with this.
+# Mainly to work with some limitations (output size).
+, inNixOSHydra ? false
 }:
 
 let
@@ -83,6 +87,7 @@ let
     special = true;
     inherit name;
     config = {
+      mobile._internal.compressLargeArtifacts = inNixOSHydra;
       mobile.device.info = {};
       mobile.system.type = "none";
       mobile.hardware.soc = {
