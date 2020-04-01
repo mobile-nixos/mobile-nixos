@@ -1,3 +1,10 @@
+# What's release.nix?
+# ===================
+#
+# This is mainly intended to be run by the build farm at the foundation's Hydra
+# instance. Though you can use it to run your builds, it is not as ergonomic as
+# using `nix-build` on `./default.nix`.
+#
 # Note:
 # Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
@@ -132,21 +139,24 @@ let
 
   examples-demo =
     let
-      device = (specialConfig {
-        name = "aarch64-linux";
-        buildingForSystem = "aarch64-linux";
-        system = "aarch64-linux";
-        config = {
-          mobile._internal.compressLargeArtifacts = inNixOSHydra;
+      aarch64-eval = import ./examples/demo {
+        device = specialConfig {
+          name = "aarch64-linux";
+          buildingForSystem = "aarch64-linux";
+          system = "aarch64-linux";
+          config = {
+            mobile._internal.compressLargeArtifacts = inNixOSHydra;
+          };
         };
-      });
+      };
     in
-    import ./examples/demo { inherit device; };
-  examples-demo-rootfs = examples-demo.build.rootfs;
+    {
+      aarch64-linux.rootfs = aarch64-eval.build.rootfs;
+    };
 in
 {
   inherit device;
-  inherit examples-demo-rootfs;
+  inherit examples-demo;
 
   # Overlays build native, and cross, according to shouldEvalOn
   overlay = lib.genAttrs systems (system:
@@ -166,7 +176,7 @@ in
       ++ lib.optionals (hasSystem "aarch64-linux") [
         device.asus-z00t.aarch64-linux               # Android
         device.asus-dumo.aarch64-linux               # Depthcharge
-        examples-demo-rootfs 
+        examples-demo.aarch64-linux.rootfs
       ];
   in
   releaseTools.aggregate {
