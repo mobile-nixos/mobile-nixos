@@ -24,7 +24,7 @@ lib.mkMerge [
       "/vendor" = {
         device = vendor_device;
         fsType = "ext4";
-        options = [ "nosuid" "noexec" "nodev" ];
+        options = [ "ro" "nosuid" "noexec" "nodev" ];
       };
     };
   })
