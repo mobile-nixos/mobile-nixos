@@ -30,8 +30,9 @@ let
     '';
 
   tableColumns = [
-    { key = "name";         name = "Name"; }
     { key = "identifier";   name = "Identifier"; }
+    { key = "manufacturer"; name = "Manufacturer"; }
+    { key = "name";         name = "Name"; }
     { key = "hardware.soc"; name = "SoC"; }
   ];
 in
