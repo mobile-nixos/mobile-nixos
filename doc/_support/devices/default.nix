@@ -47,6 +47,7 @@ runCommandNoCC "mobile-nixos-docs-devices" {
   cat <<EOF > devices/index.adoc
   = Devices List
   include::_support/common.inc[]
+  :sitemap_index: true
   :generated: true
 
   The following table lists all devices Mobile NixOS available out of the
@@ -71,16 +72,55 @@ runCommandNoCC "mobile-nixos-docs-devices" {
 
     identifier="$(get identifier)"
     col() {
-      printf "link:${githubURL}$identifier[%s]\n" \
+      printf "<<$identifier.adoc#,%s>>\n" \
         "$(get $1)"
     }
 
+    deviceDoc="$out/devices/$identifier.adoc"
+
+    # Continue building the table for the index
     printf "${concatMapStrings (_: "|%s\\n") tableColumns}\n" \
     ${
       concatMapStrings
       ({key, ...}: ''"$(col ${key})" \${"\n"}'')
       tableColumns
     } >> $out/devices/index.adoc
+
+  # Make a per-device page
+  cat <<EOF > $deviceDoc
+  = $(get name)
+  include::_support/common.inc[]
+  :generated: true
+
+  [.device-sidebar]
+  .$(get name)
+  ****
+  ${""/* TODO: include picture if available. */}
+  Manufacturer:: $(get manufacturer)
+  Identifier:: $(get identifier)
+  SoC:: $(get hardware.soc)
+  System Type:: $(get system.type)
+  Source:: link:${githubURL}$identifier[Mobile NixOS repository]
+  ****
+
+  EOF
+
+    if [ -e "${devicesDir}/$identifier/README.adoc" ]; then
+      # FIXME: pattern match on the first empty line
+      tail -n +4 "${devicesDir}/$identifier/README.adoc" \
+        >> $deviceDoc.tmp
+
+      if [ "$(head -n1 $deviceDoc.tmp)" != "== Device-specific note" ]; then
+        printf "Unexpected device-specific notes header for %s.\n\tGot: '%s'\n\tExpected: '%s'" "$identifier" "$(head -n1 $deviceDoc.tmp)" "== Device-specific note"
+        exit 1
+      fi
+
+      cat $deviceDoc.tmp >> $deviceDoc
+      rm $deviceDoc.tmp
+    else
+      echo "_(No device-specific notes available)_" >> $deviceDoc
+    fi
+
   done
   )
 

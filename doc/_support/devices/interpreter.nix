@@ -8,12 +8,16 @@ let
     lib = null;
     pkgs = null;
   });
-  inherit (eval.mobile.device) info;
+  inherit (eval) mobile;
+  inherit (mobile.device) info;
 in
   {
     inherit (info) name;
-    inherit (eval.mobile) hardware;
+    inherit (mobile) hardware;
+    system = {
+      inherit (mobile.system) type;
+    };
 
     manufacturer = if info ? manufacturer then info.manufacturer else "N/A";
-    identifier = eval.mobile.device.name;
+    identifier = mobile.device.name;
   }
