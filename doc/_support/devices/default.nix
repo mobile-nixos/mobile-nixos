@@ -92,8 +92,9 @@ runCommandNoCC "mobile-nixos-docs-devices" {
   Manufacturer:: $(get manufacturer)
   Name:: $(get name)
   Identifier:: $(get identifier)
-  SoC:: $(get hardware.soc)
   System Type:: $(get system.type)
+  SoC:: $(get hardware.soc)
+  Architecture:: $(get system.system)
   Source:: link:${githubURL}$identifier[Mobile NixOS repository]
   ****
 
