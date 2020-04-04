@@ -36,3 +36,28 @@ pre {
 	padding: @gutter / 2;
 	overflow: auto;
 }
+
+table.with-links {
+	tbody {
+		tr:hover {
+			background-color: #eeeeee;
+		}
+
+		td {
+			position: relative;
+		}
+
+		td a:before {
+			content: "";
+			position: absolute;
+			top: 0;
+			left: 0;
+			right: 0;
+			bottom: 0;
+		}
+
+		td:not(:last-child) a:before {
+			right: -1px;
+		}
+	}
+}
