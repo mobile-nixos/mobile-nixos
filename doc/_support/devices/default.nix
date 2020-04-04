@@ -44,8 +44,6 @@ stdenv.mkDerivation {
     (cd $out
     cat <<EOF >> devices/index.adoc
 
-    A more comprehensive device documentation is coming.
-
     Remember to look at the link:https://github.com/NixOS/mobile-nixos/pulls?q=is%3Aopen+is%3Apr+label%3A%22type%3A+port%22[port label]
     on the Mobile NixOS pull requests tracker, for upcoming devices.
 
