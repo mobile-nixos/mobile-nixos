@@ -111,8 +111,8 @@ runCommandNoCC "mobile-nixos-docs-devices" {
       tail -n +4 "${devicesDir}/$identifier/README.adoc" \
         >> $deviceDoc.tmp
 
-      if [ "$(head -n1 $deviceDoc.tmp)" != "== Device-specific note" ]; then
-        printf "Unexpected device-specific notes header for %s.\n\tGot: '%s'\n\tExpected: '%s'" "$identifier" "$(head -n1 $deviceDoc.tmp)" "== Device-specific note"
+      if [ "$(head -n1 $deviceDoc.tmp)" != "== Device-specific notes" ]; then
+        printf "Unexpected device-specific notes header for %s.\n\tGot: '%s'\n\tExpected: '%s'" "$identifier" "$(head -n1 $deviceDoc.tmp)" "== Device-specific notes"
         exit 1
       fi
 
