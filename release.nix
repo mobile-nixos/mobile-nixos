@@ -8,11 +8,8 @@
 # Note:
 # Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
-  all-devices =
-    builtins.filter
-      (d: builtins.pathExists (./. + "/devices/${d}/default.nix"))
-      (builtins.attrNames (builtins.readDir ./devices))
-  ;
+  mobileReleaseTools = (import ./lib/release-tools.nix);
+  inherit (mobileReleaseTools) all-devices;
 in
 { mobile-nixos ? builtins.fetchGit ./.
 # By default, builds all devices.
@@ -29,12 +26,13 @@ in
 let
   # We require some `lib` stuff in here.
   # Pick a lib from the ambient <nixpkgs>.
-  inherit (import <nixpkgs> {}) lib releaseTools;
-
-  # Given a device compatible with `default.nix`, eval.
-  evalFor = evalWithConfiguration {};
-  evalWithConfiguration = additionalConfiguration: device:
-    import ./. { inherit device additionalConfiguration; }
+  pkgs' = import <nixpkgs> {};
+  inherit (pkgs') lib releaseTools;
+  inherit (mobileReleaseTools.withPkgs pkgs')
+    evalFor
+    evalWithConfiguration
+    knownSystems
+    specialConfig
   ;
 
   # Systems we should eval for, per host system.
@@ -51,14 +49,6 @@ let
     armv7l-linux = [
       "armv7l-linux"
     ];
-  };
-
-  # Shortcuts from a simple system name to the structure required for
-  # localSystem and crossSystem
-  knownSystems = {
-    x86_64-linux  = lib.systems.examples.gnu64;
-    aarch64-linux = lib.systems.examples.aarch64-multiplatform;
-    armv7l-linux  = lib.systems.examples.armv7l-hf-multiplatform;
   };
 
   # Given an evaluated "device", filters `pkgs` down to only our packages
@@ -89,24 +79,6 @@ let
       defaultKernelPatches = null;
     }
   ;
-
-  specialConfig = {name, buildingForSystem, system, config ? {}}: {
-    special = true;
-    inherit name;
-    config = lib.mkMerge [
-      config
-      {
-        mobile.device.info = {};
-        mobile.system.type = "none";
-        mobile.hardware.soc = {
-          x86_64-linux = "generic-x86_64";
-          aarch64-linux = "generic-aarch64";
-          armv7l-linux = "generic-armv7l";
-        }.${buildingForSystem};
-        nixpkgs.localSystem = knownSystems.${system};
-      }
-    ];
-  };
 
   # Given a system builds run on, this will return a set of further systems
   # this builds in, either native or cross.
