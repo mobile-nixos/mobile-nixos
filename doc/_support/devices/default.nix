@@ -1,33 +1,25 @@
-{ stdenv, runCommandNoCC, jq, nix, writeText }:
+{ pkgs
+, stdenv
+, runCommandNoCC
+, jq
+, symlinkJoin
+}:
 
 let
   inherit (stdenv.lib) concatMapStrings;
 
+  # Release tools used to evaluate the devices metadata.
+  mobileReleaseTools = (import ../../../lib/release-tools.nix);
+  inherit (mobileReleaseTools) all-devices;
+  inherit (mobileReleaseTools.withPkgs pkgs) evalFor;
+
   githubURL = "https://github.com/NixOS/mobile-nixos/tree/master/devices/";
+
   devicesDir = ../../../devices;
-  interpreter = ./interpreter.nix;
-  device-info = runCommandNoCC "device-info" {
-    nativeBuildInputs = [ nix jq ];
-  } ''
-    mkdir -p $out
-    export NIX_STATE_DIR=$PWD/nix-state
-
-    (cd ${devicesDir}
-    for d in $(ls | sort); do
-      echo "Parsing $d"
-      nix-instantiate --eval \
-        --arg file "./$d/default.nix" \
-        --json --strict ${interpreter} \
-        > $out/$d.json
-      identifier="$(jq -r .identifier $out/$d.json)"
-
-      if [[ "$d" != "$identifier" ]]; then
-        echo "The identifier ($identifier) for the device must match its folder name ($d)."
-        exit 1
-      fi
-    done
-    )
-    '';
+  devices-info = symlinkJoin {
+    name = "devices-metadata";
+    paths = (map (device: (evalFor device).build.device-metadata) all-devices);
+  };
 
   tableColumns = [
     { key = "identifier";   name = "Identifier"; }
@@ -65,7 +57,7 @@ runCommandNoCC "mobile-nixos-docs-devices" {
   EOF
   )
 
-  (cd ${device-info};
+  (cd ${devices-info};
   for d in *; do
     get() {
       jq -r ."$1" "$d"
