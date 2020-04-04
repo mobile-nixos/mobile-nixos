@@ -8,7 +8,7 @@ let
   # NixOS (<nixpkgs/modules/system/activation/top-level.nix>)
   # Here we're only adding the `is_recovery` option.
   # In the future, we may want to move the recovery configuration to a file.
-  recovery = (import ../../lib/eval-config.nix {
+  recovery = (import ../../../lib/eval-config.nix {
     inherit baseModules;
     modules = modules ++ [{
       mobile.boot.stage-1.bootConfig = {
@@ -39,13 +39,13 @@ let
 
   inherit (config.system.build) rootfs;
 
-  android-recovery = pkgs.callPackage ../../systems/bootimg.nix {
+  android-recovery = pkgs.callPackage ../../../systems/bootimg.nix {
     inherit device_config;
     initrd = recovery.system.build.initrd;
     name = "recovery.img";
   };
 
-  android-bootimg = pkgs.callPackage ../../systems/bootimg.nix {
+  android-bootimg = pkgs.callPackage ../../../systems/bootimg.nix {
     inherit device_config;
     initrd = config.system.build.initrd;
   };
