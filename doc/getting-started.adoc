@@ -4,6 +4,9 @@ include::_support/common.inc[]
 This guide assumes the user knows how to prepare their device for development
 use. These instructions are device-dependent, but not specific to Mobile NixOS.
 
+Briefly said, the device's bootloader must be unlocked, allowing to run
+custom-built operating system images.
+
 
 == Source Code
 
@@ -33,7 +36,8 @@ GitHub help article] may help.
 
 This is where it becomes harder to make a simple guide. These are different,
 heterogeneous, hardware platforms, with different quirks, compilation steps,
-and mainly, installation steps.
+and mainly, installation steps. Please also look at the documentation for your
+specific device as it may contain further or replacement instructions.
 
 === Android devices
 
@@ -61,7 +65,8 @@ will automatically handle this.
 == Running
 
 This is where the device-specific and platform-specific instructions will help
-you. Though, here's a quick overview.
+you. Though, here's a quick overview. Again, look at the documentation for your
+specific device, as it may contain further or replacement instructions.
 
 === Android
 
