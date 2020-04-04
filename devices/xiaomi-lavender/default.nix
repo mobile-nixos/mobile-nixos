@@ -6,7 +6,7 @@
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
     format_version = "0";
-    name = "Xiaomi Redmi Note 7";
+    name = "Redmi Note 7";
     manufacturer = "Xiaomi";
     codename = "xiaomi-lavender";
     modules_initfs = "";
