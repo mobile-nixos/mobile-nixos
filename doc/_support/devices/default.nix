@@ -88,15 +88,16 @@ runCommandNoCC "mobile-nixos-docs-devices" {
 
   # Make a per-device page
   cat <<EOF > $deviceDoc
-  = $(get name)
+  = $(get fullName)
   include::_support/common.inc[]
   :generated: true
 
   [.device-sidebar]
-  .$(get name)
+  .$(get fullName)
   ****
   ${""/* TODO: include picture if available. */}
   Manufacturer:: $(get manufacturer)
+  Name:: $(get name)
   Identifier:: $(get identifier)
   SoC:: $(get hardware.soc)
   System Type:: $(get system.type)

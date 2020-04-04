@@ -20,4 +20,8 @@ in
 
     manufacturer = if info ? manufacturer then info.manufacturer else "N/A";
     identifier = mobile.device.name;
+
+    fullName = if info ? manufacturer
+      then "${info.manufacturer} ${info.name}"
+      else info.name;
   }
