@@ -4,7 +4,8 @@ let
 in {
   mobile.device.name = "xiaomi-tissot";
   mobile.device.info = {
-    name = "Xiaomi A1";
+    name = "A1";
+    manufacturer = "Xiaomi";
     screen_width = 1080;
     screen_height = 1920;
     kernel_cmdline = "androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci earlycon=msm_hsl_uart,0x78af000 androidboot.selinux=permissive buildvariant=eng";
