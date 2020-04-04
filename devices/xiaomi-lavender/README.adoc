@@ -1,7 +1,7 @@
 = Xiaomi Redmi Note 7
 include::_support/common.inc[]
 
-== Device-specific note
+== Device-specific notes
 
 === `fastboot oem getlog`
 
