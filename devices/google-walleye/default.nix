@@ -3,7 +3,7 @@
 {
   mobile.device.name = "google-walleye";
   mobile.device.info = rec {
-    name = "Google Pixel 2";
+    name = "Pixel 2";
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
 
