@@ -5,6 +5,13 @@ def githubURL(device)
   "https://github.com/NixOS/mobile-nixos/tree/master/devices/#{device}"
 end
 
+def hydraURL(device)
+  # Yes, x86_64-linux is by design.
+  # We're using the pre-built images, cross-compiled.
+  # If we used the native arch, we'd be in trouble with armv7l.
+  "https://hydra.nixos.org/job/mobile-nixos/unstable/device.#{device}.x86_64-linux"
+end
+
 NOTES_HEADER = "== Device-specific notes"
 
 COLUMNS = [
@@ -88,6 +95,7 @@ $devicesInfo.values.each do |info|
     SoC:: #{info["hardware"]["soc"]}
     Architecture:: #{info["system"]["system"]}
     Source:: link:#{githubURL(identifier)}[Mobile NixOS repository]
+    Builds:: link:#{hydraURL(identifier)}[Hydra (`default` build)]
     ****
 
     EOF
