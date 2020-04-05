@@ -4,8 +4,8 @@ include::_support/common.inc[]
 This guide assumes the user knows how to prepare their device for development
 use. These instructions are device-dependent, but not specific to Mobile NixOS.
 
-Briefly said, the device's bootloader must be unlocked, allowing to run
-custom-built operating system images.
+Briefly said, the device's bootloader must be unlocked, meaning that it allows
+running custom-built operating system images.
 
 
 == Source Code
@@ -32,78 +32,14 @@ The link:https://help.github.com/en/github/collaborating-with-issues-and-pull-re
 GitHub help article] may help.
 
 
-== Compiling
+== Compiling and Running
 
 This is where it becomes harder to make a simple guide. These are different,
 heterogeneous, hardware platforms, with different quirks, compilation steps,
-and mainly, installation steps. Please also look at the documentation for your
-specific device as it may contain further or replacement instructions.
+and mainly, installation steps.
 
-=== Android devices
-
-To build a system image, you will need to build on the native target architecture.
-
-Building the boot image (`boot.img`) can be done through cross-compilation. The
-build tooling will automatically handle this.
-
-
- nix-build --argstr device "$DEVICE" -A build.android-bootimg
-
-Assuming `DEVICE` has been set to an appropriate device name.
-
-=== Depthcharge devices
-
-To build full image, you will need to build on the native target architecture.
-
-Though, it is possible to build the partition `depthcharge` will boot from,
-which holds the kernel and initrd, through cross-compilation. The build tooling
-will automatically handle this.
-
- nix-build --argstr device "$DEVICE" -A build.kpart
-
-
-== Running
-
-This is where the device-specific and platform-specific instructions will help
-you. Though, here's a quick overview. Again, look at the documentation for your
-specific device, as it may contain further or replacement instructions.
-
-=== Android
-
-Some, if not most, Android-based platforms will allow you to boot the boot image
-using `fastboot`.
-
-Luckily, running stage-1 through `fastboot` is enough to get started porting for
-the target system, as it will exercise the harder initial bootstrapping parts.
-That is, getting a system working with a minimal set of useful features.
-
-The device will need to be booted in its bootloader, or `fastboot`, mode. The
-instructions are device-dependent. The boot image can be run using the following
-command.
-
- fastboot boot result
-
-If you have a system image (`system.img`) built, you can use `fastboot` to flash
-it to the device. Note that it might be too big to fit over the `system`
-partition. In such case, it can be flashed on the `userdata` partition.
-
-WARNING: *This will erase everything on the partition*. Additionally, the common
-backups methods, e.g. TWRP, will *not* backup the `userdata` partition.
-
- fastboot flash userdata system.img
-
-=== Depthcharge
-
-This one is annoying to get started currently. Without a full Mobile NixOS
-build, you will need to fill in some gaps manually.
-
-The link:https://www.chromium.org/chromium-os/chromiumos-design-docs/disk-format[
-upstream documentation about the disk format] may help shed some light in getting
-this booting.
-
-On a Mobile NixOS-built disk image for a ; depthcharge` device, you can replace
-the partition with the newly built image, for the next boot. This is especially
-useful with USB devices or SD cards.
+Fear not, look for your particular device on the <<devices/index.adoc#,devices list>>
+page, will likely contain the necessary instructions.
 
 
 == Customizing
