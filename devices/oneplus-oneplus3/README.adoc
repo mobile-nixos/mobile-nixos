@@ -1,8 +1,7 @@
 = Oneplus Oneplus 3
 include::_support/common.inc[]
-:sitemap_index: true
 
-== Device-specific note
+== Device-specific notes
 
 Using `fastboot` to burn system.img to the userdata partition will fail.
 

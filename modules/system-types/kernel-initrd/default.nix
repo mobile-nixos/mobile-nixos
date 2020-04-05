@@ -7,7 +7,7 @@ let
   rootfs = config.system.build.rootfs;
   enabled = config.mobile.system.type == "kernel-initrd";
 
-  kernel-initrd = pkgs.callPackage ../../systems/kernel-initrd.nix {
+  kernel-initrd = pkgs.callPackage ../../../systems/kernel-initrd.nix {
     inherit device_config hardware_config;
     initrd = config.system.build.initrd;
   };

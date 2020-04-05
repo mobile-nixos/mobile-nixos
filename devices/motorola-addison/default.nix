@@ -4,7 +4,7 @@
   mobile.device.name = "motorola-addison";
   mobile.device.info = rec {
     format_version = "0";
-    name = "Motorola Moto Z Play";
+    name = "Moto Z Play";
     manufacturer = "Motorola";
     date = "";
     modules_initfs = "";

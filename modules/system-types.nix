@@ -12,10 +12,10 @@ in
 {
   imports = [
     ../systems/rootfs.nix
-    ./system-types/depthcharge.nix
-    ./system-types/kernel-initrd.nix
-    ./system-types/android.nix
-    ./system-types/u-boot.nix
+    ./system-types/depthcharge
+    ./system-types/kernel-initrd
+    ./system-types/android
+    ./system-types/u-boot
   ];
 
   options.mobile = {

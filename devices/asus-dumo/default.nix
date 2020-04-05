@@ -4,8 +4,8 @@
   mobile.device.name = "asus-dumo";
   mobile.device.info = rec {
     format_version = "0";
-    name = "ASUS Chromebook Tablet CT100PA";
-    manufacturer = "ASUS";
+    name = "Chromebook Tablet CT100PA";
+    manufacturer = "Asus";
     arch = "aarch64";
     keyboard = false;
     external_storage = true;

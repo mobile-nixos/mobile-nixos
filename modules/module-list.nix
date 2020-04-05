@@ -9,6 +9,7 @@
   ./adb.nix
   ./boot-initrd.nix
   ./cross-workarounds.nix
+  ./devices-metadata.nix
   ./hardware-allwinner.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix

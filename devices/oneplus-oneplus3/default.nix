@@ -4,7 +4,7 @@
   mobile.device.name = "oneplus-oneplus3";
   mobile.device.info = rec {
     format_version = "0";
-    name = "OnePlus OnePlus 3";
+    name = "OnePlus 3";
     manufacturer = "OnePlus";
     date = "";
     dtb = "";

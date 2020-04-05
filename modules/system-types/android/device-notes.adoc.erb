@@ -1,0 +1,23 @@
+== Building
+
+This will build the default output for your _<%= info["fullName"] %>_.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.default
+
+== Installation
+
+The device will need to be booted in its bootloader, or `fastboot`, mode.
+The boot image can be installed using the following command, assuming it was
+built using the previous command.
+
+ $ result/flash-critical.sh
+
+If you have a system image (`system.img`) built, you can use `fastboot` to
+flash it to the device. Note that it might be too big to fit over the `system`
+partition. In such case, it can be flashed on the `userdata` partition.
+
+WARNING: *This will erase everything on the partition*. Additionally, the
+common backups methods, e.g. TWRP, will *not* backup the `userdata` partition.
+
+ $ fastboot flash userdata system.img
+

@@ -1,7 +1,7 @@
 = Google Pixel 2
 include::_support/common.inc[]
 
-== Device-specific note
+== Device-specific notes
 
 === Serial access
 

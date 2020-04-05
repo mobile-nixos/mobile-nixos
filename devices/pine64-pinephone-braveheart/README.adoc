@@ -1,7 +1,9 @@
 = PinePhone “BraveHeart”
 include::_support/common.inc[]
 
-== Building a full disk image
+== Device-specific notes
+
+=== Building a full disk image
 
 This platform uses the `u-boot` system-type. This means that a full disk image
 can be produced, and this full disk image flashed _outright_ to the block
@@ -16,7 +18,7 @@ booting it.
  $ dd if=result of=/dev/mmcblkX bs=8M oflag=sync,direct status=progress
 ```
 
-== Building the boot partition
+=== Building the boot partition
 
 Building the full disk image may require a native AArch64 system.
 
@@ -28,7 +30,7 @@ NixOS boot partition.
  $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXp1 bs=8M oflag=sync,direct status=progress
 ```
 
-== Building U-Boot
+=== Building U-Boot
 
 Flashing the boot partition will not affect the installed U-Boot bootloader.
 
@@ -39,9 +41,9 @@ U-Boot can be built and then flashed the usual way for Allwinner platforms.
  $ dd if=result/u-boot-sunxi-with-spl.bin of=/dev/mmcblkX bs=1024 seek=8
 ```
 
-== Usage notes
+=== Usage notes
 
-=== LED
+==== LED
 
 In the default setup, the LED has been configured to show status information.
 Its colour or pattern can be used to infer the status.
