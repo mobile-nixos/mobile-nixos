@@ -1,3 +1,4 @@
+require "erb"
 require "json"
 
 def githubURL(device)
@@ -19,6 +20,7 @@ $devicesInfo = Dir.glob(File.join(ENV["devicesInfo"], "*")).sort.map do |filenam
   [data["identifier"], data]
 end.to_h
 $devicesDir = ENV["devicesDir"]
+$systemTypesDir = ENV["systemTypesDir"]
 
 # First, generate the devices listing.
 puts ":: Generating devices/index.adoc"
@@ -91,10 +93,18 @@ $devicesInfo.values.each do |info|
     EOF
 
     # Generate the page contents
+
+    systemTypeFile = File.join($systemTypesDir, info["system"]["type"], "device-notes.adoc.erb")
+    if File.exists?(systemTypeFile)
+      template = ERB.new(File.read(systemTypeFile))
+      file.puts(template.result(binding))
+    else
+      file.puts("\n_(No system-specific notes available)_\n\n")
+    end
     
-    deviceNotes = File.join($devicesDir, identifier, "README.adoc")
-    if File.exists?(deviceNotes)
-      notes = File.read(deviceNotes).split("\n\n", 2).last.strip
+    deviceNotesFile = File.join($devicesDir, identifier, "README.adoc")
+    if File.exists?(deviceNotesFile)
+      notes = File.read(deviceNotesFile).split("\n\n", 2).last.strip
       first_line = notes.lines.first.strip
       unless first_line == NOTES_HEADER
         $stderr.puts(
@@ -106,7 +116,7 @@ $devicesInfo.values.each do |info|
       end
       file.puts(notes)
     else
-      file.puts("_(No device-specific notes available)_")
+      file.puts("\n_(No device-specific notes available)_\n\n")
     end
   end
 end
