@@ -91,6 +91,10 @@ A sample `local.nix`.
 }
 ```
 
+As Mobile NixOS is a superset on top of NixOS, all NixOS options can be used in
+this configuration file, though take note that most NixOS options will only
+affect the stage-2 (rootfs, system.img) build.
+
 
 == Contributing
 
