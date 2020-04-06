@@ -30,10 +30,12 @@ Generating a partitions listing
 
 By adding this to `local.nix`, build an initramfs for your device and boot it.
 
-```
+```nix
+{
   mobile.boot.stage-1.extraUtils = with pkgs; [
     gptfdisk
   ];
+}
 ```
 
 Run this command:
