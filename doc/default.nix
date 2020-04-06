@@ -10,6 +10,9 @@ let
 
   # Asciidoc source for the devices section.
   devices = pkgs.callPackage ./_support/devices { };
+
+  # Asciidoc source for the options section.
+  options = pkgs.callPackage ./_support/options { };
 in
 
 stdenv.mkDerivation {
@@ -51,6 +54,9 @@ stdenv.mkDerivation {
 
     # Copies the generated asciidoc source for the devices.
     cp -prf ${devices}/devices devices
+
+    # Copies the generated asciidoc source for the options.
+    cp -prf ${options}/options options
 
     # Use our pipeline to process the docs.
     process-doc "**/*.adoc" "**/*.md" \
