@@ -95,6 +95,9 @@ As Mobile NixOS is a superset on top of NixOS, all NixOS options can be used in
 this configuration file, though take note that most NixOS options will only
 affect the stage-2 (rootfs, system.img) build.
 
+The <<options/index.adoc#,Options list>> page will be useful, as it provides an
+overview of all the Mobile NixOS specific options.
+
 
 == Contributing
 
