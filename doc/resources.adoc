@@ -1,0 +1,12 @@
+= Resources
+include::_support/common.inc[]
+
+== User resources
+
+* <<options/index.adoc#,Options List>>
+* <<boot_process.adoc#,Boot Process>>
+
+== Developer resources
+
+* <<porting-guide.adoc#,Porting Guide>>
+* <<in-depth/index.adoc#,In-Depth Topics>>
