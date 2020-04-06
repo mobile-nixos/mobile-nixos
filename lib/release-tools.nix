@@ -6,6 +6,26 @@
     (builtins.attrNames (builtins.readDir ../devices))
   ;
 
+  # Evaluates NixOS, mobile-nixos and the device config with the given
+  # additional modules.
+  # Note that we can receive a "special" configuration, used internally by
+  # `release.nix` and not part of the public API.
+  evalWith =
+    { modules
+    , device
+    , additionalConfiguration ? {}
+    , baseModules ? ((import ../modules/module-list.nix) ++ [ ../modules/_nixos-integration.nix ])
+  }: import ./eval-config.nix {
+    inherit baseModules;
+    modules =
+      (if device ? special
+      then [ device.config ]
+      else [ (import (../. + "/devices/${device}" )) ])
+      ++ modules
+      ++ [ additionalConfiguration ]
+    ;
+  };
+
   # These can rely freely on lib, avoir depending on pkgs.
   withPkgs = pkgs:
     let
