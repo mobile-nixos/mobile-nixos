@@ -18,11 +18,15 @@ as link:https://github.com/NixOS/mobile-nixos[mobile-nixos].
 Depending on your configuration, for users with a GitHub account and the proper
 ssh configuration.
 
- git clone git@github.com:NixOS/mobile-nixos.git
+```
+$ git clone git@github.com:NixOS/mobile-nixos.git
+```
 
 Or, for everyone else.
 
- git clone https://github.com/NixOS/mobile-nixos.git
+```
+$ git clone https://github.com/NixOS/mobile-nixos.git
+```
 
 Nothing else! Everything required is self-contained.
 
