@@ -15,8 +15,9 @@ in
       type = types.bool;
       default = false;
       description = ''
-        Enables ssh.
-        CURRENT CONFIGURATION ALSO OPENS ACCESS TO ALL WITHOUT A PASSWORD NOR SSH KEY.
+        Enables ssh during stage-1.
+
+        **CURRENT CONFIGURATION ALSO OPENS ACCESS TO ALL WITHOUT A PASSWORD NOR SSH KEY.**
       '';
     };
   };
