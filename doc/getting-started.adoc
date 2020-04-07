@@ -4,8 +4,8 @@ include::_support/common.inc[]
 This guide assumes the user knows how to prepare their device for development
 use. These instructions are device-dependent, but not specific to Mobile NixOS.
 
-Briefly said, the device's bootloader must be unlocked, allowing to run
-custom-built operating system images.
+Briefly said, the device's bootloader must be unlocked, meaning that it allows
+running custom-built operating system images.
 
 
 == Source Code
@@ -18,11 +18,15 @@ as link:https://github.com/NixOS/mobile-nixos[mobile-nixos].
 Depending on your configuration, for users with a GitHub account and the proper
 ssh configuration.
 
- git clone git@github.com:NixOS/mobile-nixos.git
+```
+$ git clone git@github.com:NixOS/mobile-nixos.git
+```
 
 Or, for everyone else.
 
- git clone https://github.com/NixOS/mobile-nixos.git
+```
+$ git clone https://github.com/NixOS/mobile-nixos.git
+```
 
 Nothing else! Everything required is self-contained.
 
@@ -32,78 +36,67 @@ The link:https://help.github.com/en/github/collaborating-with-issues-and-pull-re
 GitHub help article] may help.
 
 
-== Compiling
+== Compiling and Running
 
 This is where it becomes harder to make a simple guide. These are different,
 heterogeneous, hardware platforms, with different quirks, compilation steps,
-and mainly, installation steps. Please also look at the documentation for your
-specific device as it may contain further or replacement instructions.
+and mainly, installation steps.
 
-=== Android devices
+Fear not, look for your particular device on the <<devices/index.adoc#,devices list>>
+page, will likely contain the necessary instructions.
 
-To build a system image, you will need to build on the native target architecture.
+=== Using a known-good revision
 
-Building the boot image (`boot.img`) can be done through cross-compilation. The
-build tooling will automatically handle this.
+Things change, and sometimes things break. This is even more true with Mobile
+NixOS as the project depends on another moving target, NixOS.
 
+You can look at the
+link:https://hydra.nixos.org/job/mobile-nixos/unstable/tested/latest-finished#tabs-buildinputs[latest successful build's inputs]
+to see which _revisions_ were used for a successful build.
 
- nix-build --argstr device "$DEVICE" -A build.android-bootimg
+You can then clone Nixpkgs somewhere, checkout that commit ID, and refer to it
+using `NIX_PATH`. The following is only an example of how one would do this.
 
-Assuming `DEVICE` has been set to an appropriate device name.
+```
+$ cd ~/Projects/
+$ git clone https://github.com/NixOS/nixpkgs.git
+$ cd nixpkgs
+$ git checkout $revision
+$ cd ~/Projects/mobile-nixos/
+$ export NIX_PATH="nixpkgs=$HOME/Projects/nixpkgs"
+$ nix-build [...]
+```
 
-=== Depthcharge devices
+=== Using a pre-built `system.img`
 
-To build full image, you will need to build on the native target architecture.
+When bootstrapping yourself up, without an aarch64-linux system, it may be
+easier to deal with some systems if you use a pre-built `rootfs` rather than
+rely on the dummy basic `rootfs`. For those systems, you can download a
+link:https://hydra.nixos.org/job/mobile-nixos/unstable/examples-demo.aarch64-linux.rootfs[pre-built rootfs],
+and configure the system build to use it. Assuming it is next to the
+`local.nix` file in your Mobile NixOS checkout.
 
-Though, it is possible to build the partition `depthcharge` will boot from,
-which holds the kernel and initrd, through cross-compilation. The build tooling
-will automatically handle this.
+```nix
+# local.nix
+{ pkgs, ... }:
 
- nix-build --argstr device "$DEVICE" -A build.kpart
+let
+  fromPath = input: pkgs.runCommandNoCC "system.img" {
+    filename = "system.img";
+    filesystemType = "ext4";
+  } ''
+    mkdir -p "$out"
+    cp ${input} "$out/$filename"
+  '';
+in
+{
+  system.build.rootfs = fromPath ./system.img;
+}
+```
 
-
-== Running
-
-This is where the device-specific and platform-specific instructions will help
-you. Though, here's a quick overview. Again, look at the documentation for your
-specific device, as it may contain further or replacement instructions.
-
-=== Android
-
-Some, if not most, Android-based platforms will allow you to boot the boot image
-using `fastboot`.
-
-Luckily, running stage-1 through `fastboot` is enough to get started porting for
-the target system, as it will exercise the harder initial bootstrapping parts.
-That is, getting a system working with a minimal set of useful features.
-
-The device will need to be booted in its bootloader, or `fastboot`, mode. The
-instructions are device-dependent. The boot image can be run using the following
-command.
-
- fastboot boot result
-
-If you have a system image (`system.img`) built, you can use `fastboot` to flash
-it to the device. Note that it might be too big to fit over the `system`
-partition. In such case, it can be flashed on the `userdata` partition.
-
-WARNING: *This will erase everything on the partition*. Additionally, the common
-backups methods, e.g. TWRP, will *not* backup the `userdata` partition.
-
- fastboot flash userdata system.img
-
-=== Depthcharge
-
-This one is annoying to get started currently. Without a full Mobile NixOS
-build, you will need to fill in some gaps manually.
-
-The link:https://www.chromium.org/chromium-os/chromiumos-design-docs/disk-format[
-upstream documentation about the disk format] may help shed some light in getting
-this booting.
-
-On a Mobile NixOS-built disk image for a ; depthcharge` device, you can replace
-the partition with the newly built image, for the next boot. This is especially
-useful with USB devices or SD cards.
+Note that for Android-based devices, you can simply use the `system.img`. There
+is no need to configure it as such. This is most useful for _depthcharge_ and
+_u-boot_ systems.
 
 
 == Customizing
@@ -123,6 +116,13 @@ A sample `local.nix`.
   mobile.boot.stage-1.splash.enable = false;
 }
 ```
+
+As Mobile NixOS is a superset on top of NixOS, all NixOS options can be used in
+this configuration file, though take note that most NixOS options will only
+affect the stage-2 (rootfs, system.img) build.
+
+The <<options/index.adoc#,Options list>> page will be useful, as it provides an
+overview of all the Mobile NixOS specific options.
 
 
 == Contributing

@@ -3,6 +3,7 @@
 :title: {doctitle} — Mobile NixOS
 :repo: NixOS/mobile-nixos
 :relative_prefix: doc
+:source-highlighter: rouge
 :docinfo: shared
 :docinfodir: _support/
 :toc: macro

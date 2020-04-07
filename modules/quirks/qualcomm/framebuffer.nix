@@ -10,19 +10,19 @@ in
     quirks.qualcomm.msm-fb-refresher.enable = mkOption {
       type = types.bool;
       default = false;
-      description = "
+      description = ''
         Enables use of `msm-fb-refresher`.
         Use sparingly, it is better to patch software to flip buffers instead.
-      ";
+      '';
     };
     quirks.qualcomm.msm-fb-handle.enable = mkOption {
       type = types.bool;
       default = false;
-      description = "
+      description = ''
         Enables use of `msm-fb-handle`.
         This tool keeps a dummy handle open to the framebuffer, useful for msm_mdss
         which clears and shuts display down when all handles are closed.
-      ";
+      '';
     };
   };
 

@@ -1,0 +1,28 @@
+== Building
+
+This will build the default output for your _<%= info["fullName"] %>_.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.default
+
+The default output is a disk-image that can be written on a storage media that
+your device can boot from.
+
+== Installation
+
+This one is annoying to get started currently. Without a full Mobile NixOS
+build, you will need to fill in some gaps manually.
+
+The link:https://www.chromium.org/chromium-os/chromiumos-design-docs/disk-format[
+upstream documentation about the disk format] may help shed some light in
+understanding how these devices boot.
+
+One of the important thing to realise is that you will likely need to `dd` the
+image to a storage media, either external or internal.
+
+The `kpart` output can be used to build only the stage-1, which is helpful for
+updating the kernel and the stage-1 boot program.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.kpart
+
+This can be `dd`'d over the first partition on an existing storage media
+containing a Mobile NixOS installation.

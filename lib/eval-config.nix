@@ -1,6 +1,2 @@
-{ baseModules ? import ../modules/module-list.nix
-, ...
-} @ args:
-import <nixpkgs/nixos/lib/eval-config.nix> (args // {
-  inherit baseModules;
-})
+# Simple proxy to the upstream Nixpkgs eval-config.nix
+import <nixpkgs/nixos/lib/eval-config.nix>

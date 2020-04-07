@@ -62,10 +62,6 @@ table.with-links {
 	}
 }
 
-dl dd p:last-child {
-	margin-bottom: 0;
-}
-
 .device-sidebar {
 	background-color: #fff;
 	#screen-sm-min({
@@ -102,4 +98,18 @@ dl dd p:last-child {
 
 	margin-bottom: @gutter;
 
+	dl dd > .paragraph:last-child p,
+	dl dd > p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+.options-list {
+	dt > tt {
+		padding: 0;
+	}
+	& > div > dd {
+		border-left: @gutter/2 solid lighten(@color-blue-light, 20%);
+		padding-left: @gutter/2;
+	}
 }

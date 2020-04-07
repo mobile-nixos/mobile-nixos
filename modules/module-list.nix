@@ -1,7 +1,3 @@
-# Import the upstream module-list.
-# FIXME : This won't allow importing `mobile-nixos` into /etc/configuration.nix
-(import <nixpkgs/nixos/modules/module-list.nix>) ++
-
 # Then add our additional modules.
 # Keep this list `:sort`ed.
 [

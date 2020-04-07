@@ -40,27 +40,20 @@ let
     else deviceFromEnv
   ;
 
-  # Evaluates NixOS, mobile-nixos and the device config with the given
-  # additional modules.
-  # Note that we can receive a "special" configuration, used internally by
-  # `release.nix` and not part of the public API.
-  evalWith = modules: import ./lib/eval-config.nix {
-    modules =
-      (if device ? special
-      then [ device.config ]
-      else [ (import (./. + "/devices/${final_device}" )) ])
-      ++ modules
-      ++ [ additionalConfiguration ]
-    ;
-  };
+  inherit (import ./lib/release-tools.nix) evalWith;
 
   # The "default" eval.
-  eval = evalWith configuration;
+  eval = evalWith {
+    device = final_device;
+    modules = configuration;
+  };
 
   # This is used by the `-A installer` shortcut.
-  installer-eval = evalWith [
-    ./profiles/installer.nix
-  ];
+  installer-eval = evalWith {
+    modules = [
+      ./profiles/installer.nix
+    ];
+  };
 
   # Makes a mostly useless header.
   # This is mainly useful for batch evals.

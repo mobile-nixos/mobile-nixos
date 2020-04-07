@@ -40,7 +40,7 @@ If the file does not exist, it will not fail.
 
 A sample `local.nix`:
 
-```
+```nix
 { lib, ... }:
 
 {
