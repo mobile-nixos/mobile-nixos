@@ -46,6 +46,7 @@ let
   eval = evalWith {
     device = final_device;
     modules = configuration;
+    inherit additionalConfiguration;
   };
 
   # This is used by the `-A installer` shortcut.
