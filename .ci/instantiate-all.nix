@@ -44,6 +44,9 @@ let
     ;
 
   flattened =
+    # If this fails, evaluations probably don't receive additional configuration
+    # configuring nixpkgs.localSystem.
+    assert devices."device.asus-z00t.aarch64-linux" != devices."device.asus-z00t.x86_64-linux";
     release //
     devices //
     # We could try and do something smart to unwrap two levels of attrsets
