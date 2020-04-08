@@ -125,6 +125,36 @@ The <<options/index.adoc#,Options list>> page will be useful, as it provides an
 overview of all the Mobile NixOS specific options.
 
 
+== Using in your system configuration
+
+As the Mobile NixOS configuration may include fixes and quirks for your device,
+it is useful to include its configuration into your system's
+`configuration.nix`.
+
+Assuming your `NIX_PATH` includes `mobile-nixos=/path/to/mobile-nixos` you can
+import the Mobile NixOS configuration for your device by doing the following.
+
+```nix
+# configuration.nix
+{
+  imports = [
+    (import <mobile-nixos/lib/configuration.nix> { device = "xxx-yyy"; })
+    # ...
+  ];
+
+  # ...
+  # Other configurations...
+  # ...
+}
+```
+
+While it is possible, it is discouraged to directly import the configuration
+files from the `examples` directories. They may change in ways breaking your
+system configuration. It is recommender to copy and edit the configuration
+files from the `examples` directories if you are basing your configuration off
+of an example.
+
+
 == Contributing
 
 This is a big topic, and not something about getting started! Though, quickly
