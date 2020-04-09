@@ -28,6 +28,9 @@
     ./0001-netfilter-xt_IDLETIMER-make-compatible-with-USER_NS.patch
     ./0001-asus-flash-Remove-hardcoded-IDs-for-USER_NS.patch
     ./0001-firmware-class-Remove-rude-firmware-path-trampling.patch
+    ./0001-gpio_keys-shut-up.patch
+    ./0002-asus_battery-shut-up.patch
+    ./0003-qpnp-bms-shut-up.patch
     ./01_more_precise_arch.patch
     ./01_fix_gcc6_errors.patch
     ./02_mdss_fb_refresh_rate.patch
