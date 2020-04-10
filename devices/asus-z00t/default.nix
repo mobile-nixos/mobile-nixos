@@ -51,4 +51,6 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
+
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
 }
