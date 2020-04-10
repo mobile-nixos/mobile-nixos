@@ -30,6 +30,7 @@
 
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    firmware = pkgs.callPackage ./firmware {};
     dtb = "${kernel}/dtbs/asus-z00t.img";
   };
   mobile.hardware = {
