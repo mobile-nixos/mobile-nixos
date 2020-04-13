@@ -46,4 +46,6 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
+
+  mobile.quirks.qualcomm.dwc3-otg_switch.enable = true;
 }
