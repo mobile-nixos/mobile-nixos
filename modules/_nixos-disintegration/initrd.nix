@@ -1,8 +1,8 @@
-{lib, config, ...}:
+{ pkgs, lib, config, ... }:
 
-# FIXME: instead of setting `boot.isContainer`, let's instead disable the whole
-#        stage-1 module and re-implement the options as needed.
-#  → Maybe we can even import it ourselves, to get to its `options` attribute?
+let
+  dummy = pkgs.runCommandNoCC "dummy" {} "touch $out";
+in
 {
   disabledModules = [
     <nixpkgs/nixos/modules/tasks/encrypted-devices.nix>
@@ -14,7 +14,9 @@
     boot.supportedFilesystems = lib.mkOverride 10 [ ];
     boot.initrd.supportedFilesystems = lib.mkOverride 10 [];
 
-    # Co-opting this setting to disable the upstream NixOS stage-1.
-    boot.isContainer = true;
+    # And disable the initrd outright!
+    boot.initrd.enable = false;
+    system.build.initialRamdisk = dummy;
+    system.build.initialRamdiskSecretAppender = dummy;
   };
 }

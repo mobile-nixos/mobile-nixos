@@ -30,6 +30,7 @@
 
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    firmware = pkgs.callPackage ./firmware {};
     dtb = "${kernel}/dtbs/asus-z00t.img";
   };
   mobile.hardware = {
@@ -51,4 +52,6 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
+
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
 }
