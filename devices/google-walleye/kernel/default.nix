@@ -15,12 +15,12 @@ in
   file = "Image.gz-dtb";
   hasDTB = true;
 
-  version = "4.4.208";
+  version = "4.4.230";
   src = fetchFromGitHub {
     owner = "android-linux-stable";
     repo = "wahoo";
-    rev = "edb18e23257c474cad8403512a2d7dd1a893e4cc";
-    sha256 = "0q2xzq3h48lamjw2np01wjrbnjxbr3v5bm723bixhddmbbvdpzny";
+    rev = "b7a52ef11ab0e2f59ac8d6034821bee07145b44c";
+    sha256 = "0npmpsv6mid9vd7yqbnzx83ddhqxdmjfh0mpl06gqx4ywqbc8ph0";
   };
 
   patches = [
