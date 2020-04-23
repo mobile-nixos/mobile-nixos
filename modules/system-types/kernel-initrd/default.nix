@@ -22,6 +22,9 @@ let
       path = rootfs;
     }
   ];
+
+  xres = toString hardware_config.screen.width;
+  yres = toString hardware_config.screen.height;
 in
   {
     config = lib.mkMerge [
@@ -42,13 +45,13 @@ in
 
             qemu-system-x86_64 \
               -enable-kvm \
-              -L ${pkgs.mobile-nixos.virtualization.bios} \
               -kernel "${kernel-initrd}/kernel" \
               -initrd "${kernel-initrd}/initrd" \
               -append "$(cat "${kernel-initrd}/cmdline.txt")" \
               -m      "$(cat "${kernel-initrd}/ram.txt")M" \
               -serial "mon:stdio" \
               -drive  "file=fs.img,format=raw" \
+              -device VGA,edid=on,xres=${xres},yres=${yres} \
               -device "e1000,netdev=net0" \
               -device usb-ehci -device usb-kbd \
               -device "usb-tablet" \
