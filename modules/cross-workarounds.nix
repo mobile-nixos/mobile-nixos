@@ -18,4 +18,7 @@ lib.mkIf isCross
   # building '/nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-mesa-19.3.3-aarch64-unknown-linux-gnu.drv'...
   # meson.build:1537:2: ERROR: Dependency "wayland-scanner" not found, tried pkgconfig
   security.polkit.enable = false;
+
+  # udisks fails due to gobject-introspection being not cross-compilation friendly.
+  services.udisks2.enable = false;
 }
