@@ -170,6 +170,10 @@ let
         inherit (pkgs) udev;
       in
         ''
+          # Copy modprobe.
+          copy_bin_and_libs ${pkgs.kmod}/bin/kmod
+          ln -sf kmod $out/bin/modprobe
+
           # Copy udev.
           copy_bin_and_libs ${udev}/lib/systemd/systemd-udevd
           copy_bin_and_libs ${udev}/bin/udevadm
