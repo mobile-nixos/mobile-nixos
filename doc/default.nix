@@ -38,6 +38,17 @@ stdenv.mkDerivation {
 
     EOF
 
+    # The title needs to be first
+    head -n1 ${../CONTRIBUTING.adoc} > contributing.adoc
+
+    # Then we're adding our common stuff
+    cat >> contributing.adoc <<EOF
+    include::_support/common.inc[]
+    EOF
+
+    # Then continuing with the file.
+    tail -n +2 ${../CONTRIBUTING.adoc} >> contributing.adoc
+
     if [ ! -e index.adoc ]; then
     cat >> index.adoc <<EOF
     = Main Page
