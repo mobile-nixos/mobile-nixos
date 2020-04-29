@@ -69,7 +69,14 @@ in
     mobile.boot.stage-1 = lib.mkIf (cfg.usb.enable && (config.mobile.usb.mode != null)) {
       kernel.modules = [
         "configfs"
-      ];
+        "libcomposite"
+      ]
+      ++ optionals (config.mobile.usb.mode == "gadgetfs") (
+        forEach cfg.usb.features (feature:
+          let function = lib.head (lib.splitString "." gadgetfs.functions."${feature}");
+          in "usb_f_${function}"
+        )
+      );
 
       usb.features = []
         ++ optional cfg.networking.enable "rndis"
