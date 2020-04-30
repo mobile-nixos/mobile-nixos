@@ -166,5 +166,11 @@ e-mail address, which you will find attached to commits I authored.
 
 Note that there are more in-depth guides about specific contribution topics.
 
+ifdef::env-github[]
+* <<../CONTRIBUTING.adoc#,Contributing Guide>>
+endif::[]
+ifndef::env-github[]
+* <<contributing.adoc#,Contributing Guide>>
+endif::[]
 * <<porting-guide.adoc#,Device Porting Guide>>
 
