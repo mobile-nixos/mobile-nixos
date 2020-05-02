@@ -68,3 +68,31 @@ The simulator can be launched using the following commands:
  $ nix-build --argstr device qemu-x86_64 -A pkgs.boot-recovery-menu-simulator
  $ result/bin/simulator --resolution 1080x1920
 ....
+
+
+== How mobile devices boot
+
+To answer this fully, you have to better understand where Mobile NixOS begins,
+and ends, when compared to all the parts on the device.
+
+Starting with the early boot firmware, possibly closed-source, signed by the
+OEM, and verified by the SoC. This firmware handles early hardware
+initialization, and hands-off to the bootloader.
+
+The bootloader, which may or may not be entirely or partially open source, will
+most likely also be signed, and verified by the firmware code. This is the
+component that will load the Mobile NixOS kernel and stage-1. The bootloader
+may or may not validate the operating system it is loading. It is possible that
+a bootloader that validates the operating system only does so for the OEM
+operating system.
+
+From that point on, the Linux Kernel in use is running. With some devices, this
+can be a mainline kernel (from kernel.org). With other devices it will be the
+_“downstream kernel”_ from an OEM. Once the kernel has finished doing
+initialization work, it will run the `/init` script.
+
+Our `/init` ends up running the link:https://github.com/NixOS/mobile-nixos/tree/master/boot/init[boot/init]
+code written for Mobile NixOS. Its goal is to mount the filesystems as is
+configured, and _switch root_ into the NixOS stage-2.
+
+The NixOS stage-2, is link:https://github.com/NixOS/nixpkgs/blob/master/nixos/modules/system/boot/stage-2.nix[the standard NixOS stage-2].
