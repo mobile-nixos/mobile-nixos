@@ -1,0 +1,28 @@
+= About Mobile NixOS
+include::_support/common.inc[]
+
+Mobile NixOS is a superset on top of link:https://nixos.org/nixos/[NixOS Linux]
+link:https://nixos.org/nixpkgs/[Nixpkgs] and link:https://nixos.org/nix/[Nix],
+aiming to abstract away the differences between _mobile_ devices.
+
+In four words: _“NixOS, on your phone”_.
+
+
+== Goals
+
+The goal is to get a NixOS system running on mobile devices, e.g. Android
+phones.
+
+This is intended as building blocks, allowing the end-users to configure their
+systems as desired.
+
+The amount of targeted devices does not dilute or devalue the work. It's the
+other way around, it increases the odds that people will start using the
+project and contribute back.
+
+
+== Prior work and thanks
+
+This project initially borrowed and relied on the hard work from the
+link:https://postmarketos.org/[PostmarketOS project]. They are forever
+thanked in their efforts.
