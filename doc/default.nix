@@ -34,9 +34,9 @@ stdenv.mkDerivation {
     cat >> README.adoc <<EOF
     = README.adoc
     include::_support/common.inc[]
-    :relative_file_path: README.adoc
 
     EOF
+    tail -n +4 ${../README.adoc} >> README.adoc
 
     # The title needs to be first
     head -n1 ${../CONTRIBUTING.adoc} > contributing.adoc
@@ -60,8 +60,6 @@ stdenv.mkDerivation {
 
     EOF
     fi
-
-    tail -n +3 ${../README.adoc} >> README.adoc
 
     # Copies the generated asciidoc source for the devices.
     cp -prf ${devices}/devices devices
