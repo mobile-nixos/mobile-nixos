@@ -1,77 +1,83 @@
-= Mobile NixOS
+++++
+<div align="center"><a href="https://mobile.nixos.org/"><img src="artwork/logo/logo.svg" alt="Mobile NixOS" title="Mobile NixOS" width="500" height="130" /></a></div>
+++++
 
-*This is expected to be built against the nixos-unstable for now.*
+*Mobile NixOS* is a superset on top of link:https://nixos.org/nixos/[NixOS Linux],
+link:https://nixos.org/nixpkgs/[Nixpkgs] and link:https://nixos.org/nix/[Nix],
+aiming to abstract away the differences between _mobile_ devices.
 
+In four words: _“NixOS, on your phone”_.
 
-== 2-minutes startup
+ifdef::env-github[]
+Read more: <<doc/about.adoc#,About Mobile NixOS>>.
+endif::[]
+ifndef::env-github[]
+Read more: <<about.adoc#,About Mobile NixOS>>.
+endif::[]
 
-For an already bootloader-unlocked Android-based, `fastboot`-using device.
+== Documentation
 
-```
-# Build a boot image
-nix-build --argstr device $DEVICE -A build.android-bootimg
+ * link:https://mobile.nixos.org/[The Mobile NixOS website] hosts the rendered link:https://github.com/NixOS/mobile-nixos/tree/master/doc[doc folder] for Mobile NixOS documentation.
 
-# Reboot the phone to fastboot
-adb wait-for-device && adb reboot bootloader
+As Mobile NixOS is a superset of NixOS Linux, the following documentation applies:
 
-# Use fastboot to boot the produced image
-fastboot boot result
-```
+ * link:https://nixos.org/nixos/manual[NixOS Manual] - how to install, configure, and maintain a purely-functional Linux distribution
+ * link:https://nixos.org/nixpkgs/manual/[Nixpkgs Manual] - contributing to Nixpkgs and using programming-language-specific Nix expressions
+ * link:https://nixos.org/nix/manual[Nix Package Manager Manual] - how to write Nix expressions (programs), and how to use Nix command line tools
 
-=== Booting qemu
+== Community
 
-The qemu target has a `vm` build output, which results in a script that will
-automatically start the "virtual device".
+Mobile NixOS development and questions is currently hosted on the AArch64
+channel for NixOS.
 
-```
-# Build the system
-nix-build --argstr device qemu-x86_64 -A build.vm
+ * link:irc://irc.freenode.net/#nixos-aarch64[IRC - #nixos-aarch64 on freenode.net]
 
-# Run the VM, using the script
-./result
-```
+The following community resources are also available, for NixOS questions.
 
-=== `local.nix`
+ * link:irc://irc.freenode.net/#nixos[IRC - #nixos on freenode.net]
+ * link:https://discourse.nixos.org/[Discourse Forum]
 
-This file is used to work on producing build artifacts from the "WIP" repository
-checkout. This is equivalent to adding settings in `configuration.nix`.
+== Other Project Repositories
 
-If the file does not exist, it will not fail.
+ * link:https://github.com/NixOS/nix[Nix] - the purely functional package manager
+ * link:https://github.com/NixOS/nixpkgs[Nixpkgs] - the Nix packages collection
 
-A sample `local.nix`:
+== Continuous Integration
 
-```nix
-{ lib, ... }:
+Mobile NixOS is continuously built on the link:https://hydra.nixos.org/[organization's Hydra instance].
 
-{
-  mobile.boot.stage-1.splash.enable = false;
-}
-```
+ * link:https://hydra.nixos.org/jobset/mobile-nixos/unstable[Against the `nixos-unstable` branch of NixOS]
+ ** link:https://hydra.nixos.org/job/mobile-nixos/unstable/tested[`tested` job]
 
-This will disable splash screens.
+There is no published artifacts for the time being, but the documentation
+should point you towards resources that you can use to get started quicker when
+your device is supported.
 
-Note that this can be set to another file with `<mobile-nixos-configuration>`.
-By setting it to the path of a nix expression, it will be used instead of using
-`local.nix`.
+== Contributing
 
-This is the current mechanism expected to be used to create special builds using
-the mobile-nixos tooling (e.g. to create a custom special `boot.img`).
+There are two ways your contributions can reach this project.
 
+ifdef::env-github[]
+ * <<CONTRIBUTING.adoc#,Contributing to Mobile NixOS>>
+endif::[]
+ifndef::env-github[]
+ * <<contributing.adoc#,Contributing to Mobile NixOS>>
+endif::[]
+ * link:https://github.com/NixOS/nixpkgs/blob/master/.github/CONTRIBUTING.md[Contributing to Nixpkgs or NixOS]
 
-== Goals
+Contributions are always welcome. If it's your first time contributing:
+jump in and don't be scared. Mistakes in your first contributions are room for
+improvement; it is not in our nature to scold new contributors.
 
-The goal is to get a NixOS system running on mobile devices, e.g. Android phones.
+== License
 
-This is intended as building blocks, allowing the end-users to configure their
-systems as desired.
+Mobile NixOS is licensed under the link:https://github.com/NixOS/mobile-nixos/blob/master/LICENSE[MIT License].
 
-The amount of targeted devices does not dilute or devalue the work. It's the
-other way around, it increases the odds that people will start using the project
-and contribute back.
+[NOTE]
+====
+As with Nixpkgs, the MIT license does not apply to the packages built,
+but only to the files in this repository (expressions, scripts, modules, etc.).
 
-
-== Prior work
-
-This project initially borrowed and relied on the hard work from the
-link:https://postmarketos.org/[PostmarketOS project]. They are forever
-thanked in their efforts.
+Patches and derivative work are covered by the licenses of their respective
+packages.
+====
