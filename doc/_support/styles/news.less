@@ -14,6 +14,12 @@ section.news {
 }
 
 body.news-article > .article-header,
+section.news article > header.with-image:first-child {
+	padding-bottom: @gutter/2;
+	padding-top: calc(12% + 2*@gutter + 1rem);
+}
+
+body.news-article > .article-header,
 section.news article > header:first-child {
 	position: relative;
 
@@ -24,10 +30,8 @@ section.news article > header:first-child {
 	margin-left: -@gutter;
 	margin-right: -@gutter;
 	margin-bottom: @gutter;
-	padding: @gutter/2;
 	padding-left: @gutter;
 	padding-right: @gutter;
-	padding-top: calc(12% + 2*@gutter + 1rem);
 
 	h1, h2, h3 {
 		font-size: 1.2rem;

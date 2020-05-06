@@ -26,8 +26,12 @@ tt, code, kbd, samp, pre, span.command {
 
     // Without this slight adjustment, the monospaced text seems too smushed
     // with the non-monospaced text.
-    padding-left: 0.4ex;
-    padding-right: 0.4ex;
+    // (Using a padding will cause weirdness on newlines.)
+    &::before, &::after {
+        content: " ";
+        display: inline;
+        font-size: 0.4em;
+    }
 
     // The monospace font often has a character height that's visually bigger 
     // than the non-monospaced ones. This adjusts for that.
