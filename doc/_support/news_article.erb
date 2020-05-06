@@ -1,5 +1,14 @@
 <article>
-  <header style="background-image: url('<%= image %>');<%= header_styles %>">
+  <header class="<%= [
+    if image
+      "with-image"
+    else
+      "without-image"
+    end
+  ].compact.join(" ") %>" style="<%= [
+    if image then "background-image: url('#{image}')" end,
+    header_styles,
+  ].compact.join(";") %>">
     <div class="details">
       <h3><a href="<%= url %>"><%= title %></a></h3>
       <% if date %><div class="date"><%= date %></div><% end %>
