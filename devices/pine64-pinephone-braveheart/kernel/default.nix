@@ -11,7 +11,6 @@
   src = fetchFromGitLab {
     owner = "pine64-org";
     repo = "linux";
-    
     rev = "2a6074e53b019db8a4a63cb255bc29422db3fe19";
     sha256 = "1rjs2wvbbq69mzr6i3hjdbwsr61gflzvgx13z5hf89gcp29idmcp";
   };
