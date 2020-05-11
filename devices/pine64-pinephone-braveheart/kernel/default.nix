@@ -22,6 +22,9 @@
   installTargets = [ "install" "dtbs" ];
   postInstall = postInstall + ''
     mkdir -p "$out/dtbs/allwinner"
+    # Filename expected by older U-Boot revisions for the Pinephone.
     cp -v "$buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dtb" "$out/dtbs/allwinner/sun50i-a64-pinephone.dtb"
+    # Hardware-versioned filenames.
+    cp -v "$buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dtb" "$out/dtbs/allwinner/"
   '';
 })
