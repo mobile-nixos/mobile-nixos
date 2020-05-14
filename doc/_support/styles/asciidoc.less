@@ -87,3 +87,13 @@ table.stretch {
 .clear-floats {
 	clear: both;
 }
+
+#footnotes {
+	&:before {
+		display: block;
+		content: "";
+		width: 30%;
+		border-top: 1px solid #666;
+		margin-bottom: @gutter/2;
+	}
+}
