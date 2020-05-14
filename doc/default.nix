@@ -73,6 +73,8 @@ stdenv.mkDerivation {
       --output-dir="$out"
 
     rsync --prune-empty-dirs --verbose --archive \
+      --exclude="*.src.svg" \
+      --include="*.svg" \
       --include="*.jpeg" \
       --include="*.png" \
       --include="*/" --exclude="*" . $out/
