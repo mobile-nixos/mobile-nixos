@@ -11,7 +11,6 @@ let
 in
 {
   imports = [
-    ../systems/rootfs.nix
     ./system-types/depthcharge
     ./system-types/kernel-initrd
     ./system-types/android
