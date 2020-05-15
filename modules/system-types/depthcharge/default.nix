@@ -4,7 +4,7 @@ let
   device_config = config.mobile.device;
   enabled = config.mobile.system.type == "depthcharge";
 
-  build = pkgs.callPackage ../../../systems/depthcharge {
+  build = pkgs.callPackage ./depthcharge-build.nix {
     inherit device_config;
     initrd = config.system.build.initrd;
     system = config.system.build.rootfs;
