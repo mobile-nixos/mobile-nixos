@@ -41,6 +41,8 @@ in
     ./99_framebuffer.patch
     ./0001-Allow-building-WCD9335_CODEC-without-REGMAP_ALLOW_WR.patch
     ./0005-Allow-building-with-sound-disabled.patch
+    ./0007-switch-mmc1-card-detect-sense.patch
+    ./0999-Fix-header-in-epl8802-driver.patch
   ];
 
   isModular = false;
