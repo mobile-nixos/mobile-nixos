@@ -64,7 +64,7 @@ in
     ram = 1024 * 2;
   };
 
-  mobile.system.type = "kernel-initrd";
+  mobile.system.type = "qemu-startscript";
   mobile.boot.stage-1 = {
     kernel = {
       modular = true;
