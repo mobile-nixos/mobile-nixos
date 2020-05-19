@@ -1,4 +1,4 @@
-{ stdenvNoCC, lib, fetchFromGitHub }:
+{ stdenvNoCC, lib, fetchFromGitHub, libffi }:
 
 let
   inherit (lib) licenses;
@@ -90,6 +90,21 @@ rec {
       rev = "b4415207ff6ea62360619c89a1cff83259dc4db0";
       sha256 = "12djcwjjw0fygai5kssxbfs3pzh3cpnq07h9m2h5b51jziw380xj";
     };
+
+    meta.license = licenses.mit;
+  };
+
+  mruby-fiddle = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-fiddle";
+      owner = "mobile-nixos";
+      rev = "b8b7f82a98a24384995a38012b7e08c7bc6c630c";
+      sha256 = "1138vsk6pyqxw64xnic6a91ip9bxn9zxck4kcdx653ba5s0wzaz4";
+    };
+
+    gemBuildInputs = [
+      libffi
+    ];
 
     meta.license = licenses.mit;
   };
