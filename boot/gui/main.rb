@@ -241,7 +241,7 @@ ui = UI.new
 
 def run(*cmd)
   $stderr.puts " $ " + cmd.join(" ")
-  system(*cmd) unless LVGL::Hacks.simulator?
+  system(*cmd) unless LVGL::Introspection.simulator?
 end
 
 # TODO: wait ~0.3s for the animation before doing the button actions.
