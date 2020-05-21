@@ -31,10 +31,10 @@ class UI
 
     if @screen.get_height > @screen.get_width
       # 80% of the width
-      LVGL::LVNanoSVG.resize_next_width((@screen.get_width * 0.8).to_i)
+      LVGL::Hacks::LVNanoSVG.resize_next_width((@screen.get_width * 0.8).to_i)
     else
       # 15% of the height
-      LVGL::LVNanoSVG.resize_next_height((@screen.get_height * 0.15).to_i)
+      LVGL::Hacks::LVNanoSVG.resize_next_height((@screen.get_height * 0.15).to_i)
     end
 
     @logo = LVGL::LVImage.new(@screen)
