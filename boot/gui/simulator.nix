@@ -26,8 +26,9 @@ stdenv.mkDerivation {
 
   buildPhase = ''
     (PS4=" $ "; set -x
-    mrbc -o gui.mrb \
-      lib/*.rb main.rb
+    mrbc -g -o gui.mrb \
+      $(find lib -type f -name '*.rb' | sort) \
+      main.rb
     )
   '';
   installPhase = ''
@@ -38,8 +39,17 @@ stdenv.mkDerivation {
 
     mkdir -p $out/bin
     cat > $out/bin/simulator <<EOF
-     #!/bin/sh
-     ${loader}/bin/loader $out/libexec/gui.mrb "\$@"
+      #!/bin/sh
+      args=()
+      if [[ -n "\$DEBUGGER" ]]; then
+        args+=(\$DEBUGGER)
+      fi
+      args+=(
+        ${loader}/bin/loader
+        $out/libexec/gui.mrb
+        "\$@"
+      )
+      exec "\''${args[@]}"
     EOF
     chmod +x $out/bin/simulator
     )
