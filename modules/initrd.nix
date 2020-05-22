@@ -40,17 +40,6 @@ let
 
   inherit (config.mobile.boot.stage-1) earlyInitScripts;
 
-  # The script loader
-  loader = "${mobile-nixos-script-loader}/bin/loader";
-
-  # The init "script"
-  initScript = "${mobile-nixos-init}/libexec/init.mrb";
-
-  # Where we install the "real" init program.
-  # We are wrapping it with a minimal shell script to do some early accounting,
-  # mainly for the boot logs.
-  loaderPath = "/loader";
-
   # TODO: define as an option
   withStrace = false;
 
@@ -59,15 +48,12 @@ let
 
   stage-1 = config.mobile.boot.stage-1;
 
-  mobile-nixos-script-loader = pkgs.pkgsStatic.callPackage ../boot/script-loader {};
-  mobile-nixos-init = pkgs.pkgsStatic.callPackage ../boot/init {
-    script-loader = mobile-nixos-script-loader;
+  mobile-nixos-init = pkgs.callPackage ../boot/init {
     inherit (config.mobile.boot.stage-1) tasks;
   };
 
-  shell = "${extraUtils}/bin/sh";
   initWrapper = pkgs.writeScript "init-wrapper" ''
-    #!${shell}
+    #!${extraUtils}/bin/sh
 
     echo
     echo "***************************************"
@@ -76,10 +62,10 @@ let
     echo
 
     ${earlyInitScripts}
+    export LD_LIBRARY_PATH="${extraUtils}/lib"
 
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} \
-      ${loaderPath} \
-      /init.mrb
+      /loader /init.mrb
   '';
 
   bootConfigFile = writeText "${device_name}-boot-config" (toJSON config.mobile.boot.stage-1.bootConfig);
@@ -97,9 +83,9 @@ let
       { object = udevRules; symlink = "/etc/udev/rules.d"; }
 
       # Init components
-      { object = loader; symlink = loaderPath; }
+      { object = "${extraUtils}/bin/loader"; symlink = "/loader"; }
       { object = initWrapper; symlink = "/init"; }
-      { object = initScript; symlink = "/init.mrb"; }
+      { object = "${mobile-nixos-init}/libexec/init.mrb"; symlink = "/init.mrb"; }
     ]
   ;
 
@@ -179,6 +165,9 @@ let
         ''
       ;
     }]
+    ++ [
+      { package = pkgs.callPackage ../boot/script-loader {}; }
+    ]
     ++ optionals withStrace [
       {
         # Remove libunwind, allows us to skip requiring libgcc_s

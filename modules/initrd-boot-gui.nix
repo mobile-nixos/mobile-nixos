@@ -40,6 +40,6 @@ in
   ];
   mobile.boot.stage-1.extraUtils = with pkgs; [
     # Used for `key-held.mrb`.
-    { package = pkgsStatic.evtest; }
+    { package = evtest; }
   ];
 }
