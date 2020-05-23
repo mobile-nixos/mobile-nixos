@@ -3,6 +3,7 @@
   , hardware_config
   , initrd
   , pkgs
+  , cmdline
 }:
 with pkgs;
 let
@@ -11,9 +12,6 @@ let
   device_info = device_config.info;
   linux = device_info.kernel;
   kernel = "${linux}/*Image*";
-
-  # TODO : Allow appending / prepending
-  cmdline = device_info.kernel_cmdline;
 in
 stdenv.mkDerivation {
   name = "mobile-nixos_${device_name}-qemu-startscript";

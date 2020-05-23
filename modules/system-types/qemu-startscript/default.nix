@@ -10,6 +10,7 @@ let
   qemu-startscript = pkgs.callPackage ./qemu-startscript-build.nix {
     inherit device_config hardware_config;
     initrd = config.system.build.initrd;
+    cmdline = lib.concatStringsSep " " config.boot.kernelParams;
   };
 
   system = pkgs.linkFarm "${device_config.name}-build" [
