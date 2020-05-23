@@ -257,11 +257,6 @@ in
       system.build.extraUtils = extraUtils;
       system.build.initrd = "${initrd}/initrd";
       system.build.initrd-meta = initrd-meta;
-      boot.specialFileSystems = {
-        # HACK: as we're using isContainer to bypass some NixOS stuff
-        # See <nixpkgs/nixos/modules/tasks/filesystems.nix>
-        "/sys" = { fsType = "sysfs"; options = [ "nosuid" "noexec" "nodev" ]; };
-      };
 
       mobile.boot.stage-1.bootConfig = {
         device = {
