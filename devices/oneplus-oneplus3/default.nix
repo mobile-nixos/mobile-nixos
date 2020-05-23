@@ -3,23 +3,10 @@
 {
   mobile.device.name = "oneplus-oneplus3";
   mobile.device.info = rec {
-    format_version = "0";
     name = "OnePlus 3";
     manufacturer = "OnePlus";
-    date = "";
     dtb = "";
-    modules_initfs = "";
-    arch = "aarch64";
-    keyboard = false;
-    external_storage = true;
-    screen_width = "1080";
-    screen_height = "1920";
-    dev_touchscreen = "";
-    dev_touchscreen_calibration = "";
-    dev_keyboard = "";
-    flash_method = "fastboot";
     kernel_cmdline = "androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=32M@0-0xffffffff androidboot.selinux=permissive buildvariant=eng";
-    generate_bootimg = true;
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";
     flash_offset_ramdisk = "0x01000000";

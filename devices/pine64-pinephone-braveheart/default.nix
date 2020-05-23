@@ -3,15 +3,8 @@
 {
   mobile.device.name = "pine64-pinephone-braveheart";
   mobile.device.info = rec {
-    format_version = "0";
     name = "PinePhone “BraveHeart”";
     manufacturer = "Pine64";
-    arch = "aarch64";
-    keyboard = false;
-    external_storage = true;
-
-    screen_width = "720";
-    screen_height = "1440";
 
     # Serial console on ttyS0, using the serial headphone adapter.
     kernel_cmdline = lib.concatStringsSep " " [

@@ -7,21 +7,8 @@
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
 
-    format_version = "0";
     manufacturer = "Google";
-    codename = "google-walleye";
-    date = "";
     dtb = "";
-    modules_initfs = "";
-    arch = "aarch64";
-    keyboard = "false";
-    external_storage = "true";
-    screen_width = "1080";
-    screen_height = "1920";
-    dev_touchscreen = "";
-    dev_touchscreen_calibration = "";
-    dev_keyboard = "";
-    flash_method = "fastboot";
 
     kernel_cmdline = lib.concatStringsSep " " [
       # From TWRP
@@ -43,7 +30,6 @@
       "quiet"
     ];
 
-    generate_bootimg = "true";
     bootimg_qcdt = false;
     flash_offset_base = "0x00000000";
     flash_offset_kernel = "0x00008000";

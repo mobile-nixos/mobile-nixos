@@ -3,12 +3,8 @@
 {
   mobile.device.name = "asus-dumo";
   mobile.device.info = rec {
-    format_version = "0";
     name = "Chromebook Tablet CT100PA";
     manufacturer = "Asus";
-    arch = "aarch64";
-    keyboard = false;
-    external_storage = true;
     # Serial console on ttyS2, using a suzyqable or equivalent.
     kernel_cmdline = lib.concatStringsSep " " [
       "console=ttyS2,115200n8"

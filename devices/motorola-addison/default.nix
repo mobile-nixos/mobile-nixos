@@ -3,20 +3,8 @@
 {
   mobile.device.name = "motorola-addison";
   mobile.device.info = rec {
-    format_version = "0";
     name = "Moto Z Play";
     manufacturer = "Motorola";
-    date = "";
-    modules_initfs = "";
-    arch = "aarch64";
-    keyboard = false;
-    external_storage = true;
-    screen_width = "1080";
-    screen_height = "1920";
-    dev_touchscreen = "";
-    dev_touchscreen_calibration = "";
-    dev_keyboard = "";
-    flash_method = "fastboot";
     kernel_cmdline = lib.concatStringsSep " " [
       "androidboot.console=ttyHSL0"
       "androidboot.hardware=qcom"
@@ -28,7 +16,6 @@
       "vmalloc=350M"
       "buildvariant=userdebug"
     ];
-    generate_bootimg = true;
     bootimg_qcdt = true;
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";
