@@ -8,13 +8,6 @@
   };
 
   mobile.device.info = rec {
-    # Serial console on ttyS2, using a suzyqable or equivalent.
-    kernel_cmdline = lib.concatStringsSep " " [
-      "console=ttyS2,115200n8"
-      "earlyprintk=ttyS2,115200n8"
-      "loglevel=8"
-      "vt.global_cursor_default=0"
-    ];
     # TODO : move kernel outside of the basic device details
     kernel = pkgs.callPackage ./kernel {};
     # This could be further pared down to only the required dtb files.
@@ -27,6 +20,14 @@
       width = 1536; height = 2048;
     };
   };
+
+  # Serial console on ttyS2, using a suzyqable or equivalent.
+  boot.kernelParams = [
+    "console=ttyS2,115200n8"
+    "earlyprintk=ttyS2,115200n8"
+    "loglevel=8"
+    "vt.global_cursor_default=0"
+  ];
 
   mobile.system.type = "depthcharge";
 

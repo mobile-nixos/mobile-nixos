@@ -8,17 +8,6 @@
   };
 
   mobile.device.info = rec {
-    kernel_cmdline = lib.concatStringsSep " " [
-      "androidboot.console=ttyHSL0"
-      "androidboot.hardware=qcom"
-      "user_debug=30"
-      "msm_rtb.filter=0x237"
-      "ehci-hcd.park=3"
-      "androidboot.bootdevice=7824900.sdhci"
-      "lpm_levels.sleep_disabled=1"
-      "vmalloc=350M"
-      "buildvariant=userdebug"
-    ];
     bootimg_qcdt = true;
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";
@@ -37,6 +26,18 @@
       width = 1080; height = 1920;
     };
   };
+
+  boot.kernelParams = [
+    "androidboot.console=ttyHSL0"
+    "androidboot.hardware=qcom"
+    "user_debug=30"
+    "msm_rtb.filter=0x237"
+    "ehci-hcd.park=3"
+    "androidboot.bootdevice=7824900.sdhci"
+    "lpm_levels.sleep_disabled=1"
+    "vmalloc=350M"
+    "buildvariant=userdebug"
+  ];
 
   mobile.usb.mode = "android_usb";
   # Google

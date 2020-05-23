@@ -13,26 +13,6 @@
 
     dtb = "";
 
-    kernel_cmdline = lib.concatStringsSep " " [
-      # From TWRP
-      "androidboot.hardware=walleye"
-      "androidboot.console=ttyMSM0"
-      "lpm_levels.sleep_disabled=1"
-      "user_debug=31"
-      "msm_rtb.filter=0x37"
-      "ehci-hcd.park=3"
-      "service_locator.enable=1"
-      "swiotlb=2048"
-      "firmware_class.path=/vendor/firmware"
-      "loop.max_part=7"
-      "raid=noautodetect"
-      "androidboot.fastboot=1"
-      "buildvariant=eng"
-
-      # Using `quiet` fixes early framebuffer init, for stage-1
-      "quiet"
-    ];
-
     bootimg_qcdt = false;
     flash_offset_base = "0x00000000";
     flash_offset_kernel = "0x00008000";
@@ -60,6 +40,26 @@
       width = 1080; height = 1920;
     };
   };
+
+  boot.kernelParams = [
+    # From TWRP
+    "androidboot.hardware=walleye"
+    "androidboot.console=ttyMSM0"
+    "lpm_levels.sleep_disabled=1"
+    "user_debug=31"
+    "msm_rtb.filter=0x37"
+    "ehci-hcd.park=3"
+    "service_locator.enable=1"
+    "swiotlb=2048"
+    "firmware_class.path=/vendor/firmware"
+    "loop.max_part=7"
+    "raid=noautodetect"
+    "androidboot.fastboot=1"
+    "buildvariant=eng"
+
+    # Using `quiet` fixes early framebuffer init, for stage-1
+    "quiet"
+  ];
 
   mobile.system.type = "android";
 

@@ -8,7 +8,6 @@
   };
 
   mobile.device.info = rec {
-    kernel_cmdline = "androidboot.hardware=qcom ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 androidboot.selinux=permissive";
     bootimg_qcdt = true;
     flash_offset_base = "0x10000000";
     flash_offset_kernel = "0x00008000";
@@ -34,6 +33,14 @@
       width = 1080; height = 1920;
     };
   };
+
+  boot.kernelParams = [
+    "androidboot.hardware=qcom"
+    "ehci-hcd.park=3"
+    "androidboot.bootdevice=7824900.sdhci"
+    "lpm_levels.sleep_disabled=1"
+    "androidboot.selinux=permissive"
+  ];
 
   mobile.usb.mode = "android_usb";
   # Google

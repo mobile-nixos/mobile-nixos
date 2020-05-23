@@ -47,12 +47,6 @@ in
   mobile.device.info = {
     # TODO : make kernel part of options.
     inherit kernel;
-    kernel_cmdline = lib.concatStringsSep " " ([
-      "console=tty1"
-      "console=ttyS0"
-      "vt.global_cursor_default=0"
-      "quiet"
-    ]);
   };
 
   mobile.hardware = {
@@ -65,6 +59,13 @@ in
     };
     ram = 1024 * 2;
   };
+
+  boot.kernelParams = [
+    "console=tty1"
+    "console=ttyS0"
+    "vt.global_cursor_default=0"
+    "quiet"
+  ];
 
   mobile.system.type = "qemu-startscript";
   mobile.boot.stage-1 = {

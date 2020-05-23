@@ -12,7 +12,6 @@
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
     dtb = "";
     flash_offset_base = "0x80200000";
-    kernel_cmdline = "xxxxxxxxxxxxxxxxxxxxxxxxxxconsole=ttyMSM0,115200,n8 user_debug=31 msm_rtb.filter=0x3F ehci-hcd.park=3 vmalloc=340M";
     flash_offset_kernel = "0x00008000";
     flash_offset_ramdisk = "0x02000000";
     flash_offset_second = "0x00f00000";
@@ -26,6 +25,21 @@
       width = 1200; height = 1920;
     };
   };
+
+  boot.kernelParams = lib.mkMerge [
+    # This is a hack to work around the fact that the bootloader ignores some
+    # of the initial bytes of the kernel command line.
+    (lib.mkOrder 0 [
+      "xxxxxxxxxxxxxxxxxxxxxxxxxx"
+    ])
+    [
+      "console=ttyMSM0,115200,n8"
+      "user_debug=31"
+      "msm_rtb.filter=0x3F"
+      "ehci-hcd.park=3"
+      "vmalloc=340M"
+    ]
+  ];
 
   mobile.system.type = "android";
 }

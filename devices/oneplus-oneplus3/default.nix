@@ -9,7 +9,6 @@
 
   mobile.device.info = rec {
     dtb = "";
-    kernel_cmdline = "androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=32M@0-0xffffffff androidboot.selinux=permissive buildvariant=eng";
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";
     flash_offset_ramdisk = "0x01000000";
@@ -28,6 +27,17 @@
       width = 1080; height = 1920;
     };
   };
+
+  boot.kernelParams = [
+    "androidboot.hardware=qcom"
+    "user_debug=31"
+    "msm_rtb.filter=0x237"
+    "ehci-hcd.park=3"
+    "lpm_levels.sleep_disabled=1"
+    "cma=32M@0-0xffffffff"
+    "androidboot.selinux=permissive"
+    "buildvariant=eng"
+  ];
 
   mobile.usb.mode = "android_usb";
   # Google

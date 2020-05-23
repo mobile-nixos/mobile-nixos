@@ -12,19 +12,6 @@
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
     dtb = "";
 
-    kernel_cmdline = lib.concatStringsSep " " [
-      "console=ttyHSL0,115200,n8"
-      "androidboot.console=ttyHSL0"
-      "androidboot.hardware=marlin"
-      "user_debug=31"
-      "ehci-hcd.park=3"
-      "lpm_levels.sleep_disabled=1"
-      "cma=32M@0-0xffffffff"
-      "loop.max_part=7"
-      "buildvariant=eng"
-      "firmware_class.path=/vendor/firmware"
-    ];
-
     bootimg_qcdt = false;
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";
@@ -47,6 +34,19 @@
       width = 1440; height = 2880;
     };
   };
+
+  boot.kernelParams = [
+    "console=ttyHSL0,115200,n8"
+    "androidboot.console=ttyHSL0"
+    "androidboot.hardware=marlin"
+    "user_debug=31"
+    "ehci-hcd.park=3"
+    "lpm_levels.sleep_disabled=1"
+    "cma=32M@0-0xffffffff"
+    "loop.max_part=7"
+    "buildvariant=eng"
+    "firmware_class.path=/vendor/firmware"
+  ];
 
   mobile.usb.mode = "android_usb";
   # Google

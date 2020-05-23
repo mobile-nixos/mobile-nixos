@@ -9,7 +9,6 @@ in {
   };
 
   mobile.device.info = {
-    kernel_cmdline = "androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci earlycon=msm_hsl_uart,0x78af000 androidboot.selinux=permissive buildvariant=eng";
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";
     flash_offset_second = "0x00f00000";
@@ -26,6 +25,17 @@ in {
       width = 1080; height = 1920;
     };
   };
+
+  boot.kernelParams = [
+    "androidboot.hardware=qcom"
+    "msm_rtb.filter=0x237"
+    "ehci-hcd.park=3"
+    "lpm_levels.sleep_disabled=1"
+    "androidboot.bootdevice=7824900.sdhci"
+    "earlycon=msm_hsl_uart,0x78af000"
+    "androidboot.selinux=permissive"
+    "buildvariant=eng"
+  ];
 
   mobile.system.type = "android";
 }
