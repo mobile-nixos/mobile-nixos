@@ -11,6 +11,7 @@ let
   recovery = (import ../../../lib/eval-config.nix {
     inherit baseModules;
     modules = modules ++ [{
+      mobile.system.android.bootimg.name = "recovery.img";
       mobile.boot.stage-1.bootConfig = {
         is_recovery = true;
       };
@@ -39,16 +40,13 @@ let
 
   inherit (config.system.build) rootfs;
 
-  android-recovery = pkgs.callPackage ./bootimg.nix {
-    inherit device_config;
-    initrd = recovery.system.build.initrd;
-    name = "recovery.img";
-  };
-
   android-bootimg = pkgs.callPackage ./bootimg.nix {
     inherit device_config;
+    inherit (config.mobile.system.android.bootimg) name;
     initrd = config.system.build.initrd;
   };
+
+  android-recovery = recovery.system.build.android-bootimg;
 
   # Note:
   # The flash scripts, by design, are not using nix-provided paths for
@@ -77,6 +75,19 @@ let
   '';
 in
 {
+  options = {
+    mobile.system.android = {
+      bootimg = {
+        name = lib.mkOption {
+          type = lib.types.str;
+          description = "Suffix for the image name. Use it to distinguish speciality boot images.";
+          default = "boot.img";
+          internal = true;
+        };
+      };
+    };
+  };
+
   config = lib.mkMerge [
     { mobile.system.types = [ "android" ]; }
 
