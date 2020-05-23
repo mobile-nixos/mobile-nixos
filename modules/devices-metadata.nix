@@ -2,10 +2,9 @@
 
 let
   inherit (config) mobile;
-  inherit (mobile.device) info;
+  inherit (mobile.device) identity;
 in
 {
-
   # The device-metadata output is used internally by the documentation
   # generation to generate the per-device pages.
   # Assume this format is fluid and will change.
@@ -13,18 +12,13 @@ in
     name = "${mobile.device.name}-metadata";
     destination = "/${mobile.device.name}.json";
     text = (builtins.toJSON {
-      inherit (info) name;
+      inherit (identity) name manufacturer;
       inherit (mobile) hardware;
       system = {
         inherit (mobile.system) type system;
       };
-
-      manufacturer = if info ? manufacturer then info.manufacturer else "N/A";
       identifier = mobile.device.name;
-
-      fullName = if info ? manufacturer
-        then "${info.manufacturer} ${info.name}"
-        else info.name;
+      fullName = "${identity.manufacturer} ${identity.name}";
     });
   };
 }
