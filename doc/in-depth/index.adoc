@@ -11,6 +11,10 @@ Index of in-depth topics.
 
 * <<stage-1.adoc#,Stage-1>>
 
+== Project Organization
+
+* <<devices.adoc#,Devices>>
+
 == Android-Based Devices
 
 * <<android/partitions.adoc#,Partitions>>

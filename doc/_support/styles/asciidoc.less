@@ -32,8 +32,68 @@
 
 .imageblock {
 	margin-bottom: 1em;
+	#screen-xs-max({
+		img {
+			display: block;
+			margin: auto;
+		}
+	});
+	#screen-sm-min({
+		&.right {
+			float: right;
+			padding-left: @gutter;
+		}
+		&.left {
+			float: left;
+			padding-right: @gutter;
+		}
+	});
+}
+
+.image-halfwidth {
+	img {
+		#screen-sm-min({
+			max-width: 50vw;
+		});
+	}
+}
+
+// Use when the image is *intended* to be scaled regardless of text.
+// If you want the text inside an svg image to stay as big as 
+.image-scalable {
+	&.image-halfwidth {
+		#screen-sm-min({
+			width: 50%;
+		});
+		img {
+			max-width: 100%;
+			width: 50vw;
+		}
+	}
+	#screen-xs-max({
+		&, &.image-halfwidth {
+			img {
+				max-width: 100%;
+				width: 100vw;
+			}
+		}
+	});
 }
 
 table.stretch {
 	width: 100%;
+}
+
+.clear-floats {
+	clear: both;
+}
+
+#footnotes {
+	&:before {
+		display: block;
+		content: "";
+		width: 30%;
+		border-top: 1px solid #666;
+		margin-bottom: @gutter/2;
+	}
 }

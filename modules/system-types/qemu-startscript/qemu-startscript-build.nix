@@ -16,7 +16,7 @@ let
   cmdline = device_info.kernel_cmdline;
 in
 stdenv.mkDerivation {
-  name = "mobile-nixos_${device_name}-kernel-initrd";
+  name = "mobile-nixos_${device_name}-qemu-startscript";
 
   src = builtins.filterSource (path: type: false) ./.;
   unpackPhase = "true";

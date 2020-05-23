@@ -1,4 +1,5 @@
-# This builds a rootfs image (ext4) from the current configuration.
+# This provides `build.rootfs`, which is the rootfs image (ext4) built from
+# the current configuration.
 { config, lib, pkgs, ... }:
 
 let

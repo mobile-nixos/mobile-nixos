@@ -5,17 +5,17 @@ let
   device_name = device_config.name;
   hardware_config = config.mobile.hardware;
   rootfs = config.system.build.rootfs;
-  enabled = config.mobile.system.type == "kernel-initrd";
+  enabled = config.mobile.system.type == "qemu-startscript";
 
-  kernel-initrd = pkgs.callPackage ../../../systems/kernel-initrd.nix {
+  qemu-startscript = pkgs.callPackage ./qemu-startscript-build.nix {
     inherit device_config hardware_config;
     initrd = config.system.build.initrd;
   };
 
   system = pkgs.linkFarm "${device_config.name}-build" [
     {
-      name = "kernel-initrd";
-      path = "kernel-initrd";
+      name = "qemu-startscript";
+      path = "qemu-startscript";
     }
     {
       name = "system";
@@ -28,7 +28,7 @@ let
 in
   {
     config = lib.mkMerge [
-      { mobile.system.types = [ "kernel-initrd" ]; }
+      { mobile.system.types = [ "qemu-startscript" ]; }
 
       (lib.mkIf enabled {
         system.build = rec {
@@ -45,10 +45,10 @@ in
 
             qemu-system-x86_64 \
               -enable-kvm \
-              -kernel "${kernel-initrd}/kernel" \
-              -initrd "${kernel-initrd}/initrd" \
-              -append "$(cat "${kernel-initrd}/cmdline.txt")" \
-              -m      "$(cat "${kernel-initrd}/ram.txt")M" \
+              -kernel "${qemu-startscript}/kernel" \
+              -initrd "${qemu-startscript}/initrd" \
+              -append "$(cat "${qemu-startscript}/cmdline.txt")" \
+              -m      "$(cat "${qemu-startscript}/ram.txt")M" \
               -serial "mon:stdio" \
               -drive  "file=fs.img,format=raw" \
               -device VGA,edid=on,xres=${xres},yres=${yres} \
