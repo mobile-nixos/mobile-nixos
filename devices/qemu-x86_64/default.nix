@@ -8,9 +8,6 @@ let
   splash = config.mobile.boot.stage-1.splash.enable;
 
   kernel = pkgs.linuxPackages_5_4.kernel;
-  device_info = {
-   name = "QEMU (x86_64)";
-  };
 
   modules = [
     # Disk images
@@ -42,7 +39,12 @@ let
 in
 {
   mobile.device.name = "qemu-x86_64";
-  mobile.device.info = device_info // {
+  mobile.device.identity = {
+   name = "(x86_64)";
+   manufacturer = "QEMU";
+  };
+
+  mobile.device.info = {
     # TODO : make kernel part of options.
     inherit kernel;
     kernel_cmdline = lib.concatStringsSep " " ([

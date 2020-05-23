@@ -2,11 +2,14 @@
 
 {
   mobile.device.name = "xiaomi-lavender";
+  mobile.device.identity = {
+    name = "Redmi Note 7";
+    manufacturer = "Xiaomi";
+  };
+
   mobile.device.info = rec {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-    name = "Redmi Note 7";
-    manufacturer = "Xiaomi";
     kernel_cmdline = lib.concatStringsSep " " [
       "earlycon=msm_serial_dm,0xc170000"
       "androidboot.hardware=qcom"

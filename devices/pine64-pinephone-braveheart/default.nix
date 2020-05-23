@@ -2,10 +2,12 @@
 
 {
   mobile.device.name = "pine64-pinephone-braveheart";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "PinePhone “BraveHeart”";
     manufacturer = "Pine64";
+  };
 
+  mobile.device.info = rec {
     # Serial console on ttyS0, using the serial headphone adapter.
     kernel_cmdline = lib.concatStringsSep " " [
       "console=ttyS0,115200"

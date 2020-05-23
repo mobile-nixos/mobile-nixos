@@ -2,9 +2,12 @@
 
 {
   mobile.device.name = "oneplus-oneplus3";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "OnePlus 3";
     manufacturer = "OnePlus";
+  };
+
+  mobile.device.info = rec {
     dtb = "";
     kernel_cmdline = "androidboot.hardware=qcom user_debug=31 msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 cma=32M@0-0xffffffff androidboot.selinux=permissive buildvariant=eng";
     flash_offset_base = "0x80000000";

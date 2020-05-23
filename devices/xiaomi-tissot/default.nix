@@ -3,9 +3,12 @@ let
   inherit (config.mobile.device) name;
 in {
   mobile.device.name = "xiaomi-tissot";
-  mobile.device.info = {
+  mobile.device.identity = {
     name = "A1";
     manufacturer = "Xiaomi";
+  };
+
+  mobile.device.info = {
     kernel_cmdline = "androidboot.hardware=qcom msm_rtb.filter=0x237 ehci-hcd.park=3 lpm_levels.sleep_disabled=1 androidboot.bootdevice=7824900.sdhci earlycon=msm_hsl_uart,0x78af000 androidboot.selinux=permissive buildvariant=eng";
     flash_offset_base = "0x80000000";
     flash_offset_kernel = "0x00008000";

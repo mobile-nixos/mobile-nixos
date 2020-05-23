@@ -2,9 +2,12 @@
 
 {
   mobile.device.name = "asus-z00t";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "Zenfone 2 Laser/Selfie (1080p)";
     manufacturer = "Asus";
+  };
+
+  mobile.device.info = rec {
     kernel_cmdline = "androidboot.hardware=qcom ehci-hcd.park=3 androidboot.bootdevice=7824900.sdhci lpm_levels.sleep_disabled=1 androidboot.selinux=permissive";
     bootimg_qcdt = true;
     flash_offset_base = "0x10000000";
@@ -19,6 +22,7 @@
     firmware = pkgs.callPackage ./firmware {};
     dtb = "${kernel}/dtbs/asus-z00t.img";
   };
+
   mobile.hardware = {
     # This could also be pre-built option types?
     soc = "qualcomm-msm8939";

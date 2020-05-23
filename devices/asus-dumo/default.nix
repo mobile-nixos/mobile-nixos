@@ -2,9 +2,12 @@
 
 {
   mobile.device.name = "asus-dumo";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "Chromebook Tablet CT100PA";
     manufacturer = "Asus";
+  };
+
+  mobile.device.info = rec {
     # Serial console on ttyS2, using a suzyqable or equivalent.
     kernel_cmdline = lib.concatStringsSep " " [
       "console=ttyS2,115200n8"

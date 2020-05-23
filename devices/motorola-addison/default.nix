@@ -2,9 +2,12 @@
 
 {
   mobile.device.name = "motorola-addison";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "Moto Z Play";
     manufacturer = "Motorola";
+  };
+
+  mobile.device.info = rec {
     kernel_cmdline = lib.concatStringsSep " " [
       "androidboot.console=ttyHSL0"
       "androidboot.hardware=qcom"

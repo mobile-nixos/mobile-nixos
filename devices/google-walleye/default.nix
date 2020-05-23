@@ -2,12 +2,15 @@
 
 {
   mobile.device.name = "google-walleye";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "Pixel 2";
+    manufacturer = "Google";
+  };
+
+  mobile.device.info = rec {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
 
-    manufacturer = "Google";
     dtb = "";
 
     kernel_cmdline = lib.concatStringsSep " " [

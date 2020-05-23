@@ -2,12 +2,14 @@
 
 {
   mobile.device.name = "google-marlin";
-  mobile.device.info = rec {
+  mobile.device.identity = {
     name = "Google Pixel XL";
+    manufacturer = "Google";
+  };
+
+  mobile.device.info = rec {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-
-    manufacturer = "Google";
     dtb = "";
 
     kernel_cmdline = lib.concatStringsSep " " [
