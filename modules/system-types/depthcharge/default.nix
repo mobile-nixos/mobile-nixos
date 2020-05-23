@@ -8,6 +8,8 @@ let
     inherit device_config;
     initrd = config.system.build.initrd;
     system = config.system.build.rootfs;
+    cmdline = lib.concatStringsSep " " config.boot.kernelParams;
+    arch = lib.strings.removeSuffix "-linux" config.mobile.system.system;
   };
 in
 {
