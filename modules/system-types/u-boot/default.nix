@@ -6,7 +6,7 @@ let
   cfg = config.mobile.quirks.u-boot;
   inherit (cfg) soc;
   inherit (config) system;
-  inherit (device_info) kernel dtb kernel_cmdline;
+  inherit (device_info) kernel dtb;
   deviceName = config.mobile.device.name;
   device_info = config.mobile.device.info;
   kernel_file = if device_info ? kernel_file then device_info.kernel_file else "${kernel}/${kernel.file}";
@@ -40,7 +40,7 @@ let
     echo Built for ${deviceName}
     echo
 
-    setenv bootargs ${kernel_cmdline}
+    setenv bootargs ${config.boot.kernelParams}
 
     ${cfg.additionalCommands}
 
