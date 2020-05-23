@@ -1,7 +1,9 @@
 { config, pkgs, lib, modules, baseModules, ... }:
 
 let
-  inherit (lib) optionalString;
+  inherit (lib) concatStringsSep optionalString;
+
+  cmdline = concatStringsSep " " config.boot.kernelParams;
 
   # In the future, this pattern should be extracted.
   # We're basically subclassing the main config, just like nesting does in
@@ -41,7 +43,7 @@ let
   inherit (config.system.build) rootfs;
 
   android-bootimg = pkgs.callPackage ./bootimg.nix {
-    inherit device_config;
+    inherit cmdline device_config;
     inherit (config.mobile.system.android.bootimg) name;
     initrd = config.system.build.initrd;
   };

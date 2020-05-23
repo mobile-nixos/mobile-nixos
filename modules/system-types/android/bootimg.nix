@@ -2,6 +2,7 @@
 , initrd
 , pkgs
 , name ? "boot.img"
+, cmdline
 }:
 let
   inherit (pkgs) buildPackages;
@@ -11,9 +12,6 @@ let
 
   with_qcdt = device_info ? bootimg_qcdt && device_info.bootimg_qcdt;
   kernel_file = if device_info ? kernel_file then device_info.kernel_file else "${kernel}/${kernel.file}";
-
-  # TODO : Allow appending / prepending
-  cmdline = device_info.kernel_cmdline;
 in
 pkgs.stdenv.mkDerivation {
   name = "mobile-nixos_${device_name}_${name}";
