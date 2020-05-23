@@ -17,8 +17,8 @@ mrbgems.mkGem {
   src = fetchFromGitHub {
     repo = "mruby-lvgui";
     owner = "mobile-nixos";
-    rev = "1c251ec97da1e4d3e99f0b9674b387c990211906";
-    sha256 = "03bhksn2rzixxl8dk7viw2avw5cv4zpfpkcijrxjy4cc76f1wkja";
+    rev = "eb6e40c81a63cc67b14740200966603463f426bf";
+    sha256 = "1zqlhg409xx3da2cgrcmz9p9zc9cni2q25yi5vcb3naahpylbff4";
   };
 
   gemBuildInputs = [
@@ -26,5 +26,9 @@ mrbgems.mkGem {
   ] ++ lvgui.buildInputs;
   gemNativeBuildInputs = [
     pkg-config
+  ];
+
+  requiredGems = with mrbgems; [
+    mruby-fiddle
   ];
 }
