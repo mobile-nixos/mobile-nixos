@@ -1,19 +1,19 @@
 { config, pkgs, lib, ... }:
 
 let
-  device_config = config.mobile.device;
-  device_name = device_config.name;
-  hardware_config = config.mobile.hardware;
+  inherit (config.mobile) device hardware;
   rootfs = config.system.build.rootfs;
   enabled = config.mobile.system.type == "qemu-startscript";
 
   qemu-startscript = pkgs.callPackage ./qemu-startscript-build.nix {
-    inherit device_config hardware_config;
+    inherit (device) name;
+    inherit (hardware) ram;
     initrd = config.system.build.initrd;
     cmdline = lib.concatStringsSep " " config.boot.kernelParams;
+    kernel = config.mobile.boot.stage-1.kernel.package;
   };
 
-  system = pkgs.linkFarm "${device_config.name}-build" [
+  system = pkgs.linkFarm "${device.name}-build" [
     {
       name = "qemu-startscript";
       path = "qemu-startscript";
@@ -24,8 +24,8 @@ let
     }
   ];
 
-  xres = toString hardware_config.screen.width;
-  yres = toString hardware_config.screen.height;
+  xres = toString hardware.screen.width;
+  yres = toString hardware.screen.height;
 in
   {
     config = lib.mkMerge [
@@ -36,7 +36,7 @@ in
           inherit system;
           mobile-installer = system;
           default = vm;
-          vm = pkgs.writeScript "run-vm-${device_name}" ''
+          vm = pkgs.writeScript "run-vm-${device.name}" ''
             #!${pkgs.runtimeShell}
             PS4=" $ "
             set -eux
