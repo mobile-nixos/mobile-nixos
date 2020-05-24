@@ -7,23 +7,28 @@
     manufacturer = "Motorola";
   };
 
-  mobile.device.info = rec {
-    bootimg_qcdt = true;
-    flash_offset_base = "0x80000000";
-    flash_offset_kernel = "0x00008000";
-    flash_offset_ramdisk = "0x01000000";
-    flash_offset_second = "0x00f00000";
-    flash_offset_tags = "0x00000100";
-    flash_pagesize = "2048";
+  mobile.device.info = {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-    dtb = "${kernel}/dtbs/motorola-addison.img";
   };
+
   mobile.hardware = {
     soc = "qualcomm-msm8953";
     ram = 1024 * 3;
     screen = {
       width = 1080; height = 1920;
+    };
+  };
+
+  mobile.system.android.bootimg = {
+    dt = "${config.mobile.device.info.kernel}/dtbs/motorola-addison.img";
+    flash = {
+      offset_base = "0x80000000";
+      offset_kernel = "0x00008000";
+      offset_ramdisk = "0x01000000";
+      offset_second = "0x00f00000";
+      offset_tags = "0x00000100";
+      pagesize = "2048";
     };
   };
 
