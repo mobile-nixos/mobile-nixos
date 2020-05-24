@@ -30,8 +30,8 @@ in
       fetchSubmodules = true;
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "a3412d9e2a8d1c7a23b48cf2cdf2c39cf4009651";
-      sha256 = "1ibdjnqjacw27wmdg1fir4isffq2v87ml382f4g76ldmi5za0n9l";
+      rev = "d98d5e59ba0f4a76b2f092ee957a198d9e749dfb";
+      sha256 = "1hn01mi44wmx12987va4h69ldnvjbvniwm9slnd5naib6j2n5rbw";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
@@ -56,30 +56,11 @@ in
     ];
 
     makeFlags = [
+      "PREFIX=${placeholder "out"}"
     ]
     ++ optional withSimulator "LVGL_ENV_SIMULATOR=1"
     ++ optional (!withSimulator) "LVGL_ENV_SIMULATOR=0"
     ;
-
-    # TODO: `make install`...
-    installPhase = ''
-      mkdir -p $out/lib
-      cp -vr lib*.a $out/lib/
-
-      mkdir -p $out/include
-      find . -name '*.h' -exec install -vD '{}' $out/include/'{}' ';'
-
-      mkdir -p $out/lib/pkgconfig
-      cat <<EOF > $out/lib/pkgconfig/lvgui.pc
-      Name: lvgui
-      Description: LVGL-based GUI library
-      Version: $version
-      Requires: ${optionalString withSimulator "sdl2"} ${optionalString (!withSimulator) "libevdev"}
-
-      Cflags: -I$out/include
-      Libs: $out/lib/liblvgui.a
-      EOF
-    '';
 
     enableParallelBuilding = true;
   }

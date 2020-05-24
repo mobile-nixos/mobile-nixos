@@ -200,13 +200,13 @@ class UI
       return
     end
     if @screen.get_height > @screen.get_width
-      LVGL::LVNanoSVG.resize_next_width((@screen.get_width_fit * 0.8).to_i)
+      LVGL::Hacks::LVNanoSVG.resize_next_width((@screen.get_width_fit * 0.8).to_i)
     else
       # Detecting the available space where the layout will stretch into is
       # apparently hard with lvgl, thus we rely on the vertical resolution.
       # Meh, that's not *so* bad.
       # While it's a crude approximation, for layouting it's fine.
-      LVGL::LVNanoSVG.resize_next_height((@screen.get_height * 0.15).to_i)
+      LVGL::Hacks::LVNanoSVG.resize_next_height((@screen.get_height * 0.15).to_i)
     end
 
     @logo = LVGL::LVImage.new(@screen)
@@ -241,7 +241,7 @@ ui = UI.new
 
 def run(*cmd)
   $stderr.puts " $ " + cmd.join(" ")
-  system(*cmd) unless LVGL::Hacks.simulator?
+  system(*cmd) unless LVGL::Introspection.simulator?
 end
 
 # TODO: wait ~0.3s for the animation before doing the button actions.

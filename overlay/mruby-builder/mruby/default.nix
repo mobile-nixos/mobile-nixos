@@ -94,8 +94,8 @@ let
   gems' = optionals useDefaults defaultGems ++ gemsForGems ++ gems;
   gemBoxes' = optionals useDefaults defaultGemBoxes ++ gemBoxes;
 
-  gemBuildInputs = concatGemAttr "gemBuildInputs" gems;
-  gemNativeBuildInputs = concatGemAttr "gemNativeBuildInputs" gems;
+  gemBuildInputs = concatGemAttr "gemBuildInputs" gems';
+  gemNativeBuildInputs = concatGemAttr "gemNativeBuildInputs" gems';
 
   shared-config = ''
       # Gemboxes

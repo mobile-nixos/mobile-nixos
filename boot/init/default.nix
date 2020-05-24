@@ -2,7 +2,6 @@
 , fetchurl
 , mrbgems
 , mruby
-, script-loader
 
 # Additional tasks
 , tasks ? []

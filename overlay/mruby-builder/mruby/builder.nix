@@ -40,6 +40,8 @@ in
     buildPackages.mruby
   ];
 
+  buildInputs = mruby.buildInputs;
+
   buildPhase = ''
     runHook preBuild
 

@@ -66,9 +66,9 @@ class UI
     return unless file
 
     if @screen.get_height > @screen.get_width
-      LVGL::LVNanoSVG.resize_next_width(@screen.get_width)
+      LVGL::Hacks::LVNanoSVG.resize_next_width(@screen.get_width)
     else
-      LVGL::LVNanoSVG.resize_next_height(@screen.get_height)
+      LVGL::Hacks::LVNanoSVG.resize_next_height(@screen.get_height)
     end
 
     @sad_phone = LVGL::LVImage.new(@screen)
