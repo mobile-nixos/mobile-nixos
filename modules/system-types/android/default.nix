@@ -2,9 +2,11 @@
 
 let
   inherit (lib) concatStringsSep optionalString types;
+  inherit (config.mobile) device;
   inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition;
+  inherit (config.mobile.boot) stage-1;
+  kernelPackage = stage-1.kernel.package;
 
-  device_config = config.mobile.device;
   enabled = config.mobile.system.type == "android";
 
   # In the future, this pattern should be extracted.
@@ -28,8 +30,8 @@ let
     inherit (config.mobile.system.android) bootimg;
     inherit cmdline;
     initrd = config.system.build.initrd;
-    name = "mobile-nixos_${device_config.name}_${bootimg.name}";
-    kernel = "${device_config.info.kernel}/${device_config.info.kernel.file}";
+    name = "mobile-nixos_${device.name}_${bootimg.name}";
+    kernel = "${kernelPackage}/${kernelPackage.file}";
   };
 
   android-recovery = recovery.system.build.android-bootimg;
@@ -42,7 +44,7 @@ let
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
   # TODO: Embed device-specific fastboot instructions as `echo` in the script.
-  android-device = pkgs.runCommandNoCC "android-device-${device_config.name}" {} ''
+  android-device = pkgs.runCommandNoCC "android-device-${device.name}" {} ''
     mkdir -p $out
     cp -v ${rootfs}/${rootfs.filename} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
