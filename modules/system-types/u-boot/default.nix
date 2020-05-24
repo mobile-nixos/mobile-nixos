@@ -40,7 +40,7 @@ let
     echo Built for ${deviceName}
     echo
 
-    setenv bootargs ${config.boot.kernelParams}
+    setenv bootargs ${lib.concatStringsSep " " config.boot.kernelParams}
 
     ${cfg.additionalCommands}
 
