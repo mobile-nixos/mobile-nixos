@@ -6,10 +6,10 @@ let
   cfg = config.mobile.quirks.u-boot;
   inherit (cfg) soc;
   inherit (config) system;
-  inherit (device_info) kernel dtb;
   deviceName = config.mobile.device.name;
   device_info = config.mobile.device.info;
-  kernel_file = if device_info ? kernel_file then device_info.kernel_file else "${kernel}/${kernel.file}";
+  kernel = config.mobile.boot.stage-1.kernel.package;
+  kernel_file = "${kernel}/${kernel.file}";
 
   # Look-up table to translate from targetPlatform to U-Boot names.
   ubootPlatforms = {
