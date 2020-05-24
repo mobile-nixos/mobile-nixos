@@ -7,23 +7,12 @@
     manufacturer = "Asus";
   };
 
-  mobile.device.info = rec {
-    bootimg_qcdt = true;
-    flash_offset_base = "0x10000000";
-    flash_offset_kernel = "0x00008000";
-    flash_offset_ramdisk = "0x02000000";
-    flash_offset_second = "0x00f00000";
-    flash_offset_tags = "0x00000100";
-    flash_pagesize = "2048";
-
+  mobile.device.info = {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-    firmware = pkgs.callPackage ./firmware {};
-    dtb = "${kernel}/dtbs/asus-z00t.img";
   };
 
   mobile.hardware = {
-    # This could also be pre-built option types?
     soc = "qualcomm-msm8939";
     # 3GB for the specific revision supported.
     # When this will be actually used, this may be dropped to 2, and/or
@@ -31,6 +20,20 @@
     ram = 1024 * 3;
     screen = {
       width = 1080; height = 1920;
+    };
+  };
+
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
+  mobile.system.android.bootimg = {
+    dt = "${config.mobile.device.info.kernel}/dtbs/asus-z00t.img";
+    flash = {
+      offset_base = "0x10000000";
+      offset_kernel = "0x00008000";
+      offset_ramdisk = "0x02000000";
+      offset_second = "0x00f00000";
+      offset_tags = "0x00000100";
+      pagesize = "2048";
     };
   };
 
