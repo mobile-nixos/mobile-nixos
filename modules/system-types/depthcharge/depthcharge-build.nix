@@ -1,12 +1,14 @@
-{ device_config
+{ lib
 , fetchurl
 , runCommandNoCC
 , initrd
 , system
 , imageBuilder
-, lib
 , cmdline
 , arch
+, dtbs
+, kernel
+, device_name
 
 , dtc
 , ubootTools
@@ -32,11 +34,6 @@ let
     LINUX_DATA         = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7";
     LINUX_FS           = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
   };
-
-  inherit (device_info) kernel dtbs;
-
-  device_info = device_config.info;
-  device_name = device_config.name;
 
   # Kernel used in kpart.
   kernel_file = "${kernel}/${kernel.file}";

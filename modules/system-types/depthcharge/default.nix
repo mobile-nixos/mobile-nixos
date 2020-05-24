@@ -1,11 +1,13 @@
 { config, pkgs, lib, ... }:
 
 let
-  device_config = config.mobile.device;
+  inherit (lib) types;
   enabled = config.mobile.system.type == "depthcharge";
 
   build = pkgs.callPackage ./depthcharge-build.nix {
-    inherit device_config;
+    inherit (config.mobile.device.info) kernel;
+    inherit (config.mobile.system.depthcharge.kpart) dtbs;
+    device_name = config.mobile.device.name;
     initrd = config.system.build.initrd;
     system = config.system.build.rootfs;
     cmdline = lib.concatStringsSep " " config.boot.kernelParams;
@@ -13,6 +15,19 @@ let
   };
 in
 {
+  options = {
+    mobile.system.depthcharge = {
+      kpart = {
+        dtbs = lib.mkOption {
+          type = types.path;
+          default = null;
+          description = "Path to a directory with device trees, to be put in the kpart image";
+          internal = true;
+        };
+      };
+    };
+  };
+
   config = lib.mkMerge [
     { mobile.system.types = [ "depthcharge" ]; }
 
