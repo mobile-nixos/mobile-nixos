@@ -9,13 +9,6 @@ with lib;
       description = "The device's codename. Must match the device folder.";
     };
 
-    info.kernel = mkOption {
-      # FIXME: drop this option
-      # This is only kept *currently* for the commit to still build.
-      # This will be dealt with in the coming commits.
-      internal = true;
-    };
-
     identity = {
       name = mkOption {
         type = types.str;
