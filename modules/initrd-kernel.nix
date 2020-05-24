@@ -1,14 +1,18 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
+{ config, lib, options, pkgs, ... }:
 
 let
+
+  inherit (lib)
+    mergeEqualOption
+    mkIf
+    mkOption
+    types
+  ;
   cfg = config.mobile.boot.stage-1.kernel;
   device_config = config.mobile.device;
 
-  inherit (device_config.info) kernel;
   modulesClosure = pkgs.makeModulesClosure {
-    inherit kernel;
+    kernel = cfg.package;
     allowMissing = true;
     rootModules = cfg.modules ++ cfg.additionalModules;
     firmware = cfg.firmwares;
@@ -52,9 +56,20 @@ in
         Firmwares to add to the cloure.
       '';
     };
+    # We cannot use `linuxPackagesFor` as older kernels cause eval-time assertions...
+    # This is bad form, but is already in nixpkgs :(.
+    package = mkOption {
+      type = types.package;
+      description = ''
+        Kernel to be used by the system-type to boot into the Mobile NixOS
+        stage-1.
+
+        This is not using a kernelPackages attrset, but a kernel derivation directly.
+      '';
+    };
   };
 
-  config.mobile.boot.stage-1 = mkIf cfg.modular {
+  config.mobile.boot.stage-1 = (mkIf cfg.modular {
     contents = [
       { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
       { object = "${modulesClosure}/lib/firmware"; symlink = "/lib/firmware"; }
@@ -72,6 +87,6 @@ in
       "ext4"
       "crc32c"
     ];
-  };
+  });
 }
 
