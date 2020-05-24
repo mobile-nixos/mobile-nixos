@@ -7,11 +7,6 @@
     manufacturer = "Motorola";
   };
 
-  mobile.device.info = {
-    # TODO : make kernel part of options.
-    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-  };
-
   mobile.hardware = {
     soc = "qualcomm-msm8953";
     ram = 1024 * 3;
@@ -20,8 +15,12 @@
     };
   };
 
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+  };
+
   mobile.system.android.bootimg = {
-    dt = "${config.mobile.device.info.kernel}/dtbs/motorola-addison.img";
+    dt = "${config.mobile.boot.stage-1.kernel.package}/dtbs/motorola-addison.img";
     flash = {
       offset_base = "0x80000000";
       offset_kernel = "0x00008000";
