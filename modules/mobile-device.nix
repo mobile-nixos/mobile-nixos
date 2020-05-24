@@ -3,17 +3,20 @@
 with lib;
 
 {
-  options.mobile = {
-    device.name = mkOption {
+  options.mobile.device = {
+    name = mkOption {
       type = types.str;
       description = "The device's codename. Must match the device folder.";
     };
-    device.info = mkOption {
-      #type = types.attrSet;
-      description = "system type specific informations";
-      # This probably should be `internal`.
+
+    info.kernel = mkOption {
+      # FIXME: drop this option
+      # This is only kept *currently* for the commit to still build.
+      # This will be dealt with in the coming commits.
+      internal = true;
     };
-    device.identity = {
+
+    identity = {
       name = mkOption {
         type = types.str;
         description = "The device's name as advertised by the manufacturer.";
