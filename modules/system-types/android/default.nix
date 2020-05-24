@@ -1,9 +1,11 @@
 { config, pkgs, lib, modules, baseModules, ... }:
 
 let
-  inherit (lib) concatStringsSep optionalString;
+  inherit (lib) concatStringsSep optionalString types;
+  inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition;
 
-  cmdline = concatStringsSep " " config.boot.kernelParams;
+  device_config = config.mobile.device;
+  enabled = config.mobile.system.type == "android";
 
   # In the future, this pattern should be extracted.
   # We're basically subclassing the main config, just like nesting does in
@@ -20,35 +22,19 @@ let
     }];
   }).config;
 
-  withRecovery = let
-    inherit (device_config) info;
-    withBootAsRecovery = if info ? boot_as_recovery then info.boot_as_recovery else false;
-  in
-    # As defined... Some devices will have a discrete recovery partition even
-    # if the system is "boot as recovery".
-    if info ? has_recovery_partition
-    then info.has_recovery_partition
-    # Defaults: with 'boot as recovery' → no recovery ; without 'boot as recovery' → with recovery
-    else !withBootAsRecovery
-  ;
+  cmdline = concatStringsSep " " config.boot.kernelParams;
 
-  withAB = let inherit (device_config) info; in
-    if info ? ab_partitions then info.ab_partitions else false
-  ;
-
-  device_config = config.mobile.device;
-  device_name = device_config.name;
-  enabled = config.mobile.system.type == "android";
-
-  inherit (config.system.build) rootfs;
-
-  android-bootimg = pkgs.callPackage ./bootimg.nix {
-    inherit cmdline device_config;
-    inherit (config.mobile.system.android.bootimg) name;
+  android-bootimg = pkgs.callPackage ./bootimg.nix rec {
+    inherit (config.mobile.system.android) bootimg;
+    inherit cmdline;
     initrd = config.system.build.initrd;
+    name = "mobile-nixos_${device_config.name}_${bootimg.name}";
+    kernel = "${device_config.info.kernel}/${device_config.info.kernel.file}";
   };
 
   android-recovery = recovery.system.build.android-bootimg;
+
+  inherit (config.system.build) rootfs;
 
   # Note:
   # The flash scripts, by design, are not using nix-provided paths for
@@ -56,11 +42,11 @@ let
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
   # TODO: Embed device-specific fastboot instructions as `echo` in the script.
-  android-device = pkgs.runCommandNoCC "android-device-${device_name}" {} ''
+  android-device = pkgs.runCommandNoCC "android-device-${device_config.name}" {} ''
     mkdir -p $out
     cp -v ${rootfs}/${rootfs.filename} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
-    ${optionalString withRecovery ''
+    ${optionalString has_recovery_partition ''
     cp -v ${android-recovery} $out/recovery.img
     ''}
     cat > $out/flash-critical.sh <<'EOF'
@@ -68,24 +54,66 @@ let
     dir="$(cd "$(dirname "''${BASH_SOURCE[0]}")"; echo "$PWD")"
     PS4=" $ "
     set -x
-    fastboot flash ${optionalString withAB "--slot=all"} boot "$dir"/boot.img
-    ${optionalString withRecovery ''
-    fastboot flash ${optionalString withAB "--slot=all"} recovery "$dir"/recovery.img
+    fastboot flash ${optionalString ab_partitions "--slot=all"} boot "$dir"/boot.img
+    ${optionalString has_recovery_partition ''
+    fastboot flash ${optionalString ab_partitions "--slot=all"} recovery "$dir"/recovery.img
     ''}
     EOF
     chmod +x $out/flash-critical.sh
   '';
+
+  mkBootimgOption = name: lib.mkOption {
+    type = types.str;
+    internal = true;
+  };
 in
 {
   options = {
     mobile.system.android = {
+      ab_partitions = lib.mkOption {
+        type = types.bool;
+        description = "Configures whether the device uses an A/B partition scheme";
+        default = false;
+        internal = true;
+      };
+
+      boot_as_recovery = lib.mkOption {
+        type = types.bool;
+        description = "Configures whether the device uses 'boot as recovery'";
+        default = config.mobile.system.android.ab_partitions;
+        internal = true;
+      };
+
+      has_recovery_partition = lib.mkOption {
+        type = types.bool;
+        description = "Configures whether the device uses a distinct recovery partition";
+        default = !config.mobile.system.android.boot_as_recovery;
+        internal = true;
+      };
+
       bootimg = {
         name = lib.mkOption {
-          type = lib.types.str;
+          type = types.str;
           description = "Suffix for the image name. Use it to distinguish speciality boot images.";
           default = "boot.img";
           internal = true;
         };
+
+        dt = lib.mkOption {
+          type = types.nullOr types.path;
+          default = null;
+          description = "Path to a flattened device tree to pass as --dt to mkbootimg";
+          internal = true;
+        };
+
+        flash = lib.attrsets.genAttrs [
+          "offset_base"
+          "offset_kernel"
+          "offset_second"
+          "offset_ramdisk"
+          "offset_tags"
+          "pagesize"
+        ] mkBootimgOption;
       };
     };
   };
