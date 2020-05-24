@@ -7,11 +7,6 @@
     manufacturer = "Asus";
   };
 
-  mobile.device.info = {
-    # TODO : make kernel part of options.
-    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-  };
-
   mobile.hardware = {
     soc = "qualcomm-msm8939";
     # 3GB for the specific revision supported.
@@ -23,10 +18,14 @@
     };
   };
 
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+  };
+
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.bootimg = {
-    dt = "${config.mobile.device.info.kernel}/dtbs/asus-z00t.img";
+    dt = "${config.mobile.boot.stage-1.kernel.package}/dtbs/asus-z00t.img";
     flash = {
       offset_base = "0x10000000";
       offset_kernel = "0x00008000";
