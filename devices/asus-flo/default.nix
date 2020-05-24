@@ -7,17 +7,16 @@
     manufacturer = "Asus";
   };
 
-  mobile.device.info = {
-    # TODO : make kernel part of options.
-    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-  };
-
   mobile.hardware = {
     soc = "qualcomm-apq8064-1aa";
     ram = 1024 * 2;
     screen = {
       width = 1200; height = 1920;
     };
+  };
+
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
   };
 
   mobile.system.android.bootimg = {
