@@ -128,5 +128,13 @@ in
         mobile-installer = throw "No installer yet...";
       };
     })
+
+    {
+      mobile.boot.stage-1.bootConfig = {
+        device = {
+          inherit (config.mobile.system.android) boot_as_recovery;
+        };
+      };
+    }
   ];
 }
