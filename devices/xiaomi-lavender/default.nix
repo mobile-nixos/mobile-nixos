@@ -7,11 +7,6 @@
     manufacturer = "Xiaomi";
   };
 
-  mobile.device.info = {
-    # TODO : make kernel part of options.
-    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-  };
-
   mobile.hardware = {
     soc = "qualcomm-sdm660";
     # 4GB for the specific revision supported.
@@ -21,6 +16,10 @@
     screen = {
       width = 1080; height = 2340;
     };
+  };
+
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
   };
 
   mobile.system.android = {
