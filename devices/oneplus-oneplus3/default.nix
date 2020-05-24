@@ -7,17 +7,16 @@
     manufacturer = "OnePlus";
   };
 
-  mobile.device.info = {
-    # TODO : make kernel part of options.
-    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
-  };
-
   mobile.hardware = {
     soc = "qualcomm-msm8996";
     ram = 1024 * 6;
     screen = {
       width = 1080; height = 1920;
     };
+  };
+
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
   };
 
   mobile.system.android.bootimg = {
