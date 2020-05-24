@@ -10,11 +10,13 @@ let
   modulesClosure = pkgs.makeModulesClosure {
     inherit kernel;
     allowMissing = true;
-    rootModules = cfg.modules ++ cfg.additional_modules;
+    rootModules = cfg.modules ++ cfg.additionalModules;
     firmware = cfg.firmwares;
   };
 in
 {
+  # Note: These options are provided  *instead* of `boot.initrd.*`, as we are
+  # not re-using the `initrd` options.
   options.mobile.boot.stage-1.kernel = {
     modular = mkOption {
       type = types.bool;
@@ -34,7 +36,7 @@ in
         They will be modprobed.
       '';
     };
-    additional_modules = mkOption {
+    additionalModules = mkOption {
       type = types.listOf types.str;
       default = [
       ];
