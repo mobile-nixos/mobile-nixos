@@ -7,18 +7,21 @@
     manufacturer = "Asus";
   };
 
-  mobile.device.info = rec {
+  mobile.device.info = {
     # TODO : move kernel outside of the basic device details
     kernel = pkgs.callPackage ./kernel {};
-    # This could be further pared down to only the required dtb files.
-    dtbs = "${kernel}/dtbs/rockchip";
   };
+
   mobile.hardware = {
     soc = "rockchip-op1";
     ram = 1024 * 4;
     screen = {
       width = 1536; height = 2048;
     };
+  };
+
+  mobile.system.depthcharge.kpart = {
+    dtbs = "${config.mobile.device.info.kernel}/dtbs/rockchip";
   };
 
   # Serial console on ttyS2, using a suzyqable or equivalent.
