@@ -3,7 +3,7 @@
 with lib;
 
 let
-  device_info = config.mobile.device.info;
+  inherit (config.mobile.usb) gadgetfs;
   cfg = config.mobile.boot.stage-1;
   device_name = device_config.name;
   device_config = config.mobile.device;
@@ -47,6 +47,12 @@ in
         The USB gadget implementation the device uses.
       '';
     };
+    gadgetfs.functions = mkOption {
+      type = types.attrs;
+      description = ''
+        Mapping of logical gadgetfs functions to their implementation names.
+      '';
+    };
   };
 
   config = lib.mkIf (config.mobile.usb.mode != null && cfg.usb.enable) {
@@ -73,8 +79,8 @@ in
       ];
       bootConfig = {
         boot.usb.features = cfg.usb.features;
-        boot.usb.functions = mkIf (device_info ? gadgetfs) (builtins.listToAttrs (
-          builtins.map (feature: { name = feature; value = device_info.gadgetfs.functions."${feature}"; }) cfg.usb.features
+        boot.usb.functions = mkIf (config.mobile.usb.mode == "gadgetfs") (builtins.listToAttrs (
+          builtins.map (feature: { name = feature; value = gadgetfs.functions."${feature}"; }) cfg.usb.features
         ));
         usb = {
           inherit (config.mobile.usb) idVendor idProduct mode;
