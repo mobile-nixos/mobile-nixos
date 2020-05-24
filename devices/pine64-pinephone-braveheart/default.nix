@@ -7,8 +7,7 @@
     manufacturer = "Pine64";
   };
 
-  mobile.device.info = rec {
-    # Serial console on ttyS0, using the serial headphone adapter.
+  mobile.device.info = {
     # TODO : make kernel part of options.
     kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
   };
@@ -22,6 +21,7 @@
   };
 
   boot.kernelParams = [
+    # Serial console on ttyS0, using the serial headphone adapter.
     "console=ttyS0,115200"
     "vt.global_cursor_default=0"
     "earlycon=uart,mmio32,0x01c28000"
