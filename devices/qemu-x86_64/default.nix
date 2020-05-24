@@ -7,11 +7,6 @@
    manufacturer = "QEMU";
   };
 
-  mobile.device.info = {
-    # TODO : make kernel part of options.
-    kernel = pkgs.linuxPackages_5_4.kernel;
-  };
-
   mobile.hardware = {
     soc = "generic-x86_64";
 
@@ -34,6 +29,7 @@
 
   mobile.boot.stage-1 = {
     kernel = {
+      package = pkgs.linuxPackages_5_4.kernel;
       modular = true;
       modules = [
         # Disk images
