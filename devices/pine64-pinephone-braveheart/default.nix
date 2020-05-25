@@ -2,27 +2,9 @@
 
 {
   mobile.device.name = "pine64-pinephone-braveheart";
-  mobile.device.info = rec {
-    format_version = "0";
+  mobile.device.identity = {
     name = "PinePhone “BraveHeart”";
     manufacturer = "Pine64";
-    arch = "aarch64";
-    keyboard = false;
-    external_storage = true;
-
-    screen_width = "720";
-    screen_height = "1440";
-
-    # Serial console on ttyS0, using the serial headphone adapter.
-    kernel_cmdline = lib.concatStringsSep " " [
-      "console=ttyS0,115200"
-      "vt.global_cursor_default=0"
-      "earlycon=uart,mmio32,0x01c28000"
-      "panic=10"
-      "consoleblank=0"
-    ];
-    # TODO : make kernel part of options.
-    kernel = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
   };
 
   mobile.hardware = {
@@ -32,6 +14,19 @@
       width = 720; height = 1440;
     };
   };
+
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+  };
+
+  boot.kernelParams = [
+    # Serial console on ttyS0, using the serial headphone adapter.
+    "console=ttyS0,115200"
+    "vt.global_cursor_default=0"
+    "earlycon=uart,mmio32,0x01c28000"
+    "panic=10"
+    "consoleblank=0"
+  ];
 
   mobile.system.type = "u-boot";
   mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};

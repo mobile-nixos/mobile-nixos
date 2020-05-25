@@ -1,10 +1,14 @@
-{ device_config
+{ lib
 , fetchurl
 , runCommandNoCC
 , initrd
 , system
 , imageBuilder
-, lib
+, cmdline
+, arch
+, dtbs
+, kernel
+, device_name
 
 , dtc
 , ubootTools
@@ -31,18 +35,13 @@ let
     LINUX_FS           = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
   };
 
-  inherit (device_info) arch kernel kernel_cmdline dtbs;
-
-  device_info = device_config.info;
-  device_name = device_config.name;
-
   # Kernel used in kpart.
   kernel_file = "${kernel}/${kernel.file}";
 
   # Kernel command line for vbutil_kernel.
   kpart_config = writeTextFile {
     name = "kpart-config-${device_name}";
-    text = kernel_cmdline;
+    text = cmdline;
   };
 
   # Name used for some image file output.

@@ -20,7 +20,7 @@
     modules =
       (if device ? special
       then [ device.config ]
-      else [ (import (../. + "/devices/${device}" )) ])
+      else [ { imports = [(../. + "/devices/${device}")]; } ])
       ++ modules
       ++ [ additionalConfiguration ]
     ;

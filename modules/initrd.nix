@@ -250,9 +250,6 @@ in
       mobile.boot.stage-1.bootConfig = {
         device = {
           inherit (device_config) name;
-          boot_as_recovery = if device_config.info ? boot_as_recovery
-            then device_config.info.boot_as_recovery
-            else false;
         };
         kernel = {
           inherit (config.mobile.boot.stage-1.kernel) modules;

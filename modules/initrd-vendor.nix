@@ -10,22 +10,29 @@
 { config, lib, ... }:
 
 let
-  device_info = config.mobile.device.info;
-  vendor_device =
-    if device_info ? vendor_partition
-    then device_info.vendor_partition
-    else null
-  ;
+  inherit (lib) types;
+  inherit (config.mobile.system) vendor;
 in
-lib.mkMerge [
-  (lib.mkIf (vendor_device != null) {
-    # FIXME: add "firmware_class.path=/vendor/firmware" to kernel cmdline
+{
+  options = {
+    mobile.system.vendor.partition = lib.mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Path to a partition with firmware files built-in to the device";
+      internal = true;
+    };
+  };
+  config = lib.mkIf (vendor.partition != null) {
+    boot.kernelParams = [
+      "firmware_class.path=/vendor/firmware"
+    ];
+
     boot.specialFileSystems = {
       "/vendor" = {
-        device = vendor_device;
+        device = vendor.partition;
         fsType = "ext4";
         options = [ "ro" "nosuid" "noexec" "nodev" ];
       };
     };
-  })
-]
+  };
+}
