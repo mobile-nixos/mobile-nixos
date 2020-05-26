@@ -77,11 +77,6 @@ in
   # The whole (default) eval
   inherit eval;
 
-  # Shortcut to allow building `nixos` from the same channel revision.
-  # This is used by `./nixos/default.nix`
-  # Any time `nix-build nixos` is used upstream, it can be used here.
-  nixos = import <nixpkgs/nixos>;
-
   # Evaluating this whole set is counter-productive.
   # It'll put a *bunch* of build products from the misc. inherits we added.
 
