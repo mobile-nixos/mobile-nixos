@@ -49,13 +49,6 @@ let
     inherit additionalConfiguration;
   };
 
-  # This is used by the `-A installer` shortcut.
-  installer-eval = evalWith {
-    modules = [
-      ./profiles/installer.nix
-    ];
-  };
-
   # Makes a mostly useless header.
   # This is mainly useful for batch evals.
   header = str:
@@ -89,10 +82,6 @@ in
   # Any time `nix-build nixos` is used upstream, it can be used here.
   nixos = import <nixpkgs/nixos>;
 
-  # `mobile-installer` will, when possible, contain the installer build for the
-  # given system. It usually is an alias for a disk-image type build.
-  installer = installer-eval.config.system.build.mobile-installer;
-
   # Evaluating this whole set is counter-productive.
   # It'll put a *bunch* of build products from the misc. inherits we added.
 
@@ -106,9 +95,12 @@ in
     Building this whole set is counter-productive, and not likely to be what
     is desired.
 
-    You can try to build the `installer` attribute (-A installer) if your system
-    provides an installer.
+    You can build the `-A build.default` attribute to build an empty and
+    un-configured image. That image can be configured using `local.nix`.
+    **Note that an unconfigured image may appear to hang at boot.**
 
-    Please refer to your platform's documentation for usage.
+    *************************************************************************
+    * Please also read your device's documentation for further usage notes. *
+    *************************************************************************
   '';
 }

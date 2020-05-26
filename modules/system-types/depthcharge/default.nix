@@ -36,8 +36,6 @@ in
       system.build = {
         inherit (build) disk-image kpart;
         default = build.disk-image;
-        # installer shortcut; it's a depthcharge disk-image build.
-        mobile-installer = build.disk-image;
       };
     })
   ];

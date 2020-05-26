@@ -34,7 +34,6 @@ in
       (lib.mkIf enabled {
         system.build = rec {
           inherit system;
-          mobile-installer = system;
           default = vm;
           vm = pkgs.writeScript "run-vm-${device.name}" ''
             #!${pkgs.runtimeShell}
