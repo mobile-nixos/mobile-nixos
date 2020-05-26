@@ -6,6 +6,7 @@
   ./boot-initrd.nix
   ./cross-workarounds.nix
   ./devices-metadata.nix
+  ./generated-filesystems.nix
   ./hardware-allwinner.nix
   ./hardware-generic.nix
   ./hardware-qualcomm.nix

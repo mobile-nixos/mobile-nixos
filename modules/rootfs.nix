@@ -4,9 +4,10 @@
 
 let
   inherit (config.boot) growPartition;
-  inherit (lib) optionalString;
+  inherit (lib) optionalString types;
   inherit (config.mobile._internal) compressLargeArtifacts;
   inherit (pkgs) buildPackages;
+  rootfsLabel = config.mobile.generatedFilesystems.rootfs.label;
 in
 {
   boot.loader.grub.enable = false;
@@ -14,63 +15,51 @@ in
 
   boot.growPartition = lib.mkDefault true;
 
-  system.build.rootfs =
-    pkgs.imageBuilder.fileSystem.makeExt4 {
-      name = "NIXOS_SYSTEM";
-      partitionID = "44444444-4444-4444-8888-888888888888";
-      populateCommands =
-      let
-        closureInfo = pkgs.buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
-      in
-      ''
-        mkdir -p ./nix/store
-        echo "Copying system closure..."
-        while IFS= read -r path; do
-          echo "  Copying $path"
-          cp -prf "$path" ./nix/store
-        done < "${closureInfo}/store-paths"
-        echo "Done copying system closure..."
-        cp -v ${closureInfo}/registration ./nix-path-registration
-      '';
+  mobile.generatedFilesystems.rootfs = lib.mkDefault {
+    type = "ext4";
+    label = "NIXOS_SYSTEM";
+    id = "44444444-4444-4444-8888-888888888888";
 
-      # Give some headroom for initial mounting.
-      extraPadding = pkgs.imageBuilder.size.MiB 20;
+    populateCommands =
+    let
+      closureInfo = pkgs.buildPackages.closureInfo { rootPaths = config.system.build.toplevel; };
+    in
+    ''
+      mkdir -p ./nix/store
+      echo "Copying system closure..."
+      while IFS= read -r path; do
+        echo "  Copying $path"
+        cp -prf "$path" ./nix/store
+      done < "${closureInfo}/store-paths"
+      echo "Done copying system closure..."
+      cp -v ${closureInfo}/registration ./nix-path-registration
+    '';
 
-      # FIXME: See #117, move compression into the image builder.
-      # Zstd can take a long time to complete successfully at high compression
-      # levels. Increasing the compression level could lead to timeouts.
-      postProcess = optionalString compressLargeArtifacts ''
-        (PS4=" $ "; set -x
-        PATH="$PATH:${buildPackages.zstd}/bin"
-        cd $out
-        ls -lh
-        time zstd -10 --rm "$filename"
-        ls -lh
-        )
-      '' + ''
-        (PS4=" $ "; set -x
-        mkdir $out/nix-support
-        cat <<EOF > $out/nix-support/hydra-build-products
-        file rootfs${optionalString compressLargeArtifacts "-zstd"} $out/$filename${optionalString compressLargeArtifacts ".zst"}
-        EOF
-        )
-      '';
+    # Give some headroom for initial mounting.
+    extraPadding = pkgs.imageBuilder.size.MiB 20;
 
-      zstd = compressLargeArtifacts;
-    }
-  ;
+    # FIXME: See #117, move compression into the image builder.
+    # Zstd can take a long time to complete successfully at high compression
+    # levels. Increasing the compression level could lead to timeouts.
+    postProcess = optionalString compressLargeArtifacts ''
+      (PS4=" $ "; set -x
+      PATH="$PATH:${buildPackages.zstd}/bin"
+      cd $out
+      ls -lh
+      time zstd -10 --rm "$filename"
+      ls -lh
+      )
+    '' + ''
+      (PS4=" $ "; set -x
+      mkdir $out/nix-support
+      cat <<EOF > $out/nix-support/hydra-build-products
+      file rootfs${optionalString compressLargeArtifacts "-zstd"} $out/$filename${optionalString compressLargeArtifacts ".zst"}
+      EOF
+      )
+    '';
 
-  # FIXME: this is not a rootfs!
-  system.build.diskImage = 
-    pkgs.imageBuilder.diskImage.makeMBR {
-      name = "mobile-nixos";
-      diskID = "01234567";
-      partitions = [
-        # FIXME : initrd how?
-        config.system.build.rootfs
-      ];
-    }
-  ;
+    zstd = compressLargeArtifacts;
+  };
 
   boot.postBootCommands = ''
     # On the first boot do some maintenance tasks
@@ -88,11 +77,8 @@ in
   '';
 
   fileSystems = {
-    "/" = {
-      # Expected to be installed as `system` partition on android-like.
-      # Thus the name.
-      # TODO: move into the android system type.
-      device = "/dev/disk/by-label/NIXOS_SYSTEM";
+    "/" = lib.mkDefault {
+      device = "/dev/disk/by-label/${rootfsLabel}";
       fsType = "ext4";
       autoResize = true;
     };
