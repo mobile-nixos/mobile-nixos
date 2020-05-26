@@ -43,7 +43,7 @@ Dir.chdir(ROOT) do
     "nix-build",
     "--no-out-link",
     "--argstr", "device", DEVICE,
-    "-A", "config.mobile.device.info.kernel.menuconfig"
+    "-A", "config.mobile.boot.stage-1.kernel.package.menuconfig"
   ].shelljoin}`.strip, "bin/nconf")
 
   if ONLY_SAVE
