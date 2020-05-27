@@ -2,11 +2,11 @@
 let
   system-build = import ../../. {
     inherit device;
-    configuration = [ (import ./configuration.nix) ];
+    configuration = [ { imports = [ ./configuration.nix ]; } ];
   };
   burn-tool-build = import ../../. {
     inherit device;
-    configuration = [ (import ./android-burn-tool.nix) ];
+    configuration = [ { imports = [ ./android-burn-tool.nix ]; } ];
   };
 in
   {
