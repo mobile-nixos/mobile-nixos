@@ -50,7 +50,7 @@
     # 18d1:4ee7 Google Inc. XT1685
     idVendor = "18D1";
     idProduct = "4EE7";
-  }
+  };
 
   mobile.system.type = "android";
 }

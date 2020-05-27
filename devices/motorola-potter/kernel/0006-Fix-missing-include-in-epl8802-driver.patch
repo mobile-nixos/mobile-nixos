@@ -1,0 +1,13 @@
+diff --git a/drivers/input/misc/epl8802.c b/drivers/input/misc/epl8802.c
+index 93d2330a3f91..658377aa4918 100644
+--- a/drivers/input/misc/epl8802.c
++++ b/drivers/input/misc/epl8802.c
+@@ -29,7 +29,7 @@
+ #include <linux/miscdevice.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+-#include <asm/mach-types.h>
++/* #include <asm/mach-types.h> */
+ #include <asm/setup.h>
+ #include <linux/wakelock.h>
+ #include <linux/jiffies.h>
