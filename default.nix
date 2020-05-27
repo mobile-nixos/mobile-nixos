@@ -60,6 +60,8 @@ let
   ;
 in
   (
+    # Don't break if `device` is not set.
+    if device == null then (id: id) else
     if device ? special
     then header "Evaluating: ${device.name}"
     else header "Evaluating device: ${device}"
@@ -93,6 +95,13 @@ in
     You can build the `-A build.default` attribute to build an empty and
     un-configured image. That image can be configured using `local.nix`.
     **Note that an unconfigured image may appear to hang at boot.**
+
+    An alternative is to use one of the `examples` system. They differ in their
+    configuration. An example that should be building, and working using
+    cross-compilation is the `examples/hello` system. Read its README for more
+    information.
+
+     $ nix-build examples/hello --argstr device ${final_device} -A build.default
 
     *************************************************************************
     * Please also read your device's documentation for further usage notes. *
