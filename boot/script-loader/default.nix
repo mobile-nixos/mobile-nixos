@@ -1,9 +1,11 @@
 { fetchurl
 , mruby
 , mrbgems
+, writeShellScriptBin
 }:
 
-mruby.builder {
+# We need a reference to this package for the passthru `wrap` helper.
+let loader = mruby.builder {
   pname = "mobile-nixos-script-loader";
   version = "0.2.0";
 
@@ -36,4 +38,17 @@ mruby.builder {
     # This needs to be the last gem
     mruby-require
   ];
-}
+
+  passthru = {
+    # Wraps an `mrb` applet into a runner script that uses this loader.
+    # Note that this is not used in stage-1.
+    wrap = {name, applet}: (writeShellScriptBin name ''
+      exec ${loader}/bin/loader ${applet} "$@"
+    '').overrideAttrs(old: {
+      passthru = {
+        inherit applet;
+      };
+    });
+  };
+};
+in loader
