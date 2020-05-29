@@ -166,7 +166,7 @@ let
       ;
     }]
     ++ [
-      { package = pkgs.callPackage ../boot/script-loader {}; }
+      { package = pkgs.mobile-nixos.stage-1.script-loader; }
     ]
     ++ optionals withStrace [
       {

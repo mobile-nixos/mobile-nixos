@@ -108,6 +108,10 @@ in
       kernel-builder-gcc6 = callPackage ./mobile-nixos/kernel/builder.nix {
         stdenv = with self; overrideCC stdenv buildPackages.gcc6;
       };
+
+      stage-1 = {
+        script-loader = callPackage ../boot/script-loader {};
+      };
     };
 
     imageBuilder = callPackage ../lib/image-builder {};
