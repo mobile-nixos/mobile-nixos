@@ -2,6 +2,8 @@ begin
 # TODO: Allow defining depending on stage-0/stage-1.
 STAGE = 1
 
+LOADER = "/loader"
+
 log("************************")
 log("* Mobile NixOS stage-#{STAGE} *")
 log("************************")

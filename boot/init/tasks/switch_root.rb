@@ -86,7 +86,7 @@ class Tasks::SwitchRoot < SingletonTask
       generate_selection()
       # FIXME: In the future, boot GUIs will be launched async, before this
       # task is ran.
-      System.run($PROGRAM_NAME, "/applets/boot-selection.mrb")
+      System.run(LOADER, "/applets/boot-selection.mrb")
       generation = File.read("/run/boot/choice")
       # Why "$default" rather than passing a path?
       # Because there may be no generations folder. It's easier to cheat and
@@ -130,7 +130,7 @@ class Tasks::SwitchRoot < SingletonTask
     ]
 
     # Do *not* use System.run as it would fail the boot on return value != 0
-    system($PROGRAM_NAME, "/applets/key-held.mrb", *keys)
+    system(LOADER, "/applets/key-held.mrb", *keys)
 
     # It returns `0` on key being held.
     $?.exitstatus == 0
