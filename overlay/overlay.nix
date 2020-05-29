@@ -61,13 +61,6 @@ in
     bootlogd = callPackage ./bootlogd {};
 
     #
-    # Mobile NixOS only stuff
-    # -----------------------
-    #
-
-    boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
-
-    #
     # Hacks
     # -----
     #
@@ -111,7 +104,10 @@ in
 
       stage-1 = {
         script-loader = callPackage ../boot/script-loader {};
+        boot-gui = callPackage ../boot/gui {};
       };
+
+      boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
     };
 
     imageBuilder = callPackage ../lib/image-builder {};
