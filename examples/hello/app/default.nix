@@ -16,6 +16,7 @@ stdenv.mkDerivation {
     mrbc -g -o app.mrb \
       $(find ${../../../boot/gui/lib} -type f -name '*.rb' | sort) \
       $(find ./lib -type f -name '*.rb' | sort) \
+      $(find ./windows -type f -name '*.rb' | sort) \
       main.rb
   '';
 
