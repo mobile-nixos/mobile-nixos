@@ -2,6 +2,7 @@
 , mruby
 , mrbgems
 , writeShellScriptBin
+, lib
 }:
 
 # We need a reference to this package for the passthru `wrap` helper.
@@ -42,7 +43,12 @@ let loader = mruby.builder {
   passthru = {
     # Wraps an `mrb` applet into a runner script that uses this loader.
     # Note that this is not used in stage-1.
-    wrap = {name, applet}: (writeShellScriptBin name ''
+    # NOTE: `env` escapes values using `builtins.toJSON`. This escapes some pitfalls, while keeping variables expandable.
+    wrap = {name, applet, env ? {}}: (writeShellScriptBin name ''
+      ${let
+        varList = lib.attrsets.mapAttrsToList (name: value: "${name}=${builtins.toJSON value}") env;
+        scriptEnv = lib.strings.concatStringsSep "\n" varList;
+      in scriptEnv}
       exec ${loader}/bin/loader ${applet} "$@"
     '').overrideAttrs(old: {
       passthru = {
