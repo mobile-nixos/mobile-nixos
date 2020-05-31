@@ -42,6 +42,7 @@ in
     ./0001-Allow-building-WCD9335_CODEC-without-REGMAP_ALLOW_WR.patch
     ./0005-Allow-building-with-sound-disabled.patch
     ./0006-Fix-missing-include-in-epl8802-driver.patch
+    ./0007-switch-mmc1-card-detect-sense.patch
   ];
 
   isModular = false;
