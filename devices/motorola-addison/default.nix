@@ -50,4 +50,6 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
+
+  mobile.quirks.qualcomm.fb-notify.enable = true;
 }
