@@ -3,7 +3,8 @@ module GUI
     include ButtonPalette
     def initialize()
       super()
-      BackButton.new(@container, MainWindow.instance)
+      BackButton.new(@toolbar, MainWindow.instance)
+      @container.refresh
 
       LVGL::LVLabel.new(@container).tap do |label|
 text = <<EOF
@@ -14,7 +15,7 @@ This application is intended to provide a minimum viable known working framebuff
 This is NOT a complete useful system.
 EOF
         label.set_long_mode(LVGL::LABEL_LONG::BREAK)
-        label.set_text(%Q{\n#{text}})
+        label.set_text(text)
         label.set_align(LVGL::LABEL_ALIGN::CENTER)
         label.set_width(@container.get_width_fit)
       end

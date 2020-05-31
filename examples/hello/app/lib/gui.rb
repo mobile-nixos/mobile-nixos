@@ -175,17 +175,16 @@ module GUI
   # Scrolling page.
   class Page < Widget
     def initialize(parent)
+      @parent = parent
       # A "holder" widget to work around idiosyncracies of pages.
       @holder = LVGL::LVContainer.new(parent)
       @holder.set_fit2(LVGL::FIT::FILL, LVGL::FIT::NONE)
       @holder.set_style(LVGL::CONT_STYLE::MAIN, LVGL::LVStyle::STYLE_TRANSP.dup)
-      @holder.set_height(parent.get_height_fit - @holder.get_y)
 
       # The actual widget we interact with
       super(LVGL::LVPage.new(@holder))
       style = LVGL::LVStyle::STYLE_TRANSP.dup
       # Padding to zero in the actual scrolling widget makes the scrollbar visible
-      style.body_padding_top = style.body_padding_top / 2
       style.body_padding_left = 0
       style.body_padding_right = 0
 
@@ -193,11 +192,32 @@ module GUI
       set_style(LVGL::PAGE_STYLE::SCRL, style)
       set_fit2(LVGL::FIT::FILL, LVGL::FIT::NONE)
 
-      # Filling the parent that is at the root of the screen is apparently broken :/.
-      set_height(@holder.get_height - get_y)
-
       # Make this scroll
       set_scrl_layout(LVGL::LAYOUT::COL_M)
+
+      refresh
+    end
+
+    # Call this function when the position of the Page is changed.
+    # Mainly, this would be after filling the toolbar.
+    def refresh()
+      # Filling the parent that is at the root of the screen is apparently broken :/.
+      @holder.set_height(@parent.get_height_fit - @holder.get_y)
+      set_height(@holder.get_height - get_y)
+    end
+  end
+
+  # A container, with a new name
+  class Toolbar < Widget
+    def initialize(parent)
+      super(LVGL::LVContainer.new(parent))
+      set_height(0)
+      set_fit2(LVGL::FIT::FILL, LVGL::FIT::TIGHT)
+
+      set_style(LVGL::CONT_STYLE::MAIN, LVGL::LVStyle::STYLE_TRANSP.dup)
+      style = get_style(LVGL::CONT_STYLE::MAIN)
+      style.body_padding_top = 0
+      style.body_padding_bottom = 0
     end
   end
 
@@ -245,6 +265,7 @@ module GUI
       # Preps a basic display
       @screen = Screen.new()
       @header = Header.new(@screen)
+      @toolbar = Toolbar.new(@screen)
       @container = Page.new(@screen)
     end
 

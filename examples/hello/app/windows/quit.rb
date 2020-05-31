@@ -9,7 +9,8 @@ module GUI
 
     def initialize()
       super()
-      BackButton.new(@container, MainWindow.instance)
+      BackButton.new(@toolbar, MainWindow.instance)
+      @container.refresh
 
       add_buttons([
         ["Reboot", ->() { run("reboot") }],
