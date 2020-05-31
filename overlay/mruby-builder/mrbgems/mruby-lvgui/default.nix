@@ -17,8 +17,8 @@ mrbgems.mkGem {
   src = fetchFromGitHub {
     repo = "mruby-lvgui";
     owner = "mobile-nixos";
-    rev = "eb6e40c81a63cc67b14740200966603463f426bf";
-    sha256 = "1zqlhg409xx3da2cgrcmz9p9zc9cni2q25yi5vcb3naahpylbff4";
+    rev = "73854c219fd975fc1e82ac582381a4a51af2d3c1";
+    sha256 = "0plvjn8sxgjz6n3546aqkrdqkx32mzsb0d938svpd9l223nihdh8";
   };
 
   gemBuildInputs = [
