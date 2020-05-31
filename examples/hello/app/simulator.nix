@@ -4,6 +4,7 @@
 , mrbgems
 , mruby
 , mobile-nixos
+, input-utils
 }:
 
 let
@@ -19,6 +20,9 @@ in
 (script-loader.wrap {
   name = "simulator";
   applet = "${applet}/libexec/app.mrb";
+  env = {
+    PATH = "${input-utils}/bin:$PATH";
+  };
 }).overrideAttrs(old: rec {
   pname = "hello-gui-simulator";
   version = "0.0.1";
