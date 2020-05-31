@@ -147,7 +147,7 @@ module System
 
   def self.sad_phone(color, code, message)
     begin
-      System.run($PROGRAM_NAME, "/applets/boot-error.mrb", color, code, message)
+      System.run(LOADER, "/applets/boot-error.mrb", color, code, message)
     rescue CommandError => e
       $logger.fatal(e.inspect)
     end

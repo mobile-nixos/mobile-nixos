@@ -49,13 +49,6 @@ let
     inherit additionalConfiguration;
   };
 
-  # This is used by the `-A installer` shortcut.
-  installer-eval = evalWith {
-    modules = [
-      ./profiles/installer.nix
-    ];
-  };
-
   # Makes a mostly useless header.
   # This is mainly useful for batch evals.
   header = str:
@@ -67,6 +60,8 @@ let
   ;
 in
   (
+    # Don't break if `device` is not set.
+    if device == null then (id: id) else
     if device ? special
     then header "Evaluating: ${device.name}"
     else header "Evaluating device: ${device}"
@@ -84,15 +79,6 @@ in
   # The whole (default) eval
   inherit eval;
 
-  # Shortcut to allow building `nixos` from the same channel revision.
-  # This is used by `./nixos/default.nix`
-  # Any time `nix-build nixos` is used upstream, it can be used here.
-  nixos = import <nixpkgs/nixos>;
-
-  # `mobile-installer` will, when possible, contain the installer build for the
-  # given system. It usually is an alias for a disk-image type build.
-  installer = installer-eval.config.system.build.mobile-installer;
-
   # Evaluating this whole set is counter-productive.
   # It'll put a *bunch* of build products from the misc. inherits we added.
 
@@ -106,9 +92,19 @@ in
     Building this whole set is counter-productive, and not likely to be what
     is desired.
 
-    You can try to build the `installer` attribute (-A installer) if your system
-    provides an installer.
+    You can build the `-A build.default` attribute to build an empty and
+    un-configured image. That image can be configured using `local.nix`.
+    **Note that an unconfigured image may appear to hang at boot.**
 
-    Please refer to your platform's documentation for usage.
+    An alternative is to use one of the `examples` system. They differ in their
+    configuration. An example that should be building, and working using
+    cross-compilation is the `examples/hello` system. Read its README for more
+    information.
+
+     $ nix-build examples/hello --argstr device ${final_device} -A build.default
+
+    *************************************************************************
+    * Please also read your device's documentation for further usage notes. *
+    *************************************************************************
   '';
 }

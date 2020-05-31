@@ -25,6 +25,7 @@ in
 { src
 , gems ? []
 , buildPhase
+, passthru
 , ...
 }@ attrs:
 let
@@ -98,7 +99,7 @@ in
     runHook postBuild
   '';
 
-  passthru = {
+  passthru = passthru // {
     inherit mruby;
   };
 

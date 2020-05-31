@@ -127,7 +127,6 @@ in
       system.build = {
         default = android-device;
         inherit android-bootimg android-recovery android-device;
-        mobile-installer = throw "No installer yet...";
       };
     })
 

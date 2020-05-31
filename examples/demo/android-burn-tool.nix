@@ -15,7 +15,7 @@ in
   # Only enable `adb` if we know how to.
   # FIXME: relies on implementation details. Poor separation of concerns.
   mobile.adbd.enable = (config.mobile.system.type == "android") &&
-    (config.mobile.usb.mode != "gadgetfs" || device_info.gadgetfs.functions ? ffs)
+    (config.mobile.usb.mode != "gadgetfs" || config.mobile.usb.gadgetfs.functions ? ffs)
   ;
 
   # Enables networking and ssh in stage-1 !

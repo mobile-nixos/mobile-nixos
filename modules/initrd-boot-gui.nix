@@ -4,10 +4,6 @@ let
   key-held = pkgs.runCommand "key-held.mrb" {} ''
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/applets}/key-held.rb
   '';
-  boot-gui = ../boot/gui;
-  boot-selection = pkgs.runCommand "boot-selection.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${boot-gui}/lib/*.rb ${boot-gui}/main.rb
-  '';
   boot-splash = pkgs.runCommand "boot-splash.mrb" {} ''
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/gui}/lib/*.rb ${../boot/splash}/main.rb
   '';
@@ -30,7 +26,7 @@ in
       symlink = "/applets/boot-splash.mrb";
     }
     {
-      object = boot-selection;
+      object = pkgs.mobile-nixos.stage-1.boot-gui;
       symlink = "/applets/boot-selection.mrb";
     }
     {

@@ -61,13 +61,6 @@ in
     bootlogd = callPackage ./bootlogd {};
 
     #
-    # Mobile NixOS only stuff
-    # -----------------------
-    #
-
-    boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
-
-    #
     # Hacks
     # -----
     #
@@ -108,6 +101,13 @@ in
       kernel-builder-gcc6 = callPackage ./mobile-nixos/kernel/builder.nix {
         stdenv = with self; overrideCC stdenv buildPackages.gcc6;
       };
+
+      stage-1 = {
+        script-loader = callPackage ../boot/script-loader {};
+        boot-gui = callPackage ../boot/gui {};
+      };
+
+      boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
     };
 
     imageBuilder = callPackage ../lib/image-builder {};
