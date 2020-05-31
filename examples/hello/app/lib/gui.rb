@@ -272,6 +272,10 @@ module GUI
     # Switch to this window
     def present()
       LVGL::FFI.lv_disp_load_scr(@screen.lv_obj_pointer)
+      on_present
+    end
+
+    def on_present()
     end
   end
 end
