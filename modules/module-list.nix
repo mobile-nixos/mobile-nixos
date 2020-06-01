@@ -18,6 +18,7 @@
   ./initrd-boot-gui.nix
   ./initrd-fbterm.nix
   ./initrd-fail.nix
+  ./initrd-firmware.nix
   ./initrd-kernel.nix
   ./initrd-logs.nix
   ./initrd-network.nix
