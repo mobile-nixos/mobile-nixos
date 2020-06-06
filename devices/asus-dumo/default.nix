@@ -33,6 +33,11 @@
 
   mobile.system.type = "depthcharge";
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.boot.stage-1.firmware = [
+    config.mobile.device.firmware
+  ];
+
   mobile.boot.stage-1.tasks = [
     # This hack unbinds and rebinds the currently problematic storage driver.
     # TODO: move into a generic "gru family" thing.

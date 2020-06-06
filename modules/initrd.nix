@@ -187,6 +187,7 @@ let
     nativeBuildInputs = with pkgs.buildPackages; [
       ncdu
       cpio
+      tree
     ];
   } ''
     mkdir initrd
@@ -194,6 +195,7 @@ let
 
     mkdir -p $out
     ncdu -0x -o $out/initrd.ncdu ./initrd
+    tree -a ./initrd > $out/tree
   '';
 in
   {
