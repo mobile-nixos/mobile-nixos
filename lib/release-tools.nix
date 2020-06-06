@@ -20,6 +20,7 @@
     modules =
       (if device ? special
       then [ device.config ]
+      else if builtins.isPath device then [ { imports = [ device ]; } ]
       else [ { imports = [(../. + "/devices/${device}")]; } ])
       ++ modules
       ++ [ additionalConfiguration ]
