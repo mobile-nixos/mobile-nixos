@@ -29,6 +29,9 @@
   ];
 
   mobile.system.type = "u-boot";
+
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};
   mobile.quirks.u-boot.additionalCommands = ''
     # Yellow LED.
