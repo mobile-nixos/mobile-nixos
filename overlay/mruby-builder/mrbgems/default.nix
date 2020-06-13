@@ -1,4 +1,4 @@
-{ stdenvNoCC, lib, fetchFromGitHub, libffi }:
+{ stdenvNoCC, lib, fetchFromGitHub, fetchpatch, libffi }:
 
 let
   inherit (lib) licenses;
@@ -193,6 +193,13 @@ rec {
       rev = "670eeb019e0abb657f5b9dbfd0ee993133edaa99";
       sha256 = "1whqhikiq8dkv9nsilsibcy5qw0xydxh6ysz6mjkp7vh0hpirlzs";
     };
+
+    patches = [
+      (fetchpatch {
+        url = "https://github.com/appPlant/mruby-os/pull/1.patch";
+        sha256 = "06mnj2w2dj9l1l3fd09w1zkrdnxdgll8rjkd5hn3mz4vhc4qrx19";
+      })
+    ];
 
     meta.license = licenses.mit;
   };
