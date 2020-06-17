@@ -15,6 +15,16 @@ ifndef::env-github[]
 Read more: <<about.adoc#,About Mobile NixOS>>.
 endif::[]
 
+ifdef::env-github[]
+⚠️ **Note**: Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
+endif::[]
+ifndef::env-github[]
+[NOTE]
+====
+Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
+====
+endif::[]
+
 == Documentation
 
  * link:https://mobile.nixos.org/[The Mobile NixOS website] hosts the rendered link:https://github.com/NixOS/mobile-nixos/tree/master/doc[doc folder] for Mobile NixOS documentation.
