@@ -135,7 +135,7 @@ option for the system type, and enable the relevant quirks.
 
 === How do I implement a device?
 
-See the <<porting-guide.adoc#,Porting Guide>>.
+See the <<../porting-guide.adoc#,Porting Guide>>.
 
 
 === How do I implement a family?
