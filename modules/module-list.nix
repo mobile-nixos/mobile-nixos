@@ -9,6 +9,7 @@
   ./generated-filesystems.nix
   ./hardware-allwinner.nix
   ./hardware-generic.nix
+  ./hardware-mediatek.nix
   ./hardware-qualcomm.nix
   ./hardware-ram.nix
   ./hardware-rockchip.nix
