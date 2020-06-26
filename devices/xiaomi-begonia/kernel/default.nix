@@ -66,6 +66,7 @@ in
   patches = [
     ./0001-mtkfb-Default-to-RGB-order.patch
     ./0001-fix-teei-mediatek.patch
+    ./0001-center-logo.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
   ];
 
