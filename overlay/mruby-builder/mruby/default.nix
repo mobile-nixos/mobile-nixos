@@ -13,6 +13,7 @@ in
 , buildPackages
 , ruby
 , bison
+, rake
 , fetchFromGitHub
 , file
 , mruby
@@ -147,13 +148,13 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "mruby";
-  version = "2.1.0";
+  version = "2.1.1";
 
   src = fetchFromGitHub {
     owner   = "mruby";
     repo    = "mruby";
     rev     = version;
-    sha256  = "1y072c7dh9jf8xwy7kia6cb4dkpspq4zf24ssn7zm5f46p4waxni";
+    sha256  = "gEEb0Vn/G+dNgeY6r0VP8bMSPrEOf5s+0GoOcnIPtEU=";
   };
 
   patches = [
