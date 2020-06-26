@@ -159,9 +159,10 @@ stdenv.mkDerivation rec {
   patches = [
     ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
     ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
+    ./bison-36-compat.patch
   ];
 
-  nativeBuildInputs = [ ruby bison ] ++ gemNativeBuildInputs;
+  nativeBuildInputs = [ ruby bison rake ] ++ gemNativeBuildInputs;
   buildInputs = gemBuildInputs;
 
   # Necessary so it uses `gcc` instead of `ld` for linking.
