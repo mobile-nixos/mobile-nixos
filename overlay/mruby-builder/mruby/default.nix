@@ -13,6 +13,7 @@ in
 , buildPackages
 , ruby
 , bison
+, rake
 , fetchFromGitHub
 , file
 , mruby
@@ -147,21 +148,22 @@ let
 in
 stdenv.mkDerivation rec {
   pname = "mruby";
-  version = "2.1.0";
+  version = "2.1.1";
 
   src = fetchFromGitHub {
     owner   = "mruby";
     repo    = "mruby";
     rev     = version;
-    sha256  = "1y072c7dh9jf8xwy7kia6cb4dkpspq4zf24ssn7zm5f46p4waxni";
+    sha256  = "gEEb0Vn/G+dNgeY6r0VP8bMSPrEOf5s+0GoOcnIPtEU=";
   };
 
   patches = [
     ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
     ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
+    ./bison-36-compat.patch
   ];
 
-  nativeBuildInputs = [ ruby bison ] ++ gemNativeBuildInputs;
+  nativeBuildInputs = [ ruby bison rake ] ++ gemNativeBuildInputs;
   buildInputs = gemBuildInputs;
 
   # Necessary so it uses `gcc` instead of `ld` for linking.
