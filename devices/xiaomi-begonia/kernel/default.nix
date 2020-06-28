@@ -67,6 +67,7 @@ in
     ./0001-mtkfb-Default-to-RGB-order.patch
     ./0001-fix-teei-mediatek.patch
     ./0001-center-logo.patch
+    ./0001-mt6360-white-led-defaults-to-on.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
   ];
 
