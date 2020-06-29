@@ -31,7 +31,7 @@
   ./internal.nix
   ./mobile-device.nix
   ./nixpkgs.nix
-  ./quirks/qualcomm/default.nix
+  ./quirks
   ./rootfs.nix
   ./system-target.nix
   ./system-types.nix
