@@ -27,6 +27,7 @@ in
     ./90_dtbs-install.patch
     ./0001-mtkfb-Default-to-RGB-order.patch
     ./0001-mobile-nixos-Add-identifier-nodes-to-root-node.patch
+    ./0001-center-logo.patch
   ];
 
   makeFlags = [
