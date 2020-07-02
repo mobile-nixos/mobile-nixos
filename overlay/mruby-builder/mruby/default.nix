@@ -18,6 +18,7 @@ in
 , file
 , mruby
 , writeText
+, writeShellScriptBin
 
 # When unset the default gembox will be used.
 # For a native build, use the default gembox
@@ -145,6 +146,16 @@ let
     end
     ''}
   '';
+
+  # Inspired from #91991
+  # https://github.com/NixOS/nixpkgs/pull/91991
+  # The mruby build would need to be patched in the future.
+  # As 2.2 will require other invasive changes, this is worked around until 2.2 is released.
+  # The default (without other inputs) mruby build does not use `pkg-config`,
+  # but its `#search_package` implementation does.
+  pkgconfig-helper = writeShellScriptBin "pkg-config" ''
+    exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
+  '';
 in
 stdenv.mkDerivation rec {
   pname = "mruby";
@@ -163,7 +174,7 @@ stdenv.mkDerivation rec {
     ./bison-36-compat.patch
   ];
 
-  nativeBuildInputs = [ ruby bison rake ] ++ gemNativeBuildInputs;
+  nativeBuildInputs = [ pkgconfig-helper ruby bison rake ] ++ gemNativeBuildInputs;
   buildInputs = gemBuildInputs;
 
   # Necessary so it uses `gcc` instead of `ld` for linking.
