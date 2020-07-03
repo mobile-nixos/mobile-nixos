@@ -24,14 +24,14 @@ let
 in
   stdenv.mkDerivation {
     pname = "mobile-nixos-early-boot-gui";
-    version = "2020-02-05";
+    version = "2020-07-02";
 
     src = fetchFromGitHub {
       fetchSubmodules = true;
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "d98d5e59ba0f4a76b2f092ee957a198d9e749dfb";
-      sha256 = "1hn01mi44wmx12987va4h69ldnvjbvniwm9slnd5naib6j2n5rbw";
+      rev = "d531b45b19612e520eec26660029c49f223d8d3a";
+      sha256 = "0cyra0ji2sb48c9h2vafzzsfz3y26b6k37mfc6gnv0lfx0js52hs";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
