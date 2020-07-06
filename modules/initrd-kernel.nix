@@ -70,9 +70,9 @@ in
   };
 
   config.mobile.boot.stage-1 = (mkIf cfg.modular {
+    firmware = [ modulesClosure ];
     contents = [
       { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
-      { object = "${modulesClosure}/lib/firmware"; symlink = "/lib/firmware"; }
     ];
     kernel.modules = [
       # Basic always-needed kernel modules.
