@@ -6,6 +6,11 @@ let
 in
 {
   options.mobile = {
+    hardware.socs.mediatek-mt6755.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is Mediatek MT6755 (Helio P10)";
+    };
     hardware.socs.mediatek-mt6785.enable = mkOption {
       type = types.bool;
       default = false;
@@ -14,6 +19,12 @@ in
   };
 
   config = mkMerge [
+    {
+      mobile = mkIf cfg.mediatek-mt6755.enable {
+        system.system = "aarch64-linux";
+        quirks.fb-refresher.enable = true;
+      };
+    }
     {
       mobile = mkIf cfg.mediatek-mt6785.enable {
         system.system = "aarch64-linux";

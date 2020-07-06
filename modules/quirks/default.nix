@@ -1,0 +1,6 @@
+{
+  imports = [
+    ./qualcomm
+    ./framebuffer.nix
+  ];
+}
