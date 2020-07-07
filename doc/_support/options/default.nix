@@ -31,6 +31,11 @@ let
           # ⇒ Package ‘ceph-14.2.7’ in .../nixpkgs/pkgs/tools/filesystems/ceph/default.nix:178
           #   is not supported on ‘aarch64-linux’, refusing to evaluate.
           <nixpkgs/nixos/modules/services/network-filesystems/ceph.nix>
+
+          # As of 2020-07-03 this module fails the evaluation. (55668eb671b915b49bcaaeec4518cc49d8de0a99)
+          # ⇒ Package ‘blockbook-0.3.4’ in .../nixpkgs/pkgs/servers/blockbook/default.nix:71
+          #   is not supported on ‘aarch64-linux’, refusing to evaluate.
+          <nixpkgs/nixos/modules/services/networking/blockbook-frontend.nix>
         ];
       }
     ];
