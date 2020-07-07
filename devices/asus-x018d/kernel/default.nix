@@ -20,7 +20,7 @@ in
     owner = "mobile-nixos";
     repo = "linux";
     rev = "0df1d3c38e1b8283f4497edc8b6b729c8da1e82b"; # mobile-nixos/asus-x018d
-    sha256 = "13ql3yn0syda2g0r1rhmrlwmcc9fc7rg87xdxbzs1np5hwmnj0m3";
+    sha256 = "03i6rxndpzqccig4r2gjva22g90y7j8cijds9yyjf5l841iixwnj";
   };
 
   patches = [
