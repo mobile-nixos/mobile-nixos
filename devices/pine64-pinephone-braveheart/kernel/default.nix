@@ -21,6 +21,8 @@
   installTargets = [ "install" "dtbs" ];
   postInstall = postInstall + ''
     mkdir -p "$out/dtbs/allwinner"
-    cp -v "$buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone*" "$out/dtbs/allwinner/"
+    cp -v "$buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.0.dtb" "$out/dtbs/allwinner/"
+    cp -v "$buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.1.dtb" "$out/dtbs/allwinner/"
+    cp -v "$buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-1.2.dtb" "$out/dtbs/allwinner/"
   '';
 })
