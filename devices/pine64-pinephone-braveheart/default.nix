@@ -13,10 +13,11 @@
     screen = {
       width = 720; height = 1440;
     };
+    rev = if "" == builtins.getEnv "MOBILE_NIXOS_DEVICE_HW_REV" then "1.0" else builtins.getEnv "MOBILE_NIXOS_DEVICE_HW_REV";
   };
 
   mobile.boot.stage-1 = {
-    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; hardware = config.mobile.hardware; };
   };
 
   boot.kernelParams = [

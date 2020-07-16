@@ -15,6 +15,7 @@
   ./hardware-rockchip.nix
   ./hardware-screen.nix
   ./hardware-soc.nix
+  ./hardware-rev.nix
   ./initrd-base.nix
   ./initrd-boot-gui.nix
   ./initrd-fbterm.nix
