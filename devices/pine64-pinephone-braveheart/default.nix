@@ -38,5 +38,10 @@
     gpio set 115   # R
     gpio set 114   # G
     gpio clear 116 # B
+
+    # Properly shut off EG25 by pulling up PWRKEY.
+    gpio set 35
+    sleep 1
+    gpio clear 35
   '';
 }
