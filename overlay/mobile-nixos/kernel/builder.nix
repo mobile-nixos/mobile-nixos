@@ -17,6 +17,7 @@
 , buildPackages
 
 , writeTextFile
+, writeShellScriptBin
 
 , perl
 , bc
@@ -87,6 +88,12 @@ let
       cp -av $3 $4
     '';
   };
+
+  # Inspired from #91991
+  # https://github.com/NixOS/nixpkgs/pull/91991
+  pkgconfig-helper = writeShellScriptBin "pkg-config" ''
+    exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
+  '';
 
   # Shortcuts
   inherit (stdenv.lib) optionals optional optionalString;
@@ -235,7 +242,7 @@ let kernel = stdenv.mkDerivation {
     menuconfig = kernel.overrideAttrs({nativeBuildInputs ? [] , ...}: {
       nativeBuildInputs = nativeBuildInputs ++ [
         ncurses
-        pkgconfig
+        pkgconfig-helper
       ];
       buildFlags = [ "nconfig" "V=1" ];
 
