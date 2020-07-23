@@ -2,6 +2,7 @@
 , callPackage
 , fetchFromGitHub
 , pkg-config
+, buildPackages
 
 # Configuration
 , withSimulator ? false
@@ -25,7 +26,7 @@ mrbgems.mkGem {
     lvgui
   ] ++ lvgui.buildInputs;
   gemNativeBuildInputs = [
-    pkg-config
+    buildPackages.pkg-config
   ];
 
   requiredGems = with mrbgems; [
