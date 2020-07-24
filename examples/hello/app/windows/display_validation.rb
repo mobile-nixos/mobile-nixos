@@ -1,9 +1,9 @@
 module GUI
-  class DisplayValidationWindow < BaseWindow
-    include ButtonPalette
+  class DisplayValidationWindow < LVGUI::BaseWindow
+    include LVGUI::ButtonPalette
     def initialize()
       super()
-      BackButton.new(@toolbar, MainWindow.instance)
+      LVGUI::BackButton.new(@toolbar, MainWindow.instance)
       @container.refresh
 
       LVGL::LVLabel.new(@container).tap do |label|
