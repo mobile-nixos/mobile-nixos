@@ -61,12 +61,11 @@ module BootGUI
   # Shows the list of generations to boot into.
   class GenerationsWindow < LVGUI::BaseWindow
     include LVGUI::ButtonPalette
+    include LVGUI::Window::WithBackButton
+    goes_back_to ->() { MainWindow.instance }
 
     def initialize()
       super()
-      LVGUI::BackButton.new(@toolbar, MainWindow.instance)
-      # Refresh the scrolling container, since we added to the toolbar.
-      @container.refresh
 
       if File.exist?(::SELECTIONS)
         JSON.parse(File.read(::SELECTIONS)).each do |selection|
