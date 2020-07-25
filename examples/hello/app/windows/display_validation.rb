@@ -1,10 +1,11 @@
 module GUI
   class DisplayValidationWindow < LVGUI::BaseWindow
     include LVGUI::ButtonPalette
+    include LVGUI::Window::WithBackButton
+    goes_back_to ->() { MainWindow.instance }
+
     def initialize()
       super()
-      LVGUI::BackButton.new(@toolbar, MainWindow.instance)
-      @container.refresh
 
       LVGL::LVLabel.new(@container).tap do |label|
 text = <<EOF
