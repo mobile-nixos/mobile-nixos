@@ -172,6 +172,7 @@ in
       };
       additionalCommands = mkOption {
         type = types.str;
+        default = "";
         description = ''
           Additional U-Boot commands to run.
         '';

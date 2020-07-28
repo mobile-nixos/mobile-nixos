@@ -64,6 +64,8 @@ in
     if device == null then (id: id) else
     if device ? special
     then header "Evaluating: ${device.name}"
+    else if (builtins.tryEval (builtins.isPath device && builtins.pathExists device)).value
+    then header "Evaluating device from path: ${toString device}"
     else header "Evaluating device: ${device}"
   )
 {

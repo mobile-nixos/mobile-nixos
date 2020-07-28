@@ -18,7 +18,14 @@ if other_args.empty?
 end
 
 DEVICE = other_args.shift
-FILE = Dir.glob(File.join(ROOT, "devices", DEVICE, "kernel", "config.*")).sort.first
+
+FILE =
+  # Is the device a path?
+  if DEVICE.match(%r{/})
+    Dir.glob(File.join(DEVICE, "kernel", "config.*")).sort.first
+  else
+    Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel", "config.*")).sort.first
+  end
 
 ONLY_SAVE = !!params.delete("--only-save")
 
@@ -27,22 +34,32 @@ unless params.empty?
   usage
   exit 1
 end
+
 unless other_args.empty?
   $stderr.puts "Unexpected arguments #{other_args.join(", ")}."
   usage
   exit 1
 end
-unless File.exists?(FILE)
+
+unless FILE
   $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
   usage
   exit 1
 end
 
+arg =
+  # Is the device a path?
+  if DEVICE.match(%r{/})
+    ["--arg", "device", DEVICE]
+  else
+    ["--argstr", "device", DEVICE]
+  end
+
 Dir.chdir(ROOT) do
   tool = File.join(`#{[
     "nix-build",
     "--no-out-link",
-    "--argstr", "device", DEVICE,
+    *arg,
     "-A", "config.mobile.boot.stage-1.kernel.package.menuconfig"
   ].shelljoin}`.strip, "bin/nconf")
 
