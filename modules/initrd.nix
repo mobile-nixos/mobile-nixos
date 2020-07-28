@@ -14,6 +14,7 @@ let
     concatStringsSep
     filter
     flatten
+    getBin
     mkOption
     optionalString
     optionals
@@ -123,7 +124,7 @@ let
           --replace cdrom_id ${extraUtils}/bin/cdrom_id \
           --replace ${pkgs.coreutils}/bin/basename ${extraUtils}/bin/basename \
           --replace ${pkgs.utillinux}/bin/blkid ${extraUtils}/bin/blkid \
-          --replace ${pkgs.lvm2}/sbin ${extraUtils}/bin \
+          --replace ${getBin pkgs.lvm2}/bin ${extraUtils}/bin \
           --replace ${pkgs.mdadm}/sbin ${extraUtils}/sbin \
           --replace ${pkgs.bash}/bin/sh ${extraUtils}/bin/sh \
           --replace ${udev}/bin/udevadm ${extraUtils}/bin/udevadm
