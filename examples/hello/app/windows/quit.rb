@@ -1,6 +1,8 @@
 module GUI
-  class QuitWindow < BaseWindow
-    include ButtonPalette
+  class QuitWindow < LVGUI::BaseWindow
+    include LVGUI::ButtonPalette
+    include LVGUI::Window::WithBackButton
+    goes_back_to ->() { MainWindow.instance }
 
     def run(*cmd)
       $stderr.puts " $ " + cmd.join(" ")
@@ -9,8 +11,6 @@ module GUI
 
     def initialize()
       super()
-      BackButton.new(@toolbar, MainWindow.instance)
-      @container.refresh
 
       add_buttons([
         ["Reboot", ->() { run("reboot") }],

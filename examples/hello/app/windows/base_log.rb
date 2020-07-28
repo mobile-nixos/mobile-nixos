@@ -1,9 +1,11 @@
 module GUI
-  class BaseLogWindow < BaseWindow
-    include ButtonPalette
+  class BaseLogWindow < LVGUI::BaseWindow
+    include LVGUI::ButtonPalette
+    include LVGUI::Window::WithBackButton
+    goes_back_to ->() { MainWindow.instance }
+
     def initialize(explanation:)
       super()
-      BackButton.new(@toolbar, MainWindow.instance)
       @explanation = LVGL::LVLabel.new(@toolbar).tap do |label|
         label.set_long_mode(LVGL::LABEL_LONG::SROLL_CIRC)
         label.set_align(LVGL::LABEL_ALIGN::CENTER)

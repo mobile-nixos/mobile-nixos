@@ -30,13 +30,16 @@ let loader = mruby.builder {
     mruby-file-stat
     mruby-json
     mruby-logger
-    mruby-lvgui
     mruby-open3
     mruby-regexp-pcre
     mruby-singleton
     mruby-time-strftime
 
-    # This needs to be the last gem
+    # Last as it may depend on any of the previous gems.
+    mruby-lvgui
+
+    # Though this needs to be the real last gem, as it has
+    # special significance during the build.
     mruby-require
   ];
 
