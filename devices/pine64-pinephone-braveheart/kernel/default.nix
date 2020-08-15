@@ -1,18 +1,18 @@
 {
   mobile-nixos
-, fetchFromGitLab
+, fetchFromGitHub
 , fetchpatch
 , kernelPatches ? [] # FIXME
 }:
 
 (mobile-nixos.kernel-builder {
-  version = "5.7.0";
+  version = "5.8.0";
   configfile = ./config.aarch64;
-  src = fetchFromGitLab {
-    owner = "pine64-org";
+  src = fetchFromGitHub {
+    owner = "mobile-nixos";
     repo = "linux";
-    rev = "c906a7d36abaa9ca379015c275b85af5d5b01987";
-    sha256 = "0z4j6zd4w1miw5vsfwzxbcrqskav710vxkxbyjrbwmycpzc0jpkb";
+    rev = "555692adddc0e74946e6f0a32fee1b0cd21bbbc3";
+    sha256 = "0njq3r1g39rh1xgrk9bgscqx9cj6nvs7y8jjcdqjkb6pbrc3kfmy";
   };
   patches = [
     ./0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch
