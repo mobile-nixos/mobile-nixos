@@ -20,7 +20,6 @@
       # And here the installation-device profile is a bit annoying.
       # Let's ultra-diable the documentation and nixos manual.
       documentation.enable            = lib.mkOverride 10 false;
-      services.nixosManual.showManual = lib.mkOverride 10 false;
     }
   ];
 }
