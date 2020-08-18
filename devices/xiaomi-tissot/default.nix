@@ -19,6 +19,12 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.usb = {
+    mode = "android_usb";
+    idVendor = "18d1";
+    idProduct = "d001";
+  };
+
   mobile.system.android = {
     bootimg.flash = {
       offset_base = "0x80000000";
