@@ -39,7 +39,6 @@
         config = lib.mkMerge [
           config
           {
-            mobile.device.info = {};
             mobile.system.type = "none";
             mobile.hardware.soc = {
               x86_64-linux = "generic-x86_64";
