@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android.bootimg = {
     dt = "${config.mobile.boot.stage-1.kernel.package}/dtbs/motorola-addison.img";
     flash = {
@@ -52,4 +54,6 @@
   mobile.system.type = "android";
 
   mobile.quirks.qualcomm.fb-notify.enable = true;
+
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
 }
