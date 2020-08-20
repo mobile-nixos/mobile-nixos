@@ -4,7 +4,7 @@
 , buildUBoot
 , armTrustedFirmwareAllwinner
 , fetchpatch
-, fetchFromGitLab
+, fetchurl
 }:
 
 let
@@ -20,8 +20,12 @@ in
   BL31 = "${armTrustedFirmwareAllwinner}/bl31.bin";
 
   extraPatches = [
+    # https://patchwork.ozlabs.org/patch/1202024
     (pw "1202024" "0c196zk1s3pq3wdv909sxmjgqpll2hwb817bpbghkfkyyknl96vg")
-    ./0001-HACK-Turn-red-LED-on-for-pinephone.patch
+
+    # Adapted from: https://gitlab.com/pine64-org/u-boot/-/tree/crust
+    # This drops the commits irrelevant for the pinephone.
+    ./minimal-crust-support.patch
   ];
 
   filesToInstall = ["u-boot-sunxi-with-spl.bin" "u-boot.img" "u-boot.dtb"];
@@ -38,12 +42,10 @@ in
     CONFIG_BOOTDELAY=0
   '';
 }).overrideAttrs(old: rec {
-  version = "2020.04-rc3";
-  src = fetchFromGitLab {
-    owner = "pine64-org";
-    repo = "u-boot";
-    sha256 = "10j3bl99fkvcgxaaikraljzs4bk0ikmswbsv4jai12xwnk9aidd7";
-    rev = "ec643935990b517e96ba9676eb0093b9bec96189";
+  version = "2020.07";
+  src = fetchurl {
+    url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${version}.tar.bz2";
+    sha256 = "0sjzy262x93aaqd6z24ziaq19xjjjk5f577ivf768vmvwsgbzxf1";
   };
   postInstall = ''
     cp .config $out/build.config
