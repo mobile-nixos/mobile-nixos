@@ -27,7 +27,6 @@
   boot.kernelParams = [
     "console=ttyS2,115200n8"
     "earlyprintk=ttyS2,115200n8"
-    "loglevel=8"
     "vt.global_cursor_default=0"
   ];
 

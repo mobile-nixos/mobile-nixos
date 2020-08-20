@@ -1,0 +1,19 @@
+= Chromebook Tablet CT100PA
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Developer mode
+
+For more details the link:https://chromium.googlesource.com/chromiumos/docs/+/master/debug_buttons.md#Firmware-Menu-Interface[
+Firmware Menu Interface] section from the upstream documentation can be read.
+
+You will need to:
+
+. Boot in _Recovery mode_ by powering on using `Power` + `Volume-Up` + `Volume-Down`
+. Activate Developer mode by pressing `Volume-Up` and `Volume-Down` simultaneously
+
+Note that this is only to allow you to boot unverified images.
+
+You might want to configure other options with GBB flags, left as an
+exercise to the reader.
