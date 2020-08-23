@@ -31,6 +31,12 @@
     };
   };
 
+  # Using `xz` allows us to fit the kernel + dt + initrd in 16MiB
+  #   Kernel: ~8.8M
+  #   DT:      1.2M
+  # We're left with ~6MB for the compressed initrd.
+  mobile.boot.stage-1.compression = lib.mkDefault "xz";
+
   boot.kernelParams = [
     "androidboot.console=ttyHSL0"
     "androidboot.hardware=qcom"
