@@ -158,11 +158,11 @@ let
       in
         ''
           # Copy udev.
-          copy_bin_and_libs ${udev}/lib/systemd/systemd-udevd
           copy_bin_and_libs ${udev}/bin/udevadm
           for BIN in ${udev}/lib/udev/*_id; do
             copy_bin_and_libs $BIN
           done
+          ln -sf udevadm $out/bin/systemd-udevd
         ''
       ;
     }]
