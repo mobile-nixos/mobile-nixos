@@ -4,29 +4,13 @@
 , buildUBoot
 , armTrustedFirmwareAllwinner
 , fetchpatch
-, fetchurl
+, fetchFromGitLab
 }:
 
-let
-  pw = id: sha256: fetchpatch {
-    inherit sha256;
-    name = "${id}.patch";
-    url = "https://patchwork.ozlabs.org/patch/${id}/raw/";
-  };
-in
 (buildUBoot {
   defconfig = "pinephone_defconfig";
   extraMeta.platforms = ["aarch64-linux"];
   BL31 = "${armTrustedFirmwareAllwinner}/bl31.bin";
-
-  extraPatches = [
-    # https://patchwork.ozlabs.org/patch/1202024
-    (pw "1202024" "0c196zk1s3pq3wdv909sxmjgqpll2hwb817bpbghkfkyyknl96vg")
-
-    # Adapted from: https://gitlab.com/pine64-org/u-boot/-/tree/crust
-    # This drops the commits irrelevant for the pinephone.
-    ./minimal-crust-support.patch
-  ];
 
   filesToInstall = ["u-boot-sunxi-with-spl.bin" "u-boot.img" "u-boot.dtb"];
 
@@ -42,10 +26,12 @@ in
     CONFIG_BOOTDELAY=0
   '';
 }).overrideAttrs(old: rec {
-  version = "2020.07";
-  src = fetchurl {
-    url = "ftp://ftp.denx.de/pub/u-boot/u-boot-${version}.tar.bz2";
-    sha256 = "0sjzy262x93aaqd6z24ziaq19xjjjk5f577ivf768vmvwsgbzxf1";
+  version = "495f85a398272e6d8ea8142790158afa1bb29c77";
+  src = fetchFromGitLab {
+    repo = "u-boot";
+    owner = "pine64-org";
+    rev = version;
+    sha256 = "1w8yr24naxcqkrrcgvcxm6sq6djggnkfwslnb1gdcn9slgiysvq6";
   };
   postInstall = ''
     cp .config $out/build.config
