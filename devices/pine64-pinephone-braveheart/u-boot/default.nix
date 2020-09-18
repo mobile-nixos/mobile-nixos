@@ -26,11 +26,10 @@
     CONFIG_BOOTDELAY=0
   '';
 }).overrideAttrs(old: rec {
-  version = "495f85a398272e6d8ea8142790158afa1bb29c77";
   src = fetchFromGitLab {
     repo = "u-boot";
     owner = "pine64-org";
-    rev = version;
+    rev = "495f85a398272e6d8ea8142790158afa1bb29c77";
     sha256 = "1w8yr24naxcqkrrcgvcxm6sq6djggnkfwslnb1gdcn9slgiysvq6";
   };
   postInstall = ''
