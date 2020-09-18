@@ -80,8 +80,7 @@ A sample `local.nix`.
 { lib, ... }:
 
 {
-  # Disables splash screens during boot
-  mobile.boot.stage-1.splash.enable = false;
+  # See https://mobile.nixos.org/options/index.html
 }
 ```
 
