@@ -1,0 +1,23 @@
+= Sony Xperia XA2
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Fastboot
+
+This device has a quirky way to get to fastboot.
+
+* You have to have the device connected to a computer, or else it will not activate fastboot mode.
+* Fastboot shows nothing on the display
+
+With the phone connected to a computer, hold volume up and *somehow* cause a
+reboot (from the system, or by holding power to force reset).
+
+Alternatively, from a powered-off state, hold volume up and connect to your
+computer.
+
+Finally, you can always trigger a reboot to bootloader via software. From
+within Mobile NixOS, `sudo reboot bootloader`, or from an Android-based system
+using `adb reboot bootloader` or equivalent methods.
+
+Note that the LED will light up blue when in fastboot mode.
