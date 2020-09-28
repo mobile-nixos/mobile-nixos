@@ -63,8 +63,7 @@
   mobile.usb.idProduct = "71F7";
 
   mobile.usb.gadgetfs.functions = {
-    /* The following is a common valid value for rndis. Uncomment it and try it out. */
-    #rndis = "gsi.rndis";
+    rndis = "rndis_bam.rndis";
   };
 
 }
