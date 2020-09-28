@@ -24,6 +24,7 @@ in
   };
 
   patches = [
+    ./0001-Mobile-NixOS-configure-LEDs.patch
     ./0001-mobile-nixos-Adds-and-sets-BGRA-as-default.patch
     ./0001-mobile-nixos-Workaround-selected-processor-does-not-.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
