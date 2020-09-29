@@ -37,6 +37,11 @@ in
       default = false;
       description = "enable when SOC is SDM660";
     };
+    hardware.socs.qualcomm-sdm845.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is SDM845";
+    };
   };
 
   config = mkMerge [
@@ -66,6 +71,13 @@ in
     }
     {
       mobile = mkIf cfg.qualcomm-sdm660.enable {
+        system.system = "aarch64-linux";
+        quirks.fb-refresher.enable = true;
+      };
+    }
+    {
+      # not sure if right:
+      mobile = mkIf cfg.qualcomm-sdm845.enable {
         system.system = "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
