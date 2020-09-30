@@ -12,6 +12,8 @@
 # It is also an experiments ground for a more ergonomic interface.
 #
 
+# This is the callPackage signature.
+# These are dependencies for dependency injection.
 { stdenv
 , path
 , buildPackages
@@ -27,6 +29,7 @@
 , gmp
 , libmpc
 , mpfr
+, dtc
 
 , libelf
 , utillinux
@@ -41,42 +44,59 @@
 }:
 
 let
-  # FIXME : implement some basic rules for most version strings.
+  # For now this is a no-op.
   modDirify = v: v;
+
+  # Shortcuts
+  inherit (stdenv.lib) optionals optional optionalString;
+  inherit (stdenv.hostPlatform) platform;
+
+  maybeString = str: optionalString (str != null) str;
 in
 
+# This is the builder function signature.
+
+# We have to be provided with a source
 { src
+# And a version
 , version
 , modDirVersion ? modDirify version
 
+# Additionally, a config file is required.
 , configfile
-, hasDTB ? false
 
-, kernelPatches ? []
-, patches ? []
-, postPatch ? ""
-, makeFlags ? []
+# Togglable common quirks
+, enableCenteredLinuxLogo ? true
+, enableLinuxLogoReplacement ? true
+, linuxLogo224PPMFile ? ./logo_linux_clut224.ppm
+, enableRemovingWerror ? false
+, enableCompilerGcc6Quirk ? false
+
+# Usual stdenv arguments we are also setting.
+# Use the ones given by the user for composition.
 , nativeBuildInputs ? []
+, patches ? []
+, makeFlags ? []
+, prePatch ? null
+, postPatch ? null
+, postInstall ? null
 
 # Part of the "API" of the kernel builder.
 # Image builders expect this attribute to know where to find the kernel file.
+# XXX : review if we can detect this instead in a safe manner
 , file ? stdenv.hostPlatform.platform.kernelTarget
 
-# FIXME : useful?
-, isModular ? true
+# Part of the usual NixOS kernel builder API
 , installsFirmware ? true
+, isModular ? true
+, kernelPatches ? []
 
-}:
+, ...
+} @ inputArgs:
 
 let
-  commonMakeFlags = [
-    "O=$(buildRoot)"
-  ]
-  ++ stdenv.lib.optionals (stdenv.hostPlatform.platform ? kernelMakeFlags) stdenv.hostPlatform.platform.kernelMakeFlags
-  ;
-
   # Path within <nixpkgs> to refer to the kernel build system's file.
-  nixosPath = "${path}/pkgs/os-specific/linux/kernel/";
+  nixosKernelPath = "${path}/pkgs/os-specific/linux/kernel/";
 
   # Same installer as in <nixpkgs>, though they don't expose it :/.
   installkernel = writeTextFile {
@@ -92,17 +112,19 @@ let
 
   # Inspired from #91991
   # https://github.com/NixOS/nixpkgs/pull/91991
+  # (required for menuconfig)
   pkgconfig-helper = writeShellScriptBin "pkg-config" ''
     exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
   '';
 
-  # Shortcuts
-  inherit (stdenv.lib) optionals optional optionalString;
-  inherit (stdenv.hostPlatform) platform;
+  hasDTB = stdenv.hostPlatform.platform.kernelDTB;
 in
 
-# We'll append to this derivation inside passthru.
-let kernel = stdenv.mkDerivation {
+# This `let` block allows us to have a self-reference to this derivation.
+# We'll re-use this derivation inside passthru for normalizedConfig and menuconfig.
+let kernelDerivation =
+
+stdenv.mkDerivation (inputArgs // {
   pname = "linux";
   inherit src version file;
 
@@ -116,13 +138,16 @@ let kernel = stdenv.mkDerivation {
     ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
     ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
+    # Mobile NixOS inputs.
+    # While some kernels might not need those, most will.
+    ++ [ dtc ] 
     ++ nativeBuildInputs
   ;
 
   patches =
     map (p: p.patch) kernelPatches
     # Required for deterministic builds along with some postPatch magic.
-    ++ optional (stdenv.lib.versionAtLeast version "4.13") "${nixosPath}/randstruct-provide-seed.patch"
+    ++ optional (stdenv.lib.versionAtLeast version "4.13") "${nixosKernelPath}/randstruct-provide-seed.patch"
     ++ patches
   ;
 
@@ -135,9 +160,12 @@ let kernel = stdenv.mkDerivation {
     if [ -e scripts/ld-version.sh ]; then
       sed -i scripts/ld-version.sh -e "s|/usr/bin/awk|${buildPackages.gawk}/bin/awk|"
     fi
-  '';
+  ''
+    + maybeString prePatch
+  ;
 
   postPatch = ''
+    echo ":: Patching for reproducibility"
     # Set randstruct seed to a deterministic but diversified value. Note:
     # we could have instead patched gen-random-seed.sh to take input from
     # the buildFlags, but that would require also patching the kernel's
@@ -149,27 +177,55 @@ let kernel = stdenv.mkDerivation {
         $(echo ${src} ${configfile} | sha256sum | cut -d ' ' -f 1 | tr -d '\n')
     fi
 
-    # FIXME : make optional...
+    echo ":: Removing default OEM-provided certificates"
+    rm -vf *.x509
+
+    echo ":: Patching tools/ shebangs"
+    patchShebangs tools
+
+  '' + optionalString enableLinuxLogoReplacement ''
+    echo ":: Replacing the logo"
+    cp ${linuxLogo224PPMFile} drivers/video/logo/logo_linux_clut224.ppm
+
+  '' + optionalString enableCenteredLinuxLogo ''
     # Makes the "logo" option show only one logo and not dependent on cores.
     # This should be "safer" than a patch on a greater range of kernel versions.
     # Also defaults to centering when possible.
     
+    echo ":: Patching for centered linux logo"
     if [ -e drivers/video/fbdev/core/fbmem.c ]; then
+      # Force showing only one logo
       sed -i -e 's/num_online_cpus()/1/g' \
         drivers/video/fbdev/core/fbmem.c
+
+      # Force centering logo
       sed -i -e '/^bool fb_center_logo/ s/;/ = true;/' \
         drivers/video/fbdev/core/fbmem.c
     fi
+
     if [ -e drivers/video/fbmem.c ]; then
+      # Force showing only one logo
       sed -i -e 's/num_online_cpus()/1/g' \
         drivers/video/fbmem.c
     fi
 
-    # Overrides the kernel logo
-    cp ${./logo_linux_clut224.ppm} drivers/video/logo/logo_linux_clut224.ppm
+  '' + optionalString enableRemovingWerror ''
+    echo ":: Removing all -Werror from makefiles"
+    (
+    for i in $(find . -type f -name Makefile) $(find . -type f -name Kbuild); do
+      sed -i 's/-Werror-/-W/g' "$i"
+      sed -i 's/-Werror=/-W/g' "$i"
+      sed -i 's/-Werror//g' "$i"
+    done
+    )
 
-    ${postPatch}
-  '';
+  '' + optionalString enableCompilerGcc6Quirk ''
+    echo ":: Adding GCC6 compiler compatibility shim"
+    cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
+
+  ''
+    + maybeString postPatch
+  ;
 
   configurePhase = ''
     runHook preConfigure
@@ -229,7 +285,8 @@ let kernel = stdenv.mkDerivation {
       exit 1
     fi
   
-    # Note: we can get rid of this once http://permalink.gmane.org/gmane.linux.kbuild.devel/13800 is merged.
+    # We have to keep this around, even when Linux supports this in mainline, as kernel forks might
+    # be older than the mainline fix.
     buildFlagsArray+=("KBUILD_BUILD_TIMESTAMP=$(date -u -d @$SOURCE_DATE_EPOCH)")
 
     cd $buildRoot
@@ -258,25 +315,34 @@ let kernel = stdenv.mkDerivation {
     mkdir -p $out/dtbs/
     make $makeFlags "''${makeFlagsArray[@]}" dtbs dtbs_install INSTALL_DTBS_PATH=$out/dtbs
   ''
+    + maybeString postInstall
   ;
 
   hardeningDisable = [ "bindnow" "format" "fortify" "stackprotector" "pic" "pie" ];
 
-  # Absolute paths for compilers avoid any PATH-clobbering issues.
-  makeFlags = commonMakeFlags ++ [
+  makeFlags = [
+    "O=$(buildRoot)"
     "CC=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
     "HOSTCC=${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc"
     "ARCH=${stdenv.hostPlatform.platform.kernelArch}"
-  ] ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [
-    "CROSS_COMPILE=${stdenv.cc.targetPrefix}"
-  ] ++ makeFlags;
+    "DTC_EXT=${buildPackages.dtc}/bin/dtc"
+  ]
+  # Use platform-specific flags
+  ++ stdenv.lib.optionals (stdenv.hostPlatform.platform ? kernelMakeFlags) stdenv.hostPlatform.platform.kernelMakeFlags
+  # Mark as cross-compilation
+  ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
+  # User-provided makeFlags
+  ++ makeFlags
+  ;
+
 
   requiredSystemFeatures = [ "big-parallel" ];
   enableParallelBuilding = true;
   dontStrip = true;
 
+  # {{{
   passthru = {
-    normalizedConfig = kernel.overrideAttrs({ ... }: {
+    normalizedConfig = kernelDerivation.overrideAttrs({ ... }: {
       forceNormalizedConfig = false;
       buildPhase = "echo Skipping build phase...";
       installPhase = ''
@@ -284,7 +350,7 @@ let kernel = stdenv.mkDerivation {
       '';
     });
     # Patching over this configuration to expose menuconfig.
-    menuconfig = kernel.overrideAttrs({nativeBuildInputs ? [] , ...}: {
+    menuconfig = kernelDerivation.overrideAttrs({nativeBuildInputs ? [] , ...}: {
       nativeBuildInputs = nativeBuildInputs ++ [
         ncurses
         pkgconfig-helper
@@ -374,5 +440,6 @@ let kernel = stdenv.mkDerivation {
       '';
     });
   };
-};
-in kernel
+  # }}}
+});
+in kernelDerivation
