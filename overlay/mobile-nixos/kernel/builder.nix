@@ -56,6 +56,7 @@ in
 , patches ? []
 , postPatch ? ""
 , makeFlags ? []
+, nativeBuildInputs ? []
 
 # Part of the "API" of the kernel builder.
 # Image builders expect this attribute to know where to find the kernel file.
@@ -105,12 +106,17 @@ let kernel = stdenv.mkDerivation {
   pname = "linux";
   inherit src version file;
 
+  # Allows disabling the kernel config normalization.
+  # Set to false when normalizing the kernel config.
+  forceNormalizedConfig = true;
+
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (stdenv.hostPlatform.platform.kernelTarget == "uImage") buildPackages.ubootTools
     ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
     ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ nativeBuildInputs
   ;
 
   patches =
@@ -182,11 +188,37 @@ let kernel = stdenv.mkDerivation {
     # reads the existing .config file and prompts the user for options in
     # the current kernel source that are not found in the file.
     make $makeFlags "''${makeFlagsArray[@]}" oldconfig
-    if ! diff -q $buildRoot/.config{,.old}; then
-      echo 'error: Your configuration does not match once passed through `make oldconfig`.'
-      echo '       Use the `bin/kernel-normalize-config` tool to refresh the configuration.'
-      echo "       Don't forget to make sure the changed configuration options are good!"
-      exit 1
+    if [ -n "$forceNormalizedConfig" ]; then
+      if [ -e $buildRoot/.config.old ]; then
+        # First we strip options that save the exact compiler version.
+        # This is first because it will break with cross-compilation.
+        # It also will break on minor version bumps.
+        # We do not strip options related to compiler features, since
+        # compiler features changing is something we want to track, I think.
+        (
+        cd $buildRoot
+        for f in .config{,.old}; do
+          sed \
+            -e 's;CONFIG_CC_VERSION_TEXT=.*;CONFIG_CC_VERSION_TEXT=;' \
+            -e 's;CONFIG_GCC_VERSION=.*;CONFIG_GCC_VERSION=;' \
+            -e 's;CONFIG_LD_VERSION=.*;CONFIG_LD_VERSION=;' \
+            -e 's;CONFIG_CLANG_VERSION=.*;CONFIG_CLANG_VERSION=;' \
+            $f > .tmp$f
+        done
+        )
+
+        if ! diff -q $buildRoot/.tmp.config{.old,}; then
+          printf "\n\n--------------------------------\n"
+          diff -u $buildRoot/.tmp.config{.old,} || :
+          printf "\n--------------------------------\n\n"
+          echo 'error: Your configuration does not match once passed through `make oldconfig`.'
+          echo '       Use the `bin/kernel-normalize-config` tool to refresh the configuration.'
+          echo "       Don't forget to make sure the changed configuration options are good!"
+          printf "\n"
+          exit 1
+        fi
+        rm -v $buildRoot/.tmp.config{.old,}
+      fi
     fi
     runHook postConfigure
 
@@ -244,6 +276,13 @@ let kernel = stdenv.mkDerivation {
   dontStrip = true;
 
   passthru = {
+    normalizedConfig = kernel.overrideAttrs({ ... }: {
+      forceNormalizedConfig = false;
+      buildPhase = "echo Skipping build phase...";
+      installPhase = ''
+        cp .config $out
+      '';
+    });
     # Patching over this configuration to expose menuconfig.
     menuconfig = kernel.overrideAttrs({nativeBuildInputs ? [] , ...}: {
       nativeBuildInputs = nativeBuildInputs ++ [
@@ -275,7 +314,7 @@ let kernel = stdenv.mkDerivation {
         sed -i"" -e 's/$< .*$(Kconfig)/echo "no-op"/' scripts/kconfig/Makefile
 
         # Build the ...config application.
-        make $buildFlags
+        make $makeFlags "''${makeFlagsArray[@]}" $buildFlags
 
         mv scripts/kconfig/Makefile.old scripts/kconfig/Makefile
         )
@@ -325,7 +364,8 @@ let kernel = stdenv.mkDerivation {
         export ARCH="${stdenv.hostPlatform.platform.kernelArch}"
         export KERNELVERSION="${version}"
         cd "\$KERNEL_TREE"
-        make run-nconfig "\$@"
+        ${/* We're expanding the builder's makeFlags variable here. This is not a mistake. */""}
+        make $makeFlags run-nconfig "\$@"
         EOF
         )
 

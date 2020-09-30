@@ -9,7 +9,68 @@
 #  - Changing configuration options
 #  - Changing the kernel version
 
+require "shellwords"
 ROOT = File.join(__dir__, "..")
-exec(File.join(ROOT, "bin", "menuconfig"), "--only-save", *ARGV)
+
+def usage()
+  puts "Usage: #{$PROGRAM_NAME} <device_name>"
+end
+
+# Poor approximation to arguments parsing.
+params, other_args = ARGV.partition { |s| s.match(/^--/) }
+
+if other_args.empty?
+  $stderr.puts "Device name required."
+  usage
+  exit 1
+end
+
+DEVICE = other_args.shift
+
+FILE =
+  # Is the device a path?
+  if DEVICE.match(%r{/})
+    Dir.glob(File.join(DEVICE, "kernel", "config.*")).sort.first
+  else
+    Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel", "config.*")).sort.first
+  end
+
+unless params.empty?
+  $stderr.puts "Unknown parameters #{params.join(", ")}."
+  usage
+  exit 1
+end
+
+unless other_args.empty?
+  $stderr.puts "Unexpected arguments #{other_args.join(", ")}."
+  usage
+  exit 1
+end
+
+unless FILE
+  $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
+  usage
+  exit 1
+end
+
+arg =
+  # Is the device a path?
+  if DEVICE.match(%r{/})
+    ["--arg", "device", DEVICE]
+  else
+    ["--argstr", "device", DEVICE]
+  end
+
+Dir.chdir(ROOT) do
+  result = `#{[
+    "nix-build",
+    "--no-out-link",
+    *arg,
+    "-A", "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
+  ].shelljoin}`.strip
+
+  # We "cat" into the file to ensure we don't copy the store path access rights.
+  File.write(FILE, File.read(result))
+end
 
 # vim: ft=ruby

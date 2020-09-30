@@ -36,7 +36,7 @@ let inherit (buildPackages) dtc; in
   makeFlags = [ "DTC_EXT=${dtc}/bin/dtc" ];
 
   isModular = false;
-}).overrideAttrs ({ postInstall ? "", postPatch ? "", ... }: {
+}).overrideAttrs ({ postInstall ? "", ... }: {
   installTargets = [ "Image.gz" "zinstall" "Image.gz-dtb" "install" ];
   postInstall = postInstall + ''
     cp $buildRoot/arch/arm64/boot/Image.gz-dtb $out/

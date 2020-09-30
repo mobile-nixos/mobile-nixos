@@ -45,9 +45,7 @@ in
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" "dtbs" ];
-  postPatch = postPatch + ''
+  postPatch = ''
     cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
 
     # FIXME : factor out
@@ -63,6 +61,8 @@ in
     done
     )
   '';
+}).overrideAttrs({ postInstall ? "", ... }: {
+  installTargets = [ "zinstall" "dtbs" ];
   postInstall = postInstall + ''
     mkdir -p "$out/dtbs/"
   ''
