@@ -77,7 +77,14 @@ in
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? [], ... }: {
+  postPatch = ''
+    echo ":: Replacing dtc_overaly"
+    (PS4=" $ "; set -x
+    rm scripts/dtc/dtc_overlay
+    cp ${dtc_overlay} scripts/dtc/dtc_overlay
+    )
+  '';
+}).overrideAttrs({ postInstall ? "", ... }: {
   installTargets = [
     # uh, things seem screwey with that vendor kernel tree, and dependencies
     # are not resolved as expected, so let's ask for the compressed kernel
@@ -87,16 +94,7 @@ in
     "Image.gz-dtb"
     "install"
   ];
-
   postInstall = postInstall + ''
     cp -v "$buildRoot/arch/arm64/boot/Image.gz-dtb" "$out/"
-  '';
-
-  postPatch = postPatch + ''
-    echo ":: Replacing dtc_overaly"
-    (PS4=" $ "; set -x
-    rm scripts/dtc/dtc_overlay
-    cp ${dtc_overlay} scripts/dtc/dtc_overlay
-    )
   '';
 })
