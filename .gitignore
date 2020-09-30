@@ -7,3 +7,4 @@ local.nix
 
 # Misc
 *.swp
+devices/*/kernel/config.*.old
