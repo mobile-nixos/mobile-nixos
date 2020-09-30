@@ -43,11 +43,11 @@
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" ];
-  postPatch = postPatch + ''
+  postPatch = ''
     cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
   '';
+}).overrideAttrs({ postInstall ? "", ... }: {
+  installTargets = [ "zinstall" ];
   postInstall = postInstall + ''
     ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/asus-z00t.img" "arch/arm/boot/"
     cp "arch/arm64/boot/asus-z00t.img" "$out/dtbs/asus-z00t.img"
