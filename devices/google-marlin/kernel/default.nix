@@ -30,9 +30,8 @@ in
   ];
 
   isModular = false;
-}).overrideAttrs({ postInstall ? "", postPatch ? "", nativeBuildInputs, ... }: {
-  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
-  postPatch = postPatch + ''
+
+  postPatch = ''
     # FIXME : factor out
     (
     # Remove -Werror from all makefiles
@@ -49,6 +48,9 @@ in
     # Remove google's default dm-verity certs
     rm -f *.x509
   '';
+}).overrideAttrs({ postInstall ? "", nativeBuildInputs, ... }: {
+  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
+
   nativeBuildInputs = nativeBuildInputs ++ [ dtc ];
 
   postInstall = postInstall + ''
