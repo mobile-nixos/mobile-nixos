@@ -30,6 +30,7 @@ in
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
+    audioflingerglue = callPackage ./audioflingerglue { };
     pulseaudio-modules-droid = callPackage ./pulseaudio-modules-droid { pulseaudio = self.pulseaudioFull; };
 
     # Extra "libs"
