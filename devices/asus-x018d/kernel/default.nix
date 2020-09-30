@@ -38,14 +38,15 @@ in
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? "", nativeBuildInputs ? [], ... }: {
-  nativeBuildInputs = nativeBuildInputs ++ [
-    python2
-  ];
-  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
-  postPatch = postPatch + ''
+  postPatch = ''
     patchShebangs tools
   '';
+
+  nativeBuildInputs = [
+    python2
+  ];
+}).overrideAttrs({ postInstall ? "", ... }: {
+  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
 
   postInstall = postInstall + ''
     cp -v "$buildRoot/arch/arm64/boot/Image.gz-dtb" "$out/"
