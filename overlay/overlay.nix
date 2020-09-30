@@ -32,6 +32,7 @@ in
     ply-image = callPackage ./ply-image { };
     audioflingerglue = callPackage ./audioflingerglue { };
     pulseaudio-modules-droid = callPackage ./pulseaudio-modules-droid { pulseaudio = self.pulseaudioFull; };
+    pulseaudio-modules-droid-glue = callPackage ./pulseaudio-modules-droid-glue { pulseaudio = self.pulseaudioFull; };
 
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
