@@ -29,11 +29,11 @@
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" ];
-  postPatch = postPatch + ''
+  postPatch = ''
     cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
   '';
+}).overrideAttrs({ postInstall ? "", ... }: {
+  installTargets = [ "zinstall" ];
   postInstall = postInstall + ''
     mkdir -p "$out/boot"
 
