@@ -56,6 +56,7 @@ in
 , patches ? []
 , postPatch ? ""
 , makeFlags ? []
+, nativeBuildInputs ? []
 
 # Part of the "API" of the kernel builder.
 # Image builders expect this attribute to know where to find the kernel file.
@@ -115,6 +116,7 @@ let kernel = stdenv.mkDerivation {
     ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
     ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ nativeBuildInputs
   ;
 
   patches =
