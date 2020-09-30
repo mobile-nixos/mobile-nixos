@@ -14,7 +14,7 @@
 }:
 
 let
-  version = "12.2.79";
+  version = "12.2.85";
 
   # Export private header files
   pulsecore = runCommand "pulsecore-headers" {} ''
@@ -34,7 +34,7 @@ in stdenv.mkDerivation rec {
     owner = "mer-hybris";
     repo = "pulseaudio-modules-droid";
     rev = version;
-    sha256 = "0r8i84hwl2by233s522lgbxhjh23m9m3bz28adg0an9xnv2gzszp";
+    sha256 = "1z0nlcdyjq4jp04q6q7k3sb288jq5varmpjgq7zadn7w55bp87cp";
   };
 
   postPatch = ''

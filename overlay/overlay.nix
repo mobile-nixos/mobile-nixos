@@ -30,7 +30,7 @@ in
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
-    pulseaudio-modules-droid = callPackage ./pulseaudio-modules-droid { };
+    pulseaudio-modules-droid = callPackage ./pulseaudio-modules-droid { pulseaudio = self.pulseaudioFull; };
 
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
