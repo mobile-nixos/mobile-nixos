@@ -182,10 +182,14 @@ let kernel = stdenv.mkDerivation {
     # reads the existing .config file and prompts the user for options in
     # the current kernel source that are not found in the file.
     make $makeFlags "''${makeFlagsArray[@]}" oldconfig
-    if ! diff -q $buildRoot/.config{,.old}; then
+    if ! diff -q $buildRoot/.config{.old,}; then
+      printf "\n\n--------------------------------\n"
+      diff -u $buildRoot/.config{.old,} || :
+      printf "\n--------------------------------\n\n"
       echo 'error: Your configuration does not match once passed through `make oldconfig`.'
       echo '       Use the `bin/kernel-normalize-config` tool to refresh the configuration.'
       echo "       Don't forget to make sure the changed configuration options are good!"
+      printf "\n"
       exit 1
     fi
     runHook postConfigure
