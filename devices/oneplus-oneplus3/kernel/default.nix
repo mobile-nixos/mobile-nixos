@@ -29,9 +29,7 @@
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
-  postPatch = postPatch + ''
+  postPatch = ''
     cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
 
     # FIXME : factor out
@@ -47,6 +45,8 @@
     done
     )
   '';
+}).overrideAttrs({ postInstall ? "", ... }: {
+  installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
   postInstall = postInstall + ''
     mkdir -p "$out/dtbs/"
     cp -v "$buildRoot/arch/arm64/boot/Image.gz-dtb" "$out/"
