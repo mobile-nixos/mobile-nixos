@@ -36,7 +36,7 @@ in
 
   isModular = false;
 
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
+}).overrideAttrs({ postInstall ? "", ... }: {
   installTargets = [ "zinstall" "Image.gz-dtb" "install" ];
   postInstall = postInstall + ''
     cp -v "$buildRoot/arch/arm64/boot/Image.gz-dtb" "$out/"
