@@ -279,7 +279,7 @@ let kernel = stdenv.mkDerivation {
         sed -i"" -e 's/$< .*$(Kconfig)/echo "no-op"/' scripts/kconfig/Makefile
 
         # Build the ...config application.
-        make $buildFlags
+        make $makeFlags "''${makeFlagsArray[@]}" $buildFlags
 
         mv scripts/kconfig/Makefile.old scripts/kconfig/Makefile
         )
@@ -329,7 +329,8 @@ let kernel = stdenv.mkDerivation {
         export ARCH="${stdenv.hostPlatform.platform.kernelArch}"
         export KERNELVERSION="${version}"
         cd "\$KERNEL_TREE"
-        make run-nconfig "\$@"
+        ${/* We're expanding the builder's makeFlags variable here. This is not a mistake. */""}
+        make $makeFlags run-nconfig "\$@"
         EOF
         )
 
