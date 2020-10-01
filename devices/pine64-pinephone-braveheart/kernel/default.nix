@@ -1,11 +1,10 @@
 {
   mobile-nixos
 , fetchFromGitHub
-, fetchpatch
 , kernelPatches ? [] # FIXME
 }:
 
-(mobile-nixos.kernel-builder {
+mobile-nixos.kernel-builder {
   version = "5.8.0";
   configfile = ./config.aarch64;
   src = fetchFromGitHub {
@@ -17,10 +16,11 @@
   patches = [
     ./0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch
   ];
-}).overrideAttrs({ postInstall ? "", ... }: {
-  installTargets = [ "install" "dtbs" ];
-  postInstall = postInstall + ''
+
+  # Install *only* the desired FDTs
+  postInstall = ''
+    echo ":: Installing FDTs"
     mkdir -p "$out/dtbs/allwinner"
     cp -v $buildRoot/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone-*.dtb $out/dtbs/allwinner/
   '';
-})
+}
