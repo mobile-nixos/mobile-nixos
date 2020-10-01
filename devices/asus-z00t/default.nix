@@ -25,7 +25,6 @@
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.bootimg = {
-    dt = "${config.mobile.boot.stage-1.kernel.package}/dtbs/asus-z00t.img";
     flash = {
       offset_base = "0x10000000";
       offset_kernel = "0x00008000";
