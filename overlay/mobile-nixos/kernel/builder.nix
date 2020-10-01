@@ -30,6 +30,7 @@
 , libmpc
 , mpfr
 , dtc
+, dtbTool
 
 , libelf
 , utillinux
@@ -64,6 +65,10 @@ in
 
 # Additionally, a config file is required.
 , configfile
+
+# Handling of QCDT dt.img
+, isQcdt ? false
+, qcdt_dtbs ? "arch/${platform.kernelArch}/boot/"
 
 # Togglable common quirks
 , enableCenteredLinuxLogo ? true
@@ -127,6 +132,7 @@ let kernelDerivation =
 stdenv.mkDerivation (inputArgs // {
   pname = "linux";
   inherit src version file;
+  inherit qcdt_dtbs;
 
   # Allows disabling the kernel config normalization.
   # Set to false when normalizing the kernel config.
@@ -141,6 +147,7 @@ stdenv.mkDerivation (inputArgs // {
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.
     ++ [ dtc ] 
+    ++ optional isQcdt dtbTool
     ++ nativeBuildInputs
   ;
 
@@ -309,11 +316,24 @@ stdenv.mkDerivation (inputArgs // {
   ;
 
   postInstall = ''
+    echo ":: Copying configuration file"
     # Helpful in cases where the kernel isn't built with /proc/config.gz
     cp -v "$buildRoot/.config" "$out/build.config"
+
   '' + optionalString hasDTB ''
+    echo ":: Installing DTBs"
     mkdir -p $out/dtbs/
     make $makeFlags "''${makeFlagsArray[@]}" dtbs dtbs_install INSTALL_DTBS_PATH=$out/dtbs
+
+  '' + optionalString isQcdt ''
+    echo ":: Making and installing QCDT dt.img"
+    (PS4=" $ "; set -x
+    mkdir -p $out/
+    dtbTool -s 2048 -p "scripts/dtc/" \
+      -o "$out/dt.img" \
+      "$qcdt_dtbs"
+    )
+
   ''
     + maybeString postInstall
   ;
@@ -342,6 +362,10 @@ stdenv.mkDerivation (inputArgs // {
 
   # {{{
   passthru = {
+    # This is an "API" for the kernel derivation.
+    inherit isQcdt;
+
+    # Derivation with the as-built normalized kernel config
     normalizedConfig = kernelDerivation.overrideAttrs({ ... }: {
       forceNormalizedConfig = false;
       buildPhase = "echo Skipping build phase...";
