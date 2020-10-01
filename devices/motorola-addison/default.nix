@@ -22,7 +22,6 @@
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.bootimg = {
-    dt = "${config.mobile.boot.stage-1.kernel.package}/dtbs/motorola-addison.img";
     flash = {
       offset_base = "0x80000000";
       offset_kernel = "0x00008000";
