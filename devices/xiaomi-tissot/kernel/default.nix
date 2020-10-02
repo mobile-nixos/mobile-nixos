@@ -1,6 +1,5 @@
 { mobile-nixos
 , fetchFromGitHub
-, kernelPatches ? []
 }:
 
 mobile-nixos.kernel-builder-gcc6 {
