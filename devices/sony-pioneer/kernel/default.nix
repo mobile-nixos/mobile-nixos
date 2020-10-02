@@ -1,7 +1,6 @@
 {
   mobile-nixos
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
 }:
 
 mobile-nixos.kernel-builder-gcc49 {
