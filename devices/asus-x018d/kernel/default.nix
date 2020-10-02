@@ -1,7 +1,6 @@
 {
   mobile-nixos
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
 , python2
 , buildPackages
 }:
