@@ -2,7 +2,6 @@
   mobile-nixos
 , stdenv
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
 }:
 
 #
