@@ -56,9 +56,9 @@ let
 in
 
 # This is the builder function signature.
-
+{
 # We have to be provided with a source
-{ src
+  src
 # And a version
 , version
 , modDirVersion ? modDirify version
@@ -72,14 +72,21 @@ in
 
 # Enable support for android-specific "Image.gz-dtb" appended images
 , isImageGzDtb ? false
+
 # Mark the kernel as compressed, assumes .gz
 , isCompressed ? "gz"
 
-# Togglable common quirks
+# Linux logo centering (as a boot logo)
 , enableCenteredLinuxLogo ? true
+
+# Linux logo replacement
 , enableLinuxLogoReplacement ? true
 , linuxLogo224PPMFile ? ./logo_linux_clut224.ppm
+
+# Mainly to mask issues with newer compilers
 , enableRemovingWerror ? false
+
+# Older kernels don't know about gcc6+, and this is needed
 , enableCompilerGcc6Quirk ? false
 
 # Usual stdenv arguments we are also setting.
@@ -340,12 +347,10 @@ stdenv.mkDerivation (inputArgs // {
 
   '' + optionalString isQcdt ''
     echo ":: Making and installing QCDT dt.img"
-    (PS4=" $ "; set -x
     mkdir -p $out/
     dtbTool -s 2048 -p "scripts/dtc/" \
       -o "$out/dt.img" \
       "$qcdt_dtbs"
-    )
 
   '' + optionalString isImageGzDtb ''
     echo ":: Copying platform-specific -dtb image file"
@@ -377,12 +382,12 @@ stdenv.mkDerivation (inputArgs // {
   enableParallelBuilding = true;
   dontStrip = true;
 
-  # {{{
   passthru = {
-    # This is an "API" for the kernel derivation.
+    # Used by consumers of the kernel derivation to configure the build
+    # appropriately for QCDT use.
     inherit isQcdt;
 
-    # Internal API representing the filename of the desired output.
+    # Used by consumers to refer to the kernel build product.
     file = kernelTarget + optionalString isImageGzDtb "-dtb";
 
     # Derivation with the as-built normalized kernel config
@@ -393,6 +398,7 @@ stdenv.mkDerivation (inputArgs // {
         cp .config $out
       '';
     });
+
     # Patching over this configuration to expose menuconfig.
     menuconfig = kernelDerivation.overrideAttrs({nativeBuildInputs ? [] , ...}: {
       nativeBuildInputs = nativeBuildInputs ++ [
@@ -484,6 +490,5 @@ stdenv.mkDerivation (inputArgs // {
       '';
     });
   };
-  # }}}
 });
 in kernelDerivation
