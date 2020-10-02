@@ -70,6 +70,11 @@ in
 , isQcdt ? false
 , qcdt_dtbs ? "arch/${platform.kernelArch}/boot/"
 
+# Enable support for android-specific "Image.gz-dtb" appended images
+, isImageGzDtb ? false
+# Mark the kernel as compressed, assumes .gz
+, isCompressed ? "gz"
+
 # Togglable common quirks
 , enableCenteredLinuxLogo ? true
 , enableLinuxLogoReplacement ? true
@@ -85,11 +90,7 @@ in
 , prePatch ? null
 , postPatch ? null
 , postInstall ? null
-
-# Part of the "API" of the kernel builder.
-# Image builders expect this attribute to know where to find the kernel file.
-# XXX : review if we can detect this instead in a safe manner
-, file ? stdenv.hostPlatform.platform.kernelTarget
+, installTargets ? []
 
 # Part of the usual NixOS kernel builder API
 , installsFirmware ? true
@@ -122,7 +123,11 @@ let
     exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
   '';
 
-  hasDTB = stdenv.hostPlatform.platform.kernelDTB;
+  hasDTB = platform.kernelDTB;
+  kernelFileExtension = if isCompressed != false then ".${isCompressed}" else "";
+  kernelTarget = if platform.kernelTarget == "Image"
+    then "${platform.kernelTarget}${kernelFileExtension}"
+    else platform.kernelTarget;
 in
 
 # This `let` block allows us to have a self-reference to this derivation.
@@ -131,7 +136,7 @@ let kernelDerivation =
 
 stdenv.mkDerivation (inputArgs // {
   pname = "linux";
-  inherit src version file;
+  inherit src version;
   inherit qcdt_dtbs;
 
   # Allows disabling the kernel config normalization.
@@ -140,7 +145,7 @@ stdenv.mkDerivation (inputArgs // {
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
-    ++ optional (stdenv.hostPlatform.platform.kernelTarget == "uImage") buildPackages.ubootTools
+    ++ optional (platform.kernelTarget == "uImage") buildPackages.ubootTools
     ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
     ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
@@ -301,9 +306,10 @@ stdenv.mkDerivation (inputArgs // {
 
   buildFlags = [
     "KBUILD_BUILD_VERSION=1-mobile-nixos"
-    platform.kernelTarget
+    kernelTarget
     "vmlinux"  # for "perf" and things like that
   ]
+    ++ optional isImageGzDtb "${kernelTarget}-dtb"
     ++ optional isModular "modules"
   ;
 
@@ -313,6 +319,13 @@ stdenv.mkDerivation (inputArgs // {
   ]
     ++ optional isModular "INSTALL_MOD_PATH=$(out)"
     ++ optional installsFirmware "INSTALL_FW_PATH=$(out)/lib/firmware"
+  ;
+
+  installTargets = [
+    "install"
+  ]
+    ++ optional (isCompressed != false) "zinstall"
+    ++ installTargets
   ;
 
   postInstall = ''
@@ -334,6 +347,10 @@ stdenv.mkDerivation (inputArgs // {
       "$qcdt_dtbs"
     )
 
+  '' + optionalString isImageGzDtb ''
+    echo ":: Copying platform-specific -dtb image file"
+    cp -v "$buildRoot/arch/${platform.kernelArch}/boot/${kernelTarget}-dtb" "$out/"
+
   ''
     + maybeString postInstall
   ;
@@ -344,11 +361,11 @@ stdenv.mkDerivation (inputArgs // {
     "O=$(buildRoot)"
     "CC=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
     "HOSTCC=${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc"
-    "ARCH=${stdenv.hostPlatform.platform.kernelArch}"
+    "ARCH=${platform.kernelArch}"
     "DTC_EXT=${buildPackages.dtc}/bin/dtc"
   ]
   # Use platform-specific flags
-  ++ stdenv.lib.optionals (stdenv.hostPlatform.platform ? kernelMakeFlags) stdenv.hostPlatform.platform.kernelMakeFlags
+  ++ stdenv.lib.optionals (platform ? kernelMakeFlags) platform.kernelMakeFlags
   # Mark as cross-compilation
   ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
   # User-provided makeFlags
@@ -364,6 +381,9 @@ stdenv.mkDerivation (inputArgs // {
   passthru = {
     # This is an "API" for the kernel derivation.
     inherit isQcdt;
+
+    # Internal API representing the filename of the desired output.
+    file = kernelTarget + optionalString isImageGzDtb "-dtb";
 
     # Derivation with the as-built normalized kernel config
     normalizedConfig = kernelDerivation.overrideAttrs({ ... }: {
@@ -450,8 +470,8 @@ stdenv.mkDerivation (inputArgs // {
         export PATH="$PATH:${buildPackages.gnumake}/bin"
         export KCONFIG_CONFIG="\$(readlink -f "\$1")"; shift
 
-        export SRCARCH="${stdenv.hostPlatform.platform.kernelArch}"
-        export ARCH="${stdenv.hostPlatform.platform.kernelArch}"
+        export SRCARCH="${platform.kernelArch}"
+        export ARCH="${platform.kernelArch}"
         export KERNELVERSION="${version}"
         cd "\$KERNEL_TREE"
         ${/* We're expanding the builder's makeFlags variable here. This is not a mistake. */""}
