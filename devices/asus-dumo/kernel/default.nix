@@ -2,7 +2,6 @@
   mobile-nixos
 , fetchFromGitHub
 , fetchgit
-, kernelPatches ? [] # FIXME
 }:
 
 mobile-nixos.kernel-builder {
