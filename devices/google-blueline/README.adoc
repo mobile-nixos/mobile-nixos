@@ -1,13 +1,78 @@
 = Google Pixel 3
-include::_support/common.inc[]
 
 == Device-specific notes
+
+Note, I got different results after wiping dtbo_a and flashing boot and then booting!
+`fastboot erase dtbo_a`
+android-boot-error-with-no-dtbo_a.log
+[#src-listing]
+[source]
+----
+DisplayDxe: Panel found <sw43408_dsc_fhd_cmd>
+DisplayDxe: Resolution 1080x2160 (1 intf)
+-----------------------------
+Platform Init  [ 1555] BDS
+Platform   : OEM
+Chip Name  : SDM845
+Chip Ver   : 2.1
+Core 0 Freq: 1766 MHz
+-----------------------------
+UEFI Total : 492 ms
+POST Time      [ 1568] OS Loader
+ABL version: b1c1-0.1-5578427
+ABL build time: May 17 2019 18:18:15
+Reset REASON 0
+Booting from slot (a)
+DSI read: address: 0x0A, readback: 0x1C, uRetryCount: 0
+GetBestDtbo, invalid magic (0x00000000)
+Not valid dtbo found, use only SoC dtb
+
+ASSERT_EFI_ERROR (Status = Invalid Parameter)
+
+DXE_ASSERT!: /usr/local/google/buildbot/src/googleplex-polygon-android/crosshatch-qpr3/LINUX/android/bootable/bootloader/edk2/MdePkg/Library/UefiMemoryAllocationLib/Memory (819): 
+Resetting in 3 seconds
+----
+
+
+
+Added `CONFIG_EFI=y`, renormalized, but it fails to build after this change:
+
+android-build-error.log
+[#src-listing]
+[source]
+----
+../drivers/firmware/efi/libstub/efi-stub-helper.c:360:3: error: use of undeclared identifier '__nokaslr'                                            
+                __nokaslr = 1;                                                                                                                      
+                ^                                                                                                                                   
+1 error generated.
+----
+
+=== Status (kernel-android)
+
+android-boot.log
+[#src-listing]
+[source]
+----
+�Fastboot device connected
+AcceptCmd:download:01419000
+Downloading 21073920 bytes
+AcceptCmd:boot
+avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
+avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
+avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
+AvbLoadAndVerifyBootImages: boot state orange
+DeviceTreeOverlay failed: Invalid Parameter Failed to apply dtb overlay
+Error calling BootPrepareAsync Invalid Parameter
+Fastboot: Error executing command boot
+----
+
+
 
 === Status (kernel-mainline)
 
 mainline-boot.log
-[#src-listing] 
-[source]  
+[#src-listing]
+[source]
 ----
 Platform Init  [ 1619] BDS
 Platform   : OEM
@@ -34,25 +99,6 @@ avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
 avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
 AvbLoadAndVerifyBootImages: boot state orange
 not device tree found
-Error calling BootPrepareAsync Invalid Parameter
-Fastboot: Error executing command boot
-----
-
-=== Status (kernel-android)
-
-android-boot.log
-[#src-listing] 
-[source]  
-----
-�Fastboot device connected
-AcceptCmd:download:01419000
-Downloading 21073920 bytes
-AcceptCmd:boot
-avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
-avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
-avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
-AvbLoadAndVerifyBootImages: boot state orange
-DeviceTreeOverlay failed: Invalid Parameter Failed to apply dtb overlay
 Error calling BootPrepareAsync Invalid Parameter
 Fastboot: Error executing command boot
 ----
