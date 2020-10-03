@@ -1,7 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  device_info = config.mobile.device.info;
   jumpdrive-gui = pkgs.runCommand "jumpdrive-gui.mrb" {} ''
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out \
       ${../../boot/gui/lib}/*.rb \
@@ -57,7 +56,10 @@ in
   };
 
   mobile.boot.stage-1.bootConfig = {
-    inherit (device_info) storage;
+    # TODO: figure out a better way to provide this information.
+    storage.internal = {
+      pine64-pinephone = "/dev/disk/by-path/platform-1c11000.mmc";
+    }.${config.mobile.device.name};
   };
   mobile.boot.stage-1.contents = with pkgs; [
     {
