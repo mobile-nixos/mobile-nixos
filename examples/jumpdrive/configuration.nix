@@ -1,17 +1,12 @@
 { config, lib, pkgs, ... }:
 
 let
-  jumpdrive-gui = pkgs.runCommand "jumpdrive-gui.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out \
-      ${../../boot/gui/lib}/*.rb \
-      ${./gui}/lib/*.rb \
-      ${./gui}/main.rb
-  '';
+  jumpdrive-gui = "${pkgs.callPackage ./app {}}/libexec/app.mrb";
 in
 {
   mobile.boot.stage-1.tasks = [
-    (pkgs.writeText "demo-task.rb" ''
-      class Tasks::RunDemo < SingletonTask
+    (pkgs.writeText "gui-task.rb" ''
+      class Tasks::RunGui < SingletonTask
         def initialize()
           add_dependency(:Target, :Graphics)
           add_dependency(:Mount, "/run")
@@ -34,7 +29,7 @@ in
         def run()
           # FIXME: weirdness with /dev/inputs in QEMU.
           sleep(1)
-          System.run($PROGRAM_NAME, "/applets/jumpdrive-gui.mrb")
+          System.run(LOADER, "/applets/jumpdrive-gui.mrb")
           # Exit the whole program at that point, if for any reason there's a
           # failure. This shouldn't happen anyway.
           exit(1)
@@ -68,7 +63,10 @@ in
     }
   ];
 
-  system.build.rootfs = null;
+  system.build = {
+    app-simulator = pkgs.callPackage ./app/simulator.nix {};
+    rootfs = null;
+  };
 
   mobile.boot.stage-1.networking.enable = true;
   mobile.boot.stage-1.ssh.enable = true;
