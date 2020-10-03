@@ -44,6 +44,10 @@ android-boot.log
 [#src-listing] 
 [source]  
 ----
+�Fastboot device connected
+AcceptCmd:download:01419000
+Downloading 21073920 bytes
+AcceptCmd:boot
 avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
 avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
 avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.

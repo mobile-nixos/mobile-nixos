@@ -12,8 +12,8 @@
     kernelPatches = pkgs.defaultKernelPatches;
   };
   activeKernel =
-    kernelMainline;
-    #kernelAndroid;
+    #kernelMainline;
+    kernelAndroid;
 in
 {
   mobile.device.name = "google-blueline";
