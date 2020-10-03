@@ -5,11 +5,6 @@ include::_support/common.inc[]
 
 === Status (kernel-mainline)
 
-Blocked by git building on aarch64??
-
-Now building, boot log:
-
-
 mainline-boot.log
 [#src-listing] 
 [source]  
@@ -45,65 +40,15 @@ Fastboot: Error executing command boot
 
 === Status (kernel-android)
 
-first-attempt 
-[#src-listing] 
-[source]  
----- 
-    Welcome to minicom 2.7.1
-
-    OPTIONS: I18n 
-    Compiled on Jan  1 1980, 00:00:00.
-    Port /dev/ttyUSB0, 19:50:18
-
-    Press CTRL-A Z for help on special keys                                                                                     
-                                                                                                                                
-    AcceptCmd:download:01419000                                                                                                 
-    Downloading 21073920 bytes                                                                                                  
-    AcceptCmd:boot                                                                                                              
-    avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
-    avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
-    avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
-    AvbLoadAndVerifyBootImages: boot state orange
-    DeviceTreeOverlay failed: Invalid Parameter Failed to apply dtb overlay
-    Error calling BootPrepareAsync Invalid Parameter
-    Fastboot: Error executing command boot
-----
-
-second-attempt 
+android-boot.log
 [#src-listing] 
 [source]  
 ----
-    AcceptCmd:download:01419000                                                                                                                                                                                             
-    Downloading 21073920 bytes                                                                                                                                                                                              
-    AcceptCmd:boot                                                                                                                                                                                                          
-    avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.                                                                                                                                          
-    avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.                                                                                                                                          
-    avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.                                                                                                                                                         
-    AvbLoadAndVerifyBootImages: boot state orange                                                                                                                                                                           
-    DeviceTreeOverlay failed: Invalid Parameter Failed to apply dtb overlay                                                                                                                                                 
-    Error calling BootPrepareAsync Invalid Parameter                                                                                                                                                                        
-    Fastboot: Error executing command boot                                                                                                                                                                                  
-    qusb2_1: hstx: 4                                                                                                                                                                                                        
-    PLL1 locked: 5                                                                                                                                                                                                          
-    usb_lane: 0                                                                                                                                                                                                             
-    Fastboot device connected                                                                                                                                                                                               
-    AcceptCmd:download:01419000                                                                                                                                                                                             
-    Downloading 21073920 bytes                                                                                                                                                                                              
-    AcceptCmd:boot                                                                                                                                                                                                          
-    avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.                                                                                                                                          
-    avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.                                                                                                                                          
-    avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.                                                                                                                                                         
-                                                                                                                                                                                                                            
-                                                                                                                                                                                                                            
-    Synchronous Exception at 0x0000000098F20CD0                                                                                                                                                                             
-                                                                                                                                                                                                                            
-    X0 0x0000000000000001   X1 0x000000009FFCE988   X2 0x0000000000800000   X3 0x000000009FFCEB40                                                                                                                         
-    X4 0x000000009FFCE758   X5 0x0000000000000004   X6 0xF000000000000007   X7 0x3A000000009FFCE5                                                                                                                         
-    X8 0x0000000098F5F000   X9 0x000000009FFCE760  X10 0x940B612FAC7FBFB3  X11 0x0000000000000000                                                                                                                         
-    X12 0x00000000FFFFFFE0  X13 0x940B612FAC7FBFB3  X14 0x940B612FAC7FBFB3  X15 0x0000000000000000                                                                                                                         
-    X16 0x000000006C617470  X17 0x0000000000000000  X18 0x0000000000000000  X19 0x0200000000000000                                                                                                                         
-    X20 0x0000000000000000  X21 0x00000000000004D5  X22 0x0000000098F65CA3  X23 0x0000000098F660E2                                                                                                                         
-    X24 0x00000000000F4240  X25 0x0000000000000000  X26 0x0000000000000000  X27 0x0000000098F99298                                                                                                                         
-    X28 0x0000000000000000   FP 0x0000000098F69408   LR 0x0000000098F20C5C                                                                                                                                               
+avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
+avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
+avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
+AvbLoadAndVerifyBootImages: boot state orange
+DeviceTreeOverlay failed: Invalid Parameter Failed to apply dtb overlay
+Error calling BootPrepareAsync Invalid Parameter
+Fastboot: Error executing command boot
 ----
-
