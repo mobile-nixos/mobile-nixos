@@ -11,7 +11,7 @@ let
     url = "https://git.linaro.org/people/sumit.semwal/linux-dev.git";
     # https://git.linaro.org/people/sumit.semwal/linux-dev.git/log/?h=dev/p3-mainline-WIP
     rev = "eae0a326063cd37168ad263a00756d4ef4a6b147";
-    sha256 = "sha256-HBaCTdVOHaIBlJsp5sEDEmR6YnrBcmJtaZmfDDDDe3U=";
+    sha256 = "sha256-KlQKu0oMtqHcisyqMHn54Hqjiau1UBEOPiCJ5w8ydMw=";
   };
 in
 
@@ -30,15 +30,12 @@ in
 # deferred_probe_timeout=30"
 
 (mobile-nixos.kernel-builder-gcc6{
- configfile = "${src}/arch/arm64/configs/blueline_defconfig";
+  #configfile = "${src}/arch/arm64/configs/blueline_defconfig";
+  configfile = ./config.aarch64;
 
   file = "Image.gz-dtb";
 
-  #hasDTB = true; # had to remove this to do the dtb dance below
-  # not sure if this is right, or below is right, check on how dtb
-  # should be added/appended? to kernel
-
-  version = "5.8.0-rc7-mainline";
+  version = "5.9.0-rc6-mainline";
   src = src;
 
   isModular = false; # TODO ???

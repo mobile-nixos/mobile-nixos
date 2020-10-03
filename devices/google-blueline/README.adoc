@@ -7,6 +7,42 @@ include::_support/common.inc[]
 
 Blocked by git building on aarch64??
 
+Now building, boot log:
+
+
+mainline-boot.log
+[#src-listing] 
+[source]  
+----
+Platform Init  [ 1619] BDS
+Platform   : OEM
+Chip Name  : SDM845
+Chip Ver   : 2.1
+Core 0 Freq: 1766 MHz
+-----------------------------
+UEFI Total : 493 ms
+POST Time      [ 1633] OS Loader
+ABL version: b1c1-0.1-5578427
+ABL build time: May 17 2019 18:18:15
+Reset REASON 8
+DSI read: address: 0x0A, readback: 0x1C, uRetryCount: 0
+QF: WritePerm: 0x00F1FC0C
+qusb2_1: hstx: 4
+PLL1 locked: 5
+usb_lane: 0
+Fastboot device connected
+AcceptCmd:download:014af000
+Downloading 21688320 bytes
+AcceptCmd:boot
+avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
+avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
+avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
+AvbLoadAndVerifyBootImages: boot state orange
+not device tree found
+Error calling BootPrepareAsync Invalid Parameter
+Fastboot: Error executing command boot
+----
+
 === Status (kernel-android)
 
 first-attempt 
