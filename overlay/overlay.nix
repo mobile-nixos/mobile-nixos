@@ -103,6 +103,8 @@ in
         boot-gui = callPackage ../boot/gui {};
       };
 
+      autoport = callPackage ./mobile-nixos/autoport {};
+
       boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
     };
 
