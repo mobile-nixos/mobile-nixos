@@ -130,6 +130,10 @@ in
       };
     })
 
+    (lib.mkIf kernelPackage.isQcdt {
+      mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
+    })
+
     {
       mobile.boot.stage-1.bootConfig = {
         device = {

@@ -44,12 +44,6 @@ in
       ;
     };
 
-    # Default set of kernel patches.
-    defaultKernelPatches = with self.kernelPatches; [
-      bridge_stp_helper
-      p9_fixes
-    ];
-
     #
     # New software to upstream
     # ------------------------

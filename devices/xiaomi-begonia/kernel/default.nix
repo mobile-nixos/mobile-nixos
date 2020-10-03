@@ -1,8 +1,6 @@
 {
   mobile-nixos
-, runCommand
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
 , buildPackages
 }:
 
@@ -28,8 +26,6 @@ let
     sha256 = "1p08392pcavfjy5i0zc61dxibr0jq9kb3na1hdx85q0z3d9sfwp6";
   };
 
-  inherit (buildPackages) dtc;
-
   # This may seem weird, but doing this inside the kernel build breaks the binary.
   # Note that `buildPackages.stdenv` is necessary since this is a tool for the host.
   dtc_overlay = buildPackages.stdenv.mkDerivation {
@@ -54,12 +50,10 @@ let
   };
 
 in
-(mobile-nixos.kernel-builder-clang_9 {
+  
+mobile-nixos.kernel-builder-clang_9 {
   version = "4.14.184";
   configfile = ./config.aarch64;
-
-  file = "Image.gz-dtb";
-  hasDTB = true;
 
   inherit src;
 
@@ -71,10 +65,7 @@ in
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
   ];
 
-  makeFlags = [
-    "DTC_EXT=${dtc}/bin/dtc"
-  ];
-
+  isImageGzDtb = true;
   isModular = false;
 
   postPatch = ''
@@ -84,17 +75,4 @@ in
     cp ${dtc_overlay} scripts/dtc/dtc_overlay
     )
   '';
-}).overrideAttrs({ postInstall ? "", ... }: {
-  installTargets = [
-    # uh, things seem screwey with that vendor kernel tree, and dependencies
-    # are not resolved as expected, so let's ask for the compressed kernel
-    # explictly first :/.
-    "Image.gz"
-    "zinstall"
-    "Image.gz-dtb"
-    "install"
-  ];
-  postInstall = postInstall + ''
-    cp -v "$buildRoot/arch/arm64/boot/Image.gz-dtb" "$out/"
-  '';
-})
+}

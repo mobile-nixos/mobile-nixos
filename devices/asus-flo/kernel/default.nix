@@ -1,14 +1,11 @@
 {
   mobile-nixos
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
 }:
 
-(mobile-nixos.kernel-builder-gcc6 {
+mobile-nixos.kernel-builder-gcc6 {
   version = "3.4.113";
   configfile = ./config.armv7;
-
-  file = "zImage";
 
   src = fetchFromGitHub {
     owner = "LineageOS";
@@ -27,30 +24,6 @@
     ./99_framebuffer.patch
   ];
 
+  enableCompilerGcc6Quirk = true;
   isModular = false;
-
-  postPatch = ''
-    cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
-  '';
-}).overrideAttrs({ postInstall ? "", ... }: {
-  installTargets = [ "zinstall" ];
-  postInstall = postInstall + ''
-    mkdir -p "$out/boot"
-
-    # FIXME factor this out properly
-    # Copies all potential output files.
-    for f in zImage-dtb Image.gz-dtb zImage Image.gz Image; do
-      f=arch/arm/boot/$f
-      [ -e "$f" ] || continue
-      echo "zImage found: $f"
-      cp -v "$f" "$out/"
-      break
-    done
-
-    mkdir -p $out/dtb
-    for f in arch/*/boot/dts/*.dtb; do
-      cp -v "$f" $out/dtb/
-    done
-
-  '';
-})
+}
