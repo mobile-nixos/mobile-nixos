@@ -26,4 +26,7 @@ mobile-nixos.kernel-builder-gcc6 {
 
   enableCompilerGcc6Quirk = true;
   isModular = false;
+
+  # mv: cannot stat 'arch/arm/boot/compressed/.misc.o.tmp': No such file or directory
+  enableCombiningBuildAndInstallQuirk = false;
 }
