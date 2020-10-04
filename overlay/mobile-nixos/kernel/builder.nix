@@ -93,6 +93,9 @@ in
 # installing. Work around the issue by using only one make invocation.
 , enableCombiningBuildAndInstallQuirk ? (builtins.compareVersions "4.4" version > 0)
 
+# The usual mkDerivation option
+, enableParallelBuilding ? true
+
 # Usual stdenv arguments we are also setting.
 # Use the ones given by the user for composition.
 , nativeBuildInputs ? []
@@ -150,6 +153,7 @@ stdenv.mkDerivation (inputArgs // {
   pname = "linux";
   inherit src version;
   inherit qcdt_dtbs;
+  inherit enableParallelBuilding;
 
   # Allows disabling the kernel config normalization.
   # Set to false when normalizing the kernel config.
@@ -338,9 +342,10 @@ stdenv.mkDerivation (inputArgs // {
     echo ":: Running preBuild hook before preInstall (combined build/install quirk)"
     runHook preBuild
 
-  '' + ''
+  '' + optionalString enableParallelBuilding ''
         installFlagsArray+=("-j$NIX_BUILD_CORES")
         installFlagsArray+=("-l$NIX_BUILD_CORES")
+  '' + ''
         installFlagsArray+=($buildFlags)
   ''
     + maybeString preInstall
@@ -402,7 +407,6 @@ stdenv.mkDerivation (inputArgs // {
 
 
   requiredSystemFeatures = [ "big-parallel" ];
-  enableParallelBuilding = true;
   dontStrip = true;
 
   passthru = {
