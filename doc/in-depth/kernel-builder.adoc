@@ -85,6 +85,24 @@ This effectively replaces the Tux logo.
 
 By default an appropriate file is provided by Mobile NixOS.
 
+=== `enableCompilerGcc6Quirk`
+
+When enabled, building and installing is done in one single step. Some kernels,
+mainly prior to 4.4, will rebuild the kernel from scratch when installing. Work
+around the issue by using only one make invocation.
+
+This defaults to `true` for kernel versions prior to 4.4.
+
+Using the wrong value can either:
+
+ * be a no-op
+ * make the build take twice as long
+ * fail the build in obvious ways
+
+There have been no _weird side-effects_ observed when using the wrong value.
+Touching this value, other than outright failing the build, will not make a
+kernel that doesn't boot otherwise boot.
+
 
 == Making a new port
 

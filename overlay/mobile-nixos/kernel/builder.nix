@@ -89,6 +89,10 @@ in
 # Older kernels don't know about gcc6+, and this is needed
 , enableCompilerGcc6Quirk ? false
 
+# Some kernels, mainly prior to 4.4, will rebuild the kernel from scratch when
+# installing. Work around the issue by using only one make invocation.
+, enableCombiningBuildAndInstallQuirk ? (builtins.compareVersions "4.4" version > 0)
+
 # Usual stdenv arguments we are also setting.
 # Use the ones given by the user for composition.
 , nativeBuildInputs ? []
@@ -96,6 +100,7 @@ in
 , makeFlags ? []
 , prePatch ? null
 , postPatch ? null
+, preInstall ? null
 , postInstall ? null
 , installTargets ? []
 
@@ -306,13 +311,12 @@ stdenv.mkDerivation (inputArgs // {
   
     # We have to keep this around, even when Linux supports this in mainline, as kernel forks might
     # be older than the mainline fix.
-    buildFlagsArray+=("KBUILD_BUILD_TIMESTAMP=$(date -u -d @$SOURCE_DATE_EPOCH)")
+    makeFlagsArray+=("KBUILD_BUILD_TIMESTAMP=$(date -u -d @$SOURCE_DATE_EPOCH)")
 
     cd $buildRoot
   '';
 
   buildFlags = [
-    "KBUILD_BUILD_VERSION=1-mobile-nixos"
     kernelTarget
     "vmlinux"  # for "perf" and things like that
   ]
@@ -320,13 +324,8 @@ stdenv.mkDerivation (inputArgs // {
     ++ optional isModular "modules"
   ;
 
-  installFlags = [
-    "INSTALLKERNEL=${installkernel}"
-    "INSTALL_PATH=$(out)"
-  ]
-    ++ optional isModular "INSTALL_MOD_PATH=$(out)"
-    ++ optional installsFirmware "INSTALL_FW_PATH=$(out)/lib/firmware"
-  ;
+  # no-op buildPhase if we combine build and install steps
+  buildPhase = if enableCombiningBuildAndInstallQuirk then ":" else null;
 
   installTargets = [
     "install"
@@ -335,7 +334,23 @@ stdenv.mkDerivation (inputArgs // {
     ++ installTargets
   ;
 
-  postInstall = ''
+  preInstall = optionalString enableCombiningBuildAndInstallQuirk ''
+    echo ":: Running preBuild hook before preInstall (combined build/install quirk)"
+    runHook preBuild
+
+  '' + ''
+        installFlagsArray+=("-j$NIX_BUILD_CORES")
+        installFlagsArray+=("-l$NIX_BUILD_CORES")
+        installFlagsArray+=($buildFlags)
+  ''
+    + maybeString preInstall
+  ;
+
+  postInstall = optionalString enableCombiningBuildAndInstallQuirk ''
+    echo ":: Running postBuild hook before postInstall (combined build/install quirk)"
+    runHook postBuild
+
+  '' + ''
     echo ":: Copying configuration file"
     # Helpful in cases where the kernel isn't built with /proc/config.gz
     cp -v "$buildRoot/.config" "$out/build.config"
@@ -368,6 +383,7 @@ stdenv.mkDerivation (inputArgs // {
     "HOSTCC=${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc"
     "ARCH=${platform.kernelArch}"
     "DTC_EXT=${buildPackages.dtc}/bin/dtc"
+    "KBUILD_BUILD_VERSION=1-mobile-nixos"
   ]
   # Use platform-specific flags
   ++ stdenv.lib.optionals (platform ? kernelMakeFlags) platform.kernelMakeFlags
@@ -375,6 +391,13 @@ stdenv.mkDerivation (inputArgs // {
   ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
   # User-provided makeFlags
   ++ makeFlags
+  # Install flags
+  ++ [
+    "INSTALLKERNEL=${installkernel}"
+    "INSTALL_PATH=$(out)"
+  ]
+  ++ optional isModular "INSTALL_MOD_PATH=$(out)"
+  ++ optional installsFirmware "INSTALL_FW_PATH=$(out)/lib/firmware"
   ;
 
 
