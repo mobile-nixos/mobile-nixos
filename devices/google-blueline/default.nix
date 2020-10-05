@@ -8,12 +8,16 @@
   kernelMainline = pkgs.callPackage ./kernel-mainline {
     kernelPatches = pkgs.defaultKernelPatches;
   };
-  kernelAndroid = pkgs.callPackage ./kernel-android {
+  kernelALS = pkgs.callPackage ./kernel-als {
+    kernelPatches = pkgs.defaultKernelPatches;
+  };
+  kernelPMOS = pkgs.callPackage ./kernel {
     kernelPatches = pkgs.defaultKernelPatches;
   };
   activeKernel =
     #kernelMainline;
-    kernelAndroid;
+    #kernelALS
+    kernelPMOS;
 in
 {
   mobile.device.name = "google-blueline";

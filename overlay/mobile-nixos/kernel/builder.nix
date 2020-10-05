@@ -21,6 +21,7 @@
 , writeTextFile
 , writeShellScriptBin
 
+, lz4
 , perl
 , bc
 , nettools
@@ -160,7 +161,7 @@ stdenv.mkDerivation (inputArgs // {
   forceNormalizedConfig = true;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
+  nativeBuildInputs = [ lz4 perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.kernelTarget == "uImage") buildPackages.ubootTools
     ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
