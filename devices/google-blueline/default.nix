@@ -11,12 +11,12 @@
   kernelALS = pkgs.callPackage ./kernel-als {
     kernelPatches = pkgs.defaultKernelPatches;
   };
-  kernelPMOS = pkgs.callPackage ./kernel {
+  kernelPMOS = pkgs.callPackage ./kernel-lineageos {
     kernelPatches = pkgs.defaultKernelPatches;
   };
   activeKernel =
     #kernelMainline;
-    #kernelALS
+    #kernelALS;
     kernelPMOS;
 in
 {

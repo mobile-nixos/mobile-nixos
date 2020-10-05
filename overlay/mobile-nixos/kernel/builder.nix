@@ -323,6 +323,7 @@ stdenv.mkDerivation (inputArgs // {
 
   buildFlags = [
     kernelTarget
+    "Image.gz"
     "vmlinux"  # for "perf" and things like that
   ]
     ++ optional isImageGzDtb "${kernelTarget}-dtb"
