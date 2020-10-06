@@ -3,7 +3,7 @@
 {
   mobile.device.name = "pine64-pinephone";
   mobile.device.identity = {
-    name = "PinePhone “BraveHeart”";
+    name = "PinePhone";
     manufacturer = "Pine64";
   };
 
