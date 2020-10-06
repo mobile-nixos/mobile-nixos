@@ -1,4 +1,4 @@
-= PinePhone “BraveHeart”
+= PinePhone
 include::_support/common.inc[]
 
 == Device-specific notes
@@ -14,7 +14,7 @@ that the full disk image can be flashed to an SD card, and it will prioritise
 booting it.
 
 ```
- $ nix-build --argstr device pine64-pinephone-braveheart -A build.disk-image
+ $ nix-build --argstr device pine64-pinephone -A build.disk-image
  $ dd if=result of=/dev/mmcblkX bs=8M oflag=sync,direct status=progress
 ```
 
@@ -26,7 +26,7 @@ The boot partition can be built, and then flashed on top of an existing Mobile
 NixOS boot partition.
 
 ```
- $ nix-build --argstr device pine64-pinephone-braveheart -A build.boot-partition
+ $ nix-build --argstr device pine64-pinephone -A build.boot-partition
  $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXp1 bs=8M oflag=sync,direct status=progress
 ```
 
@@ -37,7 +37,7 @@ Flashing the boot partition will not affect the installed U-Boot bootloader.
 U-Boot can be built and then flashed the usual way for Allwinner platforms.
 
 ```
- $ nix-build --argstr device pine64-pinephone-braveheart -A build.u-boot
+ $ nix-build --argstr device pine64-pinephone -A build.u-boot
  $ dd if=result/u-boot-sunxi-with-spl.bin of=/dev/mmcblkX bs=1024 seek=8
 ```
 

@@ -4,7 +4,7 @@
 }:
 
 # The minimum set of firmware files required for the device.
-runCommandNoCC "pine64-pinephone-braveheart-firmware" {
+runCommandNoCC "pine64-pinephone-firmware" {
   src = fetchFromGitHub {
     owner = "anarsoul";
     repo = "rtl8723bt-firmware";

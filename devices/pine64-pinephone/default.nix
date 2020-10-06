@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 {
-  mobile.device.name = "pine64-pinephone-braveheart";
+  mobile.device.name = "pine64-pinephone";
   mobile.device.identity = {
     name = "PinePhone “BraveHeart”";
     manufacturer = "Pine64";
