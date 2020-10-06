@@ -46,6 +46,7 @@ in
     (mkIf cfg.enable {
       earlyInitScripts = ''
         (
+        set -x
         export LD_LIBRARY_PATH="${extraUtils}/lib"
         export PATH="${extraUtils}/bin"
         echo "Prepping to launch bootlog..."
@@ -60,7 +61,7 @@ in
         mkdir -p /dev/pts
         mount -t devpts devpts /dev/pts
 
-        bootlogd &
+        #bootlogd &
         # Ugh, bootlogd takes a bit of time to be ready.
         # Let's not drop logs
         sleep 0.5

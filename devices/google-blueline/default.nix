@@ -16,10 +16,17 @@
   };
   activeKernel =
     #kernelMainline;
-    #kernelALS;
-    kernelPMOS;
+    kernelALS;
+    #kernelPMOS;
+
+  firmware = pkgs.callPackage ./firmware {};
 in
 {
+  mobile.boot.stage-1.crashToBootloader = true;
+  mobile.boot.stage-1.fbterm.enable = false;
+  mobile.boot.stage-1.networking.enable = true;
+  mobile.boot.stage-1.ssh.enable = true;
+  
   mobile.device.name = "google-blueline";
   mobile.device.identity = {
     name = "Pixel 3";
@@ -52,11 +59,14 @@ in
     };
   };
 
-  mobile.system.vendor.partition = "/dev/disk/by-partlabel/vendor_a";
+  mobile.device.firmware = firmware;
+  mobile.boot.stage-1.firmware = [ firmware ];
+
+  #mobile.system.vendor.partition = "/dev/disk/by-partlabel/vendor_a";
 
   boot.kernelParams = [
     # Extracted from an Android boot image
-    "console=ttyMSM0,115200n8"
+    #"console=ttyMSM0,115200n8"
     "androidboot.console=ttyMSM0"
     "printk.devkmsg=on"
     "msm_rtb.filter=0x237"
@@ -69,6 +79,7 @@ in
     "androidboot.boot_devices=soc/1d84000.ufshc"
     "androidboot.super_partition=system"
     "buildvariant=user"
+    "console=ttyMSM0,115200n8"
   ];
 
   mobile.system.type = "android";
@@ -79,11 +90,12 @@ in
   # Google
   mobile.usb.idVendor = "18D1";
   # "Pixel" rndis+adb (copied from marlin)
-  mobile.usb.idProduct = "4EE4";
+  mobile.usb.idProduct = "4EEA";
 
   mobile.usb.gadgetfs.functions = {
     /* This rndis gadget has been auto-detected. */
     rndis = "gsi.rndis";
+    #rndis = "rndis.gs4";
   };
 
 }

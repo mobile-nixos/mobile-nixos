@@ -28,19 +28,7 @@ kernel-als-boot.log
 [#src-listing]
 [source]
 ----
-[    2.607686] c4      1 msm_bus_late_init: Remove handoff bw requests                                                                                
-[    2.607904] c5    117 sdm845-asoc-snd soc:sound-tavil: ASoC: platform (null) not registered                                                        
-                                                                                                                                                      
-***************************************                                                                                                               
-* Mobile NixOS stage-0 script wrapper *                                                                                                               
-***************************************                                                                                                               
-                                                                                                                                                      
-Prepping to launch bootlog...                                                                                                                         
-(Preparing /dev for /dev/pts)                                                                                                                         
-(Preparing /dev/pts to identify console)                                                                                                              
-[    3.013531] c4    116 google_charger: failed to get POWER_SUPPLY_PROP_VOLTAGE_NOW from 'usb', ret=-61                                              
-[    3.024215] c4    116 google_charger: failed to get POWER_SUPPLY_PROP_VOLTAGE_NOW from 'usb', ret=-61                                              
-[    3.217095] c7    400 FG: fg_get_batt_profile: battery fastchg current unavailable, rc:-22  
+
 ----
 
 
