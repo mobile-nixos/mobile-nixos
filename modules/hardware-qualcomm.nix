@@ -79,7 +79,6 @@ in
       # not sure if right:
       mobile = mkIf cfg.qualcomm-sdm845.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {

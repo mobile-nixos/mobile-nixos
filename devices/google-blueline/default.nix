@@ -21,12 +21,7 @@
 
   firmware = pkgs.callPackage ./firmware {};
 in
-{
-  mobile.boot.stage-1.crashToBootloader = true;
-  mobile.boot.stage-1.fbterm.enable = false;
-  mobile.boot.stage-1.networking.enable = true;
-  mobile.boot.stage-1.ssh.enable = true;
-  
+{  
   mobile.device.name = "google-blueline";
   mobile.device.identity = {
     name = "Pixel 3";
@@ -59,14 +54,15 @@ in
     };
   };
 
-  mobile.device.firmware = firmware;
-  mobile.boot.stage-1.firmware = [ firmware ];
-
+  # TODO: revisit; requires support for dynamic partitions
   #mobile.system.vendor.partition = "/dev/disk/by-partlabel/vendor_a";
 
+  mobile.device.firmware = firmware;
+  mobile.boot.stage-1.firmware = [ firmware ];
+  
   boot.kernelParams = [
     # Extracted from an Android boot image
-    #"console=ttyMSM0,115200n8"
+    "console=ttyMSM0,115200n8"
     "androidboot.console=ttyMSM0"
     "printk.devkmsg=on"
     "msm_rtb.filter=0x237"
@@ -79,7 +75,6 @@ in
     "androidboot.boot_devices=soc/1d84000.ufshc"
     "androidboot.super_partition=system"
     "buildvariant=user"
-    "console=ttyMSM0,115200n8"
   ];
 
   mobile.system.type = "android";
@@ -89,13 +84,10 @@ in
   /* To be changed by the author, though those may or may work with any device. */
   # Google
   mobile.usb.idVendor = "18D1";
-  # "Pixel" rndis+adb (copied from marlin)
-  mobile.usb.idProduct = "4EEA";
+  # source: https://git.rip/dumps/google/blueline/-/blob/blueline-user-11-RPB3.200720.005-6705141-release-keys/bootimg/ramdisk/system/etc/init/hw/init.rc#L132-178
+  mobile.usb.idProduct = "D001";
 
   mobile.usb.gadgetfs.functions = {
-    /* This rndis gadget has been auto-detected. */
     rndis = "gsi.rndis";
-    #rndis = "rndis.gs4";
   };
-
 }

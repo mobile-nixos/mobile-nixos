@@ -3,6 +3,7 @@
 , fetchFromGitHub, fetchpatch
 , kernelPatches ? [] # FIXME
 , buildPackages
+, lz4
 }:
 
 let
@@ -24,6 +25,10 @@ in
     rev = "03867dba971b550ab1546e3147942227d224ddd3";
     sha256 = "sha256-ia6gTRT52Suz7jqqRN9gwU9T1UQ6i93qj0RqVxndfkc=";
   };
+
+  nativeBuildInputs = [ lz4 ];
+
+  # installTargets = [ "Image.gz" ]; # not working yet: https://github.com/NixOS/mobile-nixos/pull/191#discussion_r501421726
 
   # patches = [
   #   (fetchpatch {

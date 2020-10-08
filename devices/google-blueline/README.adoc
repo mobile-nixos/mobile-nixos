@@ -1,69 +1,99 @@
 = Google Pixel 3
 
-== Random
+== Device-specific notes
 
-- had to hack "image.gz" in, even though we just wanted "image.lz4"
-- could be other proj's issue but will need to accomodate
+- Pixel 3 is a "retro-fitted" device with dynamic partitions (vendor, system are dynamic; userdata/boot/btldr are not)
+- `kernel-als` (android-linux-stable) kernel is booting
+- `kernel-mainline` is building, but `mobile-nixos`'s kernel builder needs
+  plumbing to build/output the DTBO.img
+- TODOs are at the bottom
 
 
-=== kernel-lineageos
+== Getting Started
 
-* `blueline-qq3a.200805.001`
-* `fastboot boot /nix/store/f6v9djrq13bpq1grwklnfi3kf2gxldvy-bluephone-bundle/android-bootimg`
+This assumes you copy my directory strucuture / flake.nix bits
+for my `bluephone` device, or are just willing to build/boot my config.
 
-kernel-als-boot.log
-[#src-listing]
-[source]
+- https://github.com/colemickens/nixcfg/blob/6abe9acc21439ac587eb427889a3d83a064f3df6/hosts/bluephone/configuration.nix[configuration.nix]
+- https://github.com/colemickens/nixcfg/blob/6abe9acc21439ac587eb427889a3d83a064f3df6/flake.nix#L39-L40[flake.nix inputs]
+- https://github.com/colemickens/nixcfg/blob/6abe9acc21439ac587eb427889a3d83a064f3df6/flake.nix#L185-L193[flake.nix outputs]
+
+Let's start:
+
+1. Install this build: https://dl.google.com/dl/android/aosp/blueline-qq3a.200805.001-factory-1ba5d2c2.zip[blueline-qq3a.200805.001].
++
+[source,bash]
 ----
+mkdir BLUE; cd BLUE
+wget -O blueline.zip 'https://dl.google.com/dl/android/aosp/blueline-qq3a.200805.001-factory-1ba5d2c2.zip'
+unzip blueline.zip && rm blueline.zip
+./flash-all.sh
 ----
 
-
-
-=== kernel-als
-
-* `blueline-qq3a.200805.001`
-* `fastboot boot /nix/store/k3jpfy559fjsfm8817dz937pysgmqjqa-bluephone-bundle/android-bootimg`
-
-kernel-als-boot.log
-[#src-listing]
-[source]
+2. Acquire a flashable `NIXOS_SYSTEM`.
+  * Download this artifact from hydra: `mobile-nixos:unstable:examples-demo.aarch64-linux.rootfs`
+  * this should be a link to: https://hydra.nixos.org/job/mobile-nixos/unstable/examples-demo.aarch64-linux.rootfs/latest/download-by-type/file/rootfs-zstd[latest] (copy this link URL to clipboard)
+  * download and extract it:
++
+[source,bash]
+----
+wget -O NIXOS_SYSTEM.img.zstd 'https://hydra.nixos.org/job/mobile-nixos/unstable/examples-demo.aarch64-linux.rootfs/latest/download-by-type/file/rootfs-zstd'
+zstdcat NIXOS_SYSTEM.img.zstd > NIXOS_SYSTEM.img
 ----
 
+3. Erase `userdata` partition and stick the `NIXOS_SYSTEM` partition there:
++
+[source,bash]
+----
+fastboot erase userdata
+fastboot flash userdata ./NIXOS_SYSTEM.img
 ----
 
-
-
-=== kernel-mainline
-
-kernel-mainline-boot.log
-[#src-listing]
-[source]
+4. Build and boot the `boot.img`:
++
+[source,bash]
 ----
-Platform Init  [ 1619] BDS
-Platform   : OEM
-Chip Name  : SDM845
-Chip Ver   : 2.1
-Core 0 Freq: 1766 MHz
------------------------------
-UEFI Total : 493 ms
-POST Time      [ 1633] OS Loader
-ABL version: b1c1-0.1-5578427
-ABL build time: May 17 2019 18:18:15
-Reset REASON 8
-DSI read: address: 0x0A, readback: 0x1C, uRetryCount: 0
-QF: WritePerm: 0x00F1FC0C
-qusb2_1: hstx: 4
-PLL1 locked: 5
-usb_lane: 0
-Fastboot device connected
-AcceptCmd:download:014af000
-Downloading 21688320 bytes
-AcceptCmd:boot
-avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'vbmeta_a'.
-avb_slot_verify.c:524: DEBUG: Loading vbmeta struct from partition 'system_a'.
-avb_slot_verify.c:286: DEBUG: dtbo_a: Loading entire partition.
-AvbLoadAndVerifyBootImages: boot state orange
-not device tree found
-Error calling BootPrepareAsync Invalid Parameter
-Fastboot: Error executing command boot
+$ nix build github:colemickens/nixcfg#hosts.bluephone.bootimg
+fastboot boot ./result
 ----
+
+5. Once it's booted, you need to configure your local machine to get an IP 
+   from the phone running RNDIS:
++
+[source,bash]
+----
+sudo ip link set usb0 up
+sudo ip addr add 172.16.42.2/24 dev usb0
+sudo ip addr add brd 172.16.42.255 dev usb0
+sudo ip route add 172.16.42.0/24 dev usb0
+----
+
+6. Add your sshkey because we like life to be easy:
++
+[source,bash]
+----
+ssh-copy-id root@172.16.42.1
+----
+
+7. Build the toplevel config and push it to the phone and activate it:
++
+[source,bash]
+----
+remote="root@172.16.42.1"
+nix build github:colemickens/nixcfg#hosts.bluephone.toplevel
+toplevel="$(readlink result)"
+nix copy --to "ssh://${remote}" "${toplevel}"
+ssh "${remote}" "sudo bash -c \"\
+  nix-env --set --profile /nix/var/nix/profiles/system ${toplevel} \
+  && ${toplevel}/bin/switch-to-configuration switch\""
+----
+
+== TODO
+
+- Investigate dynamic partitions
+- Determine what other firmware needs to be put in `firmware/`
+- Get WiFi working?
+
+- add a google-bluemainline variant
+- remove/replace hacky workarounds in generation selection
+- compare ALS and LineageOS kernel sources and options

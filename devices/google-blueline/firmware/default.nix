@@ -6,12 +6,6 @@
 }:
 
 let
-  # The following files, though required, are not present in the modem
-  # partition.
-  cfg = fetchurl {
-    url = "https://raw.githubusercontent.com/LineageOS/android_device_motorola_addison/f99c3591c83c19da6db096eb3f2e5fb0e0d91eed/wifi/WCNSS_qcom_cfg.ini";
-    sha256 = "1dkmjm2j5l5c6a4q1xsdjkfqqy8d5aj9qd35al4lz6ma58gcy62y";
-  };
   ipa_fws_b00 = muppets "/vendor/firmware/ipa_fws.b00" "sha256-3aYzjFozHLjbMcgGuTz7dwKKECkbW5rWFytrYhjX/cY=";
   ipa_fws_b01 = muppets "/vendor/firmware/ipa_fws.b01" "sha256-yQUnqSTQoabkeCpM1zpZtcuhCiBjzFNJvOkztIdnNk0=";
   ipa_fws_b02 = muppets "/vendor/firmware/ipa_fws.b02" "sha256-/ADnij5zkJ6zPgFZHLh1jGa7WNkSg8g5b8P/rJf9F6s=";
@@ -26,11 +20,7 @@ let
   };
 in
 runCommandNoCC "google-blueline-firmware" {
-  inherit cfg;
-  meta.license = [
-    # We make no claims that it can be redistributed.
-    lib.licenses.unfree
-  ];
+  meta.license = [ lib.licenses.unfree ];
 } ''
   fwpath="$out/lib/firmware"
   mkdir -p $fwpath
