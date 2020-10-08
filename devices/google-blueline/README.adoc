@@ -68,7 +68,7 @@ sudo ip addr add brd 172.16.42.255 dev usb0
 sudo ip route add 172.16.42.0/24 dev usb0
 ----
 
-6. Add your sshkey because we like life to be easy:
+6. Add your sshkey because we like life to be easy: (the `root` password is `nixos`)
 +
 [source,bash]
 ----

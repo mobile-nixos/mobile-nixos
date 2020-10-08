@@ -322,6 +322,7 @@ stdenv.mkDerivation (inputArgs // {
 
   buildFlags = [
     kernelTarget
+    "Image.gz" # TODO: temporary hack for providing "Image.gz" for "zinstall" when building a lz4-compressed kernel.
     "vmlinux"  # for "perf" and things like that
   ]
     ++ optional isImageGzDtb "${kernelTarget}-dtb"
@@ -333,7 +334,6 @@ stdenv.mkDerivation (inputArgs // {
 
   installTargets = [
     "install"
-    "Image.gz" # TODO: temporary hack for providing "Image.gz" for "zinstall" when building a lz4-compressed kernel.
   ]
     ++ optional (isCompressed != false) "zinstall"
     ++ installTargets
