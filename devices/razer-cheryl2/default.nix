@@ -65,4 +65,23 @@
   mobile.usb.gadgetfs.functions = {
     rndis = "gsi.rndis";
   };
+
+  mobile.boot.stage-1.tasks = [
+    # This works around an issue with the default boot and the panel.
+    # Instead we reboot in recovery mode where it just works :/
+    (pkgs.writeText "reboot_recovery.rb" ''
+      class Tasks::MaybeRebootToRecovery < SingletonTask
+        def initialize()
+          add_dependency(:Files, "/proc/cmdline")
+        end
+
+        def run()
+          if File.read("/proc/cmdline").match(/mdss_dsi_nt36830_wqhd_dualdsi_extclk_cmd_10bit/)
+            $logger.info("HACK!! Rebooting to recovery to have a working display...")
+            System.run("reboot", "recovery")
+          end
+        end
+      end
+    '')
+  ];
 }
