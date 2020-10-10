@@ -5,7 +5,7 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: #{$PROGRAM_NAME} [--only-save] <device_name>"
+  puts "Usage: bin/menuconfig [--only-save] <device_name>"
 end
 
 # Poor approximation to arguments parsing.
