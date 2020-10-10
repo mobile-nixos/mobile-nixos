@@ -13,7 +13,7 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: #{$PROGRAM_NAME} <device_name>"
+  puts "Usage: bin/kernel-normalize-config <device_name>"
 end
 
 # Poor approximation to arguments parsing.
