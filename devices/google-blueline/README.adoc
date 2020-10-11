@@ -7,6 +7,11 @@
 - `kernel-mainline` is building, but `mobile-nixos`'s kernel builder needs
   plumbing to build/output the DTBO.img
 
+== Issues
+
+- `[***   ] A start job is running for Wait fornitialization (1min 32s / 3min 1s)`
+  - runs for 2 minutes on every "successful" boot
+
 == Getting Started
 
 This assumes you copy my directory strucuture / flake.nix bits
@@ -154,7 +159,7 @@ ssh "${remote}" "sudo bash -c \"\
 ----
 
 - venus? (I tried to add this to google-blueline/firmware too...)
-- cs4012x?
+- cs4012x (cirrus haptic touch driver)
 - msm_vidc?
 
 

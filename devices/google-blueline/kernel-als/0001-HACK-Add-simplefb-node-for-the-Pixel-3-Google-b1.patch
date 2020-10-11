@@ -1,0 +1,56 @@
+From 7fa0acac4401d51da58970bba814dca194ae4b6e Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 10 Oct 2020 21:30:27 -0400
+Subject: [PATCH] [HACK] Add simplefb node for the Pixel 3 (Google b1)
+
+---
+ .../boot/dts/google/sdm845-b1-common.dtsi     | 36 +++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/google/sdm845-b1-common.dtsi b/arch/arm64/boot/dts/google/sdm845-b1-common.dtsi
+index c5bca53cb6dca..c185eba5c855c 100644
+--- a/arch/arm64/boot/dts/google/sdm845-b1-common.dtsi
++++ b/arch/arm64/boot/dts/google/sdm845-b1-common.dtsi
+@@ -28,3 +28,39 @@
+ &actuator_rear {
+ 	param-index = <5>;
+ };
++
++/ {
++	aliases {
++		display0 = &framebuffer0;
++	};
++
++	chosen {
++		#address-cells = <2>;
++		#size-cells = <2>;
++		ranges;
++		stdout-path = "display0";
++
++		/*
++		 * HACK: Use framebuffer setup by the bootloader for simplefb.
++		 * https://wiki.postmarketos.org/wiki/SDM845_Mainlining#Creating_a_framebuffer
++		 */
++		// 1080 x 2160
++		framebuffer0: framebuffer@9d400000 {
++			compatible = "simple-framebuffer";
++			reg = <0 0x9d400000 0 (1080 * 2160 * 4)>;
++			width = <1080>;
++			height = <2160>;
++			stride = <(1080 * 4)>;
++			format = "a8r8g8b8";
++			status = "okay";
++		};
++	};
++
++	reserved-memory {
++		fb_mem: memory@a1a10000 {
++			compatible = "removed-dma-pool";
++			no-map;
++			reg = <0 0x9d400000 0 (1080 * 2160 * 4)>;
++		};
++	};
++};
+-- 
+2.28.0
+

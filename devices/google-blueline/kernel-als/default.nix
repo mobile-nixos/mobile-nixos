@@ -28,6 +28,10 @@ in
 
   nativeBuildInputs = [ lz4 ];
 
+  patches = [
+    ./0001-HACK-Add-simplefb-node-for-the-Pixel-3-Google-b1.patch
+  ];
+
   # installTargets = [ "Image.gz" ]; # not working yet: https://github.com/NixOS/mobile-nixos/pull/191#discussion_r501421726
 
   # patches = [

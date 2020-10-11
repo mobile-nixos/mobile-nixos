@@ -21,7 +21,7 @@
 
   firmware = pkgs.callPackage ./firmware {};
 in
-{  
+{
   mobile.device.name = "google-blueline";
   mobile.device.identity = {
     name = "Pixel 3";
@@ -75,6 +75,7 @@ in
     "androidboot.boot_devices=soc/1d84000.ufshc"
     "androidboot.super_partition=system"
     "buildvariant=user"
+    #"quiet"
   ];
 
   mobile.system.type = "android";
