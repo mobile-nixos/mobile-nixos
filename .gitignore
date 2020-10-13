@@ -12,6 +12,7 @@ devices/*/kernel/config.*.old
 ### env ###
 .env
 .envrc
+.direnv/
 
 ### Vim ###
 # Swap
