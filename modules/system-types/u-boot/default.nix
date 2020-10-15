@@ -101,6 +101,26 @@ let
     }
   ;
 
+  miscPartition = {
+    # Used as a BCB.
+    name = "misc";
+    partitionLabel = "misc";
+    partitionUUID = "5A7FA69C-9394-8144-A74C-6726048B129D";
+    length = imageBuilder.size.MiB 1;
+    partitionType = "EF32A33B-A409-486C-9141-9FFB711F6266";
+    filename = "/dev/null";
+  };
+
+  persistPartition = imageBuilder.fileSystem.makeExt4 {
+    # To work more like Android-based systems.
+    name = "persist";
+    partitionLabel = "persist";
+    partitionID = "5553F4AD-53E1-2645-94BA-2AFC60C12D38";
+    partitionUUID = "5553F4AD-53E1-2645-94BA-2AFC60C12D39";
+    size = imageBuilder.size.MiB 16;
+    partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
+  };
+
   # Without bootloader means "without u-boot"
   withoutBootloader = imageBuilder.diskImage.makeMBR {
     name = "mobile-nixos";
@@ -110,6 +130,8 @@ let
     # This is not ideal... an alternative solution should be figured out.
     partitions = [
       (imageBuilder.gap cfg.initialGapSize)
+      miscPartition
+      persistPartition
 
       config.system.build.boot-partition
 
