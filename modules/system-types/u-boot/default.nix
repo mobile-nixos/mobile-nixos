@@ -77,7 +77,9 @@ let
   boot-partition =
     imageBuilder.fileSystem.makeExt4 {
       name = "mobile-nixos-boot";
+      partitionLabel = "boot";
       partitionID = "ED3902B6-920A-4971-BC07-966D4E021683";
+      partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E1";
       # Let's give us a *bunch* of space to play around.
       # And let's not forget we have the kernel and stage-1 twice.
       size = imageBuilder.size.MiB 128;
@@ -122,19 +124,17 @@ let
   };
 
   # Without bootloader means "without u-boot"
-  withoutBootloader = imageBuilder.diskImage.makeMBR {
+  withoutBootloader = imageBuilder.diskImage.makeGPT {
     name = "mobile-nixos";
     diskID = "01234567";
+    headerHole = cfg.initialGapSize;
 
     # This has to follow the same order as defined in the u-boot bootloaders...
     # This is not ideal... an alternative solution should be figured out.
     partitions = [
-      (imageBuilder.gap cfg.initialGapSize)
       miscPartition
       persistPartition
-
       config.system.build.boot-partition
-
       config.system.build.rootfs
     ];
   };
