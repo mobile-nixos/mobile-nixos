@@ -47,9 +47,13 @@ let
     if load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/boot/kernel; then
       setenv boot_type boot
     else
-      load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/recovery/kernel
-      setenv boot_type recovery
-      setenv bootargs ''${bootargs} is_recovery
+      if load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/recovery/kernel; then
+        setenv boot_type recovery
+        setenv bootargs ''${bootargs} is_recovery
+      else
+        echo "!!! Failed to load either of the normal and recovery kernels !!!"
+        exit
+      fi
     fi
 
     if load ''${devtype} ''${devnum}:''${bootpart} ''${fdt_addr_r} /mobile-nixos/''${boot_type}/dtbs/''${fdtfile}; then
