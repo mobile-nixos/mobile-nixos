@@ -44,6 +44,16 @@ let
 
     ${cfg.additionalCommands}
 
+    echo
+    echo === debug information ===
+    printenv bootargs
+    echo
+    printenv kernel_addr_r
+    printenv fdt_addr_r
+    printenv ramdisk_addr_r
+    echo === end of the debug information ===
+    echo
+
     if load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/boot/kernel; then
       setenv boot_type boot
     else
