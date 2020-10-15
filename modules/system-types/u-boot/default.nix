@@ -54,6 +54,42 @@ let
     echo === end of the debug information ===
     echo
 
+    if test "$mmc_bootdev" != ""; then
+      echo ":: Detected mmc booting"
+      devtype="mmc"
+    else
+      echo "!!! Could not detect devtype !!!"
+      exit
+    fi
+
+    if test "$devtype" = "mmc"; then
+      devnum="$mmc_bootdev"
+      echo ":: Booting from mmc $devnum"
+    fi
+
+    bootpart=""
+    echo part number $devtype $devnum boot bootpart
+    part number $devtype $devnum boot bootpart
+    echo $bootpart
+
+    # To stay compatible with the previous scheme, and more importantly, the
+    # default assumptions from U-Boot, detect the bootable legacy flag.
+    if test "$bootpart" = ""; then
+      echo "Could not find a partition with the partlabel 'boot'."
+      echo "(looking at partitions marked bootable)"
+      part list ''${devtype} ''${devnum} -bootable bootpart
+      # This may print out an error message when there is only one result.
+      # Though it still is fine.
+      setexpr bootpart gsub ' .*' "" "$bootpart"
+    fi
+
+    if test "$bootpart" = ""; then
+      echo "!!! Could not find 'boot' partition on $devtype $devnum !!!"
+      exit
+    fi
+
+    echo ":: Booting from partition $bootpart"
+
     if load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/boot/kernel; then
       setenv boot_type boot
     else
