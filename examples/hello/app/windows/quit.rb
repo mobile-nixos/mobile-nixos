@@ -14,8 +14,6 @@ module GUI
 
       add_buttons([
         ["Reboot", ->() { run("reboot") }],
-        ["Reboot to recovery", ->() { run("reboot recovery") }],
-        ["Reboot to bootloader", ->() { run("reboot bootloader") }],
         ["Power off", ->() { run("poweroff") }],
       ])
 
