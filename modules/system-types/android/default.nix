@@ -128,6 +128,11 @@ in
         default = android-device;
         inherit android-bootimg android-recovery android-device;
       };
+
+      mobile.HAL.boot.rebootModes = [
+        "Android.recovery"
+        "Android.bootloader"
+      ];
     })
 
     (lib.mkIf kernelPackage.isQcdt {
