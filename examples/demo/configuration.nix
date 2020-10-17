@@ -52,6 +52,7 @@ in
       hardware.pulseaudio.enable = true;
 
       environment.systemPackages = with pkgs; [
+        dtc
         (writeShellScriptBin "firefox" ''
           export MOZ_USE_XINPUT2=1
           exec ${pkgs.firefox}/bin/firefox "$@"
