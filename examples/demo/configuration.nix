@@ -41,10 +41,10 @@ in
         # Automatically login as nixos.
         displayManager.lightdm = {
           enable = true;
-          autoLogin = {
-            enable = true;
-            user = "nixos";
-          };
+        };
+        displayManager.autoLogin = {
+          enable = true;
+          user = "nixos";
         };
 
       };
@@ -153,7 +153,7 @@ in
     {
       services.xserver = {
         desktopManager.xfce.enableXfwm = false;
-        desktopManager.xfce.extraSessionCommands = ''
+        displayManager.sessionCommands = ''
           awesome &
         '';
       };
