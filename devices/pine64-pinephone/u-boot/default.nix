@@ -40,6 +40,7 @@ in
     # This is because we re-invest the 2s in our own menu.
     CONFIG_AUTOBOOT_KEYED_CTRLC=y
     CONFIG_BOOTDELAY=0
+    CONFIG_REGEX=y
   '';
 }).overrideAttrs(old: rec {
   version = "2020.07";

@@ -44,12 +44,62 @@ let
 
     ${cfg.additionalCommands}
 
+    echo
+    echo === debug information ===
+    printenv bootargs
+    echo
+    printenv kernel_addr_r
+    printenv fdt_addr_r
+    printenv ramdisk_addr_r
+    echo === end of the debug information ===
+    echo
+
+    if test "$mmc_bootdev" != ""; then
+      echo ":: Detected mmc booting"
+      devtype="mmc"
+    else
+      echo "!!! Could not detect devtype !!!"
+      exit
+    fi
+
+    if test "$devtype" = "mmc"; then
+      devnum="$mmc_bootdev"
+      echo ":: Booting from mmc $devnum"
+    fi
+
+    bootpart=""
+    echo part number $devtype $devnum boot bootpart
+    part number $devtype $devnum boot bootpart
+    echo $bootpart
+
+    # To stay compatible with the previous scheme, and more importantly, the
+    # default assumptions from U-Boot, detect the bootable legacy flag.
+    if test "$bootpart" = ""; then
+      echo "Could not find a partition with the partlabel 'boot'."
+      echo "(looking at partitions marked bootable)"
+      part list ''${devtype} ''${devnum} -bootable bootpart
+      # This may print out an error message when there is only one result.
+      # Though it still is fine.
+      setexpr bootpart gsub ' .*' "" "$bootpart"
+    fi
+
+    if test "$bootpart" = ""; then
+      echo "!!! Could not find 'boot' partition on $devtype $devnum !!!"
+      exit
+    fi
+
+    echo ":: Booting from partition $bootpart"
+
     if load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/boot/kernel; then
       setenv boot_type boot
     else
-      load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/recovery/kernel
-      setenv boot_type recovery
-      setenv bootargs ''${bootargs} is_recovery
+      if load ''${devtype} ''${devnum}:''${bootpart} ''${kernel_addr_r} /mobile-nixos/recovery/kernel; then
+        setenv boot_type recovery
+        setenv bootargs ''${bootargs} is_recovery
+      else
+        echo "!!! Failed to load either of the normal and recovery kernels !!!"
+        exit
+      fi
     fi
 
     if load ''${devtype} ''${devnum}:''${bootpart} ''${fdt_addr_r} /mobile-nixos/''${boot_type}/dtbs/''${fdtfile}; then
@@ -77,7 +127,9 @@ let
   boot-partition =
     imageBuilder.fileSystem.makeExt4 {
       name = "mobile-nixos-boot";
+      partitionLabel = "boot";
       partitionID = "ED3902B6-920A-4971-BC07-966D4E021683";
+      partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E1";
       # Let's give us a *bunch* of space to play around.
       # And let's not forget we have the kernel and stage-1 twice.
       size = imageBuilder.size.MiB 128;
@@ -101,18 +153,38 @@ let
     }
   ;
 
+  miscPartition = {
+    # Used as a BCB.
+    name = "misc";
+    partitionLabel = "misc";
+    partitionUUID = "5A7FA69C-9394-8144-A74C-6726048B129D";
+    length = imageBuilder.size.MiB 1;
+    partitionType = "EF32A33B-A409-486C-9141-9FFB711F6266";
+    filename = "/dev/null";
+  };
+
+  persistPartition = imageBuilder.fileSystem.makeExt4 {
+    # To work more like Android-based systems.
+    name = "persist";
+    partitionLabel = "persist";
+    partitionID = "5553F4AD-53E1-2645-94BA-2AFC60C12D38";
+    partitionUUID = "5553F4AD-53E1-2645-94BA-2AFC60C12D39";
+    size = imageBuilder.size.MiB 16;
+    partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
+  };
+
   # Without bootloader means "without u-boot"
-  withoutBootloader = imageBuilder.diskImage.makeMBR {
+  withoutBootloader = imageBuilder.diskImage.makeGPT {
     name = "mobile-nixos";
     diskID = "01234567";
+    headerHole = cfg.initialGapSize;
 
     # This has to follow the same order as defined in the u-boot bootloaders...
     # This is not ideal... an alternative solution should be figured out.
     partitions = [
-      (imageBuilder.gap cfg.initialGapSize)
-
+      miscPartition
+      persistPartition
       config.system.build.boot-partition
-
       config.system.build.rootfs
     ];
   };
