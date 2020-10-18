@@ -5,6 +5,10 @@
     ./modem.nix
   ];
 
+  nixpkgs.overlays = [
+    (import ./overlay)
+  ];
+
   mobile.device.name = "pine64-pinephone";
   mobile.device.identity = {
     name = "PinePhone";
