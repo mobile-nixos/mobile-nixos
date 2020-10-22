@@ -8,6 +8,10 @@ log("************************")
 log("* Mobile NixOS stage-#{STAGE} *")
 log("************************")
 log("")
+# Since we would like to *somewhat* guesstimate how long it took to get to the
+# actual init program, we can print the CLOCK_MONOTONIC at startup.
+# It's not perfect, but that gets us halfway there I guess.
+log("init started ~#{"%.6f" % (Process.clock_gettime(Process::CLOCK_MONOTONIC))}s after kernel boot time.")
 log("Built for device #{Configuration["device"]["name"]}")
 log("")
 
