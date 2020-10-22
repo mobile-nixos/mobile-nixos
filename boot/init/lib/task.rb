@@ -30,10 +30,16 @@ module Tasks
     @tasks.sort!
 
     until @tasks.all?(&:ran) do
-      $logger.debug("Tasks resolution loop start")
+      $logger.debug("=== Tasks resolution loop start ===")
       ran_one = false
       @tasks
         .reject(&:ran)
+        .tap do |tasks|
+          $logger.debug("    Tasks order:")
+          tasks.each do |t|
+            $logger.debug("      - #{t}")
+          end
+        end
         .each do |task|
           if task._try_run_task then
             ran_one = true
