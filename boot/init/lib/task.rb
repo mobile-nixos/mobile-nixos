@@ -119,6 +119,11 @@ class Task
   def ux_priority()
     0
   end
+
+  # Same as name, but with the object_id appended.
+  def to_s()
+    name + "<0x#{object_id.to_s(16)}>"
+  end
 end
 
 # A task that can only have one instance.
