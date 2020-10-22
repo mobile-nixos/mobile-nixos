@@ -234,6 +234,17 @@ rec {
     meta.license = licenses.mit;
   };
 
+  mruby-process-clock_gettime = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-process-clock_gettime";
+      owner = "mobile-nixos";
+      rev = "23d7f64178876d1074d7ff5b4b1d2adb8a277d6c";
+      sha256 = "052q3963lblw6465i1bjbfna88cyk8v1mmznqi4x5a6wddpiwwbj";
+    };
+
+    meta.license = licenses.mit;
+  };
+
   mruby-regexp-pcre = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-regexp-pcre";
