@@ -31,6 +31,7 @@ let loader = mruby.builder {
     mruby-json
     mruby-logger
     mruby-open3
+    mruby-process-clock_gettime
     mruby-regexp-pcre
     mruby-singleton
     mruby-time-strftime
