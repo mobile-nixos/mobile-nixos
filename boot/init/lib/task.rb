@@ -31,13 +31,22 @@ module Tasks
 
     until @tasks.all?(&:ran) do
       $logger.debug("Tasks resolution loop start")
+      ran_one = false
       @tasks
         .reject(&:ran)
         .each do |task|
-          task._try_run_task
+          if task._try_run_task then
+            ran_one = true
+            $logger.debug("#{task} ran.")
+            break
+          end
         end
-      # Don't burn the CPU
-      sleep(0.1)
+
+      # Don't burn the CPU if we're waiting on something...
+      unless ran_one
+        $logger.debug("Sleeping")
+        sleep(0.1)
+      end
     end
   end
 end
@@ -94,6 +103,7 @@ class Task
 
   # Internal actual way to run the task
   # This runs the `#run` method.
+  # Returns true when the task was ran.
   def _try_run_task()
     $logger.debug("Looking to run task #{name}...")
     return unless dependencies_fulfilled?
@@ -103,6 +113,8 @@ class Task
       $logger.debug("Finished #{name}...")
       @ran = true
     end
+
+    @ran
   end
 
   def dependencies()
