@@ -5,10 +5,10 @@ let
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/applets}/key-held.rb
   '';
   boot-splash = pkgs.runCommand "boot-splash.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/gui}/lib/*.rb ${../boot/splash}/main.rb
+    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/recovery-menu}/lib/*.rb ${../boot/splash}/main.rb
   '';
   boot-error = pkgs.runCommand "boot-error.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/gui}/lib/*.rb ${../boot/error}/main.rb
+    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/recovery-menu}/lib/*.rb ${../boot/error}/main.rb
   '';
 in
 {
@@ -26,7 +26,7 @@ in
       symlink = "/applets/boot-splash.mrb";
     }
     {
-      object = pkgs.mobile-nixos.stage-1.boot-gui;
+      object = pkgs.mobile-nixos.stage-1.boot-recovery-menu;
       symlink = "/applets/boot-selection.mrb";
     }
     {
