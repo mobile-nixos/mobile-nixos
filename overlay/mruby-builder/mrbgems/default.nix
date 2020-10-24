@@ -1,4 +1,12 @@
-{ stdenvNoCC, lib, fetchFromGitHub, fetchpatch, libffi }:
+{ stdenvNoCC
+, lib
+, fetchFromGitHub
+, fetchpatch
+
+, libffi
+, pkg-config
+, zeromq
+}:
 
 let
   inherit (lib) licenses;
@@ -342,5 +350,43 @@ rec {
     };
 
     meta.licenses = licenses.mit;
+  };
+
+  mruby-zmq = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-zmq";
+      owner = "zeromq";
+      rev = "39b6dab7cb944595064ca3e9376637024d3bf483";
+      sha256 = "03n9890wx18v7pwnk5w8s10l7yij6hyj8y5q4jf296k56dr4g01m";
+    };
+
+    patches = [
+      (fetchpatch {
+        url = "https://github.com/zeromq/mruby-zmq/pull/16.patch";
+        sha256 = "1m63yl84hg80whqpr3yznk06yalaasiszwm3pjvsr2di8gyi0bm5";
+      })
+      ./mruby-zmq/0001-Work-around-missing-pthread.patch
+      ./mruby-zmq/0001-HACK-cross-build-is-not-special-with-Nixpkgs.patch
+    ];
+
+    gemBuildInputs = [
+      (zeromq.override {
+        enableDrafts = true;
+      })
+    ];
+
+    gemNativeBuildInputs = [
+      pkg-config
+    ];
+
+    requiredGems = [
+      mruby-errno
+      mruby-proc-irep-ext
+      mruby-simplemsgpack
+      mruby-pack
+      mruby-env
+    ];
+
+    meta.licenses = licenses.mpl20;
   };
 }
