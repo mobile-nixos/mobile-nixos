@@ -310,6 +310,18 @@ rec {
     meta.license = licenses.gpl;
   };
 
+  mruby-simplemsgpack = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-simplemsgpack";
+      owner = "Asmod4n";
+      rev = "9df3c4a4d6ff1b62cbedb6c680b2af2f72015e40";
+      sha256 = "1dlhxayx882wq7phhk9vpsw1lb36nh99bh22l17p1arkp78sl85p";
+      fetchSubmodules = true;
+    };
+
+    meta.licenses = licenses.asl20;
+  };
+
   mruby-singleton = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-singleton";
