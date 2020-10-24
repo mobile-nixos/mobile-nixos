@@ -215,6 +215,17 @@ rec {
     meta.license = licenses.asl20;
   };
 
+  mruby-proc-irep-ext = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-proc-irep-ext";
+      owner = "Asmod4n";
+      rev = "d5364c79c85ee5dcc605b8f32d7969597dba1f58";
+      sha256 = "1j0278zfx322d0lwp2mm5d6hah4w0fnb0v79jkjmq6z516qp1hx2";
+    };
+
+    meta.license = licenses.asl20;
+  };
+
   mruby-process = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-process";
