@@ -35,6 +35,7 @@ let loader = mruby.builder {
     mruby-regexp-pcre
     mruby-singleton
     mruby-time-strftime
+    mruby-zmq
 
     # Last as it may depend on any of the previous gems.
     mruby-lvgui
