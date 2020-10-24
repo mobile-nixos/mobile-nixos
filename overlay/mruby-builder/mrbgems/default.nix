@@ -204,6 +204,17 @@ rec {
     meta.license = licenses.mit;
   };
 
+  mruby-pack = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-pack";
+      owner = "iij";
+      rev = "383a9c79e191d524a9a2b4107cc5043ecbf6190b";
+      sha256 = "003glxgxifk4ixl12sy4gn9bhwvgb79b4wga549ic79isgv81w2d";
+    };
+
+    meta.license = licenses.asl20;
+  };
+
   mruby-process = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-process";
