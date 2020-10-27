@@ -101,11 +101,13 @@ in
       stage-1 = {
         script-loader = callPackage ../boot/script-loader {};
         boot-recovery-menu = callPackage ../boot/recovery-menu {};
+        boot-splash = callPackage ../boot/splash {};
       };
 
       autoport = callPackage ./mobile-nixos/autoport {};
 
       boot-recovery-menu-simulator = callPackage ../boot/recovery-menu/simulator.nix {};
+      boot-splash-simulator = callPackage ../boot/splash/simulator.nix {};
     };
 
     imageBuilder = callPackage ../lib/image-builder {};
