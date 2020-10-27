@@ -32,7 +32,7 @@ module Tasks
     until @tasks.all?(&:ran) do
       $logger.debug("=== Tasks resolution loop start ===")
       ran_one = false
-      @tasks
+      todo = @tasks
         .reject(&:ran)
         .tap do |tasks|
           $logger.debug("    Tasks order:")
@@ -40,7 +40,12 @@ module Tasks
             $logger.debug("      - #{t}")
           end
         end
-        .each do |task|
+
+      # Update the current progress
+      count = @tasks.length.to_f
+      Progress.set((100 * (1 - (todo.length / count))).ceil)
+
+      todo.each do |task|
           if task._try_run_task then
             ran_one = true
             $logger.debug("#{task} ran.")
