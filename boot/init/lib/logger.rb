@@ -19,13 +19,16 @@ class TimeOffsetLogger < Logger::Formatter
   end
 end
 
-LOG_LEVEL = Logger::INFO
-if Configuration["log"]
-  level = Configuration["log"]["level"]
-  if level
-    LOG_LEVEL = Logger.const_get(level.to_sym)
+LOG_LEVEL =
+  if Configuration["log"]
+    level = Configuration["log"]["level"]
+    if level
+      LOG_LEVEL = Logger.const_get(level.to_sym)
+    end
+  else
+    Logger::INFO
   end
-end
+
 $logger = Logger.new(STDOUT, level: LOG_LEVEL, formatter: TimeOffsetLogger.new)
 $logger.debug("Logger initialized... (#{LOG_LEVEL})")
 
