@@ -27,11 +27,10 @@ in
     version = "2020-07-25";
 
     src = fetchFromGitHub {
-      fetchSubmodules = true;
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "aceb8947f2a8d3b4672d30a8e4d74a94f3ded1ac";
-      sha256 = "00hcsaljxk08w0jasvqb63h60vak3lrm23b0pygiznbr7xhpm9ci";
+      rev = "0dc257d07271fad023a5e6e9ac42222d2397c5cf";
+      sha256 = "1zb7naamqfzcsfi5809c93f1ygxp4w3aiw6172bpmnk1vxdchwsh";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
