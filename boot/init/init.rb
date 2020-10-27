@@ -19,7 +19,7 @@ log("")
 # To these tasks, add all Singleton tasks found under tasks/*
 
 # Without any added dependency, show a first splash ASAP
-Tasks::Splash.new("/etc/logo.svg")
+Tasks::Splash.instance()
 
 # Some software (mainly extfs tools) bark angrily and fail when this is missing.
 Tasks::Symlink.new("/proc/mounts", "/etc/mtab")
