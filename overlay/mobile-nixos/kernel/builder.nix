@@ -21,6 +21,7 @@
 , writeTextFile
 , writeShellScriptBin
 
+, cpio
 , perl
 , bc
 , nettools
@@ -160,7 +161,7 @@ stdenv.mkDerivation (inputArgs // {
   forceNormalizedConfig = true;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
+  nativeBuildInputs = [ cpio perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.kernelTarget == "uImage") buildPackages.ubootTools
     ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
@@ -325,7 +326,7 @@ stdenv.mkDerivation (inputArgs // {
     "Image.gz" # TODO: temporary hack for providing "Image.gz" for "zinstall" when building a lz4-compressed kernel.
     "vmlinux"  # for "perf" and things like that
   ]
-    ++ optional isImageGzDtb "${kernelTarget}-dtb"
+    #++ optional isImageGzDtb "${kernelTarget}-dtb"
     ++ optional isModular "modules"
   ;
 
@@ -375,6 +376,13 @@ stdenv.mkDerivation (inputArgs // {
 
   '' + optionalString isImageGzDtb ''
     echo ":: Copying platform-specific -dtb image file"
+    # for mainline only
+    (set -x
+    ls $out/dtbs
+    cp -v "$buildRoot/arch/arm64/boot/Image.gz" "$out/Image.gz-dtb"
+    cat $buildRoot/arch/arm64/boot/dts/qcom/sdm845-blueline.dtb >> "$out/Image.gz-dtb"
+    )
+    # end for mainline only
     cp -v "$buildRoot/arch/${platform.kernelArch}/boot/${kernelTarget}-dtb" "$out/"
 
   ''

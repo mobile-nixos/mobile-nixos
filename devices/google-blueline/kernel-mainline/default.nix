@@ -24,22 +24,27 @@ in
 # deferred_probe_timeout=30"
 
 (mobile-nixos.kernel-builder-gcc6 {
-  
   #normalized from "${src}/arch/arm64/configs/blueline_defconfig";
   configfile = ./config.aarch64;
+  version = "5.9.0-rc6-mainline";
 
   file = "Image.gz-dtb";
-  version = "5.9.0-rc6-mainline";
+
+  enableRemovingWerror = true;
+  isImageGzDtb = true;
+  #isCompressed = "lz4";
+  isModular = false;
+  hasDTB = true;
+
   src = fetchgit {
     url = "https://git.linaro.org/people/sumit.semwal/linux-dev.git";
     # https://git.linaro.org/people/sumit.semwal/linux-dev.git/log/?h=dev/p3-mainline-WIP
     rev = "eae0a326063cd37168ad263a00756d4ef4a6b147";
     sha256 = "sha256-KlQKu0oMtqHcisyqMHn54Hqjiau1UBEOPiCJ5w8ydMw=";
   };
-
-  isModular = false; # TODO ???
-
-}).overrideAttrs({ postInstall ? "", postPatch ? "", nativeBuildInputs, ... }: {
+})
+/*
+.overrideAttrs({ postInstall ? "", postPatch ? "", nativeBuildInputs, ... }: {
   installTargets = [ "Image.gz" "zinstall" "install" ];
   postPatch = postPatch + ''
     # FIXME : factor out
@@ -74,3 +79,4 @@ in
     )
   '';
 })
+*/

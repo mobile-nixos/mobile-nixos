@@ -15,8 +15,8 @@
     kernelPatches = pkgs.defaultKernelPatches;
   };
   activeKernel =
-    #kernelMainline;
-    kernelALS;
+    kernelMainline;
+    #kernelALS;
     #kernelPMOS;
 
   firmware = pkgs.callPackage ./firmware {};

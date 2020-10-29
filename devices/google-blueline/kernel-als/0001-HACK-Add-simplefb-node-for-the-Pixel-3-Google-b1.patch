@@ -28,7 +28,7 @@ index c5bca53cb6dca..c185eba5c855c 100644
 +		stdout-path = "display0";
 +
 +		/*
-+		 * HACK: Use framebuffer setup by the bootloader for simplefb.
++		 * HACK: Use framebuffer setup by the bootloader for simplefb. rebuild
 +		 * https://wiki.postmarketos.org/wiki/SDM845_Mainlining#Creating_a_framebuffer
 +		 */
 +		// 1080 x 2160

@@ -13,11 +13,12 @@ in
 (mobile-nixos.kernel-builder-clang_11 { # wip
   configfile = ./config.aarch64;
   version = "4.9.223";
-  
+
   enableRemovingWerror = true;
   isImageGzDtb = true;
   isCompressed = "lz4";
   isModular = false;
+  hasDTB = true;
 
   src = fetchFromGitHub {
     owner = "android-linux-stable";

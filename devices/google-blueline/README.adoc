@@ -12,6 +12,12 @@
 - `[***   ] A start job is running for Wait fornitialization (1min 32s / 3min 1s)`
   - runs for 2 minutes on every "successful" boot
 
+- kernel-als
+  - attempting `/blueline-rp1a.201005.004`: boots
+  - attempting `/blueline-pq3a.190801.002`: fails to boot: `DeviceTreeOverlay failed: Invalid Parameter Failed to apply dtb overlay`
+- kernel-mainline
+  - attempting `/blueline-pq3a.190801.002`: ?
+
 == Getting Started
 
 This assumes you copy my directory strucuture / flake.nix bits
