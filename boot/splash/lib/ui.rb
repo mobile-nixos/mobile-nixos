@@ -24,6 +24,7 @@ class UI
     add_logo
     add_progress_bar
     add_label
+
     add_cover # last
   end
 
@@ -86,9 +87,10 @@ class UI
   def add_cover()
     @cover = LVGL::LVObject.new(@screen)
     # Make it so we can use the opacity to fade in/out
-    @cover.set_opa_scale_enable(1)
+    @cover.set_opa_scale_enable(true)
     @cover.set_width(@screen.get_width())
     @cover.set_height(@screen.get_height())
+    @cover.set_click(false)
 
     @cover.get_style().dup.tap do |style|
       @cover.set_style(style)
