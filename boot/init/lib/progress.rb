@@ -1,20 +1,24 @@
 # Progress-reporting plumbing
 module Progress
-  SOCKET = "/run/mobile-nixos-init.socket"
+  SOCKET = "/run/mobile-nixos-init"
 
   def self.start()
     @progress = 0
     $logger.debug("Starting progress IPC through ZeroMQ")
-    $logger.debug(" -> #{SOCKET}")
-    @pub = ZMQ::Pub.new("ipc://#{SOCKET}")
+
+    $logger.debug(" -> messages: #{SOCKET}")
+    @messages = ZMQ::Pub.new("ipc://#{SOCKET}-messages")
+
+    $logger.debug("  -> replies: #{SOCKET}")
+    @replies = ZMQ::Pub.new("ipc://#{SOCKET}-replies")
   end
 
   # Prefer not sending messages directly, rather use the helpers.
   def self.publish(msg)
     msg = msg.to_json
-    if @pub
+    if @messages
       $logger.debug("[send] #{msg}")
-      @pub.send(msg)
+      @messages.send(msg)
     else
       $logger.debug("[send] Couldn't send #{msg}")
     end

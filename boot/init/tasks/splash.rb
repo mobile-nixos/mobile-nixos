@@ -30,7 +30,7 @@ class Tasks::Splash < SingletonTask
       # Ensures the progress is shown
       Progress.publish({progress: 100, label: reason})
       # Command it to quit
-      Progress.publish("quit")
+      Progress.publish({command: {name: "quit"}})
 
       # If it has quit, break out!
       break if Process.wait(@pid, Process::WNOHANG)
