@@ -61,6 +61,41 @@ module Progress
     ret
   end
 
+  def self.ask(placeholder, label: nil)
+    identifier = "0x#{Random.rand(0xFFFFF).to_s(16)}"
+
+    previous_label = get(:label)
+    Progress.update({label: label}) if label
+
+    update(command: {
+      name: "ask",
+      identifier: identifier,
+      placeholder: placeholder,
+    })
+
+    value = loop do
+      # Keep progress state updated for processes attaching late.
+      send_state()
+      value =
+        each_replies do |reply|
+          # A reply for the current question?
+          if reply and reply["type"] == "reply" and reply["identifier"] == identifier
+            break reply["value"]
+          else
+            nil
+          end
+        end
+      break value if value
+
+      # Leave some breathing room to the CPU!
+      sleep(0.1)
+    end
+
+    update({label: previous_label})
+
+    value
+  end
+
   # Read one reply
   # If none are available, returns nil
   def self.read_reply()
