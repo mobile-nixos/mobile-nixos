@@ -60,6 +60,7 @@ class ProgressBar < LVGUI::Widget
   end
 
   def progress=(val)
+    val = 100 if val > 100
     @changed = true
     @progress_amount = val
     refresh_progress()
