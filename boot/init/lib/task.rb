@@ -43,7 +43,7 @@ module Tasks
 
       # Update the current progress
       count = @tasks.length.to_f
-      Progress.set((100 * (1 - (todo.length / count))).ceil)
+      Progress.update({progress: (100 * (1 - (todo.length / count))).ceil})
 
       todo.each do |task|
           if task._try_run_task then
