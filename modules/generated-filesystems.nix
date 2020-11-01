@@ -62,6 +62,14 @@ let
             limitations in CI situations.
           '';
         };
+        raw = lib.mkOption {
+          internal = true;
+          type = types.nullOr types.package;
+          default = null;
+          description = ''
+            Use an output directly rather than creating it from the options.
+          '';
+        };
       };
       config = {
       };
@@ -79,7 +87,8 @@ in
   };
 
   config = {
-    system.build.generatedFilesystems = lib.attrsets.mapAttrs (name: {type, id, label, ...} @ attrs:
+    system.build.generatedFilesystems = lib.attrsets.mapAttrs (name: {raw, type, id, label, ...} @ attrs:
+    if raw != null then raw else
       filesystemFunctions."${type}" (attrs // {
         name = label;
         partitionID = id;
