@@ -30,6 +30,7 @@
   ./initrd-vendor.nix
   ./initrd.nix
   ./internal.nix
+  ./luks.nix
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks
