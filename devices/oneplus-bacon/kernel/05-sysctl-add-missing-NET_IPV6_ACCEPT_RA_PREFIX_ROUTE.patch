@@ -1,0 +1,24 @@
+From f63521de245adccd266bc9c196292280291c31c1 Mon Sep 17 00:00:00 2001
+From: David Guibert <david.guibert@gmail.com>
+Date: Tue, 6 Apr 2021 21:16:36 +0200
+Subject: [PATCH] sysctl: add missing NET_IPV6_ACCEPT_RA_PREFIX_ROUTE
+
+---
+ include/linux/sysctl.h | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/include/linux/sysctl.h b/include/linux/sysctl.h
+index d950b5c9dd0..b3b8f839db9 100644
+--- a/include/linux/sysctl.h
++++ b/include/linux/sysctl.h
+@@ -570,6 +570,7 @@ enum {
+ 	NET_IPV6_ACCEPT_RA_RT_INFO_MAX_PLEN=22,
+ 	NET_IPV6_PROXY_NDP=23,
+ 	NET_IPV6_ACCEPT_SOURCE_ROUTE=25,
++	NET_IPV6_ACCEPT_RA_PREFIX_ROUTE=26,
+ 	__NET_IPV6_MAX
+ };
+ 
+-- 
+2.31.0
+
