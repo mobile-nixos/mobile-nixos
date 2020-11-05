@@ -1,5 +1,8 @@
 # Namespace where tasks can be defined, and hosting methods harmonizing a run.
 module Tasks
+  HUNG_BOOT_NOTIFICATION = 3 # seconds
+  HUNG_BOOT_TIMEOUT = 60 # seconds
+
   # Register a singleton task to be instantiated and ran.
   # @internal
   def self.register_singleton(klass)
@@ -29,6 +32,8 @@ module Tasks
     # unpredictable!
     @tasks.sort!
 
+    hung_tasks_timer = Time.now
+
     until @tasks.all?(&:ran) do
       $logger.debug("=== Tasks resolution loop start ===")
       ran_one = false
@@ -53,8 +58,44 @@ module Tasks
           end
         end
 
-      # Don't burn the CPU if we're waiting on something...
-      unless ran_one
+      if ran_one
+        # Reset the timer
+        hung_tasks_timer = Time.now
+        # And reset the hung state in the progress UI
+        Progress.update({label: nil, hung: nil})
+      else
+        elapsed = Time.now - hung_tasks_timer
+        $logger.debug("Time elapsed since something ran: #{elapsed}")
+
+        # Any tasks, not currently depending on another task, that have yet
+        # to be ran.
+        # Serves nothing to point to tasks depending on other tasks.
+        failed_tasks = todo.reject(&:depends_on_any_unfulfilled_task?)
+        failed_dependencies = failed_tasks.map(&:dependencies).inject(:+).uniq
+
+        if elapsed > HUNG_BOOT_NOTIFICATION
+          label = "#{failed_tasks.length} tasks are waiting on #{failed_dependencies.length} unique dependencies.\n\n" +
+            "(#{(HUNG_BOOT_TIMEOUT - elapsed).ceil} seconds left until boot is aborted.)"
+
+          Progress.update({label: label, hung: elapsed})
+        end
+
+        if elapsed > HUNG_BOOT_TIMEOUT
+          # Building this message is not pretty!
+          msg =
+            "#{failed_tasks.length} #{if failed_tasks.length == 1 then "task" else "tasks" end} " +
+            "did not run within #{HUNG_BOOT_TIMEOUT} seconds.\n" +
+            "\n" +
+            "#{failed_dependencies.length} #{if failed_dependencies.length == 1 then "dependency" else "dependencies" end} " +
+            "could not resolve:\n" +
+            failed_dependencies.map(&:pretty_name).join("\n") +
+            "\n"
+
+          # Fail with a black backdrop, and force the message to stay up 60s
+          System.failure("hung_tasks", msg, color: "000000", delay: 60)
+        end
+
+        # Don't burn the CPU if we're waiting on something...
         $logger.debug("Sleeping")
         sleep(0.1)
       end
@@ -110,6 +151,13 @@ class Task
 
   def dependencies_fulfilled?()
     dependencies.all?(&:fulfilled?)
+  end
+
+  def depends_on_any_unfulfilled_task?()
+    dependencies.reject(&:fulfilled?).any? do |dep|
+      dep.is_a?(Dependencies::Task) or
+      dep.is_a?(Dependencies::Target) 
+    end
   end
 
   # Internal actual way to run the task
