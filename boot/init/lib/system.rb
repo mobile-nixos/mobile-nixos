@@ -177,12 +177,14 @@ module System
     end
   end
 
-  def self.failure(code, message="(No details given)", color: "000000")
+  def self.failure(code, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"])
+    Progress.kill()
     $logger.fatal("#{code}: #{message}")
     sad_phone(color, code, message)
     shell if respond_to?(:shell)
-    sleep(Configuration["boot"]["fail"]["delay"])
+    sleep(delay)
     hard_reboot if Configuration["boot"]["fail"]["reboot"]
+    exit 111
   end
 
   def self.hard_reboot()
