@@ -117,6 +117,16 @@ module Dependencies
     end
   end
 
+  class Devices < Files
+    def pretty_name()
+      if @patterns.length == 1
+        "Device '#{@patterns.first}'"
+      else
+        "Devices #{@patterns.map{|f| "'#{f}'"}.join(", ")}"
+      end
+    end
+  end
+
   class Target < BaseDependency
     def initialize(name)
       @name = name.to_sym
