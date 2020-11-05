@@ -77,5 +77,13 @@ module Dependencies
     def task()
       Tasks::Mount.registry[@mount_point]
     end
+
+    def name()
+      super + "(#{@mount_point})"
+    end
+
+    def pretty_name()
+      "Mounting '#{@mount_point}'"
+    end
   end
 end
