@@ -1,4 +1,12 @@
-{ stdenvNoCC, lib, fetchFromGitHub, fetchpatch, libffi }:
+{ stdenvNoCC
+, lib
+, fetchFromGitHub
+, fetchpatch
+
+, libffi
+, pkg-config
+, zeromq
+}:
 
 let
   inherit (lib) licenses;
@@ -204,6 +212,28 @@ rec {
     meta.license = licenses.mit;
   };
 
+  mruby-pack = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-pack";
+      owner = "iij";
+      rev = "383a9c79e191d524a9a2b4107cc5043ecbf6190b";
+      sha256 = "003glxgxifk4ixl12sy4gn9bhwvgb79b4wga549ic79isgv81w2d";
+    };
+
+    meta.license = licenses.asl20;
+  };
+
+  mruby-proc-irep-ext = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-proc-irep-ext";
+      owner = "Asmod4n";
+      rev = "d5364c79c85ee5dcc605b8f32d7969597dba1f58";
+      sha256 = "1j0278zfx322d0lwp2mm5d6hah4w0fnb0v79jkjmq6z516qp1hx2";
+    };
+
+    meta.license = licenses.asl20;
+  };
+
   mruby-process = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-process";
@@ -230,6 +260,17 @@ rec {
       mruby-env
       mruby-os
     ];
+
+    meta.license = licenses.mit;
+  };
+
+  mruby-process-clock_gettime = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-process-clock_gettime";
+      owner = "mobile-nixos";
+      rev = "23d7f64178876d1074d7ff5b4b1d2adb8a277d6c";
+      sha256 = "052q3963lblw6465i1bjbfna88cyk8v1mmznqi4x5a6wddpiwwbj";
+    };
 
     meta.license = licenses.mit;
   };
@@ -277,6 +318,18 @@ rec {
     meta.license = licenses.gpl;
   };
 
+  mruby-simplemsgpack = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-simplemsgpack";
+      owner = "Asmod4n";
+      rev = "9df3c4a4d6ff1b62cbedb6c680b2af2f72015e40";
+      sha256 = "1dlhxayx882wq7phhk9vpsw1lb36nh99bh22l17p1arkp78sl85p";
+      fetchSubmodules = true;
+    };
+
+    meta.licenses = licenses.asl20;
+  };
+
   mruby-singleton = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-singleton";
@@ -297,5 +350,43 @@ rec {
     };
 
     meta.licenses = licenses.mit;
+  };
+
+  mruby-zmq = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-zmq";
+      owner = "zeromq";
+      rev = "39b6dab7cb944595064ca3e9376637024d3bf483";
+      sha256 = "03n9890wx18v7pwnk5w8s10l7yij6hyj8y5q4jf296k56dr4g01m";
+    };
+
+    patches = [
+      (fetchpatch {
+        url = "https://github.com/zeromq/mruby-zmq/pull/16.patch";
+        sha256 = "1m63yl84hg80whqpr3yznk06yalaasiszwm3pjvsr2di8gyi0bm5";
+      })
+      ./mruby-zmq/0001-Work-around-missing-pthread.patch
+      ./mruby-zmq/0001-HACK-cross-build-is-not-special-with-Nixpkgs.patch
+    ];
+
+    gemBuildInputs = [
+      (zeromq.override {
+        enableDrafts = true;
+      })
+    ];
+
+    gemNativeBuildInputs = [
+      pkg-config
+    ];
+
+    requiredGems = [
+      mruby-errno
+      mruby-proc-irep-ext
+      mruby-simplemsgpack
+      mruby-pack
+      mruby-env
+    ];
+
+    meta.licenses = licenses.mpl20;
   };
 }

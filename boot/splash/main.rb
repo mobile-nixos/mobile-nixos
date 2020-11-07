@@ -1,55 +1,66 @@
-# Get exclusive control of the framebuffer
-# By design we will not restore the console at exit.
-# This is done so the framebuffer keeps the image.
-VTConsole.map_console(0)
+# Note about those lengths:
+# In millisecond, this much combined time (fade and progress update) will
+# *also* be taken at the end to ensure animations can finish smoothly without
+# being all weird.
+# So adding to these values increase the boot time artificially.
+# Adding less than a second overall for a cleaner UX is a good trade-off.
+# More and it's not worth it.
+FADE_LENGTH = 400
+PROGRESS_UPDATE_LENGTH = 500
 
-# Prepare LVGL
-LVGL::Hacks.init()
-
-$file = ARGV.first
-
-class UI
-  def initialize()
-    screen
-    logo
-  end
-
-  def screen()
-    @screen = LVGL::LVContainer.new()
-
-    # Create a new style
-    style = @screen.get_style(LVGL::CONT_STYLE::MAIN).dup
-    @screen.set_style(LVGL::CONT_STYLE::MAIN, style)
-
-    # Background for the splash, assumed black.
-    style.body_main_color = 0xFF000000
-    style.body_grad_color = 0xFF000000
-  end
-
-  def logo()
-    return unless $file
-
-    if @screen.get_height > @screen.get_width
-      # 80% of the width
-      LVGL::Hacks::LVNanoSVG.resize_next_width((@screen.get_width * 0.8).to_i)
-    else
-      # 15% of the height
-      LVGL::Hacks::LVNanoSVG.resize_next_height((@screen.get_height * 0.15).to_i)
-    end
-
-    @logo = LVGL::LVImage.new(@screen)
-    @logo.set_src($file)
-
-    # Center the logo
-    @logo.set_pos(
-      @screen.get_width / 2 - @logo.get_width / 2,
-      @screen.get_height / 2 - @logo.get_height / 2,
-    )
-  end
-end
+VERBOSE = !!Args.get(:verbose, false)
+SOCKET = File.expand_path(Args.get(:socket, "/run/mobile-nixos-init.socket"))
 
 # Create the UI
 ui = UI.new
 
-# Run tasks once to "realize" the UI.
-LVGL::Hacks::LVTask.handle_tasks
+# Socket for status updates
+puts "[splash] Listening on: ipc://#{SOCKET}"
+$sub = ZMQ::Sub.new("ipc://#{SOCKET}", "")
+
+# Initial fade-in
+ui.fade_in()
+
+# Main loop handles updating the UI, and doing some work...
+LVGUI.main_loop do
+  # ... work like handling the queue!
+
+  # Empty all messages from the queue before continuing.
+  loop do
+    begin
+      msg = JSON.parse($sub.recv(LibZMQ::DONTWAIT).to_str)
+    rescue Errno::EWOULDBLOCK
+      # No messages left? break out!
+      break
+    end
+
+    if VERBOSE
+      print "[splash:recv] "
+      p msg
+    end
+
+    # We might have a special command, if we got a String rather than a Hash.
+    if msg.is_a? String then
+      if msg == "quit"
+        ui.quit!
+      else
+        $stderr.puts "[splash] Unexpected command #{msg}..."
+      end
+    else
+      # Update the UI...
+
+      # First updating the current progress
+      ui.set_progress(msg["progress"])
+
+      # And updating the label as needed.
+      if msg["label"]
+        ui.set_label(msg["label"])
+      else
+        ui.set_label("")
+      end
+    end
+  end
+end
+
+$stderr.puts "[splash] Broke out of the rendering loop. That's not supposed to happen."
+exit(1)

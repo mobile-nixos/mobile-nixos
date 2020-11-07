@@ -43,7 +43,6 @@ main(int argc, char **argv)
 
 	if (mrb->exc) {
 		mrb_print_backtrace(mrb);
-		mrb_print_error(mrb);
 		mrb_close(mrb);
 		exit(1);
 	}

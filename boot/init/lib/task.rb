@@ -30,14 +30,34 @@ module Tasks
     @tasks.sort!
 
     until @tasks.all?(&:ran) do
-      $logger.debug("Tasks resolution loop start")
-      @tasks
+      $logger.debug("=== Tasks resolution loop start ===")
+      ran_one = false
+      todo = @tasks
         .reject(&:ran)
-        .each do |task|
-          task._try_run_task
+        .tap do |tasks|
+          $logger.debug("    Tasks order:")
+          tasks.each do |t|
+            $logger.debug("      - #{t}")
+          end
         end
-      # Don't burn the CPU
-      sleep(0.1)
+
+      # Update the current progress
+      count = @tasks.length.to_f
+      Progress.set((100 * (1 - (todo.length / count))).ceil)
+
+      todo.each do |task|
+          if task._try_run_task then
+            ran_one = true
+            $logger.debug("#{task} ran.")
+            break
+          end
+        end
+
+      # Don't burn the CPU if we're waiting on something...
+      unless ran_one
+        $logger.debug("Sleeping")
+        sleep(0.1)
+      end
     end
   end
 end
@@ -94,6 +114,7 @@ class Task
 
   # Internal actual way to run the task
   # This runs the `#run` method.
+  # Returns true when the task was ran.
   def _try_run_task()
     $logger.debug("Looking to run task #{name}...")
     return unless dependencies_fulfilled?
@@ -103,6 +124,8 @@ class Task
       $logger.debug("Finished #{name}...")
       @ran = true
     end
+
+    @ran
   end
 
   def dependencies()
@@ -118,6 +141,11 @@ class Task
   # @internal
   def ux_priority()
     0
+  end
+
+  # Same as name, but with the object_id appended.
+  def to_s()
+    name + "<0x#{object_id.to_s(16)}>"
   end
 end
 

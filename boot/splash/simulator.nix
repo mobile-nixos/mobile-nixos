@@ -20,7 +20,7 @@ in
   name = "simulator";
   inherit applet;
 }).overrideAttrs(old: rec {
-  pname = "boot-gui-simulator";
+  pname = "boot-splash-simulator";
   version = "0.0.1";
   name = "${pname}-${version}";
 })
