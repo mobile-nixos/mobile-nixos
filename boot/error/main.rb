@@ -18,34 +18,6 @@ $status = data["status"]
 
 $color = $color.rjust(6, "0").rjust(8, "F").to_i(16)
 
-# This only works as long as the elements are not in a layout.
-class ShadedText
-  def initialize(*args)
-    @secondary = LVGL::LVLabel.new(*args)
-    style = @secondary.get_style(LVGL::LABEL_STYLE::MAIN).dup
-    @secondary.set_style(LVGL::LABEL_STYLE::MAIN, style)
-    style.text_color = 0xFF000000
-
-    @main = LVGL::LVLabel.new(*args)
-    style = @main.get_style(LVGL::LABEL_STYLE::MAIN).dup
-    @main.set_style(LVGL::LABEL_STYLE::MAIN, style)
-    style.text_color = 0xFFFFFFFF
-
-    # Ensures the position is reset at least once.
-    set_pos(0, 0)
-  end
-
-  def method_missing(*args)
-    @main.send(*(args.dup))
-    @secondary.send(*(args.dup))
-  end
-
-  def set_pos(x, y)
-    @main.set_pos(x, y)
-    @secondary.set_pos(x+2, y+2)
-  end
-end
-
 class UI
   def initialize()
     screen

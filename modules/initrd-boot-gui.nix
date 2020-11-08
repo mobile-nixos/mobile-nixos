@@ -4,9 +4,6 @@ let
   key-held = pkgs.runCommand "key-held.mrb" {} ''
     ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/applets}/key-held.rb
   '';
-  boot-error = pkgs.runCommand "boot-error.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/recovery-menu}/lib/*.rb ${../boot/error}/main.rb
-  '';
 in
 {
   mobile.boot.stage-1.contents = with pkgs; [
@@ -15,7 +12,7 @@ in
       symlink = "/etc/logo.svg";
     }
     {
-      object = boot-error;
+      object = pkgs.mobile-nixos.stage-1.boot-error;
       symlink = "/applets/boot-error.mrb";
     }
     {
