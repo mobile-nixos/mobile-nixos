@@ -5,7 +5,7 @@ class Tasks::AutoResize < Task
   def initialize(device, type: )
     @device = device
     @type = type
-    add_dependency(:Files, @device)
+    add_dependency(:Devices, @device)
   end
 
   def run()

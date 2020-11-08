@@ -28,7 +28,7 @@ class Tasks::Luks < Task
     @mapper = mapper
 
     add_dependency(:Task, Tasks::UDev.instance)
-    add_dependency(:Files, source)
+    add_dependency(:Devices, source)
     add_dependency(:Mount, "/run")
     add_dependency(:Target, :Environment)
     self.class.register(@mapper, self)

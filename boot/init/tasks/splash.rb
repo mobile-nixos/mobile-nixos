@@ -42,4 +42,9 @@ class Tasks::Splash < SingletonTask
       sleep(0.1)
     end
   end
+
+  # Use `quit` rather than kill!
+  def kill()
+    System.run("kill", "-9", @pid.to_s) if @pid
+  end
 end

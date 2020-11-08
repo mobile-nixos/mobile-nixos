@@ -96,6 +96,10 @@ module Progress
     value
   end
 
+  def self.kill()
+    Tasks::Splash.instance.kill()
+  end
+
   # Read one reply
   # If none are available, returns nil
   def self.read_reply()
