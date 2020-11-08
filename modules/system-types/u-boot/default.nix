@@ -243,7 +243,7 @@ in
         '';
       };
       additionalCommands = mkOption {
-        type = types.str;
+        type = types.lines;
         default = "";
         description = ''
           Additional U-Boot commands to run.
