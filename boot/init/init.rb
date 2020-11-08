@@ -39,26 +39,14 @@ Tasks::Modules.new(*Configuration["kernel"]["modules"])
 Tasks::go()
 
 $logger.fatal("Tasks all ran, but we're still here...")
-System.failure("did_not_switch", color: "ff0000")
+System.failure(
+  "Boot process failed to switch to stage-2",
+  "The stage-1 init did not detect any failure condition, but failed to switch to stage-2.\n\n" +
+  "It shouldn't happen, yet here we are.",
+  color: "ff0000"
+)
 
 rescue => e
-  System.sad_phone("765300", "Uncaught Exception", e.inspect)
-  3.times do
-    $logger.fatal("********************")
-  end
-  $logger.fatal("Handling exception")
-  $logger.fatal(e.inspect)
-  $logger.fatal("`init` will exit and the kernel will crash.")
-  $logger.fatal("********************")
-  # Leave some time for the $logger.fatals to flush before the kernel crashes.
-  sleep(1)
-  System.shell if System.respond_to?(:shell)
-
-  # Users with access to serial debug may prefer crashing to the bootloader.
-  # Though, crashing the kernel is *required* for console ramoops to be present.
-  if Configuration["boot"]["crashToBootloader"] then
-    System.run("reboot bootloader")
-  else
-    exit 99
-  end
+  # Then fail
+  System.failure("Uncaught Exception", e.inspect, color: "765300", status: 99)
 end
