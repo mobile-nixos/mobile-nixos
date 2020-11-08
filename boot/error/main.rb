@@ -24,6 +24,7 @@ class UI
     sad_phone
     code
     message
+    time_left
   end
 
   def screen()
@@ -82,6 +83,24 @@ class UI
       (@screen.get_height * 0.65).to_i
     )
   end
+
+  def time_left()
+    @time_left = ShadedText.new(@screen)
+    @time_left.set_long_mode(LVGL::LABEL_LONG::BREAK)
+    @time_left.set_align(LVGL::LABEL_ALIGN::CENTER)
+    @time_left.set_width((@screen.get_width * 0.95).to_i)
+
+    set_time_left($delay)
+
+    @time_left.set_pos(
+      @screen.get_width / 2 - @time_left.get_width / 2,
+      (@screen.get_height - @time_left.get_height * 1.5)
+    )
+  end
+
+  def set_time_left(value)
+    @time_left.set_text("#{value} seconds left before crashing.")
+  end
 end
 
 # Create the UI
@@ -90,15 +109,22 @@ ui = UI.new
 # Run tasks once to "realize" the UI.
 LVGL::Hacks::LVTask.handle_tasks
 
-# FIXME: temp hack until we have a proper loop to handle that.
-sleep($delay)
+start = Time.now
+LVGUI.main_loop do
+  elapsed = Time.now - start
+  left = $delay - elapsed
 
-# Ensures console is flushed entirely.
-$stdout.flush()
-$stderr.flush()
+  ui.set_time_left(left.floor)
 
-# Exit, which will crash the kernel.
-exit $status
+  if elapsed >= $delay
+    # Ensures console is flushed entirely.
+    $stdout.flush()
+    $stderr.flush()
+
+    # Exit, which will crash the kernel.
+    exit $status
+  end
+end
 
 # Handles outputing the error and, more importantly, flushing the output.
 # When simply existing, the system might not flush the output due to the
