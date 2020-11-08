@@ -192,63 +192,40 @@ module System
 
     _flush_outputs()
 
+    File.write("/.error.json", {
+      code: code,
+      color: color,
+      delay: delay,
+      message: message,
+      status: status,
+    }.to_json)
+
     # Show the error handler applet.
     begin
-      System.run(LOADER, "/applets/boot-error.mrb", color, code, message)
-    rescue CommandError => e
+      System.exec(LOADER, "/applets/boot-error.mrb", "/.error.json")
+    rescue => e
+      $logger.fatal("********************************************")
+      $logger.fatal("* Error handler failed to start            *")
+      $logger.fatal("********************************************")
       $logger.fatal(e.inspect)
+      $logger.fatal("********************************************")
     end
 
-    # Drop down to a shell if desired.
+    # If we're here, things are broken beyond belief!
+    _flush_outputs()
+
+    # Drop down to a shell if possible.
     shell if respond_to?(:shell)
 
-    # Both allows the serial output to flush before the kernel panic, and
-    # allows the failure message to be shown for an amount of time.
-    sleep(delay)
-
-    # User might want to force a reboot, rather than rely on what the kernel is
-    # configured to do with a kernel panic.
-    if Configuration["boot"]["fail"]["reboot"]
-      $logger.fatal("")
-      $logger.fatal("********************************************")
-      $logger.fatal("* Forcing a reboot...                      *")
-      $logger.fatal("********************************************")
-
-      _flush_outputs(true)
-
-      hard_reboot
-    end
-
-    if Configuration["boot"]["crashToBootloader"]
-      $logger.fatal("")
-      $logger.fatal("********************************************")
-      $logger.fatal("* Rebooting to bootloader...               *")
-      $logger.fatal("********************************************")
-
-      _flush_outputs(true)
-
-      # Users with access to serial debug may prefer crashing to the bootloader.
-      # Though, crashing the kernel is *required* for console ramoops to be present.
-      System.run("reboot bootloader")
-    end
-
-    $logger.fatal("")
-    $logger.fatal("********************************************")
-    $logger.fatal("* init will now exit and crash the system  *")
-    $logger.fatal("********************************************")
-
-    _flush_outputs(true)
-
-    exit status
+    # As in "command not found".
+    exit 127
   end
 
   # Flushes the outputs.
-  # Optionally sleep to give time for the kernel to write the output.
-  def self._flush_outputs(with_sleep = false)
+  def self._flush_outputs()
     # Flush both output
     $stdout.flush
     $stderr.flush
-    sleep(1) if with_sleep
   end
 
   def self.hard_reboot()
