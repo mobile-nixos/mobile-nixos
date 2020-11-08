@@ -1,0 +1,116 @@
+= Mobile NixOS and Security
+include::_support/common.inc[]
+
+This document is written hoping it can answer the following question:
+
+> Is Mobile NixOS secure?
+
+There is no quick answer. Security, as always, is dependent on the sum of all
+the parts involved.
+
+Furthermore, security can mean different things in different contexts.
+
+
+== Is the system secure with Mobile NixOS?
+
+To answer this fully, you have to better understand where Mobile NixOS begins,
+and ends, when compared to all the parts on the device. This is explained in
+the <<boot_process.adoc#_how_mobile_devices_boot,How mobile devices boot>>
+section.
+
+
+=== Before boot
+
+It is not our place to make security promises about the vendor firmware. Its
+security will have to be _assumed okay_ or _assumed bad_, depending on your
+personal requirements. The same has to be assumed for the bootloader. This is
+because for a large segment of devices it is simply not possible replace those
+components.
+
+A separate concern to consider is that the bootloader can be used to verify the
+operating system it will be loading. On those systems, it is possible to assert
+that the operating system image has not been tampered with, assuming the vendor
+boot chain is secure up to that point.
+
+When the vendor bootloader cannot be made to verify the loaded operating
+system, most security implications are moot, as an attacker can most likely
+change the operating system to whatever they want.
+
+
+=== Kernel
+
+Once the operating system is loaded, it's running the Kernel code.
+
+The kernel's security is not exactly ours to validate, but it is _possible_ to
+read its source code, see what changes have been made compared to mainline, if
+any, and make an educated judgement. Mainline kernel without patches can be
+assumed to be as safe as the kernel is. All changes from vendors can affect its
+security.
+
+Vendor kernels made from older kernel releases are the ones to be more wary of.
+They can be old, and many OEMs do not keep the kernel trees updated for long.
+
+Note that the project _may_ add patches to the kernels. These may also affect
+the security of the kernel.
+
+These points are the main considerations to keep in mind security wise as
+far as the kernel is considered.
+
+
+=== Early boot
+
+The kernel will then proceed to load the Mobile NixOS stage-1 code. It is at
+this point that the security considerations are specific to the project.
+
+See the Security Audits section to know more about the security promises
+specific to Mobile NixOS.
+
+
+=== Running system
+
+As Mobile NixOS is a superset of NixOS, the running system _should_ be as
+secure as the equivalent purely NixOS system.
+
+In a nutshell, it is going to be as secure as the software configured to run.
+
+
+== Is my data safe with Mobile NixOS?
+
+The answer only holds true under the following assumptions:
+
+ * The device's vendor firmwares is non-malicious.
+ * The previous security considerations are understood.
+
+Then, depends on the following requirements.
+
+
+=== ... at rest?
+
+As of May 2020, there is no supporting code to deal with encryption during
+boot. This means that the main system _and_ the data is left unencrypted.
+
+The answer, currently, is “No”.
+
+When the supporting code in early boot (stage-1) is added to allow dealing with
+an encrypted system, the answer can become “Yes”.
+
+Though note that security of the data as rest can be broken if the device can
+be tampered with and an alternative boot image installed.
+
+
+=== ... while the device is in use?
+
+It should be as secure as with the equivalent configured NixOS system.
+
+
+== Security Audit and Policy
+
+As of May 2020, no security audit has been made on the code. The code is still
+evolving and a full audit is likely not worth it _at this point_.
+
+At this point in time, the project makes no claims to be secure. Note that this
+does not mean that it is not secure.
+
+With that said, any security issues with the early boot code can be reported by
+following link:https://github.com/NixOS/mobile-nixos/security/policy[the security policy].
+It is the same as for the parent NixOS project.

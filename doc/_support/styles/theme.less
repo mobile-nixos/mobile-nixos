@@ -113,3 +113,20 @@ table.with-links {
 		padding-left: @gutter/2;
 	}
 }
+
+blockquote {
+	@_border: @gutter/2;
+	position: relative;
+	border-left: @_border solid lighten(@color-blue-light, 20%);
+	padding-left: @gutter/2;
+
+	&::before {
+		content: "“";
+		font-size: 3rem;
+		position: absolute;
+		top: 0.25em;
+		left: -@_border - @gutter/2;
+		color: @color-blue-dark;
+		line-height: 0;
+	}
+}
