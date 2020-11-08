@@ -1,3 +1,4 @@
+begin
 # Get exclusive control of the framebuffer
 # By design we will not restore the console at exit.
 # We are assuming the target does not necessarily have a console attached to
@@ -7,9 +8,13 @@ VTConsole.map_console(0)
 # Prepare LVGL
 LVGL::Hacks.init()
 
-$color = ARGV.shift
-$code = ARGV.shift
-$message = ARGV.shift
+data = JSON.parse(File.read(ARGV.first))
+
+$code = data["code"]
+$color = data["color"]
+$delay = data["delay"]
+$message = data["message"]
+$status = data["status"]
 
 $color = $color.rjust(6, "0").rjust(8, "F").to_i(16)
 
@@ -63,6 +68,7 @@ class UI
   def sad_phone()
     file = nil
     file = "/sad-phone.svg" if File.exist?("/sad-phone.svg")
+    file = "sad-phone.svg" if File.exist?("sad-phone.svg")
     return unless file
 
     if @screen.get_height > @screen.get_width
@@ -111,3 +117,30 @@ ui = UI.new
 
 # Run tasks once to "realize" the UI.
 LVGL::Hacks::LVTask.handle_tasks
+
+# FIXME: temp hack until we have a proper loop to handle that.
+sleep($delay)
+
+# Ensures console is flushed entirely.
+$stdout.flush()
+$stderr.flush()
+
+# Exit, which will crash the kernel.
+exit $status
+
+# Handles outputing the error and, more importantly, flushing the output.
+# When simply existing, the system might not flush the output due to the
+# kernel panic.
+rescue => e
+  $stderr.puts("")
+  $stderr.puts("Unexpected error in error handler:")
+  $stderr.puts("")
+  $stderr.puts(e.inspect)
+  $stderr.puts("")
+
+  $stdout.flush()
+  $stderr.flush()
+
+  sleep(1)
+  exit 128
+end
