@@ -24,14 +24,17 @@ class Tasks::Splash < SingletonTask
 
   # Implementation details-y; ask for the splash applet to be exited.
   def quit(reason)
+    # Ensures the progress is shown
+    Progress.update({progress: 100, label: reason})
+
+    # Command it to quit
+    Progress.update({command: {name: "quit"}})
+
     # Ensures that if for any reason the splash didn't start in time for the
     # socket to listen to this message, that we'll be quitting it.
     loop do
-      # Ensures the progress is shown
-      Progress.publish({progress: 100, label: reason})
-      # Command it to quit
-      Progress.publish("quit")
-
+      # Repeatedly send the current state (which has the quit command).
+      Progress.send_state()
       # If it has quit, break out!
       break if Process.wait(@pid, Process::WNOHANG)
 

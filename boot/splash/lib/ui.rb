@@ -13,22 +13,28 @@ end
 class UI
   attr_reader :screen
   attr_reader :progress_bar
+  attr_reader :ask_identifier
 
   # As this is not using BaseWindow, LVGUI::init isn't handled for us.
   LVGUI.init()
 
   def initialize()
     add_screen
+    add_page
     # Biggest of horizontal or vertical; a percent.
     @unit = ([@screen.get_width, @screen.get_height].max * 0.01).ceil
     add_logo
     add_progress_bar
     add_label
+
+    add_textarea
+    add_keyboard
+
     add_cover # last
   end
 
   def add_label()
-    @label = LVGL::LVLabel.new(@screen)
+    @label = LVGL::LVLabel.new(@page)
     @label.get_style(LVGL::LABEL_STYLE::MAIN).dup.tap do |style|
       @label.set_style(LVGL::LABEL_STYLE::MAIN, style)
       style.text_color = 0xFFFFFFFF
@@ -36,7 +42,7 @@ class UI
     @label.set_long_mode(LVGL::LABEL_LONG::BREAK)
     @label.set_align(LVGL::LABEL_ALIGN::CENTER)
 
-    @label.set_width(@screen.get_width * 0.9)
+    @label.set_width(@page.get_width * 0.9)
     @label.set_pos(*center(@label, 0, 5*@unit))
     @label.set_text("")
   end
@@ -48,15 +54,15 @@ class UI
     file = "./logo.svg" if File.exist?("./logo.svg")
     return unless file
 
-    if @screen.get_height > @screen.get_width
+    if @page.get_height > @page.get_width
       # 80% of the width
-      LVGL::Hacks::LVNanoSVG.resize_next_width((@screen.get_width * 0.8).to_i)
+      LVGL::Hacks::LVNanoSVG.resize_next_width((@page.get_width * 0.8).to_i)
     else
       # 15% of the height
-      LVGL::Hacks::LVNanoSVG.resize_next_height((@screen.get_height * 0.15).to_i)
+      LVGL::Hacks::LVNanoSVG.resize_next_height((@page.get_height * 0.15).to_i)
     end
 
-    @logo = LVGL::LVImage.new(@screen)
+    @logo = LVGL::LVImage.new(@page)
     @logo.set_src(file)
 
     # Position the logo
@@ -64,9 +70,9 @@ class UI
   end
 
   def add_progress_bar()
-    @progress_bar = ProgressBar.new(@screen)
+    @progress_bar = ProgressBar.new(@page)
     @progress_bar.set_height(3 * @unit)
-    @progress_bar.set_width(@screen.get_width * 0.7)
+    @progress_bar.set_width(@page.get_width * 0.7)
     @progress_bar.set_pos(*center(@progress_bar))
   end
 
@@ -81,14 +87,27 @@ class UI
     end
   end
 
+  def add_page()
+    @page = LVGL::LVContainer.new(@screen)
+    @page.set_width(@screen.get_width)
+    @page.set_height(@screen.get_height)
+    @page.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
+      @page.set_style(LVGL::CONT_STYLE::MAIN, style)
+      style.body_main_color = 0xFF000000
+      style.body_grad_color = 0xFF000000
+      style.body_border_width = 0
+    end
+  end
+
   # Used to handle fade-in/fade-out
   # This is because opacity handles multiple overlaid objects wrong.
   def add_cover()
     @cover = LVGL::LVObject.new(@screen)
     # Make it so we can use the opacity to fade in/out
-    @cover.set_opa_scale_enable(1)
+    @cover.set_opa_scale_enable(true)
     @cover.set_width(@screen.get_width())
     @cover.set_height(@screen.get_height())
+    @cover.set_click(false)
 
     @cover.get_style().dup.tap do |style|
       @cover.set_style(style)
@@ -101,12 +120,61 @@ class UI
     end
   end
 
+  def add_textarea()
+    @ta = TextArea.new(@page)
+    @ta.set_width(@page.get_width * 0.9)
+    @ta.set_pos(*center(@ta, 0, @unit * 14))
+    # Always present, but initially hidden
+    @ta.hide(skip_animation: true)
+  end
+
+  def add_keyboard()
+    @keyboard = Keyboard.instance()
+    # The keyboard is not added to the page; the page holds the elements that
+    # may move to ensure they're not covered by the keyboard.
+    @keyboard.set_parent(@screen)
+    @keyboard.set_height(@screen.get_width * 0.55)
+  end
+
   def set_progress(amount)
     progress_bar.progress = amount
   end
 
   def set_label(text)
     @label.set_text(text)
+  end
+
+  # +cb+ is a proc that wille be +#call+'d with the text once submitted.
+  def ask_user(placeholder: "", identifier: , cb:)
+    return if identifier == @ask_identifier
+
+    @ask_identifier = identifier
+    @ta.set_placeholder_text(placeholder)
+    @ta.show()
+    @keyboard.set_ta(@ta)
+    @keyboard.show()
+
+    bottom_space = @screen.get_height() - (@ta.get_y() + @ta.get_height())
+    delta = bottom_space - @keyboard.get_height() - 3*@unit
+    offset_page(delta) if delta < 0
+
+    @ta.on_submit = ->(value) do
+      @ta.set_text("")
+      offset_page(0)
+      cb.call(value)
+    end
+  end
+
+  def offset_page(delta)
+    LVGL::LVAnim.new().tap do |anim|
+      anim.set_exec_cb(@page, :lv_obj_set_y)
+      anim.set_time(300, 0)
+      anim.set_values(@page.get_y(), delta)
+      anim.set_path_cb(LVGL::LVAnim::Path::EASE_OUT)
+
+      # Launch the animation
+      anim.create()
+    end
   end
 
   # Fade-in animation

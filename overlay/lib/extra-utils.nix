@@ -16,11 +16,17 @@ let
   install_package = set:
     let
       pkg = if set ? type && set.type == "derivation" then set else set.package;
+      binaries = if set ? binaries then set.binaries else [ "*" ];
     in
-    ''
-      for BIN in ${pkg}/{s,}bin/*; do
-        copy_bin_and_libs $BIN
+    (concat (map (path: ''
+      for BIN in ${pkg}/{s,}bin/${path}; do
+        if [ -e "$BIN" ]; then
+          copy_bin_and_libs "$BIN"
+        fi
       done
+    '') binaries ))
+    +
+    ''
       ${if set ? extraCommand then set.extraCommand else ""}
     '';
   install_packages = concat(map (install_package) packages);
