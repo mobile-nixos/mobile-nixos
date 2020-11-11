@@ -41,10 +41,10 @@ in
         # Automatically login as nixos.
         displayManager.lightdm = {
           enable = true;
-          autoLogin = {
-            enable = true;
-            user = "nixos";
-          };
+        };
+        displayManager.autoLogin = {
+          enable = true;
+          user = "nixos";
         };
 
       };
@@ -52,6 +52,7 @@ in
       hardware.pulseaudio.enable = true;
 
       environment.systemPackages = with pkgs; [
+        dtc
         (writeShellScriptBin "firefox" ''
           export MOZ_USE_XINPUT2=1
           exec ${pkgs.firefox}/bin/firefox "$@"
@@ -94,21 +95,6 @@ in
         ln -sfT ${minesDesktopFile} ${desktopDir + "mines.desktop"}
       '';
 
-      # FIXME : Stop relying on initrd for `ssh` via USB.
-      networking.networkmanager.enable = true;
-      networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
-
-      services.blueman.enable = true;
-      hardware.bluetooth.enable = true;
-
-      # Setup USB gadget networking in initrd...
-      mobile.boot.stage-1.networking.enable = lib.mkDefault true;
-      #mobile.boot.stage-1.ssh.enable = true;
-
-      # Start SSH by default...
-      systemd.services.sshd.wantedBy = lib.mkOverride 10 [ "multi-user.target" ];
-      services.openssh.permitRootLogin = lib.mkForce "yes";
-
       # Forcibly set a password on users...
       # FIXME: highly insecure!
       # FIXME: Figure out why this breaks...
@@ -120,6 +106,35 @@ in
       # Though, it seems fine to simply disable it.
       # FIXME : figure out why systemd-udev-settle doesn't work.
       systemd.services.systemd-udev-settle.enable = false;
+    }
+
+    # Networking, modem and misc.
+    {
+      users.extraUsers.nixos.extraGroups = [ "dialout" ];
+
+      # FIXME : Stop relying on initrd for `ssh` via USB.
+      networking.networkmanager.enable = true;
+      networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
+
+      # Setup USB gadget networking in initrd...
+      mobile.boot.stage-1.networking.enable = lib.mkDefault true;
+    }
+
+    # Bluetooth
+    {
+      services.blueman.enable = true;
+      hardware.bluetooth.enable = true;
+    }
+
+    # SSH
+    {
+      # Start SSH by default...
+      systemd.services.sshd.wantedBy = lib.mkOverride 10 [ "multi-user.target" ];
+      services.openssh.permitRootLogin = lib.mkForce "yes";
+
+      # Don't start it in stage-1 though.
+      # (Currently doesn't quit on switch root)
+      #mobile.boot.stage-1.ssh.enable = true;
     }
 
     # Customized XFCE environment
@@ -152,7 +167,7 @@ in
     {
       services.xserver = {
         desktopManager.xfce.enableXfwm = false;
-        desktopManager.xfce.extraSessionCommands = ''
+        displayManager.sessionCommands = ''
           awesome &
         '';
       };

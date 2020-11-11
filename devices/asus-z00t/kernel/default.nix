@@ -1,16 +1,11 @@
 {
   mobile-nixos
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
-, dtbTool
 }:
 
-(mobile-nixos.kernel-builder-gcc6 {
+mobile-nixos.kernel-builder-gcc6 {
   version = "3.10.108";
   configfile = ./config.aarch64;
-
-  file = "Image.gz";
-  hasDTB = true;
 
   src = fetchFromGitHub {
     owner = "LineageOS";
@@ -40,27 +35,7 @@
     ./90_dtbs-install.patch
     ./99_framebuffer.patch
   ];
-
+  qcdt_dtbs = "arch/arm/boot/";
   isModular = false;
-
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" ];
-  postPatch = postPatch + ''
-    cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
-  '';
-  postInstall = postInstall + ''
-    ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "arch/arm64/boot/asus-z00t.img" "arch/arm/boot/"
-    cp "arch/arm64/boot/asus-z00t.img" "$out/dtbs/asus-z00t.img"
-
-    mkdir -p $out/dtb
-    for f in arch/*/boot/dts/*.dtb; do
-      cp -v "$f" $out/dtb/
-    done
-
-#    # FIXME: understand the specifics of why this needs to be catted together.
-#    (
-#    cd $out
-#    cat Image.gz dtb/*.dtb > vmlinuz-dtb
-#    )
-  '';
-})
+  isQcdt = true;
+}

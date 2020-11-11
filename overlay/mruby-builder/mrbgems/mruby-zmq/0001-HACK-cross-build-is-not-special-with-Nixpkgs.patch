@@ -1,0 +1,39 @@
+From c959a7e964c2f203e6a46405feb3bd036d460f5f Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 27 Oct 2020 00:26:16 -0400
+Subject: [PATCH] =?UTF-8?q?[HACK]=C2=A0cross-build=20is=20not=20special=20?=
+ =?UTF-8?q?with=20Nixpkgs?=
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+---
+ mrbgem.rake | 12 ------------
+ 1 file changed, 12 deletions(-)
+
+diff --git a/mrbgem.rake b/mrbgem.rake
+index ff42825..30fd90d 100644
+--- a/mrbgem.rake
++++ b/mrbgem.rake
+@@ -31,18 +31,6 @@ MRuby::Gem::Specification.new('mruby-zmq') do |spec|
+   end
+   if spec.build.toolchains.include? 'visualcpp'
+     spec.linker.libraries << 'libzmq'
+-  elsif build.is_a?(MRuby::CrossBuild)
+-    unless File.exists?("#{spec.build_dir}/lib/libzmq.a")
+-      sh "cd #{spec.dir}/libzmq && ./autogen.sh && mkdir -p #{spec.build_dir}/build && cd #{spec.build_dir}/build && #{spec.dir}/libzmq/configure CC=\"#{spec.cc.command}\" CFLAGS=\"#{spec.cc.flags.join(' ')}\" LDFLAGS=\"#{spec.linker.flags.join(' ')}\" CXX=\"#{spec.cxx.command}\" CXXFLAGS=\"#{spec.cxx.flags.join(' ')}\" --host=#{build.host_target} --build=#{build.build_target} --disable-shared --enable-static --without-docs --prefix=#{spec.build_dir} && make -j4 && make install"
+-    end
+-    spec.linker.flags_before_libraries << "\"#{spec.build_dir}/lib/libzmq.a\" -pthread"
+-    spec.linker.libraries << 'stdc++'
+-    spec.cc.include_paths << "#{spec.build_dir}/include"
+-    spec.cxx.include_paths << "#{spec.build_dir}/include"
+-    build.cc.include_paths << "#{spec.build_dir}/include"
+-    build.cxx.include_paths << "#{spec.build_dir}/include"
+-    spec.cxx.defines << 'ZMQ_BUILD_DRAFT_API=1'
+-    spec.cc.defines << 'ZMQ_BUILD_DRAFT_API=1'
+   else
+     `pkg-config --cflags libzmq 2>/dev/null`.split("\s").each do |cflag|
+       spec.cxx.flags << cflag
+-- 
+2.28.0
+

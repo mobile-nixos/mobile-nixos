@@ -51,6 +51,30 @@ module System
     Kernel.spawn(*args)
   end
 
+  # Runs a long-running task in the background while we keep the progress
+  # reporting active.
+  def self.run_long_running(*args)
+    pretty_command = prettify_command(*args)
+    pid = System.spawn(*args)
+    ret = nil
+
+    loop do
+      # Update progress
+      Progress.send_state()
+      # Look at the status
+      break if ret = Process.wait(pid, Process::WNOHANG)
+      # Don't loop too tightly
+      sleep(0.1)
+    end
+
+    status = $?.exitstatus
+    if status == 127
+      raise CommandNotFound.new("Command not found... `#{pretty_command}` (#{status})")
+    elsif !$?.success?
+      raise CommandError.new("Command failed... `#{pretty_command}` (#{status})")
+    end
+  end
+
   # Discovers the location of given program name.
   def self.which(program_name)
     ENV["PATH"].split(":").each do |path|
@@ -153,12 +177,14 @@ module System
     end
   end
 
-  def self.failure(code, message="(No details given)", color: "000000")
+  def self.failure(code, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"])
+    Progress.kill()
     $logger.fatal("#{code}: #{message}")
     sad_phone(color, code, message)
     shell if respond_to?(:shell)
-    sleep(Configuration["boot"]["fail"]["delay"])
+    sleep(delay)
     hard_reboot if Configuration["boot"]["fail"]["reboot"]
+    exit 111
   end
 
   def self.hard_reboot()

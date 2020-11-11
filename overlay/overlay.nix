@@ -44,12 +44,6 @@ in
       ;
     };
 
-    # Default set of kernel patches.
-    defaultKernelPatches = with self.kernelPatches; [
-      bridge_stp_helper
-      p9_fixes
-    ];
-
     #
     # New software to upstream
     # ------------------------
@@ -106,10 +100,14 @@ in
 
       stage-1 = {
         script-loader = callPackage ../boot/script-loader {};
-        boot-gui = callPackage ../boot/gui {};
+        boot-recovery-menu = callPackage ../boot/recovery-menu {};
+        boot-splash = callPackage ../boot/splash {};
       };
 
-      boot-gui-simulator = callPackage ../boot/gui/simulator.nix {};
+      autoport = callPackage ./mobile-nixos/autoport {};
+
+      boot-recovery-menu-simulator = callPackage ../boot/recovery-menu/simulator.nix {};
+      boot-splash-simulator = callPackage ../boot/splash/simulator.nix {};
     };
 
     imageBuilder = callPackage ../lib/image-builder {};

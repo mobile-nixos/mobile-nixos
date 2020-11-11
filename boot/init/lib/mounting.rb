@@ -75,6 +75,10 @@ module Mounting
       [mount_point, task]
     end.to_h
     auto_depend_mount_points(mount_points)
+
+    (Configuration["luksDevices"] or []).each do |mapper, info|
+      Tasks::Luks.new(info["device"], mapper)
+    end
   end
 end
 

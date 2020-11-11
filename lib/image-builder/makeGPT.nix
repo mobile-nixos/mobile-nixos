@@ -1,6 +1,6 @@
 { stdenvNoCC, lib
 , imageBuilder
-, utillinux
+, vboot_reference
 }:
 
 /*  */ let scope = { "diskImage.makeGPT" =
@@ -10,6 +10,7 @@ let
 
   # List of known mappings of GPT partition types to filesystems.
   # This is not exhaustive, only used as a default.
+  # See also: https://sourceforge.net/p/gptfdisk/code/ci/master/tree/parttypes.cc
   types = {
     "FAT32" = "EBD0A0A2-B9E5-4433-87C0-68B6B72699C7";
     "ESP"   = "C12A7328-F81F-11D2-BA4B-00A0C93EC93B";
@@ -22,6 +23,7 @@ in
   name
   , partitions
   , diskID
+  , headerHole ? 0 # in bytes
 }:
 
 let
@@ -48,7 +50,7 @@ stdenvNoCC.mkDerivation rec {
   img = "${placeholder "out"}/${filename}";
 
   nativeBuildInputs = [
-    utillinux
+    vboot_reference
   ];
 
   buildCommand = let
@@ -85,13 +87,24 @@ stdenvNoCC.mkDerivation rec {
   in ''
     mkdir -p $out
 
-    cat <<EOF > script.sfdisk
-    label: gpt
-    grain: 1024
-    label-id: ${diskID}
+    # 34 is the base GPT header size, as added to -p by cgpt.
+    gptSize=$((${toString headerHole} + 34*512))
+
+    touch commands.sh
+
+    cat <<EOF > commands.sh
+    # Zeroes the GPT
+    cgpt create -z $img
+
+    # Create the GPT with space if desired
+    cgpt create -p ${toString (headerHole / 512)} $img
+
+    # Add the PMBR
+    cgpt boot -p $img
+
     EOF
 
-    totalSize=${alignment}
+    totalSize=$((gptSize))
     echo
     echo "Gathering information about partitions."
     ${eachPart partitions (partition:
@@ -103,36 +116,42 @@ stdenvNoCC.mkDerivation rec {
           ${sizeFragment partition}
           echo " -> ${partition.name}: $size / ${if partition ? filesystemType then partition.filesystemType else ""}"
 
+
           (
-          # The size is /1024; otherwise it's in sectors.
-          echo -n 'start='"$((start/1024))"'KiB'
-          echo -n ', size='"$((size/1024))"'KiB'
-          echo -n ', type=${
+          printf "cgpt add"
+          printf " -b %s" "$((start/512))"
+          printf " -s %s" "$((size/512))"
+          printf " -t %s" '${
             if partition ? partitionType then
               partition.partitionType
             else
               types.${partition.filesystemType}
           }'
+          ${optionalString (partition ? partitionUUID)
+              "printf ' -u %s' '${partition.partitionUUID}'"}
           ${optionalString (partition ? bootable && partition.bootable)
-              "echo -n ', bootable'"}
-          echo "" # Finishes the command
-          ) >> script.sfdisk
+              "printf ' -B 1'"}
+          ${optionalString (partition ? partitionLabel)
+              "printf ' -l \"%s\"' '${partition.partitionLabel}'"}
+          printf " $img\n"
+          ) >> commands.sh
         ''
     )}
 
-    # Allow space for alignment + secondary partition table / header.
-    totalSize=$(( totalSize + ${alignment} ))
+    # Allow space for secondary partition table / header.
+    totalSize=$(( totalSize + 34*512 ))
 
     echo "--- script ----"
-    cat script.sfdisk
+    cat commands.sh
     echo "--- script ----"
 
     echo
     echo "Making image, $totalSize bytes..."
     truncate -s $((totalSize)) $img
-    sfdisk $img < script.sfdisk
 
-    totalSize=${alignment}
+    PS4=" > " sh -x commands.sh
+
+    totalSize=$((gptSize))
     echo
     echo "Writing partitions into image"
     ${eachPart partitions (partition: 
@@ -152,7 +171,7 @@ stdenvNoCC.mkDerivation rec {
     echo
     echo "Information about the image:"
     ls -lh $img
-    sfdisk -V --list $img
+    cgpt show $img
   '';
 }
 

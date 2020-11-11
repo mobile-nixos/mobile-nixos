@@ -17,7 +17,7 @@
   };
 
   mobile.boot.stage-1 = {
-    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    kernel.package = pkgs.callPackage ./kernel { };
   };
 
   mobile.system.android = {
@@ -30,6 +30,9 @@
       pagesize = "2048";
     };
   };
+
+  # 16MiB boot partition.
+  mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
   boot.kernelParams = [
     "bootopt=64S3,32N2,64N2"

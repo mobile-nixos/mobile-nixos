@@ -16,7 +16,13 @@
   };
 
   mobile.boot.stage-1 = {
-    kernel.package = pkgs.callPackage ./kernel { kernelPatches = pkgs.defaultKernelPatches; };
+    kernel.package = pkgs.callPackage ./kernel { };
+  };
+
+  mobile.usb = {
+    mode = "android_usb";
+    idVendor = "18d1";
+    idProduct = "d001";
   };
 
   mobile.system.android = {

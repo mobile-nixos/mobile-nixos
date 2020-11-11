@@ -2,14 +2,11 @@
   mobile-nixos
 , fetchFromGitHub
 , fetchgit
-, kernelPatches ? [] # FIXME
 }:
 
-(mobile-nixos.kernel-builder {
+mobile-nixos.kernel-builder {
   version = "5.8.0";
   configfile = ./config.aarch64;
-
-  hasDTB = true;
 
   src = fetchFromGitHub {
     owner = "torvalds";
@@ -26,4 +23,4 @@
   ];
 
   isModular = false;
-})
+}
