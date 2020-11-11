@@ -1,0 +1,111 @@
+= Notes about the kernel builder
+include::_support/common.inc[]
+
+The “Kernel builder” is a set of attributes available on the `mobile-nixos`
+attribute overlaid on top of Nixpkgs.
+
+```
+mobile-nixos.kernel-builder
+mobile-nixos.kernel-builder-clang_9
+mobile-nixos.kernel-builder-gcc49
+mobile-nixos.kernel-builder-gcc6
+```
+
+At the base level, they are made available pre-versioned with a
+compiler-specific `stdenv` so that OEM kernels requiring a specific compiler to
+either build or boot can use the right compiler version.
+
+The kernel builder additionally provides configuration options to work with
+common quirks in kernel builds.
+
+
+== Choosing the right builder
+
+There is no clear and fast rule for this. The most likely suggestion is to look
+at the kernel version string for a kernel built from the sources you are using.
+It should describe the compiler being used.
+
+Another way to figure out which builder to use is to compare kernel derivations
+either for devices using the same SoC. It often happens that basic quirks like
+requiring specific compilers are rooted in changes from the first party that
+forked the kernels, the SoC vendor.
+
+
+== Choosing quirks
+
+=== `isQcdt`
+
+When true, the build will use `dtbTool` to build a QCDT _device-tree image_.
+
+By default it will use the FDTs from the appropriate `arch/*/boot` folder from
+the kernel build. The directory to use can be changed using `qcdt_dtbs`.
+
+=== `isImageGzDtb`
+
+When true, the build will enable support for android-specific "Image.gz-dtb"
+appended images.
+
+It is most likely this is needed if `isQcdt` is not used for Android-based
+devices.
+
+=== `isCompressed`
+
+Set to the compression algorithm for the kernel. For the time being only `"gz"`
+or `false` are valid values. By default it is `"gz"`.
+
+=== `enableRemovingWerror`
+
+Goes through all `Makefile` files from the kernel source tree and removes the
+instances of `-Werror`.
+
+This is generally used when building a kernel with a newer compiler than which
+was used when the kernel was authored.
+
+=== `enableCompilerGcc6Quirk`
+
+When true, a `compiler-gcc6.h` is added to the expected location for the kernel
+build. This is generally only needed for older kernels.
+
+=== `enableCenteredLinuxLogo`
+
+When enabled, the kernel source will be patched to force only one instance of
+the _logo_ to be shown, and centered on the display.
+
+This is used to provide a graphical element before the stage-1 init is running.
+
+This is enabled by default. Note that on some systems the feature does not work
+even when enabled. Keep it enabled as it is a no-op.
+
+=== `enableLinuxLogoReplacement`
+
+When enabled, the file `linuxLogo224PPMFile` points at will be used to replace
+the `drivers/video/logo/logo_linux_clut224.ppm` file in the kernel source tree.
+
+This effectively replaces the Tux logo.
+
+By default an appropriate file is provided by Mobile NixOS.
+
+=== `enableCompilerGcc6Quirk`
+
+When enabled, building and installing is done in one single step. Some kernels,
+mainly prior to 4.4, will rebuild the kernel from scratch when installing. Work
+around the issue by using only one make invocation.
+
+This defaults to `true` for kernel versions prior to 4.4.
+
+Using the wrong value can either:
+
+ * be a no-op
+ * make the build take twice as long
+ * fail the build in obvious ways
+
+There have been no _weird side-effects_ observed when using the wrong value.
+Touching this value, other than outright failing the build, will not make a
+kernel that doesn't boot otherwise boot.
+
+
+== Making a new port
+
+There is no porting guides yet. The current recommendation is to look for a
+kernel derivation from a device using the same or a similar SoC and use it as
+a starting point.

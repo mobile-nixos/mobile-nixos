@@ -1,0 +1,53 @@
+From fbec471548f1c72cde69f43afc6a2aa0defc777a Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sun, 29 Sep 2019 14:02:41 -0400
+Subject: [PATCH] [mobile-nixos]: Adds and sets BGRA as default
+
+This fixes the issue of Red and Blue channels being mixed up from the
+expected.
+---
+ drivers/video/fbdev/msm/mdss_fb.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/video/fbdev/msm/mdss_fb.c b/drivers/video/fbdev/msm/mdss_fb.c
+index 484e5f1bde0f..608c596dcf09 100644
+--- a/drivers/video/fbdev/msm/mdss_fb.c
++++ b/drivers/video/fbdev/msm/mdss_fb.c
+@@ -1751,7 +1751,7 @@ static int mdss_fb_probe(struct platform_device *pdev)
+ 
+ 	mfd->bl_scale = 1024;
+ 	mfd->ad_bl_level = 0;
+-	mfd->fb_imgType = MDP_RGBA_8888;
++	mfd->fb_imgType = MDP_BGRA_8888;
+ 	mfd->calib_mode_bl = 0;
+ 	mfd->unset_bl_level = U32_MAX;
+ 	mfd->bl_extn_level = -1;
+@@ -3169,6 +3169,25 @@ static int mdss_fb_register(struct msm_fb_data_type *mfd)
+ 		bpp = 4;
+ 		break;
+ 
++	case MDP_BGRA_8888:
++		fix->type = FB_TYPE_PACKED_PIXELS;
++		fix->xpanstep = 1;
++		fix->ypanstep = 1;
++		var->vmode = FB_VMODE_NONINTERLACED;
++		var->blue.offset = 0;
++		var->green.offset = 8;
++		var->red.offset = 16;
++		var->blue.length = 8;
++		var->green.length = 8;
++		var->red.length = 8;
++		var->blue.msb_right = 0;
++		var->green.msb_right = 0;
++		var->red.msb_right = 0;
++		var->transp.offset = 24;
++		var->transp.length = 8;
++		bpp = 4;
++		break;
++
+ 	case MDP_YCRYCB_H2V1:
+ 		fix->type = FB_TYPE_INTERLEAVED_PLANES;
+ 		fix->xpanstep = 2;
+-- 
+2.23.0
+

@@ -33,7 +33,7 @@ class Tasks::Mount < Task
       # Only add a dependency for an absolute path.
       # Otherwise we would wait on the file "tmpfs" for tmpfs, and such.
       if source.match(%{^/})
-        add_dependency(:Files, source)
+        add_dependency(:Devices, source)
       end
     else
       @source = named[:type]
@@ -76,6 +76,14 @@ module Dependencies
 
     def task()
       Tasks::Mount.registry[@mount_point]
+    end
+
+    def name()
+      super + "(#{@mount_point})"
+    end
+
+    def pretty_name()
+      "Mounting '#{@mount_point}'"
     end
   end
 end

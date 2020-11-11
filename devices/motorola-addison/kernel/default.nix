@@ -1,10 +1,7 @@
 {
   mobile-nixos
 , stdenv
-, hostPlatform
 , fetchFromGitHub
-, kernelPatches ? [] # FIXME
-, dtbTool
 }:
 
 #
@@ -16,16 +13,9 @@
 #  mobile.system.system = lib.mkForce "armv7l-linux";
 #
 
-let
-  inherit (stdenv.lib) optionalString;
-  cpuName = hostPlatform.parsed.cpu.name;
-in
-(mobile-nixos.kernel-builder-gcc6 {
+mobile-nixos.kernel-builder-gcc6 {
   version = "3.18.71";
-  configfile = ./. + "/config.${cpuName}";
-
-  file = if (cpuName == "aarch64") then "Image.gz" else "zImage";
-  hasDTB = (cpuName == "aarch64");
+  configfile = ./. + "/config.${stdenv.hostPlatform.parsed.cpu.name}";
 
   src = fetchFromGitHub {
     owner = "LineageOS";
@@ -43,34 +33,7 @@ in
     ./0005-Allow-building-with-sound-disabled.patch
   ];
 
+  enableRemovingWerror = true;
   isModular = false;
-
-}).overrideAttrs({ postInstall ? "", postPatch ? "", ... }: {
-  installTargets = [ "zinstall" "dtbs" ];
-  postPatch = postPatch + ''
-    cp -v "${./compiler-gcc6.h}" "./include/linux/compiler-gcc6.h"
-
-    # FIXME : factor out
-    (
-    # Remove -Werror from all makefiles
-    local i
-    local makefiles="$(find . -type f -name Makefile)
-    $(find . -type f -name Kbuild)"
-    for i in $makefiles; do
-      sed -i 's/-Werror-/-W/g' "$i"
-      sed -i 's/-Werror=/-W/g' "$i"
-      sed -i 's/-Werror//g' "$i"
-    done
-    )
-  '';
-  postInstall = postInstall + ''
-    mkdir -p "$out/dtbs/"
-  ''
-  + optionalString (cpuName == "aarch64") ''
-    ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "$out/dtbs/motorola-addison.img" "$out/dtbs/qcom/"
-  ''
-  + optionalString (cpuName == "armv7l") ''
-     ${dtbTool}/bin/dtbTool -s 2048 -p "scripts/dtc/" -o "$out/dtbs/motorola-addison.img" "arch/arm/boot"
-  ''
-  ;
-})
+  isQcdt = true;
+}

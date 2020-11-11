@@ -1,0 +1,36 @@
+From 71f5fc6b8537eadefc75eb905dc32e03e2426f12 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 22 Aug 2020 22:50:35 -0400
+Subject: [PATCH] dts: pinephone: Setup default on and panic LEDs
+
+ * The green LED defaults to on.
+ * The red LED is the panic indicator.
+
+The green LED defaults to on for an expected transition through red,
+yellow and green during the different boot stages.
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+index 76095e1b90c8..d631e34b0a69 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinephone.dtsi
+@@ -212,12 +212,14 @@ green {
+ 			function = LED_FUNCTION_INDICATOR;
+ 			color = <LED_COLOR_ID_GREEN>;
+ 			gpios = <&pio 3 18 GPIO_ACTIVE_HIGH>; /* PD18 */
++			linux,default-trigger = "default-on";
+ 		};
+ 
+ 		red {
+ 			function = LED_FUNCTION_INDICATOR;
+ 			color = <LED_COLOR_ID_RED>;
+ 			gpios = <&pio 3 19 GPIO_ACTIVE_HIGH>; /* PD19 */
++			panic-indicator;
+ 		};
+ 	};
+ 
+-- 
+2.25.4
+

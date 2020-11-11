@@ -65,6 +65,6 @@ keys are held, it will instead show the recovery menu.
 The simulator can be launched using the following commands:
 
 ....
- $ nix-build --argstr device qemu-x86_64 -A pkgs.boot-gui-simulator
+ $ nix-build --argstr device qemu-x86_64 -A pkgs.boot-recovery-menu-simulator
  $ result/bin/simulator --resolution 1080x1920
 ....

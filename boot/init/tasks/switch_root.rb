@@ -147,6 +147,12 @@ class Tasks::SwitchRoot < SingletonTask
   end
 
   def run()
+    if user_wants_selection
+      Tasks::Splash.instance.quit("Continuing to recovery menu")
+    else
+      Tasks::Splash.instance.quit("Continuing to stage-2")
+    end
+
     init = "#{selected_generation}/init"
 
     # This is the traditional way we printed the init path.

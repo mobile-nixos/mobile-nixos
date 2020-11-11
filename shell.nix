@@ -4,6 +4,10 @@ with (import ./overlay) {};
 mkShell rec {
   name = "nixos-mobile";
   buildInputs = [
+    # Custom tools
+    mobile-nixos.autoport     # Helps users kickstart their ports
+
+    # Third party tools
     dtbTool                   # Combines multiple device tree blobs into one image
     file                      # Shows the type of files
     lz4                       # Decompress image files

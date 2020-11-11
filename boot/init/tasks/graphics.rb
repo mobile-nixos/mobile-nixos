@@ -21,4 +21,8 @@ class Tasks::Graphics < SingletonTask
     log("Setting framebuffer mode to: #{mode}")
     System.write("/sys/class/graphics/fb0/mode", mode)
   end
+
+  def ux_priority()
+    -100
+  end
 end

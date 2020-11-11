@@ -53,7 +53,7 @@ in
       type = types.listOf types.str;
       default = [];
       description = ''
-        Firmwares to add to the cloure.
+        Firmwares to add to the closure.
       '';
     };
     # We cannot use `linuxPackagesFor` as older kernels cause eval-time assertions...

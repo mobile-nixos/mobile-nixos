@@ -5,7 +5,7 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: #{$PROGRAM_NAME} [--only-save] <device_name>"
+  puts "Usage: bin/menuconfig [--only-save] <device_name>"
 end
 
 # Poor approximation to arguments parsing.
@@ -69,6 +69,9 @@ Dir.chdir(ROOT) do
   else
     system(tool, FILE)
   end
+
+  # Force normalize at the end. Otherwise recent kernels (5.8+) will have the wrong compiler data.
+  exec(File.join(ROOT, "bin", "kernel-normalize-config"), *ARGV)
 end
 
 # vim: ft=ruby
