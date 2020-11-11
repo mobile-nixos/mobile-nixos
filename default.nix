@@ -20,11 +20,12 @@ let
   inherit (strings) concatStringsSep stringAsChars;
 in
 {
+  pkgs ? import <nixpkgs> {}
   # The identifier of the device this should be built for.
   # (This gets massaged later on)
   # This allows using `default.nix` as a pass-through function.
   # See usage in examples folder.
-  device ? null
+, device ? null
 , configuration ? default_configuration
   # Internally used to tack on configuration by release.nix
 , additionalConfiguration ? {}
@@ -40,7 +41,7 @@ let
     else deviceFromEnv
   ;
 
-  inherit (import ./lib/release-tools.nix) evalWith;
+  inherit (import ./lib/release-tools.nix { inherit pkgs; }) evalWith;
 
   # The "default" eval.
   eval = evalWith {

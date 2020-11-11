@@ -1,3 +1,22 @@
+{ pkgs ? import <nixpkgs> {} }: 
+
+let
+  nixpkgsPath = pkgs.path;
+
+  # Original `evalConfig`
+  evalConfig' = import "${pkgs.path}/nixos/lib/eval-config.nix";
+
+  # Specialized `evalConfig` which injects the _mobile-nixos special arg.
+  evalConfig = args@{ specialArgs ? {}, ... }: evalConfig' (args // {
+    specialArgs = specialArgs // {
+      _mobile-nixos = {
+        inherit evalConfig;
+        inherit nixpkgsPath;
+        path = ../.;
+      };
+    };
+  });
+in
 {
   # This should *never* rely on lib or pkgs.
   all-devices =
@@ -14,8 +33,11 @@
     { modules
     , device
     , additionalConfiguration ? {}
-    , baseModules ? ((import ../modules/module-list.nix) ++ [ ../modules/_nixos-integration.nix ])
-  }: import ./eval-config.nix {
+    , baseModules ? (
+      (import ../modules/module-list.nix)
+      ++ (import "${toString pkgs.path}/nixos/modules/module-list.nix")
+    )
+  }: evalConfig {
     inherit baseModules;
     modules =
       (if device ? special

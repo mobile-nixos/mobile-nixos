@@ -1,10 +1,10 @@
-{ modules, baseModules, ... }:
+{ pkgs, modules, baseModules, _mobile-nixos, ... }:
 
 # This module provides the `recovery` build output.
 # It is the same configuration, with minor customizations.
 
 {
-  system.build.recovery = (import ../lib/eval-config.nix {
+  system.build.recovery = (_mobile-nixos.evalConfig {
     inherit baseModules;
     modules = modules ++ [{
       mobile.system.android.bootimg.name = "recovery.img";
