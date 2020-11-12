@@ -77,7 +77,7 @@ class Tasks::SwitchRoot < SingletonTask
       return path if path
     end
 
-    System.failure("Stage-2 init not found", "Could not find init path for stage-2", color: "FF00FF")
+    System.failure("INIT_NOT_FOUND", "Stage-2 init not found", "Could not find init path for stage-2", color: "FF00FF")
   end
 
   # May pause the boot to allow the user to select a generation.

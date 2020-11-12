@@ -169,7 +169,7 @@ module System
     end
   end
 
-  def self.failure(code, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"], status: 111)
+  def self.failure(code, title, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"], status: 111)
     Progress.kill()
 
     # First print the error we're handling.
@@ -182,7 +182,7 @@ module System
     $logger.fatal("* Fatal error in Mobile NixOS stage-1 init *")
     $logger.fatal("********************************************")
     $logger.fatal("")
-    $logger.fatal(code)
+    $logger.fatal("#{code}: #{title}")
     $logger.fatal("")
     $logger.fatal(message)
     $logger.fatal("")
@@ -194,6 +194,7 @@ module System
 
     File.write("/.error.json", {
       code: code,
+      title: title,
       color: color,
       delay: delay,
       message: message,

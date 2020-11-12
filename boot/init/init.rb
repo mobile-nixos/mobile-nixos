@@ -40,6 +40,7 @@ Tasks::go()
 
 $logger.fatal("Tasks all ran, but we're still here...")
 System.failure(
+  "INIT_FAILED_SWITCH",
   "Boot process failed to switch to stage-2",
   "The stage-1 init did not detect any failure condition, but failed to switch to stage-2.\n\n" +
   "It shouldn't happen, yet here we are.",
@@ -48,5 +49,5 @@ System.failure(
 
 rescue => e
   # Then fail
-  System.failure("Uncaught Exception", e.inspect, color: "765300", status: 99)
+  System.failure("INIT_EXCEPTION", "Uncaught Exception", e.inspect, color: "765300", status: 99)
 end

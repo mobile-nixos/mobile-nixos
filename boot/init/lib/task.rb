@@ -92,7 +92,7 @@ module Tasks
             "\n"
 
           # Fail with a black backdrop, and force the message to stay up 60s
-          System.failure("Hung Tasks", msg, color: "000000", delay: 60)
+          System.failure("TASKS_HANG_TIMEOUT", "Hung Tasks", msg, color: "000000", delay: 60)
         end
 
         # Don't burn the CPU if we're waiting on something...
