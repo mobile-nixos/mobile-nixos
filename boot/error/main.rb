@@ -1,12 +1,4 @@
 begin
-# Get exclusive control of the framebuffer
-# By design we will not restore the console at exit.
-# We are assuming the target does not necessarily have a console attached to
-# the framebuffer, so this program has to be enough by itself.
-VTConsole.map_console(0)
-
-# Prepare LVGL
-LVGL::Hacks.init()
 
 data = JSON.parse(File.read(ARGV.first))
 
@@ -15,19 +7,26 @@ $color = data["color"]
 $delay = data["delay"]
 $message = data["message"]
 $status = data["status"]
+$title = data["title"]
 
 $color = $color.rjust(6, "0").rjust(8, "F").to_i(16)
 
 class UI
   def initialize()
-    screen
-    sad_phone
-    code
-    message
-    time_left
+    add_screen
+
+    # First add the title bar, other elements will sit under.
+    add_title_bar
+    # Then, action pane, so we can get its height
+    add_actions_pane
+    # Finally, messages pane, which takes the remainder.
+    add_messages_pane
+
+    # Re-compute the layout
+    relayout()
   end
 
-  def screen()
+  def add_screen()
     @screen = LVGL::LVContainer.new()
 
     # Create a new style
@@ -38,68 +37,194 @@ class UI
     style.body_grad_color = $color
   end
 
-  def sad_phone()
-    file = nil
-    file = "/sad-phone.svg" if File.exist?("/sad-phone.svg")
-    file = "sad-phone.svg" if File.exist?("sad-phone.svg")
-    return unless file
+  def add_title_bar()
+    @title_bar = LVGL::LVContainer.new(@screen)
+    @title_bar.set_width(@screen.get_width())
+    @title_bar.set_height(16*unit)
+    @title_bar.set_pos(0, 0)
 
-    if @screen.get_height > @screen.get_width
-      LVGL::Hacks::LVNanoSVG.resize_next_width(@screen.get_width)
-    else
-      LVGL::Hacks::LVNanoSVG.resize_next_height(@screen.get_height)
+    @title_bar.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
+      @title_bar.set_style(LVGL::CONT_STYLE::MAIN, style)
+      style.body_main_color = 0x00000000
+      style.body_grad_color = 0x00000000
+      style.body_border_width = 0
+      style.body_radius = 0
+      style.body_opa = (255 * 0.30).to_i
     end
 
+    add_sad_phone
+    add_title
+  end
+
+  def add_actions_pane()
+    @actions_pane = LVGL::LVContainer.new(@screen)
+    @actions_pane.set_width(get_pane_width())
+
+    # When horizontal, we know it's placed to the right, full height.
+    if horizontal?
+      @actions_pane.set_height(@screen.get_height() - @title_bar.get_height())
+      @actions_pane.set_pos(get_pane_width(), @title_bar.get_height())
+    end
+
+    @actions_pane.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
+      @actions_pane.set_style(LVGL::CONT_STYLE::MAIN, style)
+      style.body_main_color = 0x00000000
+      style.body_grad_color = 0x00000000
+      style.body_border_width = 0
+      style.body_radius = 0
+      style.body_opa = (255 * 0.20).to_i
+    end
+
+    add_time_left
+  end
+
+  def add_messages_pane()
+    @messages_pane = LVGL::LVContainer.new(@screen)
+    @messages_pane.set_width(get_pane_width())
+    @messages_pane.set_pos(0, @title_bar.get_height())
+
+    # When horizontal, full height
+    if horizontal?
+      @messages_pane.set_height(@screen.get_height() - @title_bar.get_height())
+    end
+
+    @messages_pane.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
+      @messages_pane.set_style(LVGL::CONT_STYLE::MAIN, style)
+      style.body_main_color = 0x00000000
+      style.body_grad_color = 0x00000000
+      style.body_border_width = 0
+      style.body_radius = 0
+      style.body_opa = (255 * 0).to_i
+    end
+
+    add_message_title
+    add_message
+  end
+
+  # Title elements
+
+  def add_sad_phone()
+    file = nil
+    file = "/sad.svg" if File.exist?("/sad.svg")
+    file = "sad.svg" if File.exist?("sad.svg")
+    return unless file
+
+    LVGL::Hacks::LVNanoSVG.resize_next_height(@title_bar.get_height - 2 * padding)
     @sad_phone = LVGL::LVImage.new(@screen)
     @sad_phone.set_src(file)
+    @sad_phone.set_pos(2 * padding, padding)
+  end
 
-    # Center the image
-    @sad_phone.set_pos(
-      @screen.get_width / 2 - @sad_phone.get_width / 2,
-      @screen.get_height / 2 - @sad_phone.get_height / 2,
+  def add_title()
+    @title = new_text($code, parent: @title_bar)
+    @title.set_align(LVGL::LABEL_ALIGN::LEFT)
+    @title.set_x(@sad_phone.get_x()*2 + @sad_phone.get_width())
+    @title.set_y(@title_bar.get_height / 2 - @title.get_height / 2)
+    @title.set_width(@title_bar.get_width() - @title.get_x())
+  end
+
+  # Messages pane elements
+
+  def add_message_title()
+    @message_title = new_text($title, parent: @messages_pane)
+    @message_title.set_align(LVGL::LABEL_ALIGN::LEFT)
+    @message_title.set_pos(
+      padding,
+      padding,
     )
   end
 
-  def code()
-    @code = ShadedText.new(@screen)
-    @code.set_long_mode(LVGL::LABEL_LONG::BREAK)
-    @code.set_align(LVGL::LABEL_ALIGN::CENTER)
-    @code.set_width((@screen.get_width * 0.8).to_i)
-    @code.set_text($code)
-    @code.set_pos(
-      @screen.get_width / 2 - @code.get_width / 2,
-      (@screen.get_height * 0.05).to_i
-    )
-  end
-
-  def message()
-    @message = ShadedText.new(@screen)
-    @message.set_long_mode(LVGL::LABEL_LONG::BREAK)
-    @message.set_align(LVGL::LABEL_ALIGN::CENTER)
-    @message.set_width((@screen.get_width * 0.95).to_i)
-    @message.set_text($message)
+  def add_message()
+    @message = new_text($message, parent: @messages_pane)
+    @message.set_align(LVGL::LABEL_ALIGN::LEFT)
     @message.set_pos(
-      @screen.get_width / 2 - @message.get_width / 2,
-      (@screen.get_height * 0.65).to_i
+      padding,
+      @message_title.get_height() + @message_title.get_y() + padding
     )
   end
 
-  def time_left()
-    @time_left = ShadedText.new(@screen)
-    @time_left.set_long_mode(LVGL::LABEL_LONG::BREAK)
-    @time_left.set_align(LVGL::LABEL_ALIGN::CENTER)
-    @time_left.set_width((@screen.get_width * 0.95).to_i)
+  # Actions pane elements
 
+  def add_time_left()
+    @time_left = new_text("", parent: @actions_pane)
     set_time_left($delay)
-
-    @time_left.set_pos(
-      @screen.get_width / 2 - @time_left.get_width / 2,
-      (@screen.get_height - @time_left.get_height * 1.5)
-    )
+    @time_left.set_x(@actions_pane.get_width / 2 - @time_left.get_width / 2)
+    @time_left.set_y(padding)
   end
 
+  # Layout helpers
+
+  def relayout()
+    unless horizontal?
+      @messages_pane.set_height(
+        @screen.get_height() - @title_bar.get_height() - @actions_pane.get_height()
+      )
+
+      # The actions pane has to be as high as required in vertical mode.
+      last_element =  @actions_pane.get_children.reduce do |a, b|
+        if b
+          a_end = a.get_y() + a.get_height() 
+          b_end = b.get_y() + b.get_height() 
+          if a_end > b_end
+            a
+          else
+            b
+          end
+        else
+          a
+        end
+      end
+
+      @actions_pane.set_height(
+        last_element.get_y() + last_element.get_height() + padding
+      )
+
+      # Always push it as far down as possible!
+      @actions_pane.set_pos(0, @screen.get_height() - @actions_pane.get_height())
+    end
+  end
+
+  # Misc. helpers
+
+  # Creates a label with some useful defaults.
+  def new_text(text, parent: nil)
+    parent ||= @screen
+
+    el = ShadedText.new(parent)
+    el.set_long_mode(LVGL::LABEL_LONG::BREAK)
+    el.set_align(LVGL::LABEL_ALIGN::CENTER)
+    el.set_width((parent.get_width - 2*padding).to_i)
+    el.set_text(text)
+    el
+  end
+
+  # Updates the UI with the time left.
   def set_time_left(value)
     @time_left.set_text("#{value} seconds left before crashing.")
+  end
+
+  def get_pane_width()
+    if horizontal?
+      @screen.get_width() / 2
+    else
+      @screen.get_width()
+    end
+  end
+
+  def unit()
+    (if horizontal?
+      @screen.get_height()
+    else
+      @screen.get_width()
+    end) / 128
+  end
+
+  def padding()
+    2 * unit
+  end
+
+  def horizontal?()
+    @screen.get_height < @screen.get_width
   end
 end
 

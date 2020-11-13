@@ -28,8 +28,8 @@ in
   config = {
     mobile.boot.stage-1.contents = [
       {
-        object = (builtins.path { path = ../artwork/sad-phone.svg; });
-        symlink = "/sad-phone.svg";
+        object = (builtins.path { path = ../artwork/sad.svg; });
+        symlink = "/sad.svg";
       }
     ];
   };
