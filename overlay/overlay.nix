@@ -101,6 +101,7 @@ in
       stage-1 = {
         script-loader = callPackage ../boot/script-loader {};
         boot-recovery-menu = callPackage ../boot/recovery-menu {};
+        boot-error = callPackage ../boot/error {};
         boot-splash = callPackage ../boot/splash {};
       };
 

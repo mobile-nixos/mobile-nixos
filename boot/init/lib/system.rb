@@ -169,22 +169,64 @@ module System
     end
   end
 
-  def self.sad_phone(color, code, message)
-    begin
-      System.run(LOADER, "/applets/boot-error.mrb", color, code, message)
-    rescue CommandError => e
-      $logger.fatal(e.inspect)
+  def self.failure(code, title, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"], status: 111)
+    Progress.kill()
+
+    # First print the error we're handling.
+    # The added asterisks seve to aid in finding it visually.
+    5.times do
+      $logger.fatal("********************************************")
     end
+    $logger.fatal("")
+    $logger.fatal("********************************************")
+    $logger.fatal("* Fatal error in Mobile NixOS stage-1 init *")
+    $logger.fatal("********************************************")
+    $logger.fatal("")
+    $logger.fatal("#{code}: #{title}")
+    $logger.fatal("")
+    $logger.fatal(message)
+    $logger.fatal("")
+    5.times do
+      $logger.fatal("********************************************")
+    end
+
+    _flush_outputs()
+
+    File.write("/.error.json", {
+      code: code,
+      title: title,
+      color: color,
+      delay: delay,
+      message: message,
+      status: status,
+    }.to_json)
+
+    # Show the error handler applet.
+    begin
+      System.exec(LOADER, "/applets/boot-error.mrb", "/.error.json")
+    rescue => e
+      $logger.fatal("********************************************")
+      $logger.fatal("* Error handler failed to start            *")
+      $logger.fatal("********************************************")
+      $logger.fatal(e.inspect)
+      $logger.fatal("********************************************")
+    end
+
+    # If we're here, things are broken beyond belief!
+    _flush_outputs()
+
+    # Drop down to a shell if possible.
+    shell if respond_to?(:shell)
+
+    # As in "command not found".
+    exit 127
   end
 
-  def self.failure(code, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"])
-    Progress.kill()
-    $logger.fatal("#{code}: #{message}")
-    sad_phone(color, code, message)
-    shell if respond_to?(:shell)
-    sleep(delay)
-    hard_reboot if Configuration["boot"]["fail"]["reboot"]
-    exit 111
+  # Flushes the outputs.
+  def self._flush_outputs()
+    # Flush both output
+    $stdout.flush
+    $stderr.flush
   end
 
   def self.hard_reboot()
