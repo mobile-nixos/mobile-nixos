@@ -31,6 +31,7 @@
 , mpfr
 , dtc
 , dtbTool
+, dtbTool-exynos
 
 , cpio
 , elfutils
@@ -71,6 +72,12 @@ in
 # Handling of QCDT dt.img
 , isQcdt ? false
 , qcdt_dtbs ? "arch/${platform.kernelArch}/boot/"
+
+# Handling of Exynos dt.img
+, isExynosDT ? false
+, exynos_dtbs ? "arch/${platform.kernelArch}/boot/dts/*.dtb"
+, exynos_platform ? "0x50a6"
+, exynos_subtype  ? "0x217584da"
 
 # Enable support for android-specific "Image.gz-dtb" appended images
 , isImageGzDtb ? false
@@ -154,7 +161,7 @@ let kernelDerivation =
 stdenv.mkDerivation (inputArgs // {
   pname = "linux";
   inherit src version;
-  inherit qcdt_dtbs;
+  inherit qcdt_dtbs exynos_dtbs exynos_platform exynos_subtype;
   inherit enableParallelBuilding;
 
   # Allows disabling the kernel config normalization.
@@ -174,6 +181,7 @@ stdenv.mkDerivation (inputArgs // {
     # While some kernels might not need those, most will.
     ++ [ dtc ] 
     ++ optional isQcdt dtbTool
+    ++ optional isExynosDT dtbTool-exynos
     ++ nativeBuildInputs
   ;
 
@@ -376,6 +384,15 @@ stdenv.mkDerivation (inputArgs // {
       -o "$out/dt.img" \
       "$qcdt_dtbs"
 
+  '' + optionalString isExynosDT ''
+    echo ":: Making and installing Exynos dt.img"
+    mkdir -p $out/
+    dtbTool-exynos -s 2048 \
+      --platform "$exynos_platform" \
+      --subtype "$exynos_subtype" \
+      -o "$out/dt.img" \
+      $exynos_dtbs
+
   '' + optionalString isImageGzDtb ''
     echo ":: Copying platform-specific -dtb image file"
     cp -v "$buildRoot/arch/${platform.kernelArch}/boot/${kernelTarget}-dtb" "$out/"
@@ -415,8 +432,8 @@ stdenv.mkDerivation (inputArgs // {
 
   passthru = {
     # Used by consumers of the kernel derivation to configure the build
-    # appropriately for QCDT use.
-    inherit isQcdt;
+    # appropriately for different quirks.
+    inherit isQcdt isExynosDT;
 
     # Used by consumers to refer to the kernel build product.
     file = kernelTarget + optionalString isImageGzDtb "-dtb";
