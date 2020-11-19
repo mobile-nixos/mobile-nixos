@@ -8,6 +8,7 @@
   ./devices-metadata.nix
   ./generated-filesystems.nix
   ./hardware-allwinner.nix
+  ./hardware-exynos.nix
   ./hardware-generic.nix
   ./hardware-mediatek.nix
   ./hardware-qualcomm.nix
