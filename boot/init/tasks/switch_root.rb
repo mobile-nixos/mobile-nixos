@@ -129,11 +129,7 @@ class Tasks::SwitchRoot < SingletonTask
       "KEY_ESC", # QEMU doesn't pass through CTRL and SHIFT as expected here...
     ]
 
-    # Do *not* use System.run as it would fail the boot on return value != 0
-    system(LOADER, "/applets/key-held.mrb", *keys)
-
-    # It returns `0` on key being held.
-    $?.exitstatus == 0
+    Evdev.keys_held(keys)
   end
 
   # Checks if the user wants to select a generation.
