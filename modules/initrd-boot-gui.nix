@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  key-held = pkgs.runCommand "key-held.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/applets}/key-held.rb
-  '';
   minimalX11Config = pkgs.runCommandNoCC "minimalX11Config" {
     allowedReferences = [ "out" ];
   } ''
@@ -37,10 +34,6 @@ in
     {
       object = pkgs.mobile-nixos.stage-1.boot-recovery-menu;
       symlink = "/applets/boot-selection.mrb";
-    }
-    {
-      object = key-held;
-      symlink = "/applets/key-held.mrb";
     }
     {
       object = "${minimalX11Config}";
