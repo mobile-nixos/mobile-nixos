@@ -201,7 +201,13 @@ let
     ];
   } ''
     mkdir initrd
-    (cd initrd; gzip -cd ${initrd}/initrd | cpio -i)
+    (
+    cd initrd
+    ${if config.mobile.boot.stage-1.compression == "gzip" then "gzip -cd ${initrd}/initrd"
+      else if config.mobile.boot.stage-1.compression == "xz" then "xz -cd ${initrd}/initrd"
+      else throw "Cannot decompress ${config.mobile.boot.stage-1.compression} for initrd-meta."
+    } | cpio -i
+    )
 
     mkdir -p $out
     ncdu -0x -o $out/initrd.ncdu ./initrd
