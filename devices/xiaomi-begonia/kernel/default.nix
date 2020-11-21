@@ -11,9 +11,6 @@
 #
 # Things to note:
 #
-# This currently builds **only** with cross-compilation. That is going to stay
-# true until dtc_overlay's source is made available by OEMs.
-#
 # Either gcc49 or clang is needed for this kernel to build.
 #
 
@@ -26,29 +23,9 @@ let
     sha256 = "1p08392pcavfjy5i0zc61dxibr0jq9kb3na1hdx85q0z3d9sfwp6";
   };
 
-  # This may seem weird, but doing this inside the kernel build breaks the binary.
-  # Note that `buildPackages.stdenv` is necessary since this is a tool for the host.
-  dtc_overlay = buildPackages.stdenv.mkDerivation {
-    name = "dtc_overlay-xiaomi-begonia";
-
-    nativeBuildInputs = with buildPackages; [
-      autoPatchelfHook
-      binutils
-    ];
-
-    inherit src;
-
-    buildPhase = ''
-      cp scripts/dtc/dtc_overlay ./
-      autoPatchelf dtc_overlay
-      ./dtc_overlay --version
-    '';
-
-    installPhase = ''
-      mv dtc_overlay $out
-    '';
-  };
-
+  dtc_overlay = buildPackages.writeShellScript "dtc_overlay" ''
+    exec ${buildPackages.dtc}/bin/dtc "$@"
+  '';
 in
   
 mobile-nixos.kernel-builder-clang_9 {
