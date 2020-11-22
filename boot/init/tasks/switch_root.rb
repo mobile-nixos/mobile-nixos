@@ -120,13 +120,15 @@ class Tasks::SwitchRoot < SingletonTask
 
   def is_boot_interrupted()
     keys = [
-      "KEY_VOLUMEUP",
-      "KEY_VOLUMEDOWN",
-      "KEY_LEFTCTRL",
-      "KEY_RIGHTCTRL",
-      "KEY_LEFTSHIFT",
-      "KEY_RIGHTSHIFT",
-      "KEY_ESC", # QEMU doesn't pass through CTRL and SHIFT as expected here...
+      # Keys used for "mobile" use-cases
+      :KEY_VOLUMEUP,
+      :KEY_VOLUMEDOWN,
+      # Keys used for "computer" use-cases
+      :KEY_LEFTCTRL,
+      :KEY_RIGHTCTRL,
+      :KEY_LEFTSHIFT,
+      :KEY_RIGHTSHIFT,
+      :KEY_ESC,
     ]
 
     Evdev.keys_held(keys)
