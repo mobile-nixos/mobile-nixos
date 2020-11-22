@@ -49,6 +49,7 @@ module Tasks
       # Update the current progress
       count = @tasks.length.to_f
       Progress.update({progress: (100 * (1 - (todo.length / count))).ceil})
+      Progress.update({recovery: Hal::Recovery.wants_recovery?})
 
       todo.each do |task|
           if task._try_run_task then
