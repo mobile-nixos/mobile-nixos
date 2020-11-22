@@ -40,6 +40,7 @@ stdenv.mkDerivation {
 
     # This is the "script" that will be loaded.
     mrbc -o init.mrb \
+      $(find ${../lib} -type f | sort) \
       $(find lib -type f | sort) \
       $(get_tasks) \
       init.rb

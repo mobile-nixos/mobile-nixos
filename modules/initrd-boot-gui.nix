@@ -1,9 +1,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  key-held = pkgs.runCommand "key-held.mrb" {} ''
-    ${pkgs.buildPackages.mruby}/bin/mrbc -o $out ${../boot/applets}/key-held.rb
-  '';
   minimalX11Config = pkgs.runCommandNoCC "minimalX11Config" {
     allowedReferences = [ "out" ];
   } ''
@@ -39,18 +36,9 @@ in
       symlink = "/applets/boot-selection.mrb";
     }
     {
-      object = key-held;
-      symlink = "/applets/key-held.mrb";
-    }
-    {
       object = "${minimalX11Config}";
       symlink = "/etc/X11";
     }
-  ];
-
-  mobile.boot.stage-1.extraUtils = with pkgs; [
-    # Used for `key-held.mrb`.
-    { package = evtest; }
   ];
 
   mobile.boot.stage-1.environment = {
