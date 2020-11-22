@@ -41,11 +41,6 @@ in
     }
   ];
 
-  mobile.boot.stage-1.extraUtils = with pkgs; [
-    # Used for `key-held.mrb`.
-    { package = evtest; }
-  ];
-
   mobile.boot.stage-1.environment = {
     XKB_CONFIG_ROOT = "/etc/X11/xkb";
     XLOCALEDIR = "/etc/X11/locale";
