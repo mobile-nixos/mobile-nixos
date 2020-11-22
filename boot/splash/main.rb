@@ -73,6 +73,7 @@ LVGUI.main_loop do
 
     # First updating the current progress
     ui.set_progress(msg["progress"])
+    ui.show_recovery_notice(msg["recovery"])
 
     # And updating the label as needed.
     if msg["label"]

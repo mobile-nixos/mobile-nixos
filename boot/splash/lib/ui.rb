@@ -26,6 +26,7 @@ class UI
     add_logo
     add_progress_bar
     add_label
+    add_recovery
 
     add_textarea
     add_keyboard
@@ -99,6 +100,34 @@ class UI
     end
   end
 
+  def add_recovery()
+    @recovery_container = LVGL::LVContainer.new(@page)
+    @recovery_container.set_hidden(true)
+    @recovery_container.set_width(@page.get_width)
+    @recovery_container.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
+      @recovery_container.set_style(LVGL::CONT_STYLE::MAIN, style)
+      style.body_main_color = 0xFF000000
+      style.body_grad_color = 0xFF000000
+      style.body_border_width = 0
+    end
+
+    recovery_label = LVGL::LVLabel.new(@recovery_container)
+    recovery_label.get_style(LVGL::LABEL_STYLE::MAIN).dup.tap do |style|
+      recovery_label.set_style(LVGL::LABEL_STYLE::MAIN, style)
+      style.text_color = 0xFFFFFFFF
+    end
+    recovery_label.set_long_mode(LVGL::LABEL_LONG::BREAK)
+    recovery_label.set_align(LVGL::LABEL_ALIGN::CENTER)
+
+    recovery_label.set_width(@recovery_container.get_width() * 0.9)
+    recovery_label.set_text("Booting to recovery menu")
+    recovery_label.set_x(@recovery_container.get_width()/2 - recovery_label.get_width()/2)
+    recovery_label.set_y(@unit)
+
+    @recovery_container.set_height(recovery_label.get_height() + 2*@unit)
+    @recovery_container.set_pos(0, @page.get_height() - @recovery_container.get_height())
+  end
+
   # Used to handle fade-in/fade-out
   # This is because opacity handles multiple overlaid objects wrong.
   def add_cover()
@@ -165,6 +194,10 @@ class UI
       offset_page(0)
       cb.call(value)
     end
+  end
+
+  def show_recovery_notice(val = true)
+    @recovery_container.set_hidden(!val)
   end
 
   def offset_page(delta)
