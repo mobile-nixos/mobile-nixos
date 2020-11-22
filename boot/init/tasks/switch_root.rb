@@ -82,7 +82,7 @@ class Tasks::SwitchRoot < SingletonTask
 
   # May pause the boot to allow the user to select a generation.
   def selected_generation()
-    if user_wants_selection()
+    if Hal::Recovery.wants_recovery?
       generate_selection()
       # FIXME: In the future, boot GUIs will be launched async, before this
       # task is ran.
@@ -102,50 +102,8 @@ class Tasks::SwitchRoot < SingletonTask
     end
   end
 
-  def boot_as_recovery_wants_recovery()
-    # "Boot as recovery" systems do not have a discrete recovery partition.
-    # For those systems, when `[s_]kip_initramfs` is in the kernel cmdline, we
-    # know the intent is to boot the normal system.
-    # Is a "boot as recovery" device, and Is `[s_]kip_initramfs` missing?
-    Configuration["device"]["boot_as_recovery"] and
-      !File.read("/proc/cmdline").split(/\s+/).grep(/[s_]kip_initramfs/).any?
-  end
-
-  def is_recovery()
-    # Check in /etc/boot/config for `is_recovery`, it's assumed to be set, and
-    # true, for recovery.img.
-    Configuration["is_recovery"] or
-      boot_as_recovery_wants_recovery
-  end
-
-  def is_boot_interrupted()
-    keys = [
-      # Keys used for "mobile" use-cases
-      :KEY_VOLUMEUP,
-      :KEY_VOLUMEDOWN,
-      # Keys used for "computer" use-cases
-      :KEY_LEFTCTRL,
-      :KEY_RIGHTCTRL,
-      :KEY_LEFTSHIFT,
-      :KEY_RIGHTSHIFT,
-      :KEY_ESC,
-    ]
-
-    Evdev.keys_held(keys)
-  end
-
-  # Checks if the user wants to select a generation.
-  def user_wants_selection()
-    [
-      # Booted a recovery partition.
-      is_recovery,
-      # Or signaling the boot selection menu should be shown.
-      is_boot_interrupted,
-    ].any?
-  end
-
   def run()
-    if user_wants_selection
+    if Hal::Recovery.wants_recovery?
       Tasks::Splash.instance.quit("Continuing to recovery menu")
     else
       Tasks::Splash.instance.quit("Continuing to stage-2")
