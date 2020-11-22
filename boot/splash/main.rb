@@ -42,6 +42,19 @@ LVGUI.main_loop do
       p msg
     end
 
+    # Update the UI...
+
+    # First updating the current progress
+    ui.set_progress(msg["progress"])
+    ui.show_recovery_notice(msg["recovery"])
+
+    # Update the label as needed.
+    if msg["label"]
+      ui.set_label(msg["label"])
+    else
+      ui.set_label("")
+    end
+
     # We might have a special command; handle it.
     if msg["command"] then
       command = msg["command"]
@@ -67,19 +80,6 @@ LVGUI.main_loop do
       else
         $stderr.puts "[splash] Unexpected command #{command.to_json}..."
       end
-    end
-
-    # Update the UI...
-
-    # First updating the current progress
-    ui.set_progress(msg["progress"])
-    ui.show_recovery_notice(msg["recovery"])
-
-    # And updating the label as needed.
-    if msg["label"]
-      ui.set_label(msg["label"])
-    else
-      ui.set_label("")
     end
   end
 end
