@@ -15,6 +15,7 @@ let
     filter
     flatten
     getBin
+    mapAttrsToList
     mkOption
     optionalString
     optionals
@@ -97,18 +98,21 @@ let
   # Converts from list of attrsets, to an attrset indexed by mountPoint.
   bootFileSystems = listToAttrs (map (item: { name = item.mountPoint; value = item; }) bootFileSystems');
 
+  # These 00-env rules are used both by udev to set the environment, and by
+  # our bespoke init. This makes it a one-stop-shop for preparing the
+  # init environment.
+  envRules = writeText "00-env.rules" (
+    concatStringsSep "\n"
+    (mapAttrsToList (k: v: ''ENV{${k}}="${v}"'') config.mobile.boot.stage-1.environment)
+  );
+
   udevRules = runCommandNoCC "udev-rules" {
     allowedReferences = [ extraUtils ];
     preferLocalBuild = true;
   } ''
     mkdir -p $out
 
-    # These 00-env rules are used both by udev to set the environment, and
-    # by our bespoke init.
-    # This makes it a one-stop-shop for preparing the init environment.
-    echo 'ENV{LD_LIBRARY_PATH}="${extraUtils}/lib"' > $out/00-env.rules
-    echo 'ENV{PATH}="${extraUtils}/bin"' >> $out/00-env.rules
-
+    cp -v ${envRules} $out/00-env.rules
     cp -v ${udev}/lib/udev/rules.d/60-cdrom_id.rules $out/
     cp -v ${udev}/lib/udev/rules.d/60-input-id.rules $out/
     cp -v ${udev}/lib/udev/rules.d/60-persistent-input.rules $out/
@@ -201,7 +205,13 @@ let
     ];
   } ''
     mkdir initrd
-    (cd initrd; gzip -cd ${initrd}/initrd | cpio -i)
+    (
+    cd initrd
+    ${if config.mobile.boot.stage-1.compression == "gzip" then "gzip -cd ${initrd}/initrd"
+      else if config.mobile.boot.stage-1.compression == "xz" then "xz -cd ${initrd}/initrd"
+      else throw "Cannot decompress ${config.mobile.boot.stage-1.compression} for initrd-meta."
+    } | cpio -i
+    )
 
     mkdir -p $out
     ncdu -0x -o $out/initrd.ncdu ./initrd
@@ -262,6 +272,14 @@ in
         '';
         internal = true;
       };
+      mobile.boot.stage-1.environment = mkOption {
+        type = types.attrsOf types.str;
+        description = ''
+          Environment variables present for the whole stage-1.
+          Keep this as minimal as needed.
+        '';
+        internal = true;
+      };
     };
 
     config = {
@@ -290,6 +308,10 @@ in
 
         # Transmit all of the mobile NixOS HAL options.
         HAL = config.mobile.HAL;
+      };
+      mobile.boot.stage-1.environment = {
+        LD_LIBRARY_PATH = "${extraUtils}/lib";
+        PATH = "${extraUtils}/bin";
       };
     };
   }

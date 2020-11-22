@@ -21,16 +21,53 @@ let
       pkgs.buildPackages.python3
     ];
   });
+  libxkbcommon = pkgs.callPackage (
+    { stdenv                                             
+    , libxkbcommon                             
+    , meson             
+    , ninja                                         
+    , pkgconfig               
+    , yacc                              
+    }:                            
+
+    libxkbcommon.overrideAttrs({...}: {
+      nativeBuildInputs = [ meson ninja pkgconfig yacc ];
+      buildInputs = [ ];                                     
+
+      mesonFlags = [   
+        "-Denable-wayland=false"
+        "-Denable-x11=false"             
+        "-Denable-docs=false"            
+
+        # This is because we're forcing uses of this build
+        # to define config and locale root; for stage-1 use.
+        # In stage-2, use the regular xkbcommon lib.
+        "-Dxkb-config-root=/NEEDS/OVERRIDE/etc/X11/xkb"
+        "-Dx-locale-root=/NEEDS/OVERRIDE/share/X11/locale"
+      ];
+
+      outputs = [ "out" "dev" ];
+
+      # Ensures we don't get any stray dependencies.
+      allowedReferences = [
+        "out"
+        "dev"
+        stdenv.cc.libc_lib
+      ];
+    })
+
+  ) {};
+
 in
   stdenv.mkDerivation {
     pname = "lvgui";
-    version = "2020-11-01";
+    version = "2020-11-20";
 
     src = fetchFromGitHub {
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "4f8af498a81bd669d42ce3b370fc66fe4ec681b5";
-      sha256 = "00rik18c3c3l4glzh2azg90cwvp56s4wnski86rsn00bxslia5ma";
+      rev = "c94c3916012f5615af027389e77e7a974cc3e634";
+      sha256 = "16dfdky5v72jqs9v22h1k73g74bnif6fg52vhxw2k8sh6mw1cmzp";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
@@ -46,6 +83,7 @@ in
 
     buildInputs = [
       libevdev
+      libxkbcommon
     ]
     ++ optionals withSimulator simulatorDeps
     ;

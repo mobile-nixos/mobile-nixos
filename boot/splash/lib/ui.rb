@@ -126,6 +126,8 @@ class UI
     @ta.set_pos(*center(@ta, 0, @unit * 14))
     # Always present, but initially hidden
     @ta.hide(skip_animation: true)
+    LVGUI.focus_group.add_obj(@ta)
+    LVGUI.focus_ring_disable()
   end
 
   def add_keyboard()
