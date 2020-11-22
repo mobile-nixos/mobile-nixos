@@ -9,16 +9,28 @@ jobs:
   Parse_nix:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: "actions/checkout@58070a9fc3a91197fc9cbf24841ea31a2ab19980"
-      - uses: "cachix/install-nix-action@ebed63b0a20f20951a06a507ea1a1596bfce35b6"
+      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
+      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
       - name: "Parse .nix files"
         run: |
           git ls-files | grep '.nix$' | xargs nix-instantiate --parse --quiet > /dev/null
+  Instantiation:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
+      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
+      - name: "Instantiation"
+        run: |
+          nix-env --out-path -qaP --no-name -f .ci/instantiate-all.nix \
+            | sed -e 's/\+\+/./g' \
+            | sort
   Documentation:
     runs-on: [ubuntu-latest]
     steps:
-      - uses: "actions/checkout@58070a9fc3a91197fc9cbf24841ea31a2ab19980"
-      - uses: "cachix/install-nix-action@ebed63b0a20f20951a06a507ea1a1596bfce35b6"
+      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
+      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
       - name: "Build documentation"
         run: |
           nix-build doc
@@ -27,13 +39,3 @@ jobs:
         with:
           name: documentation
           path: built-documentation
-  Instantiation:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: "actions/checkout@58070a9fc3a91197fc9cbf24841ea31a2ab19980"
-      - uses: "cachix/install-nix-action@ebed63b0a20f20951a06a507ea1a1596bfce35b6"
-      - name: "Instantiation"
-        run: |
-          nix-env --out-path -qaP --no-name -f .ci/instantiate-all.nix \
-            | sed -e 's/\+\+/./g' \
-            | sort
