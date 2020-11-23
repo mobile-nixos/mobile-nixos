@@ -23,4 +23,5 @@ mobile-nixos.kernel-builder {
   ];
 
   isModular = false;
+  isCompressed = false;
 }
