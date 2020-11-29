@@ -25,7 +25,7 @@ in
 { src
 , gems ? []
 , buildPhase
-, passthru
+, passthru ? {}
 , ...
 }@ attrs:
 let
