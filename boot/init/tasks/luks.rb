@@ -55,7 +55,7 @@ class Tasks::Luks < Task
     end
 
     # We failed multiple times.
-    raise CouldNotUnlock.new("Could not unlock #{source}; tried #{TRIES} times.")
+    System.failure("CRYPTSETUP_FAILED_UNLOCK", "Failed to unlock", "Could not unlock #{source}.\n\nTried #{TRIES} times.", color: "000000", delay: 60)
   end
 
   def name()
