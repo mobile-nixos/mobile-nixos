@@ -74,7 +74,12 @@ makeFilesystem (args // {
   '';
 
   filesystemPhase = ''
+    fatSize=16
+    if (( size > 1024*1024*32 )); then
+      fatSize=32
+    fi
     faketime -f "1970-01-01 00:00:00" mkfs.vfat \
+      -F $fatSize \
       -R ${toString reservedSectors} \
       -h ${toString hiddenSectors} \
       -s ${toString (blockSize / sectorSize)} \
