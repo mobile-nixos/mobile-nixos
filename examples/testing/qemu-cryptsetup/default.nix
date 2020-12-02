@@ -1,5 +1,5 @@
 let
-  device = "qemu-x86_64";
+  device = "uefi-x86_64";
   system-build = import ../../../. {
     inherit device;
     configuration = [ { imports = [
