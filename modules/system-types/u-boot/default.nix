@@ -1,14 +1,14 @@
 { config, pkgs, lib, modules, baseModules, ... }:
 
 let
-  inherit (pkgs) hostPlatform buildPackages imageBuilder runCommandNoCC;
-  inherit (lib) mkEnableOption mkIf mkOption types;
+  enabled = config.mobile.system.type == "u-boot";
+
   inherit (config.system.build) recovery stage-0;
+  inherit (pkgs) buildPackages imageBuilder runCommandNoCC;
+  inherit (lib) mkIf mkOption types;
   cfg = config.mobile.quirks.u-boot;
   inherit (cfg) soc;
-  inherit (config) system;
   deviceName = config.mobile.device.name;
-  device_info = config.mobile.device.info;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
   kernel_file = "${kernel}/${kernel.file}";
 
@@ -16,8 +16,6 @@ let
   ubootPlatforms = {
     "aarch64-linux" = "arm64";
   };
-
-  enabled = config.mobile.system.type == "u-boot";
 
   bootcmd = pkgs.writeText "${deviceName}-boot.cmd" ''
     echo ****************
@@ -251,7 +249,7 @@ in
         inherit boot-partition;
         disk-image = withBootloader;
         u-boot = cfg.package;
-        default = system.build.disk-image;
+        default = config.system.build.disk-image;
       };
     })
   ];
