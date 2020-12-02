@@ -4,27 +4,12 @@ let
   enabled = config.mobile.system.type == "android";
 
   inherit (lib) concatStringsSep optionalString types;
-  inherit (config.system.build) stage-0;
+  inherit (config.system.build) recovery stage-0;
   inherit (config.mobile) device;
   inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition;
   inherit (stage-0.mobile.boot.stage-1) kernel;
 
   kernelPackage = kernel.package;
-
-  # In the future, this pattern should be extracted.
-  # We're basically subclassing the main config, just like nesting does in
-  # NixOS (<nixpkgs/modules/system/activation/top-level.nix>)
-  # Here we're only adding the `is_recovery` option.
-  # In the future, we may want to move the recovery configuration to a file.
-  recovery = (import ../../../lib/eval-config.nix {
-    inherit baseModules;
-    modules = modules ++ [{
-      mobile.system.android.bootimg.name = "recovery.img";
-      mobile.boot.stage-1.bootConfig = {
-        is_recovery = true;
-      };
-    }];
-  }).config;
 
   cmdline = concatStringsSep " " config.boot.kernelParams;
 

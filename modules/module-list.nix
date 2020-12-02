@@ -34,6 +34,7 @@
   ./mobile-device.nix
   ./nixpkgs.nix
   ./quirks
+  ./recovery.nix
   ./rootfs.nix
   ./shared-rootfs.nix
   ./stage-0.nix
