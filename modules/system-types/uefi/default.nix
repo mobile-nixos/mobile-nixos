@@ -88,6 +88,10 @@ let
   };
 in
 {
+  imports = [
+    ./vm.nix
+  ];
+
   options.mobile = {
     quirks.uefi = {
       initialGapSize = mkOption {
