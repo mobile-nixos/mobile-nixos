@@ -12,7 +12,6 @@ in
 {
   imports = [
     ./system-types/depthcharge
-    ./system-types/qemu-startscript
     ./system-types/android
     ./system-types/u-boot
     ./system-types/uefi
