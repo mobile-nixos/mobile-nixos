@@ -140,7 +140,7 @@ let
     exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
   '';
 
-  hasDTB = platform.kernelDTB;
+  hasDTB = platform ? kernelDTB && platform.kernelDTB;
   kernelFileExtension = if isCompressed != false then ".${isCompressed}" else "";
   kernelTarget = if platform.kernelTarget == "Image"
     then "${platform.kernelTarget}${kernelFileExtension}"
