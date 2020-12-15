@@ -4,6 +4,7 @@ let
 
   inherit (lib)
     mergeEqualOption
+    mkDefault
     mkIf
     mkOption
     types
@@ -88,5 +89,15 @@ in
       "crc32c"
     ];
   });
+
+  config.boot.kernelPackages = mkDefault (
+    if config.mobile.rootfs.shared.enabled
+    then {
+      # This must look legit enough so that NixOS thinks it's a kernel attrset.
+      stdenv = pkgs.stdenv;
+      kernel = pkgs.runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy";
+    }
+    else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor config.mobile.boot.stage-1.kernel.package))
+  );
 }
 
