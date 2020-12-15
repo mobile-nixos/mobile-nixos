@@ -16,7 +16,6 @@ in
 
     # And disable the initrd outright!
     boot.initrd.enable = false;
-    system.build.initialRamdisk = dummy;
     system.build.initialRamdiskSecretAppender = dummy;
   };
 }

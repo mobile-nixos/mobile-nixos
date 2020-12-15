@@ -16,6 +16,7 @@ let
     flatten
     getBin
     mapAttrsToList
+    mkIf
     mkOption
     optionalString
     optionals
@@ -292,6 +293,12 @@ in
       system.build.extraUtils = extraUtils;
       system.build.initrd = "${initrd}/initrd";
       system.build.initrd-meta = initrd-meta;
+
+      system.build.initialRamdisk =
+        if config.mobile.rootfs.shared.enabled
+        then pkgs.runCommandNoCC "dummy" {} "touch $out"
+        else initrd
+      ;
 
       mobile.boot.stage-1.bootConfig = {
         device = {
