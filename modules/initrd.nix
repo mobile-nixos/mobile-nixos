@@ -61,7 +61,7 @@ let
 
     echo
     echo "***************************************"
-    echo "* Mobile NixOS stage-0 script wrapper *"
+    echo "* Mobile NixOS stage-${toString config.mobile.boot.stage-1.stage} script wrapper *"
     echo "***************************************"
     echo
 
@@ -229,6 +229,17 @@ let
 in
   {
     options = {
+      mobile.boot.stage-1.stage = mkOption {
+        type = types.enum [ 0 1 ];
+        default = 1;
+        description = ''
+          Used with a "specialization" of the config to build the "stage-0"
+          init which can kexec into another kernel+initrd found on the system.
+
+          This serves as a replacement to a "proper" bootloader.
+        '';
+        internal = true;
+      };
       mobile.boot.stage-1.compression = mkOption {
         type = types.enum [ "gzip" "xz" ];
         default = "gzip";
@@ -303,6 +314,7 @@ in
       ;
 
       mobile.boot.stage-1.bootConfig = {
+        inherit (config.mobile.boot.stage-1) stage;
         device = {
           inherit (device_config) name;
         };
