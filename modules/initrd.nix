@@ -3,6 +3,7 @@
 let
   inherit (pkgs)
     busybox
+    kexectools
     makeInitrd
     mkExtraUtils
     runCommandNoCC
@@ -161,6 +162,7 @@ let
       busybox
     ]
     ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
+    ++ optionals (config.mobile.quirks.supportsStage-0) [ kexectools ]
     ++ [{
       package = runCommandNoCC "empty" {} "mkdir -p $out";
       extraCommand =
