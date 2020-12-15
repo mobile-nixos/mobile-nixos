@@ -10,6 +10,23 @@ class Tasks::SwitchRoot < SingletonTask
     @target = SYSTEM_MOUNT_POINT
   end
 
+  def readlink_system(filename, strip_prefix: false)
+    # Resolve the full pathname
+    loop do
+      prev_filename = filename
+
+      if File.symlink?(prev_filename)
+        filename = File.join(SYSTEM_MOUNT_POINT, File.readlink(prev_filename))
+      end
+      break if prev_filename == filename
+    end
+    if strip_prefix
+      filename.sub(%r{^/#{SYSTEM_MOUNT_POINT}}, "")
+    else
+      filename
+    end
+  end
+
   # Creates the generation selection list.
   def generate_selection()
     FileUtils.mkdir_p("/run/boot/")
@@ -80,36 +97,58 @@ class Tasks::SwitchRoot < SingletonTask
     System.failure("INIT_NOT_FOUND", "Stage-2 init not found", "Could not find init path for stage-2", color: "FF00FF")
   end
 
-  # May pause the boot to allow the user to select a generation.
-  def selected_generation()
-    if Hal::Recovery.wants_recovery?
-      generate_selection()
-      # FIXME: In the future, boot GUIs will be launched async, before this
-      # task is ran.
-      System.run(LOADER, "/applets/boot-selection.mrb")
-      generation = File.read("/run/boot/choice")
-      # Why "$default" rather than passing a path?
-      # Because there may be no generations folder. It's easier to cheat and
-      # use "$default" and rely on the existing default "maybe rehydrate"
-      # codepath.
-      if generation == "$default"
-        default_generation()
-      else
-        generation
-      end
-    else
+  # Pauses the boot to allow the user to select a generation.
+  def choose_generation()
+    generate_selection()
+    # FIXME: In the future, boot GUIs will be launched async, before this
+    # task is ran.
+    System.run(LOADER, "/applets/boot-selection.mrb")
+    generation = File.read("/run/boot/choice")
+    # Why "$default" rather than passing a path?
+    # Because there may be no generations folder. It's easier to cheat and
+    # use "$default" and rely on the existing default "maybe rehydrate"
+    # codepath.
+    if generation == "$default"
       default_generation()
+    else
+      generation
     end
   end
 
-  def run()
+  def selected_generation()
+    return @selected_generation if @selected_generation
+
     if Hal::Recovery.wants_recovery?
       Tasks::Splash.instance.quit("Continuing to recovery menu")
+      @selected_generation = choose_generation()
     else
-      Tasks::Splash.instance.quit("Continuing to stage-2")
+      @selected_generation = default_generation()
+      if will_kexec?()
+        Tasks::Splash.instance.quit("Rebooting in generation kernel")
+      else
+        Tasks::Splash.instance.quit("Continuing to stage-2")
+      end
     end
+    @selected_generation
+  end
 
-    init = "#{selected_generation}/init"
+  def will_kexec?()
+    [
+      "initrd",
+      "kernel",
+      "kernel-params",
+    ]
+      .map { |file| generation_file(file) }
+      .map { |file| File.exist?(file) }
+      .all?
+  end
+
+  def generation_file(name)
+    readlink_system(File.join(SYSTEM_MOUNT_POINT, selected_generation, name))
+  end
+
+  def run()
+    init = File.join(selected_generation, "init")
 
     # This is the traditional way we printed the init path.
     # This is still helpful to take vertical real estate when visually looking
@@ -117,10 +156,29 @@ class Tasks::SwitchRoot < SingletonTask
     log("")
     log("***")
     log("")
-    log("Switching root to #{init}")
+    if will_kexec?
+      log("Kexecing into #{selected_generation}")
+    else
+      log("Switching root to #{init}")
+    end
     log("")
     log("***")
     log("")
+
+    if will_kexec?
+      System.run(
+        "kexec", "--load",
+        generation_file("kernel"),
+        "--initrd=#{generation_file("initrd")}",
+        "--command-line",
+        [
+          "init=#{readlink_system(File.join(SYSTEM_MOUNT_POINT, selected_generation, "init"), strip_prefix: true)}",
+          File.read(generation_file("kernel-params")),
+        ].join(" ")
+      )
+      System.exec("kexec", "-e")
+      raise "Failed to kexec into #{selected_generation}"
+    end
 
     [
       "/proc",
