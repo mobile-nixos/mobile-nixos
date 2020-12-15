@@ -35,6 +35,7 @@
   ./nixpkgs.nix
   ./quirks
   ./rootfs.nix
+  ./shared-rootfs.nix
   ./system-target.nix
   ./system-types.nix
 ]
