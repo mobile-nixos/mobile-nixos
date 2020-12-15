@@ -133,6 +133,10 @@ class Tasks::SwitchRoot < SingletonTask
   end
 
   def will_kexec?()
+    # Only stage-0 bootloader-flavourd init will kexec.
+    return false unless STAGE == 0
+
+    # AND if we find the required files.
     [
       "initrd",
       "kernel",
