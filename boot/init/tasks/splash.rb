@@ -41,6 +41,8 @@ class Tasks::Splash < SingletonTask
       # Leave some breathing room to the CPU!
       sleep(0.1)
     end
+
+    @pid = nil
   end
 
   # Use `quit` rather than kill!
