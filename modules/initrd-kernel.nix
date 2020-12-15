@@ -99,5 +99,9 @@ in
     }
     else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor config.mobile.boot.stage-1.kernel.package))
   );
+
+  # Disable kernel config checks as it's EXTREMELY nixpkgs-kernel centric.
+  # We're duplicating that good work for the time being.
+  config.system.requiredKernelConfig = lib.mkForce [];
 }
 
