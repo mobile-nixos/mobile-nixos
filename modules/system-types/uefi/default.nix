@@ -3,12 +3,12 @@
 let
   enabled = config.mobile.system.type == "uefi";
 
-  inherit (config.system.build) recovery;
-  inherit (pkgs) hostPlatform buildPackages imageBuilder runCommandNoCC;
   inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (pkgs) hostPlatform buildPackages imageBuilder runCommandNoCC;
+  inherit (config.system.build) recovery stage-0;
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
-  kernel = config.mobile.boot.stage-1.kernel.package;
+  kernel = stage-0.mobile.boot.stage-1.kernel.package;
   kernelFile = "${kernel}/${kernel.file}";
 
   # Look-up table to translate from targetPlatform to U-Boot names.
@@ -49,7 +49,7 @@ let
 
       populateCommands = ''
         mkdir -p EFI/boot
-        cp ${efiKernel}                       EFI/boot/boot${uefiPlatform}.efi
+        cp ${stage-0.system.build.efiKernel}  EFI/boot/boot${uefiPlatform}.efi
         cp ${recovery.system.build.efiKernel} EFI/boot/recovery${uefiPlatform}.efi
       '';
     }
