@@ -66,6 +66,12 @@ let
     ${earlyInitScripts}
     export LD_LIBRARY_PATH="${extraUtils}/lib"
 
+    echo
+    echo "***************************************"
+    echo "* Continuing with stage-${toString config.mobile.boot.stage-1.stage}...          *"
+    echo "***************************************"
+    echo
+
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} \
       /loader /init.mrb
   '';
