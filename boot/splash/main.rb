@@ -9,6 +9,7 @@ FADE_LENGTH = 400
 PROGRESS_UPDATE_LENGTH = 500
 
 VERBOSE = !!Args.get(:verbose, false)
+SKIP_FADEIN = !!Args.get(:skip_fadein, false)
 SOCKET = File.expand_path(Args.get(:socket, "/run/mobile-nixos-init"))
 
 # Create the UI
@@ -22,7 +23,11 @@ puts "[splash] Replying on: ipc://#{SOCKET}-replies"
 $replies = ZMQ::Pub.new("ipc://#{SOCKET}-replies")
 
 # Initial fade-in
-ui.fade_in()
+if SKIP_FADEIN
+  ui.fade_in(0)
+else
+  ui.fade_in(FADE_LENGTH)
+end
 
 # Main loop handles updating the UI, and doing some work...
 LVGUI.main_loop do

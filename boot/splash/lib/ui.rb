@@ -215,10 +215,10 @@ class UI
   # Fade-in animation
   # Note that this looks like inverted logic because it is!
   # We're actually fading-out the cover!
-  def fade_in()
+  def fade_in(fade_length)
     LVGL::LVAnim.new().tap do |anim|
       anim.set_exec_cb(@cover, :lv_obj_set_opa_scale)
-      anim.set_time(FADE_LENGTH, 0)
+      anim.set_time(fade_length, 0)
       anim.set_values(255, 0)
       anim.set_path_cb(LVGL::LVAnim::Path::EASE_OUT)
 
