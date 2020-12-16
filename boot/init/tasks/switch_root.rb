@@ -124,7 +124,7 @@ class Tasks::SwitchRoot < SingletonTask
     else
       @selected_generation = default_generation()
       if will_kexec?()
-        Tasks::Splash.instance.quit("Rebooting in generation kernel")
+        Tasks::Splash.instance.quit("Rebooting in generation kernel", sticky: true)
       else
         Tasks::Splash.instance.quit("Continuing to stage-2")
       end
