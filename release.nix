@@ -118,6 +118,8 @@ let
           system = "aarch64-linux";
           config = {
             mobile._internal.compressLargeArtifacts = inNixOSHydra;
+            # Do not build kernel and initrd into the system.
+            mobile.rootfs.shared.enabled = true;
           };
         };
       };
