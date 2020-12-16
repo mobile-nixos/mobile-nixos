@@ -1,13 +1,15 @@
 { config, pkgs, lib, modules, baseModules, ... }:
 
 let
+  enabled = config.mobile.system.type == "android";
+
   inherit (lib) concatStringsSep optionalString types;
+  inherit (config.system.build) stage-0;
   inherit (config.mobile) device;
   inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition;
-  inherit (config.mobile.boot) stage-1;
-  kernelPackage = stage-1.kernel.package;
+  inherit (stage-0.mobile.boot.stage-1) kernel;
 
-  enabled = config.mobile.system.type == "android";
+  kernelPackage = kernel.package;
 
   # In the future, this pattern should be extracted.
   # We're basically subclassing the main config, just like nesting does in
@@ -29,7 +31,7 @@ let
   android-bootimg = pkgs.callPackage ./bootimg.nix rec {
     inherit (config.mobile.system.android) bootimg;
     inherit cmdline;
-    initrd = config.system.build.initrd;
+    initrd = stage-0.system.build.initrd;
     name = "mobile-nixos_${device.name}_${bootimg.name}";
     kernel = "${kernelPackage}/${kernelPackage.file}";
   };
