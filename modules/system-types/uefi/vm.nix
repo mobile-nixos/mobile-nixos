@@ -4,7 +4,7 @@ let
   # This particular VM module is only enabled for the uefi system type.
   enabled = config.mobile.system.type == "uefi";
 
-  inherit (lib) mkIf;
+  inherit (lib) mkAfter mkIf;
   inherit (config.mobile) device hardware;
   inherit (config.mobile.boot) stage-1;
   inherit (config.system.build) disk-image;
@@ -15,6 +15,10 @@ let
 in
 {
   config = mkIf enabled {
+    boot.kernelParams = mkAfter [
+      "console=ttyS0"
+    ];
+
     mobile.boot.stage-1.kernel.modules = [
       # Networking
       "e1000"
