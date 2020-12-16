@@ -177,6 +177,9 @@ class Tasks::SwitchRoot < SingletonTask
         "--command-line",
         [
           "init=#{readlink_system(File.join(SYSTEM_MOUNT_POINT, selected_generation, "init"), strip_prefix: true)}",
+          # Flag used to describe we're in a kexec situation.
+          # For the time being, the flag is the whole string, not the value yes to that key.
+          "mobile-nixos.kexec=yes",
           File.read(generation_file("kernel-params")),
         ].join(" ")
       )
