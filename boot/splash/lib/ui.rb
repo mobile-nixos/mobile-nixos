@@ -230,10 +230,10 @@ class UI
   # Fade-out animation
   # Note that this looks like inverted logic because it is!
   # We're actually fading-in the cover!
-  def fade_out()
+  def fade_out(fade_length)
     LVGL::LVAnim.new().tap do |anim|
       anim.set_exec_cb(@cover, :lv_obj_set_opa_scale)
-      anim.set_time(FADE_LENGTH, PROGRESS_UPDATE_LENGTH)
+      anim.set_time(fade_length, PROGRESS_UPDATE_LENGTH)
       anim.set_values(0, 255)
       anim.set_path_cb(LVGL::LVAnim::Path::EASE_IN)
 
@@ -242,15 +242,23 @@ class UI
     end
   end
 
-  def quit!()
-    fade_out()
+  # Quits this applet, fading-out if needed.
+  # @param sticky: when true no cleanup is done from the display.
+  def quit!(sticky: false)
+    fade_length = 0
+
+    unless sticky
+      fade_length = FADE_LENGTH
+      fade_out(fade_length)
+    end
+
     set_progress(100)
 
     # TODO: Callback on a timer or on the fade_out animation end.
     # Though we **do** want to stop processing from the queue.
     # This is not a callback yet because we don't have an ergonomic way to
     # produce those callbacks for LVGL yet.
-    exit_timestamp = Time.now + FADE_LENGTH/1000.0 + PROGRESS_UPDATE_LENGTH/1000.0 + 0.1
+    exit_timestamp = Time.now + fade_length/1000.0 + PROGRESS_UPDATE_LENGTH/1000.0 + 0.1
     LVGUI.main_loop do
       if Time.now > exit_timestamp
         sleep(2) if LVGL::Introspection.simulator?

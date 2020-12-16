@@ -66,7 +66,8 @@ LVGUI.main_loop do
 
       case command["name"]
       when "quit"
-        ui.quit!
+        sticky = msg["sticky"]
+        ui.quit!(sticky: sticky)
       when "ask"
         ui.ask_user(placeholder: command["placeholder"], identifier: command["identifier"], cb: ->(value) do
           msg = {
