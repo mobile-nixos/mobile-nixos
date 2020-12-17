@@ -10,21 +10,26 @@ class Tasks::SwitchRoot < SingletonTask
     @target = SYSTEM_MOUNT_POINT
   end
 
-  def readlink_system(filename, strip_prefix: false)
+  # Given a path name, without the leading SYSTEM_MOUNT_POINT, resolves
+  # symlinks to get the real name of the file.
+  # The returned path is not prefixed with SYSTEM_MOUNT_POINT either.
+  def readlink_system(filename)
     # Resolve the full pathname
     loop do
       prev_filename = filename
 
-      if File.symlink?(prev_filename)
-        filename = File.join(SYSTEM_MOUNT_POINT, File.readlink(prev_filename))
+      if File.symlink?(File.join(SYSTEM_MOUNT_POINT, prev_filename))
+        filename = File.readlink(File.join(SYSTEM_MOUNT_POINT, prev_filename))
+
+        # Relative link? Make absolute.
+        unless filename.match(%r{^/})
+          filename = File.join(File.dirname(prev_filename), filename)
+        end
       end
       break if prev_filename == filename
     end
-    if strip_prefix
-      filename.sub(%r{^/#{SYSTEM_MOUNT_POINT}}, "")
-    else
-      filename
-    end
+
+    filename
   end
 
   # Creates the generation selection list.
@@ -148,7 +153,13 @@ class Tasks::SwitchRoot < SingletonTask
   end
 
   def generation_file(name)
-    readlink_system(File.join(SYSTEM_MOUNT_POINT, selected_generation, name))
+    # First, resolve any links pointing to the generation dir itself.
+    # Otherwise we'll try to resolve a path that may not exist.
+    resolved_generation = readlink_system(selected_generation)
+    # Then reslove links to the actual artifact of the generation.
+    artifact = readlink_system(File.join(resolved_generation, name))
+    # Finally, return joined to the mount point.
+    File.join(SYSTEM_MOUNT_POINT, artifact)
   end
 
   def run()
@@ -176,7 +187,7 @@ class Tasks::SwitchRoot < SingletonTask
         "--initrd=#{generation_file("initrd")}",
         "--command-line",
         [
-          "init=#{readlink_system(File.join(SYSTEM_MOUNT_POINT, selected_generation, "init"), strip_prefix: true)}",
+          "init=#{readlink_system(File.join(selected_generation, "init"))}",
           # Flag used to describe we're in a kexec situation.
           # For the time being, the flag is the whole string, not the value yes to that key.
           "mobile-nixos.kexec=yes",
