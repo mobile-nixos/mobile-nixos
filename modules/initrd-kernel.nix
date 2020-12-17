@@ -60,7 +60,8 @@ in
     # We cannot use `linuxPackagesFor` as older kernels cause eval-time assertions...
     # This is bad form, but is already in nixpkgs :(.
     package = mkOption {
-      type = types.package;
+      type = types.nullOr types.package;
+      default = null;
       description = ''
         Kernel to be used by the system-type to boot into the Mobile NixOS
         stage-1.
@@ -91,7 +92,7 @@ in
   });
 
   config.boot.kernelPackages = mkDefault (
-    if config.mobile.rootfs.shared.enabled
+    if (config.mobile.rootfs.shared.enabled || cfg.package == null)
     then {
       # This must look legit enough so that NixOS thinks it's a kernel attrset.
       stdenv = pkgs.stdenv;

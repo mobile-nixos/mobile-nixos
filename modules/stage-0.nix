@@ -6,9 +6,11 @@
 let 
   inherit (lib) mkOption types;
   inherit (config.mobile.quirks) supportsStage-0;
+  inherit (config.mobile.boot.stage-1) kernel;
+
   kernelVersionSupportsKexec = 
     if pkgs.targetPlatform.system == "aarch64-linux"
-    then (lib.versionAtLeast (config.mobile.boot.stage-1.kernel.package.version) "4.8")
+    then kernel.package != null && (lib.versionAtLeast (kernel.package.version) "4.8")
     else true
   ;
 in
