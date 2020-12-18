@@ -30,6 +30,7 @@ in
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
+    ufdt-apply-overlay = callPackage ./ufdt-apply-overlay {};
 
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
