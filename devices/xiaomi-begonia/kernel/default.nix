@@ -26,6 +26,10 @@ let
   dtc_overlay = buildPackages.writeShellScript "dtc_overlay" ''
     exec ${buildPackages.dtc}/bin/dtc "$@"
   '';
+
+  ufdt_apply_overlay = buildPackages.writeShellScript "ufdt_apply_overlay" ''
+    exec ${buildPackages.ufdt-apply-overlay}/bin/ufdt_apply_overlay "$@"
+  '';
 in
   
 mobile-nixos.kernel-builder-clang_9 {
@@ -50,6 +54,7 @@ mobile-nixos.kernel-builder-clang_9 {
     (PS4=" $ "; set -x
     rm scripts/dtc/dtc_overlay
     cp ${dtc_overlay} scripts/dtc/dtc_overlay
+    cp ${ufdt_apply_overlay} scripts/dtc/ufdt_apply_overlay
     )
   '';
 }
