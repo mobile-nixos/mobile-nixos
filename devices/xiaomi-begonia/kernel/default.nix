@@ -43,6 +43,7 @@ mobile-nixos.kernel-builder-clang_9 {
     ./0001-fix-teei-mediatek.patch
     ./0001-center-logo.patch
     ./0001-mt6360-white-led-defaults-to-on.patch
+    ./0001-HACK-disable-disp_lcm_suspend.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
   ];
 
