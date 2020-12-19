@@ -18,6 +18,8 @@ let
     rootModules = cfg.modules ++ cfg.additionalModules;
     firmware = cfg.firmwares;
   };
+
+  inherit (config.mobile.quirks) supportsStage-0;
 in
 {
   # Note: These options are provided  *instead* of `boot.initrd.*`, as we are
@@ -92,13 +94,13 @@ in
   });
 
   config.boot.kernelPackages = mkDefault (
-    if (config.mobile.rootfs.shared.enabled || cfg.package == null)
+    if (supportsStage-0 && config.mobile.rootfs.shared.enabled) || cfg.package == null
     then {
       # This must look legit enough so that NixOS thinks it's a kernel attrset.
       stdenv = pkgs.stdenv;
       kernel = pkgs.runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy";
     }
-    else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor config.mobile.boot.stage-1.kernel.package))
+    else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
   );
 
   # Disable kernel config checks as it's EXTREMELY nixpkgs-kernel centric.
