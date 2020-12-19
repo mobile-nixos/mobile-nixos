@@ -75,8 +75,17 @@
           add_dependency(:Files, "/proc/cmdline")
         end
 
+        def booted_with_recovery_fdt?()
+          # TODO: actually detect FDT using /proc/device-tree
+          cmdline = File.read("/proc/cmdline")
+          [
+            # Assume presence of that cmdline means it booted with normal boot
+            !cmdline.match(/mdss_dsi_nt36830_wqhd_dualdsi_extclk_cmd_10bit/),
+          ].any?()
+        end
+
         def run()
-          if File.read("/proc/cmdline").match(/mdss_dsi_nt36830_wqhd_dualdsi_extclk_cmd_10bit/)
+          unless booted_with_recovery_fdt?()
             $logger.info("HACK!! Rebooting to recovery to have a working display...")
             System.run("reboot", "recovery")
           end
