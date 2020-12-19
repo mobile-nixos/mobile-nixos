@@ -7,24 +7,16 @@ let
   inherit (lib) mkOption types;
   inherit (config.mobile.quirks) supportsStage-0;
   inherit (config.mobile.boot.stage-1) kernel;
-
-  kernelVersionSupportsKexec = 
-    if pkgs.targetPlatform.system == "aarch64-linux"
-    then kernel.package != null && (lib.versionAtLeast (kernel.package.version) "4.8")
-    else true
-  ;
 in
 {
   options = {
     mobile.quirks.supportsStage-0 = mkOption {
       type = types.bool;
-      default = kernelVersionSupportsKexec;
-      defaultText = "(Varies per platform; aarch64 depends on kernel version.)";
+      default = false;
       description = ''
-        Set to false when a device cannot use `kexec` to kexec into a system.
+        Set to true when a device, and its kernel, can use kexec.
 
-        A default value will be selected according to the platform and
-        `mobile.boot` kernel selected.
+        This will enable booting into the generation's kernel.
       '';
     };
   };
