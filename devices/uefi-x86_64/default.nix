@@ -116,4 +116,6 @@
       ];
     };
   };
+
+  mobile.quirks.supportsStage-0 = true;
 }
