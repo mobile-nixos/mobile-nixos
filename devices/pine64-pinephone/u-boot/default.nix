@@ -3,8 +3,10 @@
 , callPackage
 , buildUBoot
 , armTrustedFirmwareAllwinner
+, crustFirmware
 , fetchpatch
 , fetchurl
+, fetchFromGitHub
 }:
 
 let
@@ -13,11 +15,24 @@ let
     name = "${id}.patch";
     url = "https://patchwork.ozlabs.org/patch/${id}/raw/";
   };
+
+  # use a version of ATF that has all the Crust goodies in it
+  crustATF = armTrustedFirmwareAllwinner.overrideAttrs(old: rec {
+    name = "arm-trusted-firmware-crust-${version}";
+    version = "2.4";
+    src = fetchFromGitHub {
+      owner = "crust-firmware";
+      repo = "arm-trusted-firmware";
+      rev = "42b9ab0cbe6c1d687fe331c547d28489e12260c3";
+      sha256 = "13q0946qk2brda1ci3bsri359ly8zhz76f2d1svnlh45rrrfn984";
+    };
+  });
 in
 (buildUBoot {
   defconfig = "pinephone_defconfig";
   extraMeta.platforms = ["aarch64-linux"];
-  BL31 = "${armTrustedFirmwareAllwinner}/bl31.bin";
+  BL31 = "${crustATF}/bl31.bin";
+  SCP = "${crustFirmware}/scp.bin";
 
   extraPatches = [
     # https://patchwork.ozlabs.org/patch/1202024
