@@ -5,32 +5,18 @@ let
   cfg = config.mobile.system;
   inherit (config.nixpkgs) localSystem;
 
-  # Mapping from system types to config types
-  # A simplified view of <nixpkgs/lib/systems/examples.nix>
-  config_types = {
-    aarch64-linux = "aarch64-unknown-linux-gnu";
-    armv7l-linux = "armv7l-unknown-linux-gnueabihf";
-    x86_64-linux = "x86_64-unknown-linux-gnu";
-  };
-
-  # Derived from config_types
-  target_types = lib.attrNames config_types;
-
-  # Builds the expected "platform" set for cross-compilation from the given
-  # system name.
-  selectPlatform = system: {
-    inherit system;
-    platform = lib.systems.platforms.selectBySystem system;
-    config = config_types.${system};
-  };
-
   # The platform selected by the configuration
-  selectedPlatform = selectPlatform cfg.system;
+  selectedPlatform = lib.systems.elaborate cfg.system;
 in
 {
   options.mobile = {
     system.system = mkOption {
-      type = types.enum target_types;
+      # Known supported target types for Mobile NixOS
+      type = types.enum [
+        "aarch64-linux"
+        "armv7l-linux"
+        "x86_64-linux"
+      ];
       description = ''
         Defines the kind of target architecture system the device is.
 
