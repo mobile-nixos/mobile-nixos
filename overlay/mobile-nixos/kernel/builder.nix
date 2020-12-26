@@ -287,6 +287,7 @@ stdenv.mkDerivation (inputArgs // {
             -e 's;CONFIG_GCC_VERSION=.*;CONFIG_GCC_VERSION=;' \
             -e 's;CONFIG_LD_VERSION=.*;CONFIG_LD_VERSION=;' \
             -e 's;CONFIG_CLANG_VERSION=.*;CONFIG_CLANG_VERSION=;' \
+            -e '/CONFIG_DEBUG_INFO_SPLIT/d;' \
             $f > .tmp$f
         done
         )
