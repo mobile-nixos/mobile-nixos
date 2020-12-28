@@ -79,11 +79,19 @@ class Tasks::SwitchRoot < SingletonTask
 
   # Boot the default generation.
   # This does either of:
+  #
+  #  * Booting the generation given in parameters
   #  * Booting the default system link.
   #  * Find the generation store path that needs to be rehydrated.
   #
   # This is *always* a sane default to fallback on.
   def default_generation()
+    # Given as a command-line option, most likely from stage-0.
+    generation_parameter = System.cmdline().grep(/^mobile-nixos.generation=/).first
+    unless generation_parameter.nil?
+      return generation_parameter.split("=", 2).last
+    end
+
     # The default generation
     if File.symlink?(File.join(@target, DEFAULT_SYSTEM_LINK))
       return DEFAULT_SYSTEM_LINK
@@ -191,6 +199,7 @@ class Tasks::SwitchRoot < SingletonTask
           # Flag used to describe we're in a kexec situation.
           # For the time being, the flag is the whole string, not the value yes to that key.
           "mobile-nixos.kexec=yes",
+          "mobile-nixos.generation=#{selected_generation}",
           File.read(generation_file("kernel-params")),
         ].join(" ")
       )
