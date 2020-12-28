@@ -12,6 +12,11 @@ in
       default = false;
       description = "enable when SOC is APQ8064–1AA";
     };
+    hardware.socs.qualcomm-msm8940.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is msm8940";
+    };
     hardware.socs.qualcomm-msm8953.enable = mkOption {
       type = types.bool;
       default = false;
@@ -45,6 +50,12 @@ in
   };
 
   config = mkMerge [
+    {
+      mobile = mkIf cfg.qualcomm-msm8940.enable {
+        system.system = "aarch64-linux";
+        quirks.fb-refresher.enable = true;
+      };
+    }
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
         system.system = "aarch64-linux";
