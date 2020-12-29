@@ -169,6 +169,14 @@ module System
     end
   end
 
+  def self.cmdline()
+    if File.exists?("/proc/cmdline") then
+      File.read("/proc/cmdline").split(/\s+/)
+    else
+      []
+    end
+  end
+
   def self.failure(code, title, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"], status: 111)
     Progress.kill()
 

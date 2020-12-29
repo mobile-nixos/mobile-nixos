@@ -100,6 +100,13 @@ in
 
   services.mingetty.autologinUser = "nixos";
 
+  # The LVGUI interface can be used with volume keys for selecting
+  # and power to activate an option.
+  # Without this, logind just powers off :).
+  services.logind.extraConfig = ''
+    HandlePowerKey=ignore
+  '';
+
   system.build = {
     app-simulator = pkgs.callPackage ./app/simulator.nix {};
   };

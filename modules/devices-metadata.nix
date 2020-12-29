@@ -14,6 +14,9 @@ in
     text = (builtins.toJSON {
       inherit (identity) name manufacturer;
       inherit (mobile) hardware;
+      quirks = {
+        inherit (mobile.quirks) supportsStage-0;
+      };
       system = {
         inherit (mobile.system) type system;
       };

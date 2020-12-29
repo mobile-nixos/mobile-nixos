@@ -47,4 +47,7 @@
     gpio set 114   # G
     gpio clear 116 # B
   '';
+
+  # Supports rebooting into generation kernel through kexec.
+  mobile.quirks.supportsStage-0 = true;
 }

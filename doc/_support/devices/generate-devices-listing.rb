@@ -12,6 +12,14 @@ def hydraURL(device)
   "https://hydra.nixos.org/job/mobile-nixos/unstable/device.#{device}.x86_64-linux"
 end
 
+def yesno(bool)
+  if bool
+    "yes"
+  else
+    "no"
+  end
+end
+
 NOTES_HEADER = "== Device-specific notes"
 
 COLUMNS = [
@@ -94,6 +102,7 @@ $devicesInfo.values.each do |info|
     System Type:: #{info["system"]["type"]}
     SoC:: #{info["hardware"]["soc"]}
     Architecture:: #{info["system"]["system"]}
+    Supports Stage-0:: #{yesno(info["quirks"]["supportsStage-0"])}
     Source:: link:#{githubURL(identifier)}[Mobile NixOS repository]
     Builds:: link:#{hydraURL(identifier)}[Hydra (`default` build)]
     ****

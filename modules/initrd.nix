@@ -3,6 +3,7 @@
 let
   inherit (pkgs)
     busybox
+    kexectools
     makeInitrd
     mkExtraUtils
     runCommandNoCC
@@ -16,6 +17,7 @@ let
     flatten
     getBin
     mapAttrsToList
+    mkIf
     mkOption
     optionalString
     optionals
@@ -59,12 +61,18 @@ let
 
     echo
     echo "***************************************"
-    echo "* Mobile NixOS stage-0 script wrapper *"
+    echo "* Mobile NixOS stage-${toString config.mobile.boot.stage-1.stage} script wrapper *"
     echo "***************************************"
     echo
 
     ${earlyInitScripts}
     export LD_LIBRARY_PATH="${extraUtils}/lib"
+
+    echo
+    echo "***************************************"
+    echo "* Continuing with stage-${toString config.mobile.boot.stage-1.stage}...          *"
+    echo "***************************************"
+    echo
 
     exec ${optionalString withStrace "${extraUtils}/bin/strace -f"} \
       /loader /init.mrb
@@ -154,6 +162,7 @@ let
       busybox
     ]
     ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
+    ++ optionals (config.mobile.quirks.supportsStage-0) [ kexectools ]
     ++ [{
       package = runCommandNoCC "empty" {} "mkdir -p $out";
       extraCommand =
@@ -220,6 +229,17 @@ let
 in
   {
     options = {
+      mobile.boot.stage-1.stage = mkOption {
+        type = types.enum [ 0 1 ];
+        default = 1;
+        description = ''
+          Used with a "specialization" of the config to build the "stage-0"
+          init which can kexec into another kernel+initrd found on the system.
+
+          This serves as a replacement to a "proper" bootloader.
+        '';
+        internal = true;
+      };
       mobile.boot.stage-1.compression = mkOption {
         type = types.enum [ "gzip" "xz" ];
         default = "gzip";
@@ -287,7 +307,14 @@ in
       system.build.initrd = "${initrd}/initrd";
       system.build.initrd-meta = initrd-meta;
 
+      system.build.initialRamdisk =
+        if config.mobile.rootfs.shared.enabled
+        then pkgs.runCommandNoCC "dummy" {} "touch $out"
+        else initrd
+      ;
+
       mobile.boot.stage-1.bootConfig = {
+        inherit (config.mobile.boot.stage-1) stage;
         device = {
           inherit (device_config) name;
         };

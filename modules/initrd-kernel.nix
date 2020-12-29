@@ -4,6 +4,7 @@ let
 
   inherit (lib)
     mergeEqualOption
+    mkDefault
     mkIf
     mkOption
     types
@@ -17,6 +18,8 @@ let
     rootModules = cfg.modules ++ cfg.additionalModules;
     firmware = cfg.firmwares;
   };
+
+  inherit (config.mobile.quirks) supportsStage-0;
 in
 {
   # Note: These options are provided  *instead* of `boot.initrd.*`, as we are
@@ -59,7 +62,8 @@ in
     # We cannot use `linuxPackagesFor` as older kernels cause eval-time assertions...
     # This is bad form, but is already in nixpkgs :(.
     package = mkOption {
-      type = types.package;
+      type = types.nullOr types.package;
+      default = null;
       description = ''
         Kernel to be used by the system-type to boot into the Mobile NixOS
         stage-1.
@@ -88,5 +92,19 @@ in
       "crc32c"
     ];
   });
+
+  config.boot.kernelPackages = mkDefault (
+    if (supportsStage-0 && config.mobile.rootfs.shared.enabled) || cfg.package == null
+    then {
+      # This must look legit enough so that NixOS thinks it's a kernel attrset.
+      stdenv = pkgs.stdenv;
+      kernel = pkgs.runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy";
+    }
+    else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
+  );
+
+  # Disable kernel config checks as it's EXTREMELY nixpkgs-kernel centric.
+  # We're duplicating that good work for the time being.
+  config.system.requiredKernelConfig = lib.mkForce [];
 }
 

@@ -67,12 +67,6 @@ in
         )
 
         echo "Early logging started..."
-
-        echo
-        echo "***************************************"
-        echo "* Continuing with stage-1...          *"
-        echo "***************************************"
-        echo
       '';
       tasks = [
         (pkgs.writeText "bootlogd-task.rb" ''

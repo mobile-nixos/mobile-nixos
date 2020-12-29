@@ -53,6 +53,7 @@ in
 
       environment.systemPackages = with pkgs; [
         dtc
+        file
         (writeShellScriptBin "firefox" ''
           export MOZ_USE_XINPUT2=1
           exec ${pkgs.firefox}/bin/firefox "$@"

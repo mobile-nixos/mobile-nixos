@@ -11,6 +11,10 @@ class Tasks::Splash < SingletonTask
       args << "--verbose"
     end
 
+    if System.cmdline().grep("mobile-nixos.kexec=yes").any?
+      args << "--skip-fadein"
+    end
+
     begin
       @pid = System.spawn(LOADER, "/applets/boot-splash.mrb", *args)
     # Don't fail the boot if the splash fails
@@ -23,12 +27,12 @@ class Tasks::Splash < SingletonTask
   end
 
   # Implementation details-y; ask for the splash applet to be exited.
-  def quit(reason)
+  def quit(reason, sticky: nil)
     # Ensures the progress is shown
     Progress.update({progress: 100, label: reason})
 
     # Command it to quit
-    Progress.update({command: {name: "quit"}})
+    Progress.update({command: {name: "quit"}, sticky: sticky})
 
     # Ensures that if for any reason the splash didn't start in time for the
     # socket to listen to this message, that we'll be quitting it.
@@ -41,6 +45,8 @@ class Tasks::Splash < SingletonTask
       # Leave some breathing room to the CPU!
       sleep(0.1)
     end
+
+    @pid = nil
   end
 
   # Use `quit` rather than kill!

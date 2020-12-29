@@ -3,12 +3,13 @@
 let
   inherit (pkgs) hostPlatform buildPackages imageBuilder runCommandNoCC;
   inherit (lib) mkEnableOption mkIf mkOption types;
+  inherit (config.system.build) stage-0;
   cfg = config.mobile.quirks.u-boot;
   inherit (cfg) soc;
   inherit (config) system;
   deviceName = config.mobile.device.name;
   device_info = config.mobile.device.info;
-  kernel = config.mobile.boot.stage-1.kernel.package;
+  kernel = stage-0.mobile.boot.stage-1.kernel.package;
   kernel_file = "${kernel}/${kernel.file}";
 
   # Look-up table to translate from targetPlatform to U-Boot names.
@@ -138,7 +139,7 @@ let
         mkdir -vp mobile-nixos/{boot,recovery}
         (
         cd mobile-nixos/boot
-        cp -v ${config.system.build.initrd} stage-1
+        cp -v ${stage-0.system.build.initrd} stage-1
         cp -v ${kernel_file} kernel
         cp -vr ${kernel}/dtbs dtbs
         )

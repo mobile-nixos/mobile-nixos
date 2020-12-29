@@ -10,6 +10,28 @@ class Tasks::SwitchRoot < SingletonTask
     @target = SYSTEM_MOUNT_POINT
   end
 
+  # Given a path name, without the leading SYSTEM_MOUNT_POINT, resolves
+  # symlinks to get the real name of the file.
+  # The returned path is not prefixed with SYSTEM_MOUNT_POINT either.
+  def readlink_system(filename)
+    # Resolve the full pathname
+    loop do
+      prev_filename = filename
+
+      if File.symlink?(File.join(SYSTEM_MOUNT_POINT, prev_filename))
+        filename = File.readlink(File.join(SYSTEM_MOUNT_POINT, prev_filename))
+
+        # Relative link? Make absolute.
+        unless filename.match(%r{^/})
+          filename = File.join(File.dirname(prev_filename), filename)
+        end
+      end
+      break if prev_filename == filename
+    end
+
+    filename
+  end
+
   # Creates the generation selection list.
   def generate_selection()
     FileUtils.mkdir_p("/run/boot/")
@@ -57,11 +79,19 @@ class Tasks::SwitchRoot < SingletonTask
 
   # Boot the default generation.
   # This does either of:
+  #
+  #  * Booting the generation given in parameters
   #  * Booting the default system link.
   #  * Find the generation store path that needs to be rehydrated.
   #
   # This is *always* a sane default to fallback on.
   def default_generation()
+    # Given as a command-line option, most likely from stage-0.
+    generation_parameter = System.cmdline().grep(/^mobile-nixos.generation=/).first
+    unless generation_parameter.nil?
+      return generation_parameter.split("=", 2).last
+    end
+
     # The default generation
     if File.symlink?(File.join(@target, DEFAULT_SYSTEM_LINK))
       return DEFAULT_SYSTEM_LINK
@@ -80,36 +110,68 @@ class Tasks::SwitchRoot < SingletonTask
     System.failure("INIT_NOT_FOUND", "Stage-2 init not found", "Could not find init path for stage-2", color: "FF00FF")
   end
 
-  # May pause the boot to allow the user to select a generation.
-  def selected_generation()
-    if Hal::Recovery.wants_recovery?
-      generate_selection()
-      # FIXME: In the future, boot GUIs will be launched async, before this
-      # task is ran.
-      System.run(LOADER, "/applets/boot-selection.mrb")
-      generation = File.read("/run/boot/choice")
-      # Why "$default" rather than passing a path?
-      # Because there may be no generations folder. It's easier to cheat and
-      # use "$default" and rely on the existing default "maybe rehydrate"
-      # codepath.
-      if generation == "$default"
-        default_generation()
-      else
-        generation
-      end
-    else
+  # Pauses the boot to allow the user to select a generation.
+  def choose_generation()
+    generate_selection()
+    # FIXME: In the future, boot GUIs will be launched async, before this
+    # task is ran.
+    System.run(LOADER, "/applets/boot-selection.mrb")
+    generation = File.read("/run/boot/choice")
+    # Why "$default" rather than passing a path?
+    # Because there may be no generations folder. It's easier to cheat and
+    # use "$default" and rely on the existing default "maybe rehydrate"
+    # codepath.
+    if generation == "$default"
       default_generation()
+    else
+      generation
     end
   end
 
-  def run()
+  def selected_generation()
+    return @selected_generation if @selected_generation
+
     if Hal::Recovery.wants_recovery?
       Tasks::Splash.instance.quit("Continuing to recovery menu")
+      @selected_generation = choose_generation()
     else
-      Tasks::Splash.instance.quit("Continuing to stage-2")
+      @selected_generation = default_generation()
+      if will_kexec?()
+        Tasks::Splash.instance.quit("Rebooting in generation kernel", sticky: true)
+      else
+        Tasks::Splash.instance.quit("Continuing to stage-2")
+      end
     end
+    @selected_generation
+  end
 
-    init = "#{selected_generation}/init"
+  def will_kexec?()
+    # Only stage-0 bootloader-flavourd init will kexec.
+    return false unless STAGE == 0
+
+    # AND if we find the required files.
+    [
+      "initrd",
+      "kernel",
+      "kernel-params",
+    ]
+      .map { |file| generation_file(file) }
+      .map { |file| File.exist?(file) }
+      .all?
+  end
+
+  def generation_file(name)
+    # First, resolve any links pointing to the generation dir itself.
+    # Otherwise we'll try to resolve a path that may not exist.
+    resolved_generation = readlink_system(selected_generation)
+    # Then reslove links to the actual artifact of the generation.
+    artifact = readlink_system(File.join(resolved_generation, name))
+    # Finally, return joined to the mount point.
+    File.join(SYSTEM_MOUNT_POINT, artifact)
+  end
+
+  def run()
+    init = File.join(selected_generation, "init")
 
     # This is the traditional way we printed the init path.
     # This is still helpful to take vertical real estate when visually looking
@@ -117,10 +179,33 @@ class Tasks::SwitchRoot < SingletonTask
     log("")
     log("***")
     log("")
-    log("Switching root to #{init}")
+    if will_kexec?
+      log("Kexecing into #{selected_generation}")
+    else
+      log("Switching root to #{init}")
+    end
     log("")
     log("***")
     log("")
+
+    if will_kexec?
+      System.run(
+        "kexec", "--load",
+        generation_file("kernel"),
+        "--initrd=#{generation_file("initrd")}",
+        "--command-line",
+        [
+          "init=#{readlink_system(File.join(selected_generation, "init"))}",
+          # Flag used to describe we're in a kexec situation.
+          # For the time being, the flag is the whole string, not the value yes to that key.
+          "mobile-nixos.kexec=yes",
+          "mobile-nixos.generation=#{selected_generation}",
+          File.read(generation_file("kernel-params")),
+        ].join(" ")
+      )
+      System.exec("kexec", "-e")
+      raise "Failed to kexec into #{selected_generation}"
+    end
 
     [
       "/proc",
