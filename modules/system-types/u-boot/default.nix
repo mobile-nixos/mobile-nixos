@@ -1,14 +1,14 @@
 { config, pkgs, lib, modules, baseModules, ... }:
 
 let
-  inherit (pkgs) hostPlatform buildPackages imageBuilder runCommandNoCC;
-  inherit (lib) mkEnableOption mkIf mkOption types;
-  inherit (config.system.build) stage-0;
+  enabled = config.mobile.system.type == "u-boot";
+
+  inherit (config.system.build) recovery stage-0;
+  inherit (pkgs) buildPackages imageBuilder runCommandNoCC;
+  inherit (lib) mkIf mkOption types;
   cfg = config.mobile.quirks.u-boot;
   inherit (cfg) soc;
-  inherit (config) system;
   deviceName = config.mobile.device.name;
-  device_info = config.mobile.device.info;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
   kernel_file = "${kernel}/${kernel.file}";
 
@@ -16,22 +16,6 @@ let
   ubootPlatforms = {
     "aarch64-linux" = "arm64";
   };
-
-  # In the future, this pattern should be extracted.
-  # We're basically subclassing the main config, just like nesting does in
-  # NixOS (<nixpkgs/modules/system/activation/top-level.nix>)
-  # Here we're only adding the `is_recovery` option.
-  # In the future, we may want to move the recovery configuration to a file.
-  recovery = (import ../../../lib/eval-config.nix {
-    inherit baseModules;
-    modules = modules ++ [{
-      mobile.boot.stage-1.bootConfig = {
-        is_recovery = true;
-      };
-    }];
-  }).config;
-
-  enabled = config.mobile.system.type == "u-boot";
 
   bootcmd = pkgs.writeText "${deviceName}-boot.cmd" ''
     echo ****************
@@ -265,7 +249,7 @@ in
         inherit boot-partition;
         disk-image = withBootloader;
         u-boot = cfg.package;
-        default = system.build.disk-image;
+        default = config.system.build.disk-image;
       };
     })
   ];

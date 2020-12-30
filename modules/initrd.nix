@@ -114,6 +114,8 @@ let
     (mapAttrsToList (k: v: ''ENV{${k}}="${v}"'') config.mobile.boot.stage-1.environment)
   );
 
+  extraUdevRules = writeText "99-extra.rules" config.mobile.boot.stage-1.extraUdevRules;
+
   udevRules = runCommandNoCC "udev-rules" {
     allowedReferences = [ extraUtils ];
     preferLocalBuild = true;
@@ -128,6 +130,7 @@ let
     cp -v ${udev}/lib/udev/rules.d/70-touchpad.rules $out/
     cp -v ${udev}/lib/udev/rules.d/80-drivers.rules $out/
     cp -v ${pkgs.lvm2}/lib/udev/rules.d/*.rules $out/
+    cp -v ${extraUdevRules} $out/99-extra.rules
 
     for i in $out/*.rules; do
         substituteInPlace $i \
@@ -297,6 +300,14 @@ in
         description = ''
           Environment variables present for the whole stage-1.
           Keep this as minimal as needed.
+        '';
+        internal = true;
+      };
+      mobile.boot.stage-1.extraUdevRules = mkOption {
+        type = types.lines;
+        default = "";
+        description = ''
+          Additional udev rules for stage-1.
         '';
         internal = true;
       };

@@ -1,4 +1,4 @@
-{ device ? "qemu-x86_64" }:
+{ device ? "uefi-x86_64" }:
 let
   system-build = import ../../../. {
     inherit device;

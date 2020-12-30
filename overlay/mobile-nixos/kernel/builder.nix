@@ -32,6 +32,8 @@
 , dtc
 , dtbTool
 
+, cpio
+, elfutils
 , libelf
 , utillinux
 
@@ -138,7 +140,7 @@ let
     exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
   '';
 
-  hasDTB = platform.kernelDTB;
+  hasDTB = platform ? kernelDTB && platform.kernelDTB;
   kernelFileExtension = if isCompressed != false then ".${isCompressed}" else "";
   kernelTarget = if platform.kernelTarget == "Image"
     then "${platform.kernelTarget}${kernelFileExtension}"
@@ -162,9 +164,12 @@ stdenv.mkDerivation (inputArgs // {
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.kernelTarget == "uImage") buildPackages.ubootTools
-    ++ optional (stdenv.lib.versionAtLeast version "4.14") libelf
+    ++ optional (stdenv.lib.versionAtLeast version "4.14" && stdenv.lib.versionOlder version "5.8") libelf
     ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
     ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optional  (stdenv.lib.versionAtLeast version "5.2")  cpio
+    ++ optional  (stdenv.lib.versionAtLeast version "5.8")  elfutils
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.
     ++ [ dtc ] 

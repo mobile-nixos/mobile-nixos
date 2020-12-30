@@ -142,7 +142,7 @@ in
 
     constituents =
       lib.optionals (hasSystem "x86_64-linux") [
-        device.qemu-x86_64.x86_64-linux              # VM
+        device.uefi-x86_64.x86_64-linux              # UEFI system
         # Cross builds
         device.asus-z00t.x86_64-linux                # Android
         device.asus-dumo.x86_64-linux                # Depthcharge

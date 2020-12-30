@@ -18,6 +18,10 @@ let
   encryptedRootfs = pkgs.vmTools.runInLinuxVM (
     pkgs.runCommand "encrypted-rootfs" {
       buildInputs = [ pkgs.cryptsetup ];
+      passthru = {
+        filename = "encrypted.img";
+        filesystemType = "LUKS";
+      };
     } ''
       (PS4=" $ "; set -x
       mkdir -p /run/cryptsetup
