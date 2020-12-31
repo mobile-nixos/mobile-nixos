@@ -103,6 +103,10 @@ in
     else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
   );
 
+  config.system.boot.loader.kernelFile = mkIf (cfg.package != null && cfg.package ? file) (
+    mkDefault cfg.package.file
+  );
+
   # Disable kernel config checks as it's EXTREMELY nixpkgs-kernel centric.
   # We're duplicating that good work for the time being.
   config.system.requiredKernelConfig = lib.mkForce [];
