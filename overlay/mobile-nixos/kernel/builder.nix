@@ -337,10 +337,8 @@ stdenv.mkDerivation (inputArgs // {
   # no-op buildPhase if we combine build and install steps
   buildPhase = if enableCombiningBuildAndInstallQuirk then ":" else null;
 
-  installTargets = [
-    "install"
-  ]
-    ++ optional (isCompressed != false) "zinstall"
+  installTargets =
+    if isCompressed != false then [ "zinstall" ] else [ "install" ]
     ++ installTargets
   ;
 
