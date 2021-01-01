@@ -1,6 +1,5 @@
 { stdenv
 , fetchurl
-, mrbgems
 , mruby
 
 # Additional tasks
@@ -14,6 +13,15 @@ let
     url = "https://raw.githubusercontent.com/ruby/ruby/${ruby_rev}/lib/shellwords.rb";
     sha256 = "197g7qvrrijmajixa2h9c4jw26l36y8ig6qjb5d43qg4qykhqfcx";
   };
+
+  inherit (stdenv.lib) concatMapStringsSep;
+
+  # Select libs we need from the libs folder.
+  libs = concatMapStringsSep " " (name: "${../lib}/${name}") [
+    "hal/recovery.rb"
+    "evdev/*.rb"
+    "linux/*.rb"
+  ];
 in
 stdenv.mkDerivation {
   pname = "mobile-nixos-init";
@@ -41,7 +49,7 @@ stdenv.mkDerivation {
     # This is the "script" that will be loaded.
     mrbc \
       -o init.mrb \
-      $(find ${../lib} -type f | sort) \
+      ${libs} \
       $(find lib -type f | sort) \
       $(get_tasks) \
       init.rb
