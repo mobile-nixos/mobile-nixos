@@ -13,7 +13,8 @@ stdenv.mkDerivation {
   ];
 
   buildPhase = ''
-    mrbc -g -o app.mrb \
+    mrbc \
+      -o app.mrb \
       $(find ./windows -type f -name '*.rb' | sort) \
       main.rb
   '';
