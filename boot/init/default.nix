@@ -18,6 +18,7 @@ let
 
   # Select libs we need from the libs folder.
   libs = concatMapStringsSep " " (name: "${../lib}/${name}") [
+    "00-monkey_patches/*.rb"
     "hal/recovery.rb"
     "evdev/*.rb"
     "linux/*.rb"
