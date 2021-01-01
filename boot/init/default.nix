@@ -21,6 +21,7 @@ let
     "00-monkey_patches/*.rb"
     "hal/recovery.rb"
     "evdev/*.rb"
+    "init/configuration.rb"
     "linux/*.rb"
   ];
 in
