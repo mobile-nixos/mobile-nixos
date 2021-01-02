@@ -1,7 +1,7 @@
 # Wraps a raw +lv_keyboard+ in minimal helpers
 # This is intended to be used as a singleton instance, where you can
 # "re-parent" the keyboard as needed.
-class Keyboard < LVGUI::Widget
+class LVGUI::Keyboard < LVGUI::Widget
   include Singleton
 
   private

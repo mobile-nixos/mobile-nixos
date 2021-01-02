@@ -1,5 +1,5 @@
 # Wraps a raw +lv_ta+ in minimal helpers
-class TextArea < LVGUI::Widget
+class LVGUI::TextArea < LVGUI::Widget
   attr_reader :hidden
 
   def initialize(parent)
@@ -31,16 +31,16 @@ class TextArea < LVGUI::Widget
       return if hidden()
       case event
       when LVGL::EVENT::CLICKED
-        Keyboard.instance.set_ta(self)
-        Keyboard.instance.show()
+        LVGUI::Keyboard.instance.set_ta(self)
+        LVGUI::Keyboard.instance.show()
       when LVGL::EVENT::INSERT
         # Not exactly right, but right enough.
         char = LVGL::FFI.lv_event_get_data().to_str(1)
         # Assume there is only one input.
         # Also assume Enter sends; that it is a single line.
         if char == "\n"
-          Keyboard.instance.set_ta(nil)
-          Keyboard.instance.hide()
+          LVGUI::Keyboard.instance.set_ta(nil)
+          LVGUI::Keyboard.instance.hide()
           # Create a new string
           # get_text() gives us a Fiddle::Pointer (leaky abstraction!!!)
           value = "#{get_text()}"

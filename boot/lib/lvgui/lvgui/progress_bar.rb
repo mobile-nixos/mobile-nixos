@@ -1,4 +1,4 @@
-class ProgressBar < LVGUI::Widget
+class LVGUI::ProgressBar < LVGUI::Widget
   def initialize(parent)
     super(LVGL::LVContainer.new(parent))
 
