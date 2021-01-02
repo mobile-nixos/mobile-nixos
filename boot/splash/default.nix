@@ -29,7 +29,6 @@ runCommand "boot-splash.mrb" {
   mrbc \
     -o $out \
     ${libs} \
-    $(find $lib -type f -name '*.rb' | sort) \
-    $(find $src/lib -type f -name '*.rb' | sort) \
+    $src/ui.rb \
     $src/main.rb
 ''
