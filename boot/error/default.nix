@@ -8,6 +8,7 @@ let
 
   # Select libs we need from the libs folder.
   libs = concatMapStringsSep " " (name: "${../lib}/${name}") [
+    "hal/reboot_modes.rb"
     "lvgui/args.rb"
     "lvgui/fiddlier.rb"
     "lvgui/lvgl/*.rb"
@@ -21,7 +22,6 @@ in
 # Since we don't need anything from mkDerivation, really, let's use runCommand.
 runCommand "boot-error.mrb" {
   src = lib.cleanSource ./.;
-  lib = lib.cleanSource ../recovery-menu/lib;
 
   nativeBuildInputs = [
     mruby
@@ -30,7 +30,6 @@ runCommand "boot-error.mrb" {
   mrbc \
     -o $out \
     ${libs} \
-    $(find $lib -type f -name '*.rb' | sort) \
     $(find $src/lib -type f -name '*.rb' | sort) \
     $src/main.rb
 ''
