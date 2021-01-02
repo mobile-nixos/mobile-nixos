@@ -315,7 +315,7 @@ $ui.set_actions([[
     $ui.set_actions([
       ["Power off", ->() { run("poweroff") }],
       ["Kernel panic", ->() { $exit = true }],
-      *(RebootModes.options),
+      *(Hal::RebootModes.options),
     ])
   end
 ]])

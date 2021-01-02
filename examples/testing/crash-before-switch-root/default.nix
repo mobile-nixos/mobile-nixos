@@ -8,4 +8,4 @@ let
     ]; } ];
   };
 in
-  system-build.build.default
+  system-build.build.vm

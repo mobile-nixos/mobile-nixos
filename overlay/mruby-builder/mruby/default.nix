@@ -17,6 +17,7 @@ in
 , fetchFromGitHub
 , file
 , mruby
+, runtimeShell
 , writeText
 , writeShellScriptBin
 
@@ -31,6 +32,8 @@ in
 , additionalBuildConfig ? ""
 # Adds `enable_debug`.
 , debug ? false
+# Adds `-g` to mrbc wrapper.
+, mrbWithDebug ? true
 # Prepends defaults to `gems` and `gemBoxes`.
 , useDefaults ? true
 }:
@@ -209,6 +212,20 @@ stdenv.mkDerivation rec {
     mkdir -p $out/nix-support
     cp mruby_linker_flags.sh $out/nix-support/
   '';
+
+  # Wrap `mrbc` with -g conditional to the debug flag.
+  postInstall = ''
+    mkdir -p $out/libexec/
+    mv $out/bin/mrbc $out/libexec/mrbc
+    cat > $out/bin/mrbc <<EOF
+    #!${runtimeShell}
+    exec $out/libexec/mrbc ${optionalString mrbWithDebug "-g"} "\''${@}"
+    EOF
+  '';
+
+  passthru = {
+    inherit debug;
+  };
 
   meta = with stdenv.lib; {
     description = "An embeddable implementation of the Ruby language";

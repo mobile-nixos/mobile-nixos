@@ -3,8 +3,17 @@
 , mrbgems
 , writeShellScriptBin
 , lib
+, callPackage
+
+# Configuration
+, withSimulator ? false      # Builds lvgui with simulator.
 }:
 
+let
+  mruby-lvgui-native-fragment = callPackage ./mruby-lvgui-native-fragment {
+    inherit withSimulator;
+  };
+in
 # We need a reference to this package for the passthru `wrap` helper.
 let loader = mruby.builder {
   pname = "mobile-nixos-script-loader";
@@ -37,8 +46,8 @@ let loader = mruby.builder {
     mruby-time-strftime
     mruby-zmq
 
-    # Last as it may depend on any of the previous gems.
-    mruby-lvgui
+    # Glue that serves to link the proper dependencies into the project.
+    mruby-lvgui-native-fragment
 
     # Though this needs to be the real last gem, as it has
     # special significance during the build.

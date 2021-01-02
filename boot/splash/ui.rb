@@ -71,7 +71,7 @@ class UI
   end
 
   def add_progress_bar()
-    @progress_bar = ProgressBar.new(@page)
+    @progress_bar = LVGUI::ProgressBar.new(@page)
     @progress_bar.set_height(3 * @unit)
     @progress_bar.set_width(@page.get_width * 0.7)
     @progress_bar.set_pos(*center(@progress_bar))
@@ -150,7 +150,7 @@ class UI
   end
 
   def add_textarea()
-    @ta = TextArea.new(@page)
+    @ta = LVGUI::TextArea.new(@page)
     @ta.set_width(@page.get_width * 0.9)
     @ta.set_pos(*center(@ta, 0, @unit * 14))
     # Always present, but initially hidden
@@ -160,7 +160,7 @@ class UI
   end
 
   def add_keyboard()
-    @keyboard = Keyboard.instance()
+    @keyboard = LVGUI::Keyboard.instance()
     # The keyboard is not added to the page; the page holds the elements that
     # may move to ensure they're not covered by the keyboard.
     @keyboard.set_parent(@screen)

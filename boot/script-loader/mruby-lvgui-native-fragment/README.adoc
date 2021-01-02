@@ -1,0 +1,5 @@
+= mruby-lvgui-native-fragment
+
+This is glue code to build the mruby interpreter with the proper libraries.
+
+The actual library parts are found under /boot/lib/
