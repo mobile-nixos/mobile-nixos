@@ -21,7 +21,6 @@ in
 # Since we don't need anything from mkDerivation, really, let's use runCommand.
 runCommand "boot-splash.mrb" {
   src = lib.cleanSource ./.;
-  lib = lib.cleanSource ../recovery-menu/lib;
 
   nativeBuildInputs = [
     mruby
