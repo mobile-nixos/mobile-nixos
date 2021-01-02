@@ -47,11 +47,8 @@ end
 
 module LVGL::Hacks
   def self.init()
-    puts "??1"
     LVGL::FFI.hal_init()
-    puts "??2"
     LVGL::FFI.lv_nanosvg_init()
-    puts "??3"
   end
 
   def self.monitor_height=(v)

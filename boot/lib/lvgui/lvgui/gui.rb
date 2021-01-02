@@ -36,11 +36,9 @@ module LVGUI
     # the framebuffer, so this program has to be enough by itself.
     VTConsole.map_console(0)
 
-    puts "init"
     # XXX : here is the hang
     # Prepare LVGL
     LVGL::Hacks.init()
-    puts "derp"
 
     # Start the animation core
     LVGL::FFI.lv_anim_core_init()
