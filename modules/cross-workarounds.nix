@@ -1,4 +1,4 @@
-{ lib, config, ... }:
+{ config, lib, pkgs, ... }:
 
 # This module adds system-level workarounds when cross-compiling.
 # These workarounds are only expected to be implemented for the *basic* build.
@@ -8,6 +8,19 @@ let
     config.nixpkgs.crossSystem != null &&
     config.nixpkgs.localSystem.system != null &&
     config.nixpkgs.crossSystem.system != config.nixpkgs.localSystem.system;
+
+  AArch32Overlay = final: super: {
+    # Works around libselinux failure with python on armv7l.
+    # LONG_BIT definition appears wrong for platform
+    libselinux = (super.libselinux
+      .override({
+        enablePython = false;
+      }))
+      .overrideAttrs (_: {
+        preInstall = ":";
+      })
+    ;
+  };
 in
 lib.mkIf isCross
 {
@@ -21,4 +34,8 @@ lib.mkIf isCross
 
   # udisks fails due to gobject-introspection being not cross-compilation friendly.
   services.udisks2.enable = false;
+
+  nixpkgs.overlays = lib.mkMerge [
+    (lib.mkIf config.nixpkgs.crossSystem.isAarch32 [ AArch32Overlay ])
+  ];
 }
