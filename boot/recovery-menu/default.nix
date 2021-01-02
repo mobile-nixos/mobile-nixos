@@ -8,6 +8,7 @@ let
 
   # Select libs we need from the libs folder.
   libs = concatMapStringsSep " " (name: "${../lib}/${name}") [
+    "hal/reboot_modes.rb"
     "init/configuration.rb"
     "lvgui/args.rb"
     "lvgui/fiddlier.rb"
@@ -30,6 +31,5 @@ runCommand "boot-recovery-menu.mrb" {
   mrbc \
     -o $out \
     ${libs} \
-    $(find $src/lib -type f -name '*.rb' | sort) \
     $src/main.rb
 ''

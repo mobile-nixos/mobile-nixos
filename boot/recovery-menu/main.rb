@@ -50,7 +50,7 @@ module BootGUI
       # Our buttons palette!
       add_buttons([
         ["Generations  #{LVGL::Symbols::RIGHT}", ->() { GenerationsWindow.instance.present }],
-        *(RebootModes.options),
+        *(Hal::RebootModes.options),
         ["Power off", ->() { run("poweroff") }],
       ])
     end
