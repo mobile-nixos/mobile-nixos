@@ -51,6 +51,11 @@
     mass_storage = "mass_storage.0";
   };
 
+  mobile.boot.stage-1.bootConfig = {
+    # Used by target-disk-mode to share the internal drive
+    storage.internal = "/dev/disk/by-path/platform-1c11000.mmc";
+  };
+
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};
