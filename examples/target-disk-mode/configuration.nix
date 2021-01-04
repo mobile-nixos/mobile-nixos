@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  jumpdrive-gui = "${pkgs.callPackage ./app {}}/libexec/app.mrb";
+  tdm-gui = "${pkgs.callPackage ./app {}}/libexec/app.mrb";
   internalStorageConfigured =
     config.mobile.boot.stage-1.bootConfig ? storage &&
     config.mobile.boot.stage-1.bootConfig.storage ? internal &&
@@ -42,7 +42,7 @@ in
         def run()
           # FIXME: weirdness with /dev/inputs in QEMU.
           sleep(1)
-          System.run(LOADER, "/applets/jumpdrive-gui.mrb")
+          System.run(LOADER, "/applets/tdm-gui.mrb")
           # Exit the whole program at that point, if for any reason there's a
           # failure. This shouldn't happen anyway.
           exit(1)
@@ -65,8 +65,8 @@ in
 
   mobile.boot.stage-1.contents = with pkgs; [
     {
-      object = jumpdrive-gui;
-      symlink = "/applets/jumpdrive-gui.mrb";
+      object = tdm-gui;
+      symlink = "/applets/tdm-gui.mrb";
     }
   ];
 

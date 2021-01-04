@@ -17,7 +17,7 @@ let
 in
 
 stdenv.mkDerivation {
-  name = "jumpdrive-gui.mrb";
+  name = "tdm-gui.mrb";
 
   src = lib.cleanSource ./.;
 
@@ -37,6 +37,6 @@ stdenv.mkDerivation {
     mkdir -p $out/libexec/
     mv -v app.mrb $out/libexec/
 
-    mkdir -p $out/share/jumpdrive-gui
+    mkdir -p $out/share/tdm-gui
   '';
 }

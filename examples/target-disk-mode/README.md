@@ -1,12 +1,11 @@
-[JumpDrive](https://github.com/dreemurrs-embedded/Jumpdrive), but with Mobile NixOS
-===================================================================================
+Target Disk Mode
+================
 
 What's this?
 ------------
 
 This is a system that allows you to present the internal storage of a device
 over the USB connection using Linux USB gadget mode.
-
 
 * * *
 

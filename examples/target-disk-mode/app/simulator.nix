@@ -24,7 +24,7 @@ in
     PATH = "${input-utils}/bin:$PATH";
   };
 }).overrideAttrs(old: rec {
-  pname = "jumpdrive-gui-simulator";
+  pname = "tdm-gui-simulator";
   version = "0.0.1";
   name = "${pname}-${version}";
 })
