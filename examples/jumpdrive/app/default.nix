@@ -3,6 +3,19 @@
 , mruby
 }:
 
+let
+  inherit (lib) concatMapStringsSep;
+
+  # Select libs we need from the libs folder.
+  libs = concatMapStringsSep " " (name: "${../../../boot/lib}/${name}") [
+    "lvgui/args.rb"
+    "lvgui/fiddlier.rb"
+    "lvgui/lvgl/*.rb"
+    "lvgui/lvgui/*.rb"
+    "lvgui/vtconsole.rb"
+  ];
+in
+
 stdenv.mkDerivation {
   name = "jumpdrive-gui.mrb";
 
@@ -13,7 +26,9 @@ stdenv.mkDerivation {
   ];
 
   buildPhase = ''
-    mrbc -g -o app.mrb \
+    mrbc \
+      -o app.mrb \
+      ${libs} \
       $(find ./windows -type f -name '*.rb' | sort) \
       main.rb
   '';
