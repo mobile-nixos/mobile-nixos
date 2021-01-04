@@ -2,10 +2,18 @@
 
 let
   jumpdrive-gui = "${pkgs.callPackage ./app {}}/libexec/app.mrb";
+  internalStorageConfigured =
+    config.mobile.boot.stage-1.bootConfig ? storage &&
+    config.mobile.boot.stage-1.bootConfig.storage ? internal &&
+    config.mobile.boot.stage-1.bootConfig.storage.internal != null
+  ;
 in
 {
   mobile.boot.stage-1.tasks = [
-    (pkgs.writeText "gui-task.rb" ''
+    (# Slip an assertion here; nixos asserts only operate on `build.toplevel`.
+    if !internalStorageConfigured
+    then builtins.throw "mobile.boot.stage-1.bootConfig.storage.internal needs to be configured for ${config.mobile.device.name}."
+    else pkgs.writeText "gui-task.rb" ''
       class Tasks::RunGui < SingletonTask
         def initialize()
           add_dependency(:Target, :Graphics)
@@ -50,12 +58,6 @@ in
     features = [ "mass_storage" ];
   };
 
-  mobile.boot.stage-1.bootConfig = {
-    # TODO: figure out a better way to provide this information.
-    storage.internal = {
-      pine64-pinephone = "/dev/disk/by-path/platform-1c11000.mmc";
-    }.${config.mobile.device.name};
-  };
   mobile.boot.stage-1.contents = with pkgs; [
     {
       object = jumpdrive-gui;
