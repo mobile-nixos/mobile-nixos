@@ -18,6 +18,7 @@ module System::ConfigFSUSB
   # detailed explanation for this, but it's part of the USB spec.
   STRINGS_SUFFIX = "strings/0x409" # en-US ¯\_(ツ)_/¯
 
+  # https://www.kernel.org/doc/Documentation/usb/gadget_configfs.txt
   class Gadget
     attr_reader :name
     attr_accessor :features
@@ -100,6 +101,21 @@ module System::ConfigFSUSB
       end
     end
 
+    # Tears down just enough so that a `kexec` call is successful.
+    def teardown()
+      # See 6. Disabling the gadget
+      # ~ equiv to: echo "" > UDC
+      System.write(File.join(path_prefix, "UDC"), "\n")
+      sleep(0.1)
+
+      # See 7. Cleaning up
+      System.delete(*Dir.glob(File.join(path_prefix, "configs/*/*")))
+      System.delete(*Dir.glob(File.join(path_prefix, "configs/*/strings/*")))
+      System.delete(*Dir.glob(File.join(path_prefix, "configs/*")))
+      System.delete(*Dir.glob(File.join(path_prefix, "functions/*")))
+      System.delete(*Dir.glob(File.join(path_prefix, "strings/*")))
+      System.delete(path_prefix)
+    end
   end
 end
 
@@ -147,6 +163,10 @@ class System::AndroidUSB
     System.write(File.join(path_prefix, "enable"), "1")
     sleep(0.1)
   end
+
+  def teardown()
+    # no-op
+  end
 end
 
 # This task detects which gadget mode to use, and sets it up.
@@ -162,9 +182,9 @@ class Tasks::SetupGadgetMode < SingletonTask
     Targets[:SwitchRoot].add_dependency(:Task, self)
   end
 
-  def run()
+  def gadget()
     mode = Configuration["usb"]["mode"]
-    gadget =
+    @gadget ||= 
       case mode
       when "gadgetfs"
         log("Configuring CONFIGFS USB Gadget.")
@@ -176,6 +196,10 @@ class Tasks::SetupGadgetMode < SingletonTask
         log("No way to configure USB Gadget found.")
         return
       end
+  end
+
+  def run()
+    return unless gadget
 
     gadget.id_vendor = Configuration["usb"]["idVendor"]
     gadget.id_product = Configuration["usb"]["idProduct"]
@@ -185,6 +209,11 @@ class Tasks::SetupGadgetMode < SingletonTask
     gadget.serial_number = "0123456789"
     gadget.features = Configuration["boot"]["usb"]["features"]
     gadget.activate!
+  end
+
+  def teardown()
+    return unless gadget
+    gadget.teardown()
   end
 end
 
