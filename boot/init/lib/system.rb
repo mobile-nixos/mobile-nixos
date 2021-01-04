@@ -120,6 +120,22 @@ module System
     result
   end
 
+  # Deletes files or directories indiscriminately.
+  # Directories still need to be emptied beforehand.
+  def self.delete(*paths)
+    paths.each do |path|
+      # A symlink can be directory?() true, but won't `Dir.delete()`
+      # Thus the weird conditional.
+      if File.symlink?(path) || !File.directory?(path)
+        $logger.debug(" $ rm #{path.shellescape}")
+        File.delete(path)
+      else
+        $logger.debug(" $ rmdir #{path.shellescape}")
+        Dir.delete(path)
+      end
+    end
+  end
+
   # Mounts a filesystem of type +type+ on +dest+.
   #
   # The +source+ parameter is optional, though kept first to keep a coherent

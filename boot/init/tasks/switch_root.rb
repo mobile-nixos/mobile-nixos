@@ -189,6 +189,12 @@ class Tasks::SwitchRoot < SingletonTask
     log("")
 
     if will_kexec?
+      if Tasks.constants.include?(:SetupGadgetMode)
+        Progress.exec_with_message("Tearing down USB Gadget mode") do
+          Tasks::SetupGadgetMode.instance.teardown()
+        end
+      end
+
       System.run(
         "kexec", "--load",
         generation_file("kernel"),
