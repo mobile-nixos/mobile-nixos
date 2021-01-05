@@ -13,46 +13,7 @@ in
     (# Slip an assertion here; nixos asserts only operate on `build.toplevel`.
     if !internalStorageConfigured
     then builtins.throw "mobile.boot.stage-1.bootConfig.storage.internal needs to be configured for ${config.mobile.device.name}."
-    else pkgs.writeText "gui-task.rb" ''
-      class Tasks::RunGui < SingletonTask
-        def initialize()
-          add_dependency(:Target, :Graphics)
-          add_dependency(:Mount, "/run")
-          add_dependency(:Files, "/dev/input")
-
-          # Ensures networking and SSH works
-          add_dependency(:Target, :Networking)
-          add_dependency(:Task, Tasks::DropbearSSHD.instance)
-
-          # Ensure this runs before SwitchRoot happens.
-          # Otherwise this could never be ran!
-          Tasks::SwitchRoot.instance.add_dependency(:Task, self)
-          add_dependency(:Task, Tasks::SetupGadgetMode.instance)
-
-          # Ensure shell runs once before.
-          if Tasks.const_defined?(:RunShell)
-            add_dependency(:Task, Tasks::RunShell.instance)
-            Tasks::RunShell.instance.add_dependency(
-              :Task,
-              Tasks::SetupGadgetMode.instance
-            )
-          end
-        end
-
-        def run()
-          # FIXME: weirdness with /dev/inputs in QEMU.
-          sleep(1)
-          System.run(LOADER, "/applets/tdm-gui.mrb")
-          # Exit the whole program at that point, if for any reason there's a
-          # failure. This shouldn't happen anyway.
-          exit(1)
-        end
-
-        def ux_priority()
-          -10000
-        end
-      end
-    '')
+    else ./gui-task.rb)
   ];
 
   # There is no mounting here.
