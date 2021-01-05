@@ -27,7 +27,8 @@ stdenv.mkDerivation {
     done
 
     mkdir -p $out
-    lessc index.less $out/styles.css
+    # --math=always to use 3.x compatible maths with lessc 4.x
+    lessc --math=always index.less $out/styles.css
   '';
 
   dontInstall = true;
