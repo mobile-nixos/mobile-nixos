@@ -31,9 +31,23 @@ in
     }
   ];
 
+  mobile.generatedFilesystems = {
+    # Replaces the rootfs with a generated empty disk.
+    # Ideally we'd have `lib.mkDelete` here, but that doesn't exist.
+    rootfs = lib.mkForce {
+      raw = pkgs.runCommandNoCC "empty" {
+        filename = "empty.img";
+        partitionType = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
+        length = 1024;
+      } ''
+        mkdir -p $out
+        touch $out/empty.img
+      '';
+    };
+  };
+
   system.build = {
     app-simulator = pkgs.callPackage ./app/simulator.nix {};
-    rootfs = null;
   };
 
   mobile.boot.stage-1.networking.enable = true;
