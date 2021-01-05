@@ -3,9 +3,14 @@ module System::ConfigFSUSB
   CONFIGFS_USB = File.join(CONFIGFS, "usb_gadget")
 
   module Quirks
-    def self.gsi_rndis()
+    def self.gsi_rndis(function_dir)
       # Activate the IPA stuff... ugh.
       System.write("/dev/ipa", 1)
+    end
+
+    def self.mass_storage_0(function_dir)
+      device = Configuration["storage"]["internal"]
+      System.write(File.join(function_dir, "lun.0/file"), device)
     end
   end
 
@@ -83,10 +88,11 @@ module System::ConfigFSUSB
         function_dir = File.join(path_prefix, "functions", function_name)
         feature_dir = File.join(config_dir, feature)
         FileUtils.mkdir_p(function_dir)
-        File.symlink(function_dir, feature_dir)
+        System.symlink(function_dir, feature_dir)
 
         quirk_name = function_name.gsub(/\./, "_").to_sym
-        Quirks.send(quirk_name) if Quirks.respond_to?(quirk_name)
+        $logger.debug("Looking for quirk: #{quirk_name}")
+        Quirks.send(quirk_name, function_dir) if Quirks.respond_to?(quirk_name)
       end
 
       # Then, attach to the USB driver.
@@ -180,6 +186,11 @@ class Tasks::SetupGadgetMode < SingletonTask
       add_dependency(:Mount, "/vendor")
     end
     Targets[:SwitchRoot].add_dependency(:Task, self)
+
+    # TODO: Decouple dependencies from features.
+    if Configuration["boot"]["usb"]["features"].any?("mass_storage")
+      add_dependency(:Files, Configuration["storage"]["internal"])
+    end
   end
 
   def gadget()
