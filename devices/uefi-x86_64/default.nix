@@ -18,7 +18,6 @@
 
   boot.kernelParams = [
     "vt.global_cursor_default=0"
-    "quiet"
   ];
 
   mobile.system.type = "uefi";
