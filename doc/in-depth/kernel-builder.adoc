@@ -40,6 +40,18 @@ When true, the build will use `dtbTool` to build a QCDT _device-tree image_.
 By default it will use the FDTs from the appropriate `arch/*/boot` folder from
 the kernel build. The directory to use can be changed using `qcdt_dtbs`.
 
+=== `isExynosDT`
+
+When true, the build will use `dtbTool-exynos` to build a _device-tree image_
+for the device.
+
+By default it will use the FDTs from the appropriate `arch/*/boot/dts/`
+folder from the kernel build. The pattern to use can be changed using
+`exynos_dtbs`.
+
+Additionally, the platform code and subtype codes can be configured with
+`exynos_platform` and `exynos_subtype`, though the default are likely to work.
+
 === `isImageGzDtb`
 
 When true, the build will enable support for android-specific "Image.gz-dtb"

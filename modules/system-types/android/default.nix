@@ -126,6 +126,10 @@ in
       mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
     })
 
+    (lib.mkIf kernelPackage.isExynosDT {
+      mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
+    })
+
     {
       mobile.boot.stage-1.bootConfig = {
         device = {

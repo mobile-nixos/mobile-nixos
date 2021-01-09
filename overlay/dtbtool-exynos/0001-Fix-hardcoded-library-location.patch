@@ -1,0 +1,29 @@
+From 5ad5f39282e30c3ef4cb26fa9922b07120622e7d Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 19 Nov 2020 00:20:11 -0500
+Subject: [PATCH] Fix hardcoded library location
+
+---
+ Makefile | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/Makefile b/Makefile
+index e548cb3..3ae3f91 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,10 +1,10 @@
+-OBJ_FILES := dtbtool-exynos.o /usr/lib/libfdt.so
++OBJ_FILES := dtbtool-exynos.o
+ CFLAGS := -O2 -fomit-frame-pointer -Wall
+ 
+ all: dtbTool-exynos
+ 
+ dtbTool-exynos: $(OBJ_FILES)
+-	$(CC) $(CFLAGS) -o $@ $^
++	$(CC) $(CFLAGS) -lfdt -o $@ $^
+ 	strip $@
+ 
+ clean:
+-- 
+2.28.0
+
