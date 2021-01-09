@@ -104,6 +104,16 @@ in
           "pagesize"
         ] mkBootimgOption;
       };
+
+      flashingMethod = lib.mkOption {
+        type = types.enum [
+          "fastboot" # Default, using `fastboot`
+          "odin"     # Mainly Samsung, using `heimdall`
+        ];
+        description = "Configures which flashing method is used by the device.";
+        default = "fastboot";
+        internal = true;
+      };
     };
   };
 
