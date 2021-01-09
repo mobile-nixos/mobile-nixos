@@ -28,6 +28,7 @@
       offset_tags = "0x00000100";
       pagesize = "2048";
     };
+    flashingMethod = "odin";
   };
 
   boot.kernelParams = [
