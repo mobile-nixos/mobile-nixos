@@ -6,7 +6,7 @@ let
   inherit (lib) concatStringsSep optionalString types;
   inherit (config.system.build) recovery stage-0;
   inherit (config.mobile) device;
-  inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition;
+  inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition flashingMethod;
   inherit (stage-0.mobile.boot.stage-1) kernel;
 
   kernelPackage = kernel.package;
@@ -43,10 +43,19 @@ let
     dir="$(cd "$(dirname "''${BASH_SOURCE[0]}")"; echo "$PWD")"
     PS4=" $ "
     set -x
-    fastboot flash ${optionalString ab_partitions "--slot=all"} boot "$dir"/boot.img
-    ${optionalString has_recovery_partition ''
-    fastboot flash ${optionalString ab_partitions "--slot=all"} recovery "$dir"/recovery.img
-    ''}
+    ${if flashingMethod == "fastboot" then ''
+      fastboot flash ${optionalString ab_partitions "--slot=all"} boot "$dir"/boot.img
+      ${optionalString has_recovery_partition ''
+      fastboot flash ${optionalString ab_partitions "--slot=all"} recovery "$dir"/recovery.img
+      ''}
+    ''
+    else if flashingMethod == "odin" then ''
+      heimdall flash \
+        --BOOT "$dir"/boot.img ${optionalString has_recovery_partition ''\
+        --RECOVERY "$dir"/recovery.img
+      ''}
+    ''
+    else builtins.throw "No flashing method for ${flashingMethod}"}
     EOF
     chmod +x $out/flash-critical.sh
   '';
