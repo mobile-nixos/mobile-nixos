@@ -1,0 +1,74 @@
+From f116062840defac45702026e42165352c978ea52 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Wed, 18 Nov 2020 23:39:18 -0500
+Subject: [PATCH] af_inet: only enable knox stuff with paranoid networking
+
+---
+ net/ipv4/af_inet.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/net/ipv4/af_inet.c b/net/ipv4/af_inet.c
+index 79c35a5b276..664f2f44655 100644
+--- a/net/ipv4/af_inet.c
++++ b/net/ipv4/af_inet.c
+@@ -420,6 +420,7 @@ out_rcu_unlock:
+ 	goto out;
+ }
+ 
++#ifdef CONFIG_ANDROID_PARANOID_NETWORK
+ /* START_OF_KNOX_NPA */
+ /** The function is used to check if the ncm feature is enabled or not;
+  * if enabled then collect the socket meta-data information;
+@@ -431,6 +432,7 @@ static void knox_collect_metadata(struct socket *sock)
+ 	}
+ }
+ /* END_OF_KNOX_NPA */
++#endif
+ 
+ /*
+  *	The peer socket should always be NULL (or else). When we call this
+@@ -463,9 +465,11 @@ int inet_release(struct socket *sock)
+ 		if (sock_flag(sk, SOCK_LINGER) &&
+ 		    !(current->flags & PF_EXITING))
+ 			timeout = sk->sk_lingertime;
++#ifdef CONFIG_ANDROID_PARANOID_NETWORK
+ 		/* START_OF_KNOX_NPA */
+ 		knox_collect_metadata(sock);
+ 		/* END_OF_KNOX_NPA */
++#endif
+ 		sock->sk = NULL;
+ 		sk->sk_prot->close(sk, timeout);
+ 	}
+@@ -807,6 +811,7 @@ int inet_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
+ 
+     err = sk->sk_prot->sendmsg(iocb, sk, msg, size);
+ 
++#ifdef CONFIG_ANDROID_PARANOID_NETWORK
+     if (err >= 0) {
+         if(sock->knox_sent + err > ULLONG_MAX) {
+             sock->knox_sent = ULLONG_MAX;
+@@ -814,6 +819,7 @@ int inet_sendmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
+             sock->knox_sent = sock->knox_sent + err;
+         }
+     }
++#endif
+     return err;
+ }
+ EXPORT_SYMBOL(inet_sendmsg);
+@@ -849,11 +855,13 @@ int inet_recvmsg(struct kiocb *iocb, struct socket *sock, struct msghdr *msg,
+ 				   flags & ~MSG_DONTWAIT, &addr_len);
+ 	if (err >= 0) {
+ 		msg->msg_namelen = addr_len;
++#ifdef CONFIG_ANDROID_PARANOID_NETWORK
+         if(sock->knox_recv + err > ULLONG_MAX) {
+             sock->knox_recv = ULLONG_MAX;
+         } else {
+             sock->knox_recv = sock->knox_recv + err;
+         }
++#endif
+     }
+ 	return err;
+ }
+-- 
+2.28.0
+
