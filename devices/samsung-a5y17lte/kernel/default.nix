@@ -6,18 +6,17 @@
 mobile-nixos.kernel-builder-gcc49 {
   configfile = ./config.aarch64;
 
-  version = "3.18.14";
+  version = "3.18.91";
 
   src = fetchFromGitHub {
-    owner = "LineageOS";
+    owner = "corsicanu";
     repo = "android_kernel_samsung_universal7880";
-    rev = "a33b847e713a40d42c5733c9139412bed9ec8f2c";
-    sha256 = "05qzr7agan5hhmk52dm5shmn117wcvhy7dpnak4dz2fgm74inhvj";
+    rev = "890ed9b1e36c2ea6cac7be9e624e8b1709e601dd"; # android-9.0
+    sha256 = "1ka9xpncinzd66kfgcybh0i35s34hcqkidg9sxvsjd5irdm80rgv";
   };
 
   patches = [
     ./90_dtbs-install.patch
-    ./0001-af_inet-only-enable-knox-stuff-with-paranoid-network.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
     ./0001-mobile-nixos-exynos-decon_7880-Adds-and-sets-ARGB-as.patch
     ./0001-mobile-nixos-exynos-decon_7880-Force-unblank-on-prob.patch
