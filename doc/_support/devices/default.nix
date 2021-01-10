@@ -17,7 +17,6 @@ let
     name = "devices-metadata";
     paths = (map (device: (evalFor device).build.device-metadata) all-devices);
   };
-  systemTypesDir = ../../../modules/system-types;
 in
 
 runCommandNoCC "mobile-nixos-docs-devices" {
@@ -25,7 +24,7 @@ runCommandNoCC "mobile-nixos-docs-devices" {
     ruby
     glibcLocales
   ];
-  inherit devicesDir devicesInfo systemTypesDir;
+  inherit devicesDir devicesInfo;
 }
 ''
   mkdir -p $out/devices

@@ -35,7 +35,6 @@ $devicesInfo = Dir.glob(File.join(ENV["devicesInfo"], "*")).sort.map do |filenam
   [data["identifier"], data]
 end.to_h
 $devicesDir = ENV["devicesDir"]
-$systemTypesDir = ENV["systemTypesDir"]
 
 # First, generate the devices listing.
 puts ":: Generating devices/index.adoc"
@@ -111,13 +110,12 @@ $devicesInfo.values.each do |info|
 
     # Generate the page contents
 
-    systemTypeFile = File.join($systemTypesDir, info["system"]["type"], "device-notes.adoc.erb")
-    if File.exists?(systemTypeFile)
-      template = ERB.new(File.read(systemTypeFile))
-      file.puts(template.result(binding))
-    else
-      file.puts("\n_(No system-specific notes available)_\n\n")
-    end
+    template = ERB.new(File.read(info["documentation"]["systemTypeFargment"]))
+    file.puts(template.result(binding))
+
+    # Ensure the content is at least separated by an empty line.
+    # Otherwise a trailing command could end-up being merged.
+    file.puts("\n\n")
     
     deviceNotesFile = File.join($devicesDir, identifier, "README.adoc")
     if File.exists?(deviceNotesFile)
