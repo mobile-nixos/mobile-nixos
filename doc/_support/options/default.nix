@@ -31,7 +31,6 @@ let
   };
 
   optionsJSON = (nixosOptionsDoc { options = dummyEval.options; }).optionsJSON;
-  systemTypesDir = ../../../modules/system-types;
 in
 
 runCommandNoCC "mobile-nixos-docs-options" {
