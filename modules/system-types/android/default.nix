@@ -139,6 +139,8 @@ in
         "Android.recovery"
         "Android.bootloader"
       ];
+
+      mobile.documentation.systemTypeFargment = ./. + "/device-notes.${flashingMethod}.adoc.erb";
     })
 
     (lib.mkIf kernelPackage.isQcdt {
