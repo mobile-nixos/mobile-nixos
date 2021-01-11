@@ -45,4 +45,7 @@
   mobile.usb.mode = "android_usb";
   mobile.usb.idVendor = "04E8"; # Samsung
   mobile.usb.idProduct = "6860"; # Galaxy A
+
+  # qcacld-2.0 works the same way!
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
 }
