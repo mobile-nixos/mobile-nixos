@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android = {
     bootimg.flash = {
       offset_base = "0x10000000";
