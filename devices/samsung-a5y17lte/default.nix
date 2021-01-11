@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   mobile.device.name = "samsung-a5y17lte";
@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android = {
     bootimg.flash = {
       offset_base = "0x10000000";
@@ -36,9 +38,15 @@
     # (Actually blank!)
   ];
 
+  mobile.boot.stage-1.compression = lib.mkDefault "xz";
+
   mobile.system.type = "android";
 
   mobile.usb.mode = "android_usb";
   mobile.usb.idVendor = "04E8"; # Samsung
   mobile.usb.idProduct = "6860"; # Galaxy A
+
+  # qcacld-2.0 works the same way!
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.wifi.disableMacAddressRandomization = true;
 }
