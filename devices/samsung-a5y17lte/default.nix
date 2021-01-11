@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   mobile.device.name = "samsung-a5y17lte";
@@ -37,6 +37,8 @@
     # Extracted from an Android boot image
     # (Actually blank!)
   ];
+
+  mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
   mobile.system.type = "android";
 
