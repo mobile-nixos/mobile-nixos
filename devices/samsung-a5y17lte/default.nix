@@ -48,4 +48,5 @@
 
   # qcacld-2.0 works the same way!
   mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.wifi.disableMacAddressRandomization = true;
 }
