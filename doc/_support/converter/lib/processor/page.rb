@@ -118,7 +118,7 @@ module Processor
       news_items = Article.get_article_paths().map do |filename|
         article = Article.new(filename)
         article.output
-      end.join("\n")
+      end[0..9].join("\n")
       @output.sub!('<!-- {NEWS_ITEMS} -->', news_items)
     end
 
