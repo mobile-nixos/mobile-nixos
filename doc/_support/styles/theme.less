@@ -113,3 +113,23 @@ table.with-links {
 		padding-left: @gutter/2;
 	}
 }
+
+.banner {
+	margin-left: -@gutter;
+	margin-right: -@gutter;
+	padding: @gutter;
+	color: #fff;
+	a {
+		color: inherit;
+	}
+	background: @color-blue-dark;
+	text-align: center;
+
+	&>:last-child, p:last-child {
+		margin-bottom: 0;
+	}
+}
+
+#content > .banner:last-child {
+	margin-bottom: 0;
+}
