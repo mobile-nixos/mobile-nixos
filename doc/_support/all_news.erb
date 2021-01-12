@@ -1,0 +1,8 @@
+<ul>
+  <% news_items.each do |item|
+    article = item[:article]
+    url = item[:url]
+  %>
+    <li><a href="<%= url %>"><%= article.title %></a></li>
+  <% end %>
+</ul>

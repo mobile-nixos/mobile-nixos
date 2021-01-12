@@ -122,6 +122,21 @@ module Processor
       @output.sub!('<!-- {NEWS_ITEMS} -->', news_items)
     end
 
+    def handle_special_all_news()
+      template = ERB.new(File.read(File.join($options["root"], "_support/all_news.erb")))
+      news_items = Article.get_article_paths().map do |filename|
+        {
+          article: Article.new(filename),
+          # Assumes links will be relative to the root of the site.
+          url: filename.sub(/\.adoc$/, ".html").sub(%r{^/build/doc/}, "")
+        }
+      end
+      @output.sub!(
+        '<!-- {NEWS_ITEMS} -->',
+        template.result(binding)
+      )
+    end
+
     def handle_special_news()
       @output.sub!(/<body class="/, '<body class="news-article ')
 
