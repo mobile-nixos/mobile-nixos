@@ -13,6 +13,37 @@ let
     SDL2
   ];
 
+  # Minified libinput, both for size and cross-compilation.
+  libinput = (pkgs.libinput.override({
+    # libwacom doesn't cross-compile at the moment
+    libwacom = null;
+
+    documentationSupport = false;
+    doxygen = null;
+    graphviz = null;
+
+    eventGUISupport = false;
+    cairo = null;
+    glib = null;
+    gtk3 = null;
+
+    testsSupport = false;
+    check = null;
+    valgrind = null;
+    python3 = null;
+  })).overrideAttrs(old: {
+    buildInputs = with pkgs; [
+      libevdev     
+      mtdev        
+    ];
+    nativeBuildInputs = old.nativeBuildInputs ++ [
+      pkgs.buildPackages.udev
+    ];
+    mesonFlags = old.mesonFlags ++ [
+      "-Dlibwacom=false"
+    ];
+  });
+
   # Allow libevdev to cross-compile.
   libevdev = (pkgs.libevdev.override({
     python3 = null;
@@ -83,6 +114,7 @@ in
 
     buildInputs = [
       libevdev
+      libinput
       libxkbcommon
     ]
     ++ optionals withSimulator simulatorDeps
