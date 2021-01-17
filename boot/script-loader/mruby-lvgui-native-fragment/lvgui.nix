@@ -4,6 +4,7 @@
 , fetchFromGitHub
 , pkg-config
 , SDL2
+, libdrm
 , withSimulator ? false
 }:
 
@@ -114,6 +115,7 @@ in
 
     buildInputs = [
       libevdev
+      libdrm
       libinput
       libxkbcommon
     ]
