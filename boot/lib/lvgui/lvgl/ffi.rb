@@ -44,6 +44,7 @@ module LVGL::FFI
   extern "bool lv_introspection_is_simulator()"
   extern "bool lv_introspection_is_debug()"
   extern "bool lv_introspection_use_assert_style()"
+  extern "const char * lv_introspection_display_driver()"
 
   # lvgl/src/lv_misc/lv_task.h
   enum!(:LV_TASK_PRIO, [
