@@ -27,6 +27,19 @@ EOF
       word("Red",   0xFF0000)
       word("Green", 0x00FF00)
       word("Blue",  0x0000FF)
+
+
+      LVGL::LVLabel.new(@container).tap do |label|
+text = <<EOF
+
+LVGUI is currently using the "#{LVGL::Introspection.display_driver}" display driver.
+
+EOF
+        label.set_long_mode(LVGL::LABEL_LONG::BREAK)
+        label.set_text(text)
+        label.set_align(LVGL::LABEL_ALIGN::CENTER)
+        label.set_width(@container.get_width_fit)
+      end
     end
 
     def word(text, color)
