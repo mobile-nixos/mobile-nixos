@@ -114,4 +114,9 @@ in
   system.build = {
     app-simulator = pkgs.callPackage ./app/simulator.nix {};
   };
+
+  # Override stage-0 support for this example app.
+  # It's only noise, and the current stage-0 is not able to boot anything else
+  # than a system it was built for anyway.
+  mobile.quirks.supportsStage-0 = lib.mkForce false;
 }
