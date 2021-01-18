@@ -57,6 +57,10 @@ in
     log.level = "DEBUG";
   };
 
+  # Ensure hello-gui isn't trampled over by the TTY
+  systemd.services."getty@tty1" = {
+    enable = false;
+  };
   systemd.services.hello-gui = {
     description = "GUI for the hello example of Mobile NixOS";
     wantedBy = [ "multi-user.target" ];
