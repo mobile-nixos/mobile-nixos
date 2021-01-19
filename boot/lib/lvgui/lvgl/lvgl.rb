@@ -12,6 +12,7 @@ module LVGL
     :LABEL_STYLE,
     :LAYOUT,
     :PAGE_STYLE,
+    :SW_STYLE,
     :TASK_PRIO,
     :TA_STYLE,
   ].each do |enum_name|
@@ -152,6 +153,10 @@ module LVGL
       @event_handler_proc = cb_proc
     end
 
+    def event_handler()
+      @event_handler_proc
+    end
+
     def register_userdata()
       userdata = Fiddle::Pointer[self]
       REGISTRY[@self_pointer.to_i] = self
@@ -208,6 +213,7 @@ module LVGL
     end
 
     def set_text(text)
+      text ||= ""
       # The "\0" thing is a bit scary; it seems that *something* related
       # to C string and "\0" in either mruby or LVGL, likely mruby, may
       # cause issues when using something like `split` to split a bigger
@@ -245,6 +251,38 @@ module LVGL
 
   class LVButton < LVContainer
     LV_TYPE = :btn
+  end
+
+  class LVSwitch < LVObject
+    LV_TYPE = :sw
+
+    def on(anim = false)
+      LVGL.ffi_call!(self.class, :on, @self_pointer, anim)
+    end
+
+    def off(anim = false)
+      LVGL.ffi_call!(self.class, :off, @self_pointer, anim)
+    end
+
+    def toggle(anim = false)
+      LVGL.ffi_call!(self.class, :toggle, @self_pointer, anim)
+    end
+
+    def get_state()
+      LVGL.ffi_call!(self.class, :get_state, @self_pointer) != 0
+    end
+
+    def get_style(style_type)
+      style = LVGL.ffi_call!(self.class, :get_style, @self_pointer, style_type)
+      LVGL::LVStyle.from_pointer(style)
+    end
+
+    def set_style(style_type, style)
+      # Prevents the object from being collected
+      @_style ||= {}
+      @_style[style_type] = style
+      LVGL.ffi_call!(self.class, :set_style, @self_pointer, style_type, style.lv_style_pointer)
+    end
   end
 
   class LVTextArea < LVObject

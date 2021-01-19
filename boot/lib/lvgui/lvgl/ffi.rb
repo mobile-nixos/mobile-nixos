@@ -99,6 +99,12 @@ module LVGL::FFI
   ], type: :uint8_t)
   typealias("lv_res_t", "LV_RES")
 
+  enum!(:LV_ANIM, [
+    :OFF,
+    :ON,
+  ])
+  typealias("lv_anim_enable_t", "LV_ANIM")
+
   extern "lv_obj_t * lv_obj_create(lv_obj_t *, const lv_obj_t *)"
   extern "const lv_style_t * lv_obj_get_style(const lv_obj_t *)"
   extern "void lv_obj_set_style(lv_obj_t *, const lv_style_t *)"
@@ -199,6 +205,24 @@ module LVGL::FFI
   extern "lv_obj_t * lv_img_create(lv_obj_t *, const lv_obj_t *)"
   extern "void lv_img_set_src(lv_obj_t *, const void *)"
 
+  # lvgl/src/lv_objx/lv_sw.h
+  enum!(:LV_SW_STYLE, [
+    :BG,
+    :INDIC,
+    :KNOB_OFF,
+    :KNOB_ON,
+  ], type: "uint8_t")
+  typealias("lv_sw_style_t", "LV_SW_STYLE")
+
+  extern "lv_obj_t *lv_sw_create(lv_obj_t *, const lv_obj_t *)"
+  extern "void lv_sw_on(lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_sw_off(lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_sw_toggle(lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_sw_set_style(lv_obj_t *, lv_sw_style_t , const lv_style_t *)"
+  extern "void lv_sw_set_anim_time(lv_obj_t *, uint16_t)"
+  extern "bool lv_sw_get_state(const lv_obj_t *)"
+  extern "uint16_t lv_sw_get_anim_time(const lv_obj_t *)"
+
   # lvgl/src/lv_objx/lv_label.h
   enum!(:LV_LABEL_LONG, [
     :EXPAND,     #< Expand the object size to the text size*/
@@ -231,11 +255,6 @@ module LVGL::FFI
   extern "void lv_label_set_align(lv_obj_t *, lv_label_align_t)"
 
   # lvgl/src/lv_objx/lv_page.h
-  enum!(:LV_ANIM, [
-    :OFF,
-    :ON,
-  ])
-  typealias("lv_anim_enable_t", "LV_ANIM")
   enum!(:LV_PAGE_STYLE, [
     :BG,
     :SCRL,
