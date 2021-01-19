@@ -34,6 +34,25 @@ module LVGUI
         label.set_width(@container.get_width_fit)
       end
     end
+
+    def add_switch(label, description: nil, initial: false)
+      LVGUI::SwitchLine.new(@container).tap do |switch|
+        add_to_focus_group(switch.switch_control)
+        if initial
+          switch.on
+        else
+          switch.off
+        end
+        switch.set_label(label)
+        switch.set_description(description)
+        switch.event_handler = ->(event) do
+          case event
+          when LVGL::EVENT::VALUE_CHANGED
+            yield(switch.get_state())
+          end
+        end
+      end
+    end
   end
 
   module Window
