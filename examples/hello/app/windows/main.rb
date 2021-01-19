@@ -12,6 +12,7 @@ module GUI
         ["Input devices information", ->() { InputsWindow.instance.present }],
         ["Disks information", ->() { DisksWindow.instance.present }],
         ["Logs", ->() { LogsWindow.instance.present }],
+        ["GUI testing", ->() { LVGUITestingWindow.instance.present }],
         ["About", ->() { AboutWindow.instance.present }],
         ["Quit",  ->() { QuitWindow.instance.present }],
       ])
