@@ -41,7 +41,8 @@ in
         (pkgs.writeText "system-shell.rb" ''
           module System
             def self.shell()
-              cmd = %q{setsid /bin/sh -c /bin/sh < /dev/${cfg.console} >/dev/${cfg.console} 2>/dev/${cfg.console}}
+              # `cttyhack` ensures we get job control (^C, ^Z) going.
+              cmd = %q{setsid /bin/sh -c 'setsid cttyhack sh; exec ash -mi' < /dev/${cfg.console} >/dev/${cfg.console} 2>/dev/${cfg.console}}
               $logger.debug(" $ #{cmd}")
               puts("\nExit this shell (CTRL+D) to resume booting.\n")
               system(cmd)
