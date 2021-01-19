@@ -191,7 +191,12 @@ class Tasks::SwitchRoot < SingletonTask
     if will_kexec?
       if Tasks.constants.include?(:SetupGadgetMode)
         Progress.exec_with_message("Tearing down USB Gadget mode") do
-          Tasks::SetupGadgetMode.instance.teardown()
+          begin
+            Tasks::SetupGadgetMode.instance.teardown()
+          rescue => e
+            $logger.fatal("Caught an error during teardown for kexec...")
+            $logger.fatal(e.inspect)
+          end
         end
       end
 
