@@ -292,6 +292,10 @@ module LVGL::FFI
   extern "void lv_page_glue_obj(lv_obj_t *, bool)"
   extern "void lv_page_set_style(lv_obj_t *, lv_page_style_t, const lv_style_t *)"
   extern "void lv_page_focus(lv_obj_t *, const lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_page_set_scrl_width(lv_obj_t *, lv_coord_t)"
+  extern "void lv_page_set_scrl_height(lv_obj_t *, lv_coord_t)"
+  extern "lv_coord_t lv_page_get_scrl_width(const lv_obj_t *)"
+  extern "lv_coord_t lv_page_get_scrl_height(const lv_obj_t *)"
 
 
   # lvgl/src/lv_objx/lv_kb.h
