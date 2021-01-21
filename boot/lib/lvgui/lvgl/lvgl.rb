@@ -1,6 +1,7 @@
 module LVGL
   [
     :ANIM,
+    :BTN_STYLE,
     :CONT_STYLE,
     :CURSOR,
     :EVENT,
@@ -251,6 +252,18 @@ module LVGL
 
   class LVButton < LVContainer
     LV_TYPE = :btn
+
+    def get_style(style_type)
+      style = LVGL.ffi_call!(self.class, :get_style, @self_pointer, style_type)
+      LVGL::LVStyle.from_pointer(style)
+    end
+
+    def set_style(style_type, style)
+      # Prevents the object from being collected
+      @_style ||= {}
+      @_style[style_type] = style
+      LVGL.ffi_call!(self.class, :set_style, @self_pointer, style_type, style.lv_style_pointer)
+    end
   end
 
   class LVSwitch < LVObject

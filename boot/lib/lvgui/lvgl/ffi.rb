@@ -153,10 +153,22 @@ module LVGL::FFI
   bound_method! :handle_lv_event, "void handle_lv_event_(struct _lv_obj_t *, lv_event_t)"
 
   # lvgl/src/lv_objx/lv_btn.h
+
+  enum!(:LV_BTN_STYLE, [
+    :REL,
+    :PR,
+    :TGL_REL,
+    :TGL_PR,
+    :INA,
+  ])
+  typealias("lv_btn_style_t", "LV_BTN_STYLE")
+
   extern "lv_obj_t * lv_btn_create(lv_obj_t *, const lv_obj_t *)"
   extern "void lv_btn_set_ink_in_time(lv_obj_t *, uint16_t)"
   extern "void lv_btn_set_ink_wait_time(lv_obj_t *, uint16_t)"
   extern "void lv_btn_set_ink_out_time(lv_obj_t *, uint16_t)"
+  extern "void lv_btn_set_style(lv_obj_t *, lv_btn_style_t, const lv_style_t *)"
+  extern "const lv_style_t * lv_btn_get_style(const lv_obj_t *, lv_btn_style_t)"
 
   # lvgl/src/lv_objx/lv_cont.h
   #typedef uint8_t lv_layout_t;
