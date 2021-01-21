@@ -436,6 +436,9 @@ module LVGL::FFI
   extern "void lv_anim_set_path_cb(lv_anim_t *, lv_anim_path_cb_t)"
   extern "void lv_anim_set_values(lv_anim_t *, lv_anim_value_t, lv_anim_value_t)"
 
+  # Colors
+  extern "lv_color_t lv_color_mix(lv_color_t, lv_color_t, uint8_t)"
+
   # Focus groups
   typedef "lv_group_focus_cb_t", "void (*lv_group_focus_cb_t)(struct _lv_group_t *)"
   extern "void lv_anim_core_init()"

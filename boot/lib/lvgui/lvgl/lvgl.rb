@@ -627,4 +627,37 @@ module LVGL
     SD_CARD        = "\xef\x9F\x82" # 63426, 0xF7C2
     NEW_LINE       = "\xef\xA2\xA2" # 63650, 0xF8A2
   end
+
+  # OPA_50 -> OPA::50 is illegal
+  # enum {                  
+  #   LV_OPA_TRANSP = 0,  
+  #   LV_OPA_0      = 0,  
+  #   LV_OPA_10     = 25, 
+  #   LV_OPA_20     = 51, 
+  #   LV_OPA_30     = 76, 
+  #   LV_OPA_40     = 102,
+  #   LV_OPA_50     = 127,
+  #   LV_OPA_60     = 153,
+  #   LV_OPA_70     = 178,
+  #   LV_OPA_80     = 204,
+  #   LV_OPA_90     = 229,
+  #   LV_OPA_100    = 255,
+  #   LV_OPA_COVER  = 255,
+  # };                      
+  module OPA
+    TRANSP = 0
+    COVER = 255
+    HALF = 127 # 50
+
+    # 0-100
+    def self.scale(num)
+      (255*num/100.0).round
+    end
+  end
+
+  module LVColor
+    def self.mix(col1, col2, mix)
+      LVGL::FFI.lv_color_mix(col1, col2, mix)
+    end
+  end
 end
