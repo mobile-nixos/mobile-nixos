@@ -460,6 +460,8 @@ module LVGL
 
     def initialize(pointer: nil)
       @focus_handler_proc = nil
+      @focus_groups_stack = [[]]
+      @last_focused_in_stack = []
 
       unless pointer
         raise "(FIXME) Creating a focus group is not implemented"
@@ -493,19 +495,33 @@ module LVGL
     end
 
     def add_obj(obj)
+      @focus_groups_stack.last << obj
+      _add_obj(obj)
+    end
+
+    def focus_obj(obj)
+      # Automatic bindings fail since there is no "self" argument here.
       ptr =
         if obj.respond_to?(:lv_obj_pointer)
           obj.lv_obj_pointer
         else
           obj
         end
-      LVGL.ffi_call!(self.class, :add_obj, @self_pointer, ptr)
+      LVGL.ffi_call!(self.class, :focus_obj, ptr)
     end
 
     def get_focused()
       LVObject.from_pointer(
         LVGL.ffi_call!(self.class, :get_focused, @self_pointer)
       )
+    end
+
+    def remove_all_objs()
+      # Evict the current array from the stack
+      @focus_groups_stack.pop()
+      # Don't forget to add a new one!
+      @focus_groups_stack.push([])
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
     end
 
     def focus_handler=(cb_proc)
@@ -517,9 +533,41 @@ module LVGL
     end
 
     def register_userdata()
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
       userdata = Fiddle::Pointer[self]
       REGISTRY[@self_pointer.to_i] = self
       LVGL.ffi_call!(self.class, :set_user_data, @self_pointer, userdata)
+    end
+
+    # Keep the previous focus group aside in memory, and empty the focus group.
+    # Use +#pop+ to put back the last focus group
+    def push()
+      @last_focused_in_stack << get_focused()
+      @focus_groups_stack << []
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
+    end
+
+    # Empties the current focus group, and puts back the previous one from the
+    # stack.
+    def pop()
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
+      @focus_groups_stack.pop()
+      @focus_groups_stack.last.each do |obj|
+        _add_obj(obj)
+      end
+      focus_obj(@last_focused_in_stack.pop())
+    end
+
+    private
+
+    def _add_obj(obj)
+      ptr =
+        if obj.respond_to?(:lv_obj_pointer)
+          obj.lv_obj_pointer
+        else
+          obj
+        end
+      LVGL.ffi_call!(self.class, :add_obj, @self_pointer, ptr)
     end
   end
 
