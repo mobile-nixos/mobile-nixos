@@ -24,7 +24,7 @@ module LVGUI
 
       @focus_group = []
       # Dummy object used as a "null" focus
-      LVGL::LVObject.new(@screen).tap do |obj|
+      LVGUI::Dummy.new(@screen).tap do |obj|
         add_to_focus_group(obj)
       end
       reset_focus_group
