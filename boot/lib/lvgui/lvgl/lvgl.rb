@@ -61,6 +61,14 @@ module LVGL
     end
   end
 
+  def self.layer_top()
+    LVObject.from_pointer(LVGL::FFI.lv_layer_top())
+  end
+
+  def self.layer_sys()
+    LVObject.from_pointer(LVGL::FFI.lv_layer_sys())
+  end
+
   class LVDisplay
     # This is not actually an object type in LVGL proper.
 

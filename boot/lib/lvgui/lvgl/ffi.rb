@@ -213,6 +213,9 @@ module LVGL::FFI
   extern "lv_disp_t *lv_disp_get_default()"
   extern "lv_obj_t *lv_scr_act()"
 
+  extern "lv_obj_t * lv_layer_top()"
+  extern "lv_obj_t * lv_layer_sys()"
+
   # lvgl/src/lv_objx/lv_img.h
   extern "lv_obj_t * lv_img_create(lv_obj_t *, const lv_obj_t *)"
   extern "void lv_img_set_src(lv_obj_t *, const void *)"
