@@ -82,6 +82,17 @@ module LVGUI
     end
   end
 
+  # Used mainly to create an intangible object that the focus ring can default
+  # on so it doesn't focus anything by default.
+  class Dummy < Widget
+    def initialize(parent)
+      super(LVGL::LVObject.new(parent))
+      set_width(0)
+      set_height(0)
+      set_style(LVGL::LVStyle::STYLE_TRANSP)
+    end
+  end
+
   class Button < Widget
     def initialize(parent)
       super(LVGL::LVButton.new(parent))
