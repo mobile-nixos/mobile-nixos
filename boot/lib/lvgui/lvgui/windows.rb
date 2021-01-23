@@ -53,6 +53,22 @@ module LVGUI
         end
       end
     end
+
+    def add_select(label, options, initial: nil)
+      LVGUI::OptionSelection.new(@container, @screen).tap do |select|
+        select.set_label(label)
+        select.set_options(options)
+        select.select(initial)
+        add_to_focus_group(select)
+
+        select.event_handler = ->(event) do
+          case event
+          when LVGL::EVENT::VALUE_CHANGED
+            yield(select.selected())
+          end
+        end
+      end
+    end
   end
 
   module Window
