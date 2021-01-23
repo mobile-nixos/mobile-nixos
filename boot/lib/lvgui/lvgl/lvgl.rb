@@ -459,7 +459,7 @@ module LVGL
     }
 
     def initialize(pointer: nil)
-      @focus_handler_proc = nil
+      @focus_handler_proc_stack = [nil]
       @focus_groups_stack = [[]]
       @last_focused_in_stack = []
 
@@ -525,11 +525,10 @@ module LVGL
     end
 
     def focus_handler=(cb_proc)
-      # Hook the handler on-the-fly.
-      unless @focus_handler
-        LVGL.ffi_call!(self.class, :set_focus_cb, @self_pointer, LVGL::FFI["handle_lv_focus"])
-      end
-      @focus_handler_proc = cb_proc
+      # Replace the last item from the stack
+      @focus_handler_proc_stack.pop()
+      @focus_handler_proc_stack << cb_proc
+      _set_focus_handler(cb_proc)
     end
 
     def register_userdata()
@@ -544,6 +543,8 @@ module LVGL
     def push()
       @last_focused_in_stack << get_focused()
       @focus_groups_stack << []
+      @focus_handler_proc_stack << nil
+      _set_focus_handler(@focus_handler_proc_stack.last)
       LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
     end
 
@@ -556,6 +557,8 @@ module LVGL
         _add_obj(obj)
       end
       focus_obj(@last_focused_in_stack.pop())
+      @focus_handler_proc_stack.pop()
+      _set_focus_handler(@focus_handler_proc_stack.last)
     end
 
     private
@@ -568,6 +571,11 @@ module LVGL
           obj
         end
       LVGL.ffi_call!(self.class, :add_obj, @self_pointer, ptr)
+    end
+
+    def _set_focus_handler(cb_proc)
+      # Hook the handler on-the-fly.
+      LVGL.ffi_call!(self.class, :set_focus_cb, @self_pointer, LVGL::FFI["handle_lv_focus"])
     end
   end
 

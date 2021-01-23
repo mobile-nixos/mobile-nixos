@@ -470,8 +470,9 @@ module LVGL::FFI
     # Pick from our registry, until we can rehydrate the object type with Fiddle.
     instance = LVGL::LVGroup::REGISTRY[group_p.to_i]
     instance.instance_exec do
-      if @focus_handler_proc
-        @focus_handler_proc.call()
+      prc = @focus_handler_proc_stack.last
+      if prc
+        prc.call()
       end
     end
   end
