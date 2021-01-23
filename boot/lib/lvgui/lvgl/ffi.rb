@@ -145,8 +145,8 @@ module LVGL::FFI
     # Pick from our registry, until we can rehydrate the object type with Fiddle.
     instance = LVGL::LVObject::REGISTRY[obj_p.to_i]
     instance.instance_exec do
-      if @event_handler_proc
-        @event_handler_proc.call(event)
+      if @__event_handler_proc
+        @__event_handler_proc.call(event)
       end
     end
   end

@@ -96,7 +96,7 @@ module LVGL
     }
 
     def initialize(parent = nil, pointer: nil)
-      @event_handler_proc = nil
+      @__event_handler_proc = nil
 
       unless pointer
         parent_ptr =
@@ -155,15 +155,16 @@ module LVGL
     end
 
     def event_handler=(cb_proc)
-      # Hook the handler on-the-fly.
-      unless @event_handler_proc
+      # Hook the handler on-the-fly, assuming it wasn't set if we didn't have
+      # a handler proc.
+      unless @__event_handler_proc
         LVGL.ffi_call!(self.class, :set_event_cb, @self_pointer, LVGL::FFI["handle_lv_event"])
       end
-      @event_handler_proc = cb_proc
+      @__event_handler_proc = cb_proc
     end
 
     def event_handler()
-      @event_handler_proc
+      @__event_handler_proc
     end
 
     def register_userdata()
