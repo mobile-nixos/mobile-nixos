@@ -67,6 +67,15 @@ module LVGUI
     LVGL::FFI.lvgui_focus_ring_disable()
   end
 
+  module Styles
+    def self.debug(color)
+      LVGL::LVStyle::STYLE_PLAIN.dup.tap do |style|
+        style.body_main_color = color
+        style.body_grad_color = color
+      end
+    end
+  end
+
   # Wraps an LVGL widget.
   class Widget
     def initialize(widget)
