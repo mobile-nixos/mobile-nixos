@@ -9,6 +9,7 @@ let
   # Select libs we need from the libs folder.
   libs = concatMapStringsSep " " (name: "${../lib}/${name}") [
     "hal/reboot_modes.rb"
+    "init/configuration.rb"
     "lvgui/args.rb"
     "lvgui/fiddlier.rb"
     "lvgui/lvgl/*.rb"
