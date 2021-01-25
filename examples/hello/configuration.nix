@@ -57,6 +57,10 @@ in
     log.level = "DEBUG";
   };
 
+  # Ensure hello-gui isn't trampled over by the TTY
+  systemd.services."getty@tty1" = {
+    enable = false;
+  };
   systemd.services.hello-gui = {
     description = "GUI for the hello example of Mobile NixOS";
     wantedBy = [ "multi-user.target" ];
@@ -110,4 +114,9 @@ in
   system.build = {
     app-simulator = pkgs.callPackage ./app/simulator.nix {};
   };
+
+  # Override stage-0 support for this example app.
+  # It's only noise, and the current stage-0 is not able to boot anything else
+  # than a system it was built for anyway.
+  mobile.quirks.supportsStage-0 = lib.mkForce false;
 }

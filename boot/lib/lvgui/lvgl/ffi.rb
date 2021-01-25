@@ -44,6 +44,7 @@ module LVGL::FFI
   extern "bool lv_introspection_is_simulator()"
   extern "bool lv_introspection_is_debug()"
   extern "bool lv_introspection_use_assert_style()"
+  extern "const char * lv_introspection_display_driver()"
 
   # lvgl/src/lv_misc/lv_task.h
   enum!(:LV_TASK_PRIO, [
@@ -98,6 +99,12 @@ module LVGL::FFI
   ], type: :uint8_t)
   typealias("lv_res_t", "LV_RES")
 
+  enum!(:LV_ANIM, [
+    :OFF,
+    :ON,
+  ])
+  typealias("lv_anim_enable_t", "LV_ANIM")
+
   extern "lv_obj_t * lv_obj_create(lv_obj_t *, const lv_obj_t *)"
   extern "const lv_style_t * lv_obj_get_style(const lv_obj_t *)"
   extern "void lv_obj_set_style(lv_obj_t *, const lv_style_t *)"
@@ -138,18 +145,30 @@ module LVGL::FFI
     # Pick from our registry, until we can rehydrate the object type with Fiddle.
     instance = LVGL::LVObject::REGISTRY[obj_p.to_i]
     instance.instance_exec do
-      if @event_handler_proc
-        @event_handler_proc.call(event)
+      if @__event_handler_proc
+        @__event_handler_proc.call(event)
       end
     end
   end
   bound_method! :handle_lv_event, "void handle_lv_event_(struct _lv_obj_t *, lv_event_t)"
 
   # lvgl/src/lv_objx/lv_btn.h
+
+  enum!(:LV_BTN_STYLE, [
+    :REL,
+    :PR,
+    :TGL_REL,
+    :TGL_PR,
+    :INA,
+  ])
+  typealias("lv_btn_style_t", "LV_BTN_STYLE")
+
   extern "lv_obj_t * lv_btn_create(lv_obj_t *, const lv_obj_t *)"
   extern "void lv_btn_set_ink_in_time(lv_obj_t *, uint16_t)"
   extern "void lv_btn_set_ink_wait_time(lv_obj_t *, uint16_t)"
   extern "void lv_btn_set_ink_out_time(lv_obj_t *, uint16_t)"
+  extern "void lv_btn_set_style(lv_obj_t *, lv_btn_style_t, const lv_style_t *)"
+  extern "const lv_style_t * lv_btn_get_style(const lv_obj_t *, lv_btn_style_t)"
 
   # lvgl/src/lv_objx/lv_cont.h
   #typedef uint8_t lv_layout_t;
@@ -194,9 +213,30 @@ module LVGL::FFI
   extern "lv_disp_t *lv_disp_get_default()"
   extern "lv_obj_t *lv_scr_act()"
 
+  extern "lv_obj_t * lv_layer_top()"
+  extern "lv_obj_t * lv_layer_sys()"
+
   # lvgl/src/lv_objx/lv_img.h
   extern "lv_obj_t * lv_img_create(lv_obj_t *, const lv_obj_t *)"
   extern "void lv_img_set_src(lv_obj_t *, const void *)"
+
+  # lvgl/src/lv_objx/lv_sw.h
+  enum!(:LV_SW_STYLE, [
+    :BG,
+    :INDIC,
+    :KNOB_OFF,
+    :KNOB_ON,
+  ], type: "uint8_t")
+  typealias("lv_sw_style_t", "LV_SW_STYLE")
+
+  extern "lv_obj_t *lv_sw_create(lv_obj_t *, const lv_obj_t *)"
+  extern "void lv_sw_on(lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_sw_off(lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_sw_toggle(lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_sw_set_style(lv_obj_t *, lv_sw_style_t , const lv_style_t *)"
+  extern "void lv_sw_set_anim_time(lv_obj_t *, uint16_t)"
+  extern "bool lv_sw_get_state(const lv_obj_t *)"
+  extern "uint16_t lv_sw_get_anim_time(const lv_obj_t *)"
 
   # lvgl/src/lv_objx/lv_label.h
   enum!(:LV_LABEL_LONG, [
@@ -230,11 +270,6 @@ module LVGL::FFI
   extern "void lv_label_set_align(lv_obj_t *, lv_label_align_t)"
 
   # lvgl/src/lv_objx/lv_page.h
-  enum!(:LV_ANIM, [
-    :OFF,
-    :ON,
-  ])
-  typealias("lv_anim_enable_t", "LV_ANIM")
   enum!(:LV_PAGE_STYLE, [
     :BG,
     :SCRL,
@@ -260,6 +295,10 @@ module LVGL::FFI
   extern "void lv_page_glue_obj(lv_obj_t *, bool)"
   extern "void lv_page_set_style(lv_obj_t *, lv_page_style_t, const lv_style_t *)"
   extern "void lv_page_focus(lv_obj_t *, const lv_obj_t *, lv_anim_enable_t)"
+  extern "void lv_page_set_scrl_width(lv_obj_t *, lv_coord_t)"
+  extern "void lv_page_set_scrl_height(lv_obj_t *, lv_coord_t)"
+  extern "lv_coord_t lv_page_get_scrl_width(const lv_obj_t *)"
+  extern "lv_coord_t lv_page_get_scrl_height(const lv_obj_t *)"
 
 
   # lvgl/src/lv_objx/lv_kb.h
@@ -400,6 +439,9 @@ module LVGL::FFI
   extern "void lv_anim_set_path_cb(lv_anim_t *, lv_anim_path_cb_t)"
   extern "void lv_anim_set_values(lv_anim_t *, lv_anim_value_t, lv_anim_value_t)"
 
+  # Colors
+  extern "lv_color_t lv_color_mix(lv_color_t, lv_color_t, uint8_t)"
+
   # Focus groups
   typedef "lv_group_focus_cb_t", "void (*lv_group_focus_cb_t)(struct _lv_group_t *)"
   extern "void lv_anim_core_init()"
@@ -428,8 +470,9 @@ module LVGL::FFI
     # Pick from our registry, until we can rehydrate the object type with Fiddle.
     instance = LVGL::LVGroup::REGISTRY[group_p.to_i]
     instance.instance_exec do
-      if @focus_handler_proc
-        @focus_handler_proc.call()
+      prc = @focus_handler_proc_stack.last
+      if prc
+        prc.call()
       end
     end
   end

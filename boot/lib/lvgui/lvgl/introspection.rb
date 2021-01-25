@@ -8,4 +8,7 @@ module LVGL::Introspection
   def self.use_assert_style?()
     LVGL::FFI.lv_introspection_use_assert_style != 0
   end
+  def self.display_driver()
+    LVGL::FFI.lv_introspection_display_driver
+  end
 end

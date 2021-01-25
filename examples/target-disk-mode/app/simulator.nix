@@ -9,11 +9,7 @@
 
 let
   script-loader = mobile-nixos.stage-1.script-loader.override({
-    mrbgems = mrbgems // {
-      mruby-lvgui = callPackage ../../../overlay/mruby-builder/mrbgems/mruby-lvgui {
-        withSimulator = true;
-      };
-    };
+    withSimulator = true;
   });
   applet = callPackage ./. {};
 in

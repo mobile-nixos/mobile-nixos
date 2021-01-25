@@ -1,6 +1,7 @@
 module LVGL
   [
     :ANIM,
+    :BTN_STYLE,
     :CONT_STYLE,
     :CURSOR,
     :EVENT,
@@ -12,6 +13,7 @@ module LVGL
     :LABEL_STYLE,
     :LAYOUT,
     :PAGE_STYLE,
+    :SW_STYLE,
     :TASK_PRIO,
     :TA_STYLE,
   ].each do |enum_name|
@@ -59,6 +61,14 @@ module LVGL
     end
   end
 
+  def self.layer_top()
+    LVObject.from_pointer(LVGL::FFI.lv_layer_top())
+  end
+
+  def self.layer_sys()
+    LVObject.from_pointer(LVGL::FFI.lv_layer_sys())
+  end
+
   class LVDisplay
     # This is not actually an object type in LVGL proper.
 
@@ -86,7 +96,7 @@ module LVGL
     }
 
     def initialize(parent = nil, pointer: nil)
-      @event_handler_proc = nil
+      @__event_handler_proc = nil
 
       unless pointer
         parent_ptr =
@@ -145,11 +155,16 @@ module LVGL
     end
 
     def event_handler=(cb_proc)
-      # Hook the handler on-the-fly.
-      unless @event_handler_proc
+      # Hook the handler on-the-fly, assuming it wasn't set if we didn't have
+      # a handler proc.
+      unless @__event_handler_proc
         LVGL.ffi_call!(self.class, :set_event_cb, @self_pointer, LVGL::FFI["handle_lv_event"])
       end
-      @event_handler_proc = cb_proc
+      @__event_handler_proc = cb_proc
+    end
+
+    def event_handler()
+      @__event_handler_proc
     end
 
     def register_userdata()
@@ -208,6 +223,7 @@ module LVGL
     end
 
     def set_text(text)
+      text ||= ""
       # The "\0" thing is a bit scary; it seems that *something* related
       # to C string and "\0" in either mruby or LVGL, likely mruby, may
       # cause issues when using something like `split` to split a bigger
@@ -245,6 +261,50 @@ module LVGL
 
   class LVButton < LVContainer
     LV_TYPE = :btn
+
+    def get_style(style_type)
+      style = LVGL.ffi_call!(self.class, :get_style, @self_pointer, style_type)
+      LVGL::LVStyle.from_pointer(style)
+    end
+
+    def set_style(style_type, style)
+      # Prevents the object from being collected
+      @_style ||= {}
+      @_style[style_type] = style
+      LVGL.ffi_call!(self.class, :set_style, @self_pointer, style_type, style.lv_style_pointer)
+    end
+  end
+
+  class LVSwitch < LVObject
+    LV_TYPE = :sw
+
+    def on(anim = false)
+      LVGL.ffi_call!(self.class, :on, @self_pointer, anim)
+    end
+
+    def off(anim = false)
+      LVGL.ffi_call!(self.class, :off, @self_pointer, anim)
+    end
+
+    def toggle(anim = false)
+      LVGL.ffi_call!(self.class, :toggle, @self_pointer, anim)
+    end
+
+    def get_state()
+      LVGL.ffi_call!(self.class, :get_state, @self_pointer) != 0
+    end
+
+    def get_style(style_type)
+      style = LVGL.ffi_call!(self.class, :get_style, @self_pointer, style_type)
+      LVGL::LVStyle.from_pointer(style)
+    end
+
+    def set_style(style_type, style)
+      # Prevents the object from being collected
+      @_style ||= {}
+      @_style[style_type] = style
+      LVGL.ffi_call!(self.class, :set_style, @self_pointer, style_type, style.lv_style_pointer)
+    end
   end
 
   class LVTextArea < LVObject
@@ -400,7 +460,9 @@ module LVGL
     }
 
     def initialize(pointer: nil)
-      @focus_handler_proc = nil
+      @focus_handler_proc_stack = [nil]
+      @focus_groups_stack = [[]]
+      @last_focused_in_stack = []
 
       unless pointer
         raise "(FIXME) Creating a focus group is not implemented"
@@ -434,6 +496,75 @@ module LVGL
     end
 
     def add_obj(obj)
+      @focus_groups_stack.last << obj
+      _add_obj(obj)
+    end
+
+    def focus_obj(obj)
+      # Automatic bindings fail since there is no "self" argument here.
+      ptr =
+        if obj.respond_to?(:lv_obj_pointer)
+          obj.lv_obj_pointer
+        else
+          obj
+        end
+      LVGL.ffi_call!(self.class, :focus_obj, ptr)
+    end
+
+    def get_focused()
+      LVObject.from_pointer(
+        LVGL.ffi_call!(self.class, :get_focused, @self_pointer)
+      )
+    end
+
+    def remove_all_objs()
+      # Evict the current array from the stack
+      @focus_groups_stack.pop()
+      # Don't forget to add a new one!
+      @focus_groups_stack.push([])
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
+    end
+
+    def focus_handler=(cb_proc)
+      # Replace the last item from the stack
+      @focus_handler_proc_stack.pop()
+      @focus_handler_proc_stack << cb_proc
+      _set_focus_handler(cb_proc)
+    end
+
+    def register_userdata()
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
+      userdata = Fiddle::Pointer[self]
+      REGISTRY[@self_pointer.to_i] = self
+      LVGL.ffi_call!(self.class, :set_user_data, @self_pointer, userdata)
+    end
+
+    # Keep the previous focus group aside in memory, and empty the focus group.
+    # Use +#pop+ to put back the last focus group
+    def push()
+      @last_focused_in_stack << get_focused()
+      @focus_groups_stack << []
+      @focus_handler_proc_stack << nil
+      _set_focus_handler(@focus_handler_proc_stack.last)
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
+    end
+
+    # Empties the current focus group, and puts back the previous one from the
+    # stack.
+    def pop()
+      LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
+      @focus_groups_stack.pop()
+      @focus_groups_stack.last.each do |obj|
+        _add_obj(obj)
+      end
+      focus_obj(@last_focused_in_stack.pop())
+      @focus_handler_proc_stack.pop()
+      _set_focus_handler(@focus_handler_proc_stack.last)
+    end
+
+    private
+
+    def _add_obj(obj)
       ptr =
         if obj.respond_to?(:lv_obj_pointer)
           obj.lv_obj_pointer
@@ -443,24 +574,9 @@ module LVGL
       LVGL.ffi_call!(self.class, :add_obj, @self_pointer, ptr)
     end
 
-    def get_focused()
-      LVObject.from_pointer(
-        LVGL.ffi_call!(self.class, :get_focused, @self_pointer)
-      )
-    end
-
-    def focus_handler=(cb_proc)
+    def _set_focus_handler(cb_proc)
       # Hook the handler on-the-fly.
-      unless @focus_handler
-        LVGL.ffi_call!(self.class, :set_focus_cb, @self_pointer, LVGL::FFI["handle_lv_focus"])
-      end
-      @focus_handler_proc = cb_proc
-    end
-
-    def register_userdata()
-      userdata = Fiddle::Pointer[self]
-      REGISTRY[@self_pointer.to_i] = self
-      LVGL.ffi_call!(self.class, :set_user_data, @self_pointer, userdata)
+      LVGL.ffi_call!(self.class, :set_focus_cb, @self_pointer, LVGL::FFI["handle_lv_focus"])
     end
   end
 
@@ -575,5 +691,38 @@ module LVGL
     BACKSPACE      = "\xef\x95\x9A" # 62810, 0xF55A
     SD_CARD        = "\xef\x9F\x82" # 63426, 0xF7C2
     NEW_LINE       = "\xef\xA2\xA2" # 63650, 0xF8A2
+  end
+
+  # OPA_50 -> OPA::50 is illegal
+  # enum {                  
+  #   LV_OPA_TRANSP = 0,  
+  #   LV_OPA_0      = 0,  
+  #   LV_OPA_10     = 25, 
+  #   LV_OPA_20     = 51, 
+  #   LV_OPA_30     = 76, 
+  #   LV_OPA_40     = 102,
+  #   LV_OPA_50     = 127,
+  #   LV_OPA_60     = 153,
+  #   LV_OPA_70     = 178,
+  #   LV_OPA_80     = 204,
+  #   LV_OPA_90     = 229,
+  #   LV_OPA_100    = 255,
+  #   LV_OPA_COVER  = 255,
+  # };                      
+  module OPA
+    TRANSP = 0
+    COVER = 255
+    HALF = 127 # 50
+
+    # 0-100
+    def self.scale(num)
+      (255*num/100.0).round
+    end
+  end
+
+  module LVColor
+    def self.mix(col1, col2, mix)
+      LVGL::FFI.lv_color_mix(col1, col2, mix)
+    end
   end
 end

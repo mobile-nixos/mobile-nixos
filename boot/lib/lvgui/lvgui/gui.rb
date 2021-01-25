@@ -67,6 +67,15 @@ module LVGUI
     LVGL::FFI.lvgui_focus_ring_disable()
   end
 
+  module Styles
+    def self.debug(color)
+      LVGL::LVStyle::STYLE_PLAIN.dup.tap do |style|
+        style.body_main_color = color
+        style.body_grad_color = color
+      end
+    end
+  end
+
   # Wraps an LVGL widget.
   class Widget
     def initialize(widget)
@@ -79,6 +88,33 @@ module LVGUI
     # Needed to make respond_to? work.
     def lv_obj_pointer()
       @widget.lv_obj_pointer
+    end
+  end
+
+  # Used mainly to create an intangible object that the focus ring can default
+  # on so it doesn't focus anything by default.
+  class Dummy < Widget
+    def initialize(parent)
+      super(LVGL::LVObject.new(parent))
+      set_width(0)
+      set_height(0)
+      set_style(LVGL::LVStyle::STYLE_TRANSP)
+    end
+  end
+
+  # Horizontal separator between elements
+  class HorizontalSeparator < Widget
+    def initialize(parent)
+      super(LVGL::LVObject.new(parent))
+      set_width(parent.get_width_fit())
+      set_height(1)
+
+      LVGL::LVStyle::STYLE_PLAIN.dup().tap do |style|
+        style.body_main_color = 0x99BBBBBB
+        style.body_grad_color = style.body_main_color
+        style.body_border_width = 0
+        set_style(style)
+      end
     end
   end
 

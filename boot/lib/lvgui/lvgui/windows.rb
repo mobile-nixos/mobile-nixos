@@ -25,6 +25,52 @@ module LVGUI
     end
   end
 
+  module BaseUIElements
+    def add_main_text(text, alignment: LVGL::LABEL_ALIGN::CENTER)
+      LVGL::LVLabel.new(@container).tap do |label|
+        label.set_long_mode(LVGL::LABEL_LONG::BREAK)
+        label.set_text(text)
+        label.set_align(alignment)
+        label.set_width(@container.get_width_fit)
+      end
+    end
+
+    def add_switch(label, description: nil, initial: false)
+      LVGUI::SwitchLine.new(@container).tap do |switch|
+        add_to_focus_group(switch.switch_control)
+        if initial
+          switch.on
+        else
+          switch.off
+        end
+        switch.set_label(label)
+        switch.set_description(description)
+        switch.event_handler = ->(event) do
+          case event
+          when LVGL::EVENT::VALUE_CHANGED
+            yield(switch.get_state())
+          end
+        end
+      end
+    end
+
+    def add_select(label, options, initial: nil)
+      LVGUI::OptionSelection.new(@container, @screen).tap do |select|
+        select.set_label(label)
+        select.set_options(options)
+        select.select(initial)
+        add_to_focus_group(select)
+
+        select.event_handler = ->(event) do
+          case event
+          when LVGL::EVENT::VALUE_CHANGED
+            yield(select.selected())
+          end
+        end
+      end
+    end
+  end
+
   module Window
     # Include with +include LVGUI::Window::WithBackButton+ and
     # use e.g. +goes_back_to ->() { MainWindow.instance }+
