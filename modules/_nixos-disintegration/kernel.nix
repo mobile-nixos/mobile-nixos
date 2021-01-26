@@ -3,7 +3,7 @@
 # kernel package with arguments that makes the Mobile NixOS kernel
 # builder less ergonomic to use.
 
-{ pkgs, lib, config, _mobile-nixos, ... }:
+{ pkgs, lib, config, modulesPath, ... }:
 
 let
   inherit (lib)
@@ -20,7 +20,7 @@ in
   imports = [
     (
       let
-        toOverride = import "${_mobile-nixos.nixpkgsPath}/nixos/modules/system/boot/kernel.nix" {
+        toOverride = import "${modulesPath}/system/boot/kernel.nix" {
           inherit lib config pkgs;
         };
       in (

@@ -1,7 +1,6 @@
 { pkgs ? import <nixpkgs> {} }: 
 
 let
-  nixpkgsPath = pkgs.path;
 
   # Original `evalConfig`
   evalConfig' = import "${pkgs.path}/nixos/lib/eval-config.nix";
@@ -11,7 +10,6 @@ let
     specialArgs = specialArgs // {
       _mobile-nixos = {
         inherit evalConfig;
-        inherit nixpkgsPath;
         path = ../.;
       };
     };
