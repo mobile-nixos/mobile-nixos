@@ -52,4 +52,8 @@
   mobile.system.type = "android";
 
   mobile.quirks.qualcomm.dwc3-otg_switch.enable = true;
+
+  # qcacld-2.0 works the same way as wcnss-wlan
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.wifi.disableMacAddressRandomization = true;
 }
