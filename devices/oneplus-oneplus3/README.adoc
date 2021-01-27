@@ -3,6 +3,8 @@ include::_support/common.inc[]
 
 == Device-specific notes
 
+=== `rootfs` installation
+
 Using `fastboot` to burn system.img to the userdata partition will fail.
 
 It seems like it flashes successfully like other devices do, but the flashed
@@ -15,3 +17,26 @@ flash the image.
  $ cat .../.system.img | adb shell dd of=/dev/block/by-name/userdata bs=8m
 ```
 
+=== Firmware for Wi-Fi
+
+This particular phone keeps the firmware files on a partition named
+`modem`.
+
+To make use of the Wi-Fi capabilities of this phone you will need to
+make them available to the firmware derivation.
+
+The files can be acquired through different methods. You can use an
+alternate recovery like TWRP, mount the partition (identified using
+`blkid`) and copy the files.
+
+Another way is to do it using an installed Mobile NixOS system, where,
+too, you mount the partition and copy them:
+
+```
+$ sudo mount -o ro /dev/disk/by-partlabel/modem /mnt
+$ cp -r /mnt ./modem
+$ sudo umount /mnt
+```
+
+The copy of the firmware files will be in the modem directory, in the
+current working directory, ready to be referred to.
