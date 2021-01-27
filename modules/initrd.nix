@@ -342,6 +342,7 @@ in
 
         boot = {
           inherit (config.mobile.boot.stage-1) fail crashToBootloader;
+          inherit (config.mobile.boot.stage-1.shell) shellOnFail;
         };
 
         # Transmit all of the mobile NixOS HAL options.
