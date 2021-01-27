@@ -190,6 +190,11 @@ module System
     end
   end
 
+  # Unmounts a mount.
+  def self.umount(target, *args)
+    run("umount", target, *args)
+  end
+
   def self.cmdline()
     if File.exists?("/proc/cmdline") then
       File.read("/proc/cmdline").split(/\s+/)
