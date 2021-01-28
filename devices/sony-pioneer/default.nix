@@ -64,6 +64,7 @@
 
   mobile.usb.gadgetfs.functions = {
     rndis = "rndis_bam.rndis";
+    adb = "ffs.adb";
   };
 
 }
