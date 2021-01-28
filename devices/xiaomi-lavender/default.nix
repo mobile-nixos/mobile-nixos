@@ -68,7 +68,6 @@
 
   mobile.usb.gadgetfs.functions = {
     rndis = "rndis_bam.rndis";
-    # FIXME: This is likely the right function name, but doesn't work.
-    # adb = "ffs.usb0";
+    adb = "ffs.adb";
   };
 }
