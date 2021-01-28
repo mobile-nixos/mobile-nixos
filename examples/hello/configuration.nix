@@ -21,6 +21,19 @@ let
     fsType = "tmpfs";
     neededForBoot = true;
   };
+
+  # Only enable `adb` if we know how to.
+  # FIXME: relies on implementation details. Poor separation of concerns.
+  enableADB = 
+  let
+    value =
+      config.mobile.usb.mode == "android_usb" ||
+      (config.mobile.usb.mode == "gadgetfs" && config.mobile.usb.gadgetfs.functions ? adb)
+    ;
+  in
+    if value then value else
+    builtins.trace "warning: unable to enable ADB for this device." value
+  ;
 in
 {
   imports = [
@@ -73,11 +86,7 @@ in
     };
   };
 
-  # Only enable `adb` if we know how to.
-  # FIXME: relies on implementation details. Poor separation of concerns.
-  mobile.adbd.enable = (config.mobile.system.type == "android") &&
-    (config.mobile.usb.mode != "gadgetfs" || config.mobile.usb.gadgetfs.functions ? ffs)
-  ;
+  mobile.adbd.enable = lib.mkDefault enableADB;
 
   boot.postBootCommands = lib.mkOrder (-1) ''
     brightness=10
