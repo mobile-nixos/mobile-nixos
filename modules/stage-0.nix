@@ -1,4 +1,4 @@
-{ config, lib, pkgs, modules, baseModules, _mobile-nixos, ... }:
+{ config, lib, pkgs, ... }:
 
 # This module provides the `stage-0` build output.
 # It is the same configuration, with minor customizations.
@@ -22,11 +22,10 @@ in
   };
 
   config = {
-    system.build.stage-0 = (_mobile-nixos.evalConfig {
-      inherit baseModules;
-      modules = modules ++ [{
+    system.build.stage-0 = (config.lib.mobile-nixos.composeConfig {
+      config = {
         mobile.boot.stage-1.stage = if supportsStage-0 then 0 else 1;
-      }];
+      };
     }).config;
   };
 }
