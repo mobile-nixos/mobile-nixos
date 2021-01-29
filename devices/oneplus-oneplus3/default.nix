@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android.bootimg = {
     flash = {
       offset_base = "0x80000000";
@@ -50,4 +52,8 @@
   mobile.system.type = "android";
 
   mobile.quirks.qualcomm.dwc3-otg_switch.enable = true;
+
+  # qcacld-2.0 works the same way as wcnss-wlan
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.wifi.disableMacAddressRandomization = true;
 }
