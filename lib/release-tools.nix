@@ -1,19 +1,8 @@
 { pkgs ? import <nixpkgs> {} }: 
 
 let
-
   # Original `evalConfig`
-  evalConfig' = import "${pkgs.path}/nixos/lib/eval-config.nix";
-
-  # Specialized `evalConfig` which injects the _mobile-nixos special arg.
-  evalConfig = args@{ specialArgs ? {}, ... }: evalConfig' (args // {
-    specialArgs = specialArgs // {
-      _mobile-nixos = {
-        inherit evalConfig;
-        path = ../.;
-      };
-    };
-  });
+  evalConfig = import "${toString pkgs.path}/nixos/lib/eval-config.nix";
 in
 {
   # This should *never* rely on lib or pkgs.
