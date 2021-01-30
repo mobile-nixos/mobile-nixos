@@ -11,7 +11,6 @@
 {
   imports = [
     ./initrd.nix
-    ./kernel.nix
   ];
 
   config = lib.mkMerge [
