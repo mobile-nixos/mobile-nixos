@@ -1,6 +1,7 @@
 {
   mobile-nixos
 , fetchFromGitHub
+, ...
 }:
 
 mobile-nixos.kernel-builder-gcc49 {
