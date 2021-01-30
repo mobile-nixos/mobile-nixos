@@ -95,11 +95,19 @@ in
 
   config.boot.kernelPackages = mkDefault (
     if (supportsStage-0 && config.mobile.rootfs.shared.enabled) || cfg.package == null
-    then {
-      # This must look legit enough so that NixOS thinks it's a kernel attrset.
-      stdenv = pkgs.stdenv;
-      kernel = pkgs.runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy";
-    }
+    then let
+      self = {
+        # This must look legit enough so that NixOS thinks it's a kernel attrset.
+        stdenv = pkgs.stdenv;
+        # callPackage so that override / overrideAttrs exist.
+        kernel = pkgs.callPackage (
+          { runCommandNoCC, ... }: runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy"
+        ) {};
+        # Fake having `extend` available... probably dumb... but is it more
+        # dumb than faking a kernelPackages package set for eval??
+        extend = _: self;
+      };
+    in self
     else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
   );
 
