@@ -2,6 +2,7 @@
   mobile-nixos
 , fetchFromGitHub
 , fetchpatch
+, ...
 }:
 
 mobile-nixos.kernel-builder-gcc6 {
