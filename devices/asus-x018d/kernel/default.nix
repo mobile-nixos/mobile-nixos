@@ -3,6 +3,7 @@
 , fetchFromGitHub
 , python2
 , buildPackages
+, ...
 }:
 
 mobile-nixos.kernel-builder-gcc49 {
