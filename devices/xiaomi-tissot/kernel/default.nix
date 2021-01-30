@@ -1,5 +1,6 @@
 { mobile-nixos
 , fetchFromGitHub
+, ...
 }:
 mobile-nixos.kernel-builder-gcc6 {
   version = "3.18.140";
