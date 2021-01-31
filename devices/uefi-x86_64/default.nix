@@ -24,9 +24,12 @@
 
   mobile.boot.stage-1 = {
     kernel = {
-      package = pkgs.linuxPackages_5_4.kernel
-        .overrideAttrs({passthru ? {}, ...}: {
-          passthru = passthru // {
+      package = let inherit (pkgs.linuxPackages_5_4) kernel; in
+        kernel.overrideAttrs({passthru ? {}, ...}: {
+          # Using `kernel.passthru` as overrideAttrs on kernel derivations
+          # does not work as expected.
+          # See https://github.com/NixOS/nixpkgs/issues/111504
+          passthru = kernel.passthru // {
             file = "bzImage";
           };
         })
