@@ -64,6 +64,7 @@
 
   mobile.usb.gadgetfs.functions = {
     rndis = "gsi.rndis";
+    adb = "ffs.adb";
   };
 
   mobile.boot.stage-1.tasks = [

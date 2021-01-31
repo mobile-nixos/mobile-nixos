@@ -57,5 +57,6 @@
   mobile.usb.idProduct = "FF80"; # Mi/Redmi series (RNDIS)
 
   mobile.usb.gadgetfs.functions = {
+    adb = "ffs.adb";
   };
 }

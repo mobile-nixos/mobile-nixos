@@ -190,6 +190,11 @@ module System
     end
   end
 
+  # Unmounts a mount.
+  def self.umount(target, *args)
+    run("umount", target, *args)
+  end
+
   def self.cmdline()
     if File.exists?("/proc/cmdline") then
       File.read("/proc/cmdline").split(/\s+/)
@@ -199,6 +204,8 @@ module System
   end
 
   def self.failure(code, title, message="(No details given)", color: "000000", delay: Configuration["boot"]["fail"]["delay"], status: 111)
+    $logger.debug("-- Entering System.failure handler --")
+    $logger.debug("Killing the splash applet...")
     Progress.kill()
 
     # First print the error we're handling.
@@ -230,6 +237,9 @@ module System
       status: status,
     }.to_json)
 
+    # Drop down to a shell if possible and wanted.
+    shell if respond_to?(:shell) && Configuration["boot"]["shellOnFail"]
+
     # Show the error handler applet.
     begin
       System.exec(LOADER, "/applets/boot-error.mrb", "/.error.json")
@@ -243,9 +253,6 @@ module System
 
     # If we're here, things are broken beyond belief!
     _flush_outputs()
-
-    # Drop down to a shell if possible.
-    shell if respond_to?(:shell)
 
     # As in "command not found".
     exit 127

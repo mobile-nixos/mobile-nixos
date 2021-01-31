@@ -14,6 +14,54 @@ module System::ConfigFSUSB
     end
   end
 
+  module FunctionFS
+    ROOT = "/dev/usb-ffs"
+
+    class FFSDaemon
+      def start()
+        raise "#start() needs to be set on #{self.class.name}"
+      end
+    end
+
+    module Daemon
+    end
+
+    class Daemon::Adb < FFSDaemon
+      def self.start()
+        System.spawn("adbd")
+        # `adbd` is not ready instantly. We need *some* time to pass for it
+        # to start and be ready.
+        sleep(1)
+      end
+    end
+
+    DAEMONS = {
+      adb: Daemon::Adb
+    }
+
+    def self.mount(feature_name)
+      target = File.join(ROOT, feature_name)
+      FileUtils.mkdir_p(target)
+      System.mount(feature_name, target, type: "functionfs")
+    end
+    
+    def self.umount(feature_name)
+      target = File.join(ROOT, feature_name)
+      System.umount(target)
+      Dir.delete(target)
+    end
+
+    def self.start_daemon(feature_name)
+      feature_name = feature_name.to_sym()
+      $logger.debug("FunctionFS.start_daemon(#{feature_name.inspect}) // #{feature_name.inspect}")
+      if DAEMONS[feature_name]
+        DAEMONS[feature_name].start()
+      else
+        $logger.fatal("Tried to get FunctionFS Daemon for #{feature_name} (#{feature_name.constantize()}) and failed.")
+      end
+    end
+  end 
+
   # This is a bit underdocumented in the configfs and gadgetfs docs, but this
   # would be used to translate strings in multiple languages.
   # In practice, it never happens and is hardcoded to en-US.
@@ -28,12 +76,17 @@ module System::ConfigFSUSB
     attr_reader :name
     attr_accessor :features
 
+    def needs_ffs?()
+      Configuration["boot"]["usb"]["functions"].each do |feature, function_name|
+        return true if function_name.match(/^ffs\./)
+      end
+    end
+
     # Initializes a USB gadget
     # The name is actually arbitrary, but it is customary to use `gn` where n
     # is an incrementing number.
     def initialize(name)
       @name = name
-      FileUtils.mkdir_p(File.join(path_prefix, STRINGS_SUFFIX))
     end
 
     def path_prefix()
@@ -69,6 +122,10 @@ module System::ConfigFSUSB
       System.write(File.join(path_prefix, STRINGS_SUFFIX, name), value)
     end
 
+    def prepare()
+      FileUtils.mkdir_p(File.join(path_prefix, STRINGS_SUFFIX))
+    end
+
     def activate!()
       # TODO: explore more than one "config" in a gadget. (c.1)
       # First, "document" features.
@@ -89,6 +146,13 @@ module System::ConfigFSUSB
         feature_dir = File.join(config_dir, feature)
         FileUtils.mkdir_p(function_dir)
         System.symlink(function_dir, feature_dir)
+
+        # Handle FunctionFS
+        if function_name.match(/^ffs\./)
+          $logger.debug("Handling FunctionFS feature: #{feature} with function name: #{function_name}")
+          FunctionFS.mount(feature)
+          FunctionFS.start_daemon(feature)
+        end
 
         quirk_name = function_name.gsub(/\./, "_").to_sym
         $logger.debug("Looking for quirk: #{quirk_name}")
@@ -131,6 +195,12 @@ class System::AndroidUSB
   attr_accessor :id_vendor, :id_product
 
   ANDROID_USB  = "/sys/class/android_usb"
+  ALIASES_PATH = "#{ANDROID_USB}/android0/f_ffs/aliases"
+
+  def needs_ffs?()
+    # TODO: add other known ffs android_usb features
+    Configuration["boot"]["usb"]["features"].any?("adb")
+  end
 
   def path_prefix()
     File.join(ANDROID_USB, "android0")
@@ -157,17 +227,37 @@ class System::AndroidUSB
     System.write(File.join(path_prefix, name), value)
   end
 
+  def prepare()
+  end
+
   def activate!()
+    # Ensure it is not enabled
     System.write(File.join(path_prefix, "enable"), "0")
+
+    # TODO: decouple FFS features
+    # Start the FFS endpoint, if needed
+    if @features.any?("adb")
+      System.write(ALIASES_PATH, "adb")
+      System::ConfigFSUSB::FunctionFS.mount("adb")
+    end
+
     set_id("idVendor", @id_vendor)
     set_id("idProduct", @id_product)
     System.write(File.join(path_prefix, "bDeviceClass"), "0")
     System.write(File.join(path_prefix, "bDeviceSubClass"), "0")
     System.write(File.join(path_prefix, "bDeviceProtocol"), "0")
     System.write(File.join(path_prefix, "functions"), @features.join(","))
+
     sleep(0.1)
     System.write(File.join(path_prefix, "enable"), "1")
     sleep(0.1)
+
+    # Confusingly enough, this needs to be started *after* enabling the device
+    # for android_usb
+    # Start the adbd daemon for the FFS endpoint
+    if @features.any?("adb")
+      System::ConfigFSUSB::FunctionFS.start_daemon("adb")
+    end
   end
 
   def teardown()
@@ -179,7 +269,7 @@ end
 class Tasks::SetupGadgetMode < SingletonTask
   def initialize()
     add_dependency(:Mount, "/sys")
-    add_dependency(:Mount, System::ConfigFSUSB::CONFIGFS)
+    add_dependency(:Mount, System::ConfigFSUSB::CONFIGFS) if mode == "gadgetfs"
     # If there's a `/vendor` mount point, it's likely that it's highly possible
     # that it's going to be required for firmwares.
     if Configuration["nixos"]["boot"]["specialFileSystems"]["/vendor"]
@@ -191,18 +281,30 @@ class Tasks::SetupGadgetMode < SingletonTask
     if Configuration["boot"]["usb"]["features"].any?("mass_storage")
       add_dependency(:Files, Configuration["storage"]["internal"])
     end
+
+    if needs_ffs?
+      add_dependency(:Mount, "/dev")
+    end
+  end
+
+  # Whether the configuration needs FunctionFS
+  def needs_ffs?()
+    gadget.needs_ffs?()
+  end
+
+  def mode()
+    Configuration["usb"]["mode"]
   end
 
   def gadget()
-    mode = Configuration["usb"]["mode"]
     @gadget ||= 
       case mode
       when "gadgetfs"
-        log("Configuring CONFIGFS USB Gadget.")
-        gadget = System::ConfigFSUSB::Gadget.new("g1")
+        log("Using CONFIGFS USB Gadget.")
+        System::ConfigFSUSB::Gadget.new("g1")
       when "android_usb"
-        log("Configuring ANDROID_USB Gadget.")
-        gadget = System::AndroidUSB.instance()
+        log("Using ANDROID_USB Gadget.")
+        System::AndroidUSB.instance()
       else
         log("No way to configure USB Gadget found.")
         return
@@ -212,6 +314,8 @@ class Tasks::SetupGadgetMode < SingletonTask
   def run()
     return unless gadget
 
+    log("Configuring USB Gadget.")
+    gadget.prepare
     gadget.id_vendor = Configuration["usb"]["idVendor"]
     gadget.id_product = Configuration["usb"]["idProduct"]
     gadget.product = Configuration["device"]["name"]
@@ -225,27 +329,5 @@ class Tasks::SetupGadgetMode < SingletonTask
   def teardown()
     return unless gadget
     gadget.teardown()
-  end
-end
-
-# This task is a bit hacky.
-# It ensures ffs aliases are being configured before the functionfs mounts.
-# This is because otherwise, on some devices, it fails.
-class Tasks::SetupFFSAlias < SingletonTask
-  ALIASES_PATH = "/sys/class/android_usb/android0/f_ffs/aliases"
-  def initialize()
-    @with_ffs = false
-    add_dependency(:Mount, "/sys")
-    mount_task = Tasks::Mount.registry["/dev/usb-ffs/adb"]
-    if mount_task
-      @with_ffs = true
-      mount_task.add_dependency(:Task, self)
-    end
-  end
-
-  def run()
-    if @with_ffs and File.exist?(ALIASES_PATH)
-      System.write(ALIASES_PATH, "adb")
-    end
   end
 end

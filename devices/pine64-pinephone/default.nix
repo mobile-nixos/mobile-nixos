@@ -49,6 +49,7 @@
   mobile.usb.gadgetfs.functions = {
     rndis = "rndis.usb0";
     mass_storage = "mass_storage.0";
+    adb = "ffs.adb";
   };
 
   mobile.boot.stage-1.bootConfig = {
