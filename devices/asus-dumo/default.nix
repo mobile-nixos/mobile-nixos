@@ -37,6 +37,27 @@
     config.mobile.device.firmware
   ];
 
+  # The controller is hidden from the OS unless started using the "android"
+  # launch option in the weird UEFI GUI chooser.
+  mobile.usb.mode = "gadgetfs";
+
+  # Commonly re-used values, Nexus 4 (debug)
+  # (These identifiers have well-known default udev rules.)
+  mobile.usb.idVendor = "18d1";
+  mobile.usb.idProduct = "d002";
+
+  # Mainline gadgetfs functions
+  mobile.usb.gadgetfs.functions = {
+    rndis = "rndis.usb0";
+    mass_storage = "mass_storage.0";
+    adb = "ffs.adb";
+  };
+
+  mobile.boot.stage-1.bootConfig = {
+    # Used by target-disk-mode to share the internal drive
+    storage.internal = "/dev/disk/by-path/platform-fe330000.sdhci";
+  };
+
   mobile.boot.stage-1.tasks = [
     # This hack unbinds and rebinds the currently problematic storage driver.
     # TODO: move into a generic "gru family" thing.
