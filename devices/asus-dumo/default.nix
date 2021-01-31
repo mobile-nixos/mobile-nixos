@@ -103,5 +103,7 @@
         end
       end
     '')
+
+    ./usb_role_switch_task.rb
   ];
 }
