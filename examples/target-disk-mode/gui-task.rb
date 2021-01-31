@@ -24,6 +24,9 @@ class Tasks::RunGui < SingletonTask
   end
 
   def run()
+    # Free up the framebuffer / DRM context
+    Progress.kill()
+
     System.run(LOADER, "/applets/tdm-gui.mrb")
     
     # This `raise` shouldn't really happen as `System#run` will raise
