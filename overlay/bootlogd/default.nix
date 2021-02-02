@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "bootlogd";
@@ -17,7 +17,7 @@ stdenv.mkDerivation {
     "PREFIX=${placeholder "out"}"
   ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     license = licenses.gpl2;
   };
 }

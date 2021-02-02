@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub }:
+{ stdenv, lib, fetchFromGitHub }:
 
 stdenv.mkDerivation {
   pname = "hardshutdown";
@@ -15,7 +15,7 @@ stdenv.mkDerivation {
     "PREFIX=${placeholder "out"}"
   ];
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Single-call binary handling shutdown/reboot syscalls";
     license = licenses.gpl2;
   };

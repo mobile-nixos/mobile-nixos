@@ -15,6 +15,7 @@
 # This is the callPackage signature.
 # These are dependencies for dependency injection.
 { stdenv
+, lib
 , path
 , buildPackages
 
@@ -52,8 +53,8 @@ let
   modDirify = v: v;
 
   # Shortcuts
-  inherit (stdenv.lib) optionals optional optionalString;
   inherit (stdenv.hostPlatform) platform;
+  inherit (lib) optionals optional optionalString;
 
   maybeString = str: optionalString (str != null) str;
 in
@@ -171,12 +172,12 @@ stdenv.mkDerivation (inputArgs // {
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.kernelTarget == "uImage") buildPackages.ubootTools
-    ++ optional (stdenv.lib.versionAtLeast version "4.14" && stdenv.lib.versionOlder version "5.8") libelf
-    ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
-    ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
-    ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
-    ++ optional  (stdenv.lib.versionAtLeast version "5.2")  cpio
-    ++ optional  (stdenv.lib.versionAtLeast version "5.8")  elfutils
+    ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
+    ++ optional (lib.versionAtLeast version "4.15") utillinux
+    ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optional  (lib.versionAtLeast version "5.2")  cpio
+    ++ optional  (lib.versionAtLeast version "5.8")  elfutils
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.
     ++ [ dtc ] 
@@ -188,7 +189,7 @@ stdenv.mkDerivation (inputArgs // {
   patches =
     map (p: p.patch) kernelPatches
     # Required for deterministic builds along with some postPatch magic.
-    ++ optional (stdenv.lib.versionAtLeast version "4.13") "${nixosKernelPath}/randstruct-provide-seed.patch"
+    ++ optional (lib.versionAtLeast version "4.13") "${nixosKernelPath}/randstruct-provide-seed.patch"
     ++ patches
   ;
 
@@ -412,9 +413,9 @@ stdenv.mkDerivation (inputArgs // {
     "KBUILD_BUILD_VERSION=1-mobile-nixos"
   ]
   # Use platform-specific flags
-  ++ stdenv.lib.optionals (platform ? kernelMakeFlags) platform.kernelMakeFlags
+  ++ lib.optionals (platform ? kernelMakeFlags) platform.kernelMakeFlags
   # Mark as cross-compilation
-  ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
+  ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
   # User-provided makeFlags
   ++ makeFlags
   # Install flags

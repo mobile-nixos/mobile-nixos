@@ -1,4 +1,5 @@
 { stdenv
+, lib
 , fetchurl
 , mruby
 
@@ -14,7 +15,7 @@ let
     sha256 = "197g7qvrrijmajixa2h9c4jw26l36y8ig6qjb5d43qg4qykhqfcx";
   };
 
-  inherit (stdenv.lib) concatMapStringsSep;
+  inherit (lib) concatMapStringsSep;
 
   # Select libs we need from the libs folder.
   libs = concatMapStringsSep " " (name: "${../lib}/${name}") [

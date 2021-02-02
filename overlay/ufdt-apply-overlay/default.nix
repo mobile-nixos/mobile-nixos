@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub, dtc }:
+{ stdenv, lib, fetchFromGitHub, dtc }:
 
 stdenv.mkDerivation {
   pname = "ufdt-apply-overlay";
@@ -27,7 +27,7 @@ stdenv.mkDerivation {
     echo "(already installed)"
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     # up-upstream: https://android.googlesource.com/platform/system/libufdt/
     homepage = https://github.com/hybris-mobian/android-platform-system-libufdt;
     description = "Standalone fork of platform/system/libufdt";

@@ -1,4 +1,5 @@
 { stdenv
+, lib
 , fetchFromGitHub
 , dtc
 }:
@@ -28,7 +29,7 @@ stdenv.mkDerivation {
     chmod +x $out/bin/dtbTool-exynos
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     license = licenses.bsd3;
   };
 }
