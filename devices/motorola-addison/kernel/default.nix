@@ -2,6 +2,7 @@
   mobile-nixos
 , stdenv
 , fetchFromGitHub
+, ...
 }:
 
 #

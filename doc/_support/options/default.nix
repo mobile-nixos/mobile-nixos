@@ -7,7 +7,7 @@
 
 let
   # Release tools used to evaluate the devices metadata.
-  mobileReleaseTools = (import ../../../lib/release-tools.nix);
+  mobileReleaseTools = (import ../../../lib/release-tools.nix { inherit pkgs; });
   inherit (mobileReleaseTools) evalWith;
   inherit (mobileReleaseTools.withPkgs pkgs) specialConfig;
 

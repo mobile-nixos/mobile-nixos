@@ -5,8 +5,8 @@ let
 in
 {
   disabledModules = [
-    <nixpkgs/nixos/modules/tasks/encrypted-devices.nix>
-    <nixpkgs/nixos/modules/tasks/filesystems/zfs.nix>
+    "tasks/encrypted-devices.nix"
+    "tasks/filesystems/zfs.nix"
   ];
 
   config = {

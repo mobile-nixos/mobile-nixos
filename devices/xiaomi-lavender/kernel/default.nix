@@ -1,6 +1,7 @@
 {
   mobile-nixos
 , fetchFromGitHub
+, ...
 }:
 
 #

@@ -8,7 +8,7 @@
 # Note:
 # Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
-  mobileReleaseTools = (import ./lib/release-tools.nix);
+  mobileReleaseTools = (import ./lib/release-tools.nix {});
   inherit (mobileReleaseTools) all-devices;
 in
 { mobile-nixos ? builtins.fetchGit ./.

@@ -1,3 +1,9 @@
+{ pkgs ? import <nixpkgs> {} }: 
+
+let
+  # Original `evalConfig`
+  evalConfig = import "${toString pkgs.path}/nixos/lib/eval-config.nix";
+in
 {
   # This should *never* rely on lib or pkgs.
   all-devices =
@@ -14,8 +20,11 @@
     { modules
     , device
     , additionalConfiguration ? {}
-    , baseModules ? ((import ../modules/module-list.nix) ++ [ ../modules/_nixos-integration.nix ])
-  }: import ./eval-config.nix {
+    , baseModules ? (
+      (import ../modules/module-list.nix)
+      ++ (import "${toString pkgs.path}/nixos/modules/module-list.nix")
+    )
+  }: evalConfig {
     inherit baseModules;
     modules =
       (if device ? special
