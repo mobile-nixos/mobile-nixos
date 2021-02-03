@@ -26,6 +26,30 @@ in
   # This allows using `default.nix` as a pass-through function.
   # See usage in examples folder.
 , device ? null
+  # Build with QEMU to emulate the device's system rather than build
+  # with cross compilation.
+  #
+  # Before you can use this option, you must configure nix to support
+  # building for the device's platform.
+  #
+  # For example, by passing it as an option to nix-build (must be a trusted user):
+  # nix-build \
+  #   --argstr device pine64-pinephone \
+  #   --arg emulate true \
+  #   --option extra-platforms aarch64-linux \
+  #   -A build.default
+  #
+  # Or by permanently configuring the option in /etc/nix/nix.conf:
+  #   extra-platforms = aarch64-linux
+  #
+  # Or by using NixOS configuration to generate /etc/nix/nix.conf:
+  #   boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+  #
+  # NOTE: This isn't a perfect emulation, and there may be problems
+  # running some tests. Ideally you should run builds natively on your
+  # device, but this can be helpful as a workaround if your device
+  # doesn't have enough system resources to build certain packages.
+, emulate ? false
 , configuration ? default_configuration
   # Internally used to tack on configuration by release.nix
 , additionalConfiguration ? {}
@@ -47,7 +71,7 @@ let
   eval = evalWith {
     device = final_device;
     modules = configuration;
-    inherit additionalConfiguration;
+    inherit emulate additionalConfiguration;
   };
 
   # Makes a mostly useless header.

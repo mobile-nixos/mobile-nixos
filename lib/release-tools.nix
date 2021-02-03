@@ -19,6 +19,7 @@ in
   evalWith =
     { modules
     , device
+    , emulate ? false
     , additionalConfiguration ? {}
     , baseModules ? (
       (import ../modules/module-list.nix)
@@ -31,6 +32,14 @@ in
       then [ device.config ]
       else if builtins.isPath device then [ { imports = [ device ]; } ]
       else [ { imports = [(../. + "/devices/${device}")]; } ])
+      ++ (if emulate then [ {
+        imports = [
+          ({ config, ... }: {
+            # Use mkForce to override value set in user configuration
+            nixpkgs.localSystem = pkgs.lib.mkForce config.mobile.system;
+          })
+        ];
+      } ] else [])
       ++ modules
       ++ [ additionalConfiguration ]
     ;
