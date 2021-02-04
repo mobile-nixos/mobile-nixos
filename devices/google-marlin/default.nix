@@ -56,4 +56,7 @@
   mobile.usb.idProduct = "4EE4";
 
   mobile.system.type = "android";
+
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.wifi.disableMacAddressRandomization = true;
 }
