@@ -45,7 +45,6 @@
     "cma=32M@0-0xffffffff"
     "loop.max_part=7"
     "buildvariant=eng"
-    "firmware_class.path=/vendor/firmware"
   ];
 
   mobile.usb.mode = "android_usb";
