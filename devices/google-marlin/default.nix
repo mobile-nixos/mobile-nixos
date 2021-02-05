@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android = {
     # This device has an A/B partition scheme
     ab_partitions = true;
