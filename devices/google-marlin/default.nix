@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android = {
     # This device has an A/B partition scheme
     ab_partitions = true;
@@ -45,7 +47,6 @@
     "cma=32M@0-0xffffffff"
     "loop.max_part=7"
     "buildvariant=eng"
-    "firmware_class.path=/vendor/firmware"
   ];
 
   mobile.usb.mode = "android_usb";
@@ -55,4 +56,7 @@
   mobile.usb.idProduct = "4EE4";
 
   mobile.system.type = "android";
+
+  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.wifi.disableMacAddressRandomization = true;
 }
