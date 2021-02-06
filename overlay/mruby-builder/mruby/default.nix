@@ -10,6 +10,7 @@ let
   ];
 in
 { stdenv
+, lib
 , buildPackages
 , ruby
 , bison
@@ -39,7 +40,7 @@ in
 }:
 
 let
-  inherit (stdenv.lib)
+  inherit (lib)
     concatMapStringsSep
     concatStringsSep
     isDerivation
@@ -227,7 +228,7 @@ stdenv.mkDerivation rec {
     inherit debug;
   };
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "An embeddable implementation of the Ruby language";
     homepage = https://mruby.org;
     maintainers = [ maintainers.nicknovitski ];

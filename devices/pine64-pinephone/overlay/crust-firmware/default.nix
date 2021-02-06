@@ -1,4 +1,4 @@
-{ stdenv, fetchFromGitHub
+{ stdenv, lib, fetchFromGitHub
 , flex, yacc, or1k-toolchain }:
 
 stdenv.mkDerivation rec {
@@ -41,7 +41,7 @@ stdenv.mkDerivation rec {
     cp -v build/scp/scp.bin $out
   '';
 
-  meta = with stdenv.lib; {
+  meta = with lib; {
     description = "Libre SCP firmware for Allwinner sunxi SoCs";
     homepage = "https://github.com/crust-firmware/crust";
     license = with licenses; [ bsd3 gpl2Only mit ];

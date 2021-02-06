@@ -1,4 +1,4 @@
-{ stdenv, bundlerEnv, glibcLocales }:
+{ stdenv, lib, bundlerEnv, glibcLocales }:
 
 let
   env =
@@ -10,7 +10,7 @@ let
       "asciidoctor"
     ];
 
-    meta = with stdenv.lib; {
+    meta = with lib; {
       description = "Custom documentation building pipeline built on asciidoctor";
       license = licenses.mit; # Same as mobile-nixos
       maintainers = with maintainers; [ samueldr ];

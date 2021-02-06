@@ -1,4 +1,4 @@
-{ stdenv, zstd, fetchurl }:
+{ stdenv, lib, zstd, fetchurl }:
 
 stdenv.mkDerivation {
   pname = "pinephone-qfirehose";
@@ -44,6 +44,6 @@ stdenv.mkDerivation {
     #
     # *Who are* the customers of Quectel company?
     # *What is* totally open source code and public domain software?
-    license = with stdenv.lib.licenses; [ unfree ];
+    license = with lib.licenses; [ unfree ];
   };
 }

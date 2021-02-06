@@ -15,6 +15,7 @@
 # This is the callPackage signature.
 # These are dependencies for dependency injection.
 { stdenv
+, lib
 , path
 , buildPackages
 
@@ -52,8 +53,8 @@ let
   modDirify = v: v;
 
   # Shortcuts
-  inherit (stdenv.lib) optionals optional optionalString;
-  inherit (stdenv.hostPlatform) platform;
+  inherit (lib) optionals optional optionalString;
+  platform = stdenv.hostPlatform;
 
   maybeString = str: optionalString (str != null) str;
 in
@@ -71,11 +72,11 @@ in
 
 # Handling of QCDT dt.img
 , isQcdt ? false
-, qcdt_dtbs ? "arch/${platform.kernelArch}/boot/"
+, qcdt_dtbs ? "arch/${platform.linuxArch}/boot/"
 
 # Handling of Exynos dt.img
 , isExynosDT ? false
-, exynos_dtbs ? "arch/${platform.kernelArch}/boot/dts/*.dtb"
+, exynos_dtbs ? "arch/${platform.linuxArch}/boot/dts/*.dtb"
 , exynos_platform ? "0x50a6"
 , exynos_subtype  ? "0x217584da"
 
@@ -149,9 +150,9 @@ let
 
   hasDTB = platform ? kernelDTB && platform.kernelDTB;
   kernelFileExtension = if isCompressed != false then ".${isCompressed}" else "";
-  kernelTarget = if platform.kernelTarget == "Image"
-    then "${platform.kernelTarget}${kernelFileExtension}"
-    else platform.kernelTarget;
+  kernelTarget = if platform.linux-kernel.target == "Image"
+    then "${platform.linux-kernel.target}${kernelFileExtension}"
+    else platform.linux-kernel.target;
 in
 
 # This `let` block allows us to have a self-reference to this derivation.
@@ -170,13 +171,13 @@ stdenv.mkDerivation (inputArgs // {
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
-    ++ optional (platform.kernelTarget == "uImage") buildPackages.ubootTools
-    ++ optional (stdenv.lib.versionAtLeast version "4.14" && stdenv.lib.versionOlder version "5.8") libelf
-    ++ optional (stdenv.lib.versionAtLeast version "4.15") utillinux
-    ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
-    ++ optionals (stdenv.lib.versionAtLeast version "4.16") [ bison flex ]
-    ++ optional  (stdenv.lib.versionAtLeast version "5.2")  cpio
-    ++ optional  (stdenv.lib.versionAtLeast version "5.8")  elfutils
+    ++ optional (platform.linux-kernel.target == "uImage") buildPackages.ubootTools
+    ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
+    ++ optional (lib.versionAtLeast version "4.15") utillinux
+    ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optional  (lib.versionAtLeast version "5.2")  cpio
+    ++ optional  (lib.versionAtLeast version "5.8")  elfutils
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.
     ++ [ dtc ] 
@@ -188,7 +189,7 @@ stdenv.mkDerivation (inputArgs // {
   patches =
     map (p: p.patch) kernelPatches
     # Required for deterministic builds along with some postPatch magic.
-    ++ optional (stdenv.lib.versionAtLeast version "4.13") "${nixosKernelPath}/randstruct-provide-seed.patch"
+    ++ optional (lib.versionAtLeast version "4.13") "${nixosKernelPath}/randstruct-provide-seed.patch"
     ++ patches
   ;
 
@@ -395,7 +396,7 @@ stdenv.mkDerivation (inputArgs // {
 
   '' + optionalString isImageGzDtb ''
     echo ":: Copying platform-specific -dtb image file"
-    cp -v "$buildRoot/arch/${platform.kernelArch}/boot/${kernelTarget}-dtb" "$out/"
+    cp -v "$buildRoot/arch/${platform.linuxArch}/boot/${kernelTarget}-dtb" "$out/"
 
   ''
     + maybeString postInstall
@@ -407,14 +408,14 @@ stdenv.mkDerivation (inputArgs // {
     "O=$(buildRoot)"
     "CC=${stdenv.cc}/bin/${stdenv.cc.targetPrefix}cc"
     "HOSTCC=${buildPackages.stdenv.cc}/bin/${buildPackages.stdenv.cc.targetPrefix}cc"
-    "ARCH=${platform.kernelArch}"
+    "ARCH=${platform.linuxArch}"
     "DTC_EXT=${buildPackages.dtc}/bin/dtc"
     "KBUILD_BUILD_VERSION=1-mobile-nixos"
   ]
   # Use platform-specific flags
-  ++ stdenv.lib.optionals (platform ? kernelMakeFlags) platform.kernelMakeFlags
+  ++ lib.optionals (platform ? kernelMakeFlags) platform.kernelMakeFlags
   # Mark as cross-compilation
-  ++ stdenv.lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
+  ++ lib.optional (stdenv.hostPlatform != stdenv.buildPlatform) [ "CROSS_COMPILE=${stdenv.cc.targetPrefix}" ]
   # User-provided makeFlags
   ++ makeFlags
   # Install flags
@@ -524,8 +525,8 @@ stdenv.mkDerivation (inputArgs // {
         export PATH="$PATH:${buildPackages.gnumake}/bin"
         export KCONFIG_CONFIG="\$(readlink -f "\$1")"; shift
 
-        export SRCARCH="${platform.kernelArch}"
-        export ARCH="${platform.kernelArch}"
+        export SRCARCH="${platform.linuxArch}"
+        export ARCH="${platform.linuxArch}"
         export KERNELVERSION="${version}"
         cd "\$KERNEL_TREE"
         ${/* We're expanding the builder's makeFlags variable here. This is not a mistake. */""}
