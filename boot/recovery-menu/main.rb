@@ -69,7 +69,9 @@ module BootGUI
         JSON.parse(File.read(::SELECTIONS)).each do |selection|
           add_button(selection["name"]) do
             File.open("/run/boot/choice", "w") do |file|
-              file.write(selection["id"])
+              file.write({
+                generation: selection["id"],
+              }.to_json())
             end
 
             # Put back the console on the framebuffer

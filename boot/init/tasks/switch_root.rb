@@ -113,10 +113,14 @@ class Tasks::SwitchRoot < SingletonTask
   # Pauses the boot to allow the user to select a generation.
   def choose_generation()
     generate_selection()
-    # FIXME: In the future, boot GUIs will be launched async, before this
-    # task is ran.
+
+    # Synchronuously (pause the init code) show the selection applet.
     System.run(LOADER, "/applets/boot-selection.mrb")
-    generation = File.read("/run/boot/choice")
+
+    # Read data from the user
+    data = JSON.parse(File.read("/run/boot/choice"))
+    generation = data["generation"]
+
     # Why "$default" rather than passing a path?
     # Because there may be no generations folder. It's easier to cheat and
     # use "$default" and rely on the existing default "maybe rehydrate"
