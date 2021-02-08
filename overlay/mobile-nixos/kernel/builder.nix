@@ -127,7 +127,7 @@ in
 
 let
   # Path within <nixpkgs> to refer to the kernel build system's file.
-  nixosKernelPath = "${path}/pkgs/os-specific/linux/kernel/";
+  nixosKernelPath = path + "/pkgs/os-specific/linux/kernel";
 
   # Same installer as in <nixpkgs>, though they don't expose it :/.
   installkernel = writeTextFile {
@@ -189,7 +189,7 @@ stdenv.mkDerivation (inputArgs // {
   patches =
     map (p: p.patch) kernelPatches
     # Required for deterministic builds along with some postPatch magic.
-    ++ optional (lib.versionAtLeast version "4.13") "${nixosKernelPath}/randstruct-provide-seed.patch"
+    ++ optional (lib.versionAtLeast version "4.13") (nixosKernelPath + "/randstruct-provide-seed.patch")
     ++ patches
   ;
 
