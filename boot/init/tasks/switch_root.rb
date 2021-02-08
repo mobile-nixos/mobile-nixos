@@ -120,6 +120,7 @@ class Tasks::SwitchRoot < SingletonTask
     # Read data from the user
     data = JSON.parse(File.read("/run/boot/choice"))
     generation = data["generation"]
+    @use_generation_kernel = data["use_generation_kernel"]
 
     # Why "$default" rather than passing a path?
     # Because there may be no generations folder. It's easier to cheat and
@@ -152,6 +153,9 @@ class Tasks::SwitchRoot < SingletonTask
   def will_kexec?()
     # Only stage-0 bootloader-flavourd init will kexec.
     return false unless STAGE == 0
+
+    # The user wants to use the generation's kernel
+    return false unless @use_generation_kernel
 
     # AND if we find the required files.
     [
