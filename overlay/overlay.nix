@@ -111,6 +111,8 @@ in
 
       boot-recovery-menu-simulator = callPackage ../boot/recovery-menu/simulator.nix {};
       boot-splash-simulator = callPackage ../boot/splash/simulator.nix {};
+
+      map-dtbs = callPackage ./mobile-nixos/map-dtbs {};
     };
 
     imageBuilder = callPackage ../lib/image-builder {};
