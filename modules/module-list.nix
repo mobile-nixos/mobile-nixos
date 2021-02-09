@@ -41,6 +41,7 @@
   ./rootfs.nix
   ./shared-rootfs.nix
   ./stage-0.nix
+  ./system-build.nix
   ./system-target.nix
   ./system-types.nix
 ]
