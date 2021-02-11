@@ -184,11 +184,40 @@ class Tasks::SwitchRoot < SingletonTask
 
     if File.exist?(file)
       log("  DTB: file `#{file}` found")
-      "--dtb=#{file}"
+      "--dtb=#{forward_fdt_bootloader_info(file)}"
     else
       log("  DTB: file `#{file}` not found... skipping DTB mapping")
       nil
     end
+  end
+
+  # Given a path to a DTB file, merges required properties that the bootloader
+  # has setup. It will additionally merge optional properties.
+  def forward_fdt_bootloader_info(path)
+    args = [
+      "--print-header",
+      "--copy-dtb", path,
+      Configuration["stage-0"]["forward"]["nodes"].map {|path| [ "--forward-node", path] },
+      Configuration["stage-0"]["forward"]["props"].map {|pair| [ "--forward-prop", *pair] },
+    ].flatten
+    log(" $ fdt-forward #{args.shelljoin}")
+    dts = `fdt-forward #{args.shelljoin}`
+
+    # Declare we booted using stage-0's kexec
+    # And additional useful debugging data...
+    dts << [
+      "\n",
+      "// Declare we booted using kexec",
+      %Q{/ { mobile-nixos,stage-0; };},
+      %Q{/ { mobile-nixos,stage-0,timestamp = #{Time.now.to_s.to_json}; };},
+      %Q{/ { mobile-nixos,stage-0,uname = #{`uname -a`.to_json}; };},
+      %Q{/ { mobile-nixos,stage-0,uptime = #{`uptime`.to_json}; };},
+    ].join("\n")
+
+    File.write("/run/boot/fdt.dts", dts)
+    System.run("fdt-forward --to-dtb < /run/boot/fdt.dts > /run/boot/fdt.dtb")
+
+    return "/run/boot/fdt.dtb"
   end
 
   def will_kexec?()
