@@ -112,6 +112,8 @@ in
       boot-recovery-menu-simulator = callPackage ../boot/recovery-menu/simulator.nix {};
       boot-splash-simulator = callPackage ../boot/splash/simulator.nix {};
 
+      fdt-forward = callPackage ./mobile-nixos/fdt-forward {};
+
       map-dtbs = callPackage ./mobile-nixos/map-dtbs {};
     };
 
