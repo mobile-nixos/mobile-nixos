@@ -86,13 +86,13 @@ in
       '';
     });
 
-    #
-    # Fixes sent upstream
-    # -------------------
-    #
-
-    ubootTools = super.ubootTools.overrideAttrs({ patches ? [], ... }: {
+    ubootTools = super.ubootTools.overrideAttrs({ buildInputs ? [], patches ? [], ... }: {
+      # Needed for cross-compiling ubootTools
+      buildInputs = buildInputs ++ [
+        self.openssl
+      ];
       patches = patches ++ [
+        ./u-boot/0001-mobile-nixos-work-around-ubootTools-cross-compilatio.patch
         (fetchpatch {
           # https://patchwork.ozlabs.org/project/uboot/patch/20210210194309.07d1dec7@DUFFMAN/
           url = "https://patchwork.ozlabs.org/series/229060/mbox/";
