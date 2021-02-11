@@ -31,16 +31,48 @@ in
         This will enable booting into the generation's kernel.
       '';
     };
+
+    mobile.quirks.fdt-forward = {
+      nodes = mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          FDT nodes to forward to the kexec'd system.
+        '';
+      };
+      props = mkOption {
+        type = types.listOf (types.listOf types.str);
+        default = [];
+        example = [
+          ["/soc/mmc@1c10000/wifi@1" "local-mac-address"]
+        ];
+        description = ''
+          Pair of [node prop] to forward to the kexec'd system.
+
+          Only the prop described on the exact node will be forwarded.
+        '';
+      };
+    };
   };
 
   config = {
     system.build.stage-0 = (config.lib.mobile-nixos.composeConfig {
-      config = {
+      config = { config, ... }: {
         mobile.boot.stage-1.stage = if supportsStage-0 then 0 else 1;
         mobile.boot.stage-1.extraUtils = with pkgs; [
           { package = pkgs.kexectools; }
           { package = fdt-forward; }
         ];
+        mobile.boot.stage-1.bootConfig.stage-0 = {
+          forward = {
+            nodes = [
+              "/memory"
+            ] ++ config.mobile.quirks.fdt-forward.nodes;
+            props = [
+              ["/" "serial-number"]
+            ] ++ config.mobile.quirks.fdt-forward.props;
+          };
+        };
       };
     }).config;
   };
