@@ -25,6 +25,9 @@ in
     system.build.stage-0 = (config.lib.mobile-nixos.composeConfig {
       config = {
         mobile.boot.stage-1.stage = if supportsStage-0 then 0 else 1;
+        mobile.boot.stage-1.extraUtils = with pkgs; [
+          { package = pkgs.kexectools; }
+        ];
       };
     }).config;
   };
