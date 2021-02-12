@@ -57,7 +57,7 @@ module System::ConfigFSUSB
       if DAEMONS[feature_name]
         DAEMONS[feature_name].start()
       else
-        $logger.fatal("Tried to get FunctionFS Daemon for #{feature_name} (#{feature_name.constantize()}) and failed.")
+        $logger.fatal("Tried to get FunctionFS Daemon for #{feature_name} and failed.")
       end
     end
   end 
