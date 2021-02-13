@@ -178,6 +178,11 @@ stdenv.mkDerivation rec {
     ./bison-36-compat.patch
   ];
 
+  postPatch = ''
+    substituteInPlace include/mrbconf.h \
+      --replace '//#define MRB_INT64' '#define MRB_INT64'
+  '';
+
   nativeBuildInputs = [ pkgconfig-helper ruby bison rake ] ++ gemNativeBuildInputs;
   buildInputs = gemBuildInputs;
 
