@@ -279,12 +279,15 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-regexp-pcre";
       owner = "iij";
-      rev = "bcf0fb72f3baa2efb474232fd016edc021982d97";
-      sha256 = "00bwca5as5hd0pgq2a7dw6c7g3h6k9xww72p5vni6zilhnl4kllj";
+      rev = "a961225c0953dd2bd987111f0836821573616de2";
+      sha256 = "1d6frx8xxjkjly11pl6y7shncvnrsbw4fhdpcxzayilvg8v4csi7";
     };
 
     patches = [
-      ./mruby-regexp-pcre/0001-Fix-String-match-removed-in-mruby-2.1.0.patch
+      (fetchpatch {
+        url = "https://github.com/iij/mruby-regexp-pcre/commit/d07d8b4689554da825d3b30725a3ecb272079de0.patch";
+        sha256 = "0n0bf3x4j98nps3yvdngpkbkjfhijz1q9yxdfnp0jmr3nws6asb4";
+      })
     ];
 
     meta.license = licenses.mit;
