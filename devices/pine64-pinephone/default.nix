@@ -69,4 +69,10 @@
 
   # Supports rebooting into generation kernel through kexec.
   mobile.quirks.supportsStage-0 = true;
+
+  mobile.quirks.fdt-forward = {
+    props = [
+      ["/soc/mmc@1c10000/wifi@1" "local-mac-address"]
+    ];
+  };
 }

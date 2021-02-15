@@ -113,10 +113,15 @@ class Tasks::SwitchRoot < SingletonTask
   # Pauses the boot to allow the user to select a generation.
   def choose_generation()
     generate_selection()
-    # FIXME: In the future, boot GUIs will be launched async, before this
-    # task is ran.
+
+    # Synchronuously (pause the init code) show the selection applet.
     System.run(LOADER, "/applets/boot-selection.mrb")
-    generation = File.read("/run/boot/choice")
+
+    # Read data from the user
+    data = JSON.parse(File.read("/run/boot/choice"))
+    generation = data["generation"]
+    @use_generation_kernel = data["use_generation_kernel"]
+
     # Why "$default" rather than passing a path?
     # Because there may be no generations folder. It's easier to cheat and
     # use "$default" and rely on the existing default "maybe rehydrate"
@@ -145,9 +150,82 @@ class Tasks::SwitchRoot < SingletonTask
     @selected_generation
   end
 
+  # If the system build exports a DTB file name to load, return the appropriate
+  # command-line argument for `kexec`. Otherwise nil.
+  def maybe_dtb()
+    log("Looking for a DTB file...")
+
+    mapping_path = generation_file("mobile-nixos/dtb-mapping.json", missing_allowed: true)
+    unless mapping_path && File.exist?(mapping_path)
+      log("  DTB: dtb-mapping.json not found... skipping DTB mapping...")
+      return nil
+    end
+
+    log("  DTB: Mappings from: `#{mapping_path}`...")
+    mapping = JSON.parse(File.read(mapping_path))
+
+    # Work only off the first compatible name.
+    # It is assumed that the loader uses the exact same scheme as the kernel
+    # build does. If this assumption stops holding true, it will be a new
+    # feature to implement.
+    board_compatible = File.read("/proc/device-tree/compatible").split("\0").first
+    log("  DTB: board_compatible: #{board_compatible}")
+
+    desired_dtb = mapping[board_compatible]
+    if desired_dtb
+      log("  DTB: wants: #{desired_dtb}")
+    else
+      log("  DTB: no DTB mapping found for #{board_compatible}...")
+      return nil
+    end
+
+    # The desired_dtb path is an absolute path in the mounted system.
+    file = File.join(SYSTEM_MOUNT_POINT, desired_dtb)
+
+    if File.exist?(file)
+      log("  DTB: file `#{file}` found")
+      "--dtb=#{forward_fdt_bootloader_info(file)}"
+    else
+      log("  DTB: file `#{file}` not found... skipping DTB mapping")
+      nil
+    end
+  end
+
+  # Given a path to a DTB file, merges required properties that the bootloader
+  # has setup. It will additionally merge optional properties.
+  def forward_fdt_bootloader_info(path)
+    args = [
+      "--print-header",
+      "--copy-dtb", path,
+      Configuration["stage-0"]["forward"]["nodes"].map {|path| [ "--forward-node", path] },
+      Configuration["stage-0"]["forward"]["props"].map {|pair| [ "--forward-prop", *pair] },
+    ].flatten
+    log(" $ fdt-forward #{args.shelljoin}")
+    dts = `fdt-forward #{args.shelljoin}`
+
+    # Declare we booted using stage-0's kexec
+    # And additional useful debugging data...
+    dts << [
+      "\n",
+      "// Declare we booted using kexec",
+      %Q{/ { mobile-nixos,stage-0; };},
+      %Q{/ { mobile-nixos,stage-0,timestamp = #{Time.now.to_s.to_json}; };},
+      %Q{/ { mobile-nixos,stage-0,uname = #{`uname -a`.to_json}; };},
+      %Q{/ { mobile-nixos,stage-0,uptime = #{`uptime`.to_json}; };},
+    ].join("\n")
+
+    File.write("/run/boot/fdt.dts", dts)
+    System.run("fdt-forward --to-dtb < /run/boot/fdt.dts > /run/boot/fdt.dtb")
+
+    return "/run/boot/fdt.dtb"
+  end
+
   def will_kexec?()
     # Only stage-0 bootloader-flavourd init will kexec.
     return false unless STAGE == 0
+
+    # The user wants to use the generation's kernel
+    return false unless @use_generation_kernel
 
     # AND if we find the required files.
     [
@@ -160,14 +238,27 @@ class Tasks::SwitchRoot < SingletonTask
       .all?
   end
 
-  def generation_file(name)
-    # First, resolve any links pointing to the generation dir itself.
-    # Otherwise we'll try to resolve a path that may not exist.
-    resolved_generation = readlink_system(selected_generation)
-    # Then reslove links to the actual artifact of the generation.
-    artifact = readlink_system(File.join(resolved_generation, name))
-    # Finally, return joined to the mount point.
-    File.join(SYSTEM_MOUNT_POINT, artifact)
+  def generation_file(name, missing_allowed: false)
+    begin
+      # First, resolve any links pointing to the generation dir itself.
+      # Otherwise we'll try to resolve a path that may not exist.
+      resolved_generation = readlink_system(selected_generation)
+
+      full_path = File.join(resolved_generation, name)
+
+      # Then resolve links to the actual artifact of the generation.
+      artifact = readlink_system(File.join(resolved_generation, name))
+      # Finally, return joined to the mount point.
+      File.join(SYSTEM_MOUNT_POINT, artifact)
+    rescue => e
+      log "While searching for generation_file(#{name.inspect}):"
+      log e.inspect
+      if missing_allowed
+        return nil
+      else
+        raise e
+      end
+    end
   end
 
   def run()
@@ -200,10 +291,13 @@ class Tasks::SwitchRoot < SingletonTask
         end
       end
 
+      log("About to kexec...")
+
       System.run(
         "kexec", "--load",
         generation_file("kernel"),
         "--initrd=#{generation_file("initrd")}",
+        *[maybe_dtb()].compact(),
         "--command-line",
         [
           "init=#{readlink_system(File.join(selected_generation, "init"))}",

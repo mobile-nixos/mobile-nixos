@@ -1,4 +1,5 @@
 # File with boot selection
+STAGE = Configuration["stage"]
 SELECTIONS = "/run/boot/selection.json"
 
 # Runs and prints a command. Probably.
@@ -58,18 +59,47 @@ module BootGUI
 
   # Shows the list of generations to boot into.
   class GenerationsWindow < LVGUI::BaseWindow
+    include LVGUI::BaseUIElements
     include LVGUI::ButtonPalette
     include LVGUI::Window::WithBackButton
     goes_back_to ->() { MainWindow.instance }
 
+    def update_switch_label()
+      if use_generation_kernel?
+        @use_generation_kernel.set_description("Use kexec with the generation kernel")
+      else
+        @use_generation_kernel.set_description("Continue directly to stage-2")
+      end
+    end
+
+    def use_generation_kernel?()
+      return false unless STAGE == 0
+      @use_generation_kernel.get_state()
+    end
+
     def initialize()
       super()
+
+      if STAGE == 0
+        # Add a toggle switch
+        @use_generation_kernel = add_switch(
+          "Boot using generation kernel",
+          initial: true,
+        ) do |new_state|
+          update_switch_label()
+        end
+
+        update_switch_label()
+      end
 
       if File.exist?(::SELECTIONS)
         JSON.parse(File.read(::SELECTIONS)).each do |selection|
           add_button(selection["name"]) do
             File.open("/run/boot/choice", "w") do |file|
-              file.write(selection["id"])
+              file.write({
+                generation: selection["id"],
+                use_generation_kernel: use_generation_kernel?,
+              }.to_json())
             end
 
             # Put back the console on the framebuffer
