@@ -34,10 +34,12 @@ in
 , additionalBuildConfig ? ""
 # Adds `enable_debug`.
 , debug ? false
-# Adds `-g` to mrbc wrapper.
-, mrbWithDebug ? true
 # Prepends defaults to `gems` and `gemBoxes`.
 , useDefaults ? true
+# Strips store path hashes in debug information
+# `nuke-ref` will break the irep of compiled mruby.
+# Stripping the hashes is *required* with nuke-ref.
+, stripStorePathHashes ? debug
 }:
 
 let
@@ -46,6 +48,7 @@ let
     concatStringsSep
     isDerivation
     mapAttrsToList
+    optional
     optionals
     optionalString
   ;
@@ -178,7 +181,9 @@ let
       ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
       ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
       ./bison-36-compat.patch
-    ];
+    ]
+    ++ optional stripStorePathHashes ./0001-mobile-nixos-Strip-store-path-hashes-when-saving-deb.patch
+    ;
 
     postPatch = ''
       substituteInPlace include/mrbconf.h \
@@ -220,15 +225,6 @@ let
       cp -R include $out
       mkdir -p $out/nix-support
       cp mruby_linker_flags.sh $out/nix-support/
-
-      # Wrap `mrbc` with -g conditional to the debug flag.
-      mkdir -p $out/libexec/
-      mv $out/bin/mrbc $out/libexec/mrbc
-      cat > $out/bin/mrbc <<EOF
-      #!${runtimeShell}
-      exec $out/libexec/mrbc ${optionalString mrbWithDebug "-g"} "\''${@}"
-      EOF
-      chmod +x $out/bin/mrbc
       runHook postInstall
     '';
 
