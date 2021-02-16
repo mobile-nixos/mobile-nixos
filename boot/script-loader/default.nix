@@ -11,6 +11,9 @@
 
 let
   mruby' = mruby.override({
+    # Strip store path hashes so `nuke-refs` don't destroy the irep.
+    stripStorePathHashes = true;
+
     # This script loader handles all "applets" and scripts that will run during
     # stage-1.
     gems = with mrbgems; [
