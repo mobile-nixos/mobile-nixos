@@ -10,12 +10,41 @@
 }:
 
 let
+  mruby' = mruby.override({
+    # This script loader handles all "applets" and scripts that will run during
+    # stage-1.
+    gems = with mrbgems; [
+      { core = "mruby-exit"; }
+      { core = "mruby-io"; }
+      { core = "mruby-sleep"; }
+      { core = "mruby-time"; }
+      mruby-dir
+      mruby-dir-glob
+      mruby-env
+      mruby-file-stat
+      mruby-json
+      mruby-logger
+      mruby-open3
+      mruby-process-clock_gettime
+      mruby-regexp-pcre
+      mruby-singleton
+      mruby-time-strftime
+      mruby-zmq
+
+      # Glue that serves to link the proper dependencies into the project.
+      mruby-lvgui-native-fragment
+
+      # Though this needs to be the real last gem, as it has
+      # special significance during the build.
+      mruby-require
+    ];
+  });
   mruby-lvgui-native-fragment = callPackage ./mruby-lvgui-native-fragment {
     inherit withSimulator;
   };
 in
 # We need a reference to this package for the passthru `wrap` helper.
-let loader = mruby.builder {
+let loader = mruby'.builder {
   pname = "mobile-nixos-script-loader";
   version = "0.2.0";
 
@@ -25,34 +54,6 @@ let loader = mruby.builder {
   buildPhase = ''
     makeBin loader main.rb
   '';
-
-  # This script loader handles all "applets" and scripts that will run during
-  # stage-1.
-  gems = with mrbgems; [
-    { core = "mruby-exit"; }
-    { core = "mruby-io"; }
-    { core = "mruby-sleep"; }
-    { core = "mruby-time"; }
-    mruby-dir
-    mruby-dir-glob
-    mruby-env
-    mruby-file-stat
-    mruby-json
-    mruby-logger
-    mruby-open3
-    mruby-process-clock_gettime
-    mruby-regexp-pcre
-    mruby-singleton
-    mruby-time-strftime
-    mruby-zmq
-
-    # Glue that serves to link the proper dependencies into the project.
-    mruby-lvgui-native-fragment
-
-    # Though this needs to be the real last gem, as it has
-    # special significance during the build.
-    mruby-require
-  ];
 
   passthru = {
     # Wraps an `mrb` applet into a runner script that uses this loader.
