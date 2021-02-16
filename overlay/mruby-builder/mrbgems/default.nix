@@ -106,8 +106,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-fiddle";
       owner = "mobile-nixos";
-      rev = "b8b7f82a98a24384995a38012b7e08c7bc6c630c";
-      sha256 = "1138vsk6pyqxw64xnic6a91ip9bxn9zxck4kcdx653ba5s0wzaz4";
+      rev = "f4ee03fcf9022d21e68de6d3b6e58e14b9c6cf43";
+      sha256 = "1w2mzmdgkk9qvn0cz0i09xs14mjcvryjxicl2n09l2bjk0plqdm4";
     };
 
     gemBuildInputs = [
