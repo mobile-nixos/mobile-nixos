@@ -18,6 +18,7 @@ in
 , fetchFromGitHub
 , file
 , mruby
+, builder
 , runtimeShell
 , writeText
 , writeShellScriptBin
@@ -160,87 +161,91 @@ let
   pkgconfig-helper = writeShellScriptBin "pkg-config" ''
     exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
   '';
+  mruby = stdenv.mkDerivation rec {
+    pname = "mruby";
+    version = "2.1.1";
+
+    inherit stripStorePathHashes;
+
+    src = fetchFromGitHub {
+      owner   = "mruby";
+      repo    = "mruby";
+      rev     = version;
+      sha256  = "gEEb0Vn/G+dNgeY6r0VP8bMSPrEOf5s+0GoOcnIPtEU=";
+    };
+
+    patches = [
+      ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
+      ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
+      ./bison-36-compat.patch
+    ];
+
+    postPatch = ''
+      substituteInPlace include/mrbconf.h \
+        --replace '//#define MRB_INT64' '#define MRB_INT64'
+    '';
+
+    nativeBuildInputs = [ pkgconfig-helper ruby bison rake ] ++ gemNativeBuildInputs;
+    buildInputs = gemBuildInputs;
+
+    # Necessary so it uses `gcc` instead of `ld` for linking.
+    # https://github.com/mruby/mruby/blob/35be8b252495d92ca811d76996f03c470ee33380/tasks/toolchains/gcc.rake#L25
+    preBuild = if stdenv.isLinux then "unset LD" else null;
+
+    SKIP_HOST = if isCross then "true" else null;
+
+    buildPhase = ''
+      runHook preBuild
+      cp -vf ${mruby-config} build_config.rb
+      ruby ./minirake -v -j$NIX_BUILD_CORES
+      ruby ./minirake -v dump_linker_flags
+      runHook postBuild
+    '';
+
+    checkPhase = ''
+      runHook preCheck
+      ruby ./minirake test -j$NIX_BUILD_CORES
+      runHook postCheck
+    '';
+
+    doCheck = true;
+
+    # TODO: Allow cross-compiling the binaries too.
+    installPhase = ''
+      runHook preInstall
+      mkdir -p $out/share/mruby/
+      cp build_config.rb $out/share/mruby
+      cp -R build/${targetName}/bin $out
+      cp -R build/${targetName}/lib $out
+      cp -R include $out
+      mkdir -p $out/nix-support
+      cp mruby_linker_flags.sh $out/nix-support/
+
+      # Wrap `mrbc` with -g conditional to the debug flag.
+      mkdir -p $out/libexec/
+      mv $out/bin/mrbc $out/libexec/mrbc
+      cat > $out/bin/mrbc <<EOF
+      #!${runtimeShell}
+      exec $out/libexec/mrbc ${optionalString mrbWithDebug "-g"} "\''${@}"
+      EOF
+      chmod +x $out/bin/mrbc
+      runHook postInstall
+    '';
+
+    passthru = {
+      inherit debug;
+      builder = builder.override({ inherit mruby; });
+    };
+
+    meta = with lib; {
+      description = "An embeddable implementation of the Ruby language";
+      homepage = https://mruby.org;
+      maintainers = [ maintainers.nicknovitski ];
+      license = licenses.mit;
+      platforms = platforms.unix;
+    };
+
+    enableParallelBuilding = true;
+  };
 in
-stdenv.mkDerivation rec {
-  pname = "mruby";
-  version = "2.1.1";
-
-  src = fetchFromGitHub {
-    owner   = "mruby";
-    repo    = "mruby";
-    rev     = version;
-    sha256  = "gEEb0Vn/G+dNgeY6r0VP8bMSPrEOf5s+0GoOcnIPtEU=";
-  };
-
-  patches = [
-    ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
-    ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
-    ./bison-36-compat.patch
-  ];
-
-  postPatch = ''
-    substituteInPlace include/mrbconf.h \
-      --replace '//#define MRB_INT64' '#define MRB_INT64'
-  '';
-
-  nativeBuildInputs = [ pkgconfig-helper ruby bison rake ] ++ gemNativeBuildInputs;
-  buildInputs = gemBuildInputs;
-
-  # Necessary so it uses `gcc` instead of `ld` for linking.
-  # https://github.com/mruby/mruby/blob/35be8b252495d92ca811d76996f03c470ee33380/tasks/toolchains/gcc.rake#L25
-  preBuild = if stdenv.isLinux then "unset LD" else null;
-
-  SKIP_HOST = if isCross then "true" else null;
-
-  buildPhase = ''
-    runHook preBuild
-    cp -vf ${mruby-config} build_config.rb
-    ruby ./minirake -v -j$NIX_BUILD_CORES
-    ruby ./minirake -v dump_linker_flags
-    runHook postBuild
-  '';
-
-  checkPhase = ''
-    runHook preCheck
-    ruby ./minirake test -j$NIX_BUILD_CORES
-    runHook postCheck
-  '';
-
-  doCheck = true;
-
-  # TODO: Allow cross-compiling the binaries too.
-  installPhase = ''
-    runHook preInstall
-    mkdir -p $out/share/mruby/
-    cp build_config.rb $out/share/mruby
-    cp -R build/${targetName}/bin $out
-    cp -R build/${targetName}/lib $out
-    cp -R include $out
-    mkdir -p $out/nix-support
-    cp mruby_linker_flags.sh $out/nix-support/
-
-    # Wrap `mrbc` with -g conditional to the debug flag.
-    mkdir -p $out/libexec/
-    mv $out/bin/mrbc $out/libexec/mrbc
-    cat > $out/bin/mrbc <<EOF
-    #!${runtimeShell}
-    exec $out/libexec/mrbc ${optionalString mrbWithDebug "-g"} "\''${@}"
-    EOF
-    chmod +x $out/bin/mrbc
-    runHook postInstall
-  '';
-
-  passthru = {
-    inherit debug;
-  };
-
-  meta = with lib; {
-    description = "An embeddable implementation of the Ruby language";
-    homepage = https://mruby.org;
-    maintainers = [ maintainers.nicknovitski ];
-    license = licenses.mit;
-    platforms = platforms.unix;
-  };
-
-  enableParallelBuilding = true;
-}
+  mruby

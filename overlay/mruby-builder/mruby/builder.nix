@@ -10,7 +10,6 @@
 
 let
   inherit (lib) concatStringsSep optional optionalString;
-  mruby' = mruby;
 
   isCross = stdenv.targetPlatform != stdenv.hostPlatform;
   # FIXME: Discover from stdenv rather than from a parameter.
@@ -23,16 +22,14 @@ in
 # Given a source, (name or pname/version) and gems, this will automatically
 # handle building mruby, then with a stub, 
 { src
-, gems ? []
 , buildPhase
 , passthru ? {}
 , ...
 }@ attrs:
-let
-  mruby = mruby'.override({
-    inherit gems;
-  });
-in
+
+# `gems` is not a valid argument for `mruby.builder` anymore.
+assert attrs ? gems == false;
+
   stdenv.mkDerivation ((
     builtins.removeAttrs attrs ["gems"]
   ) // {

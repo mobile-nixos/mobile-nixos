@@ -10,11 +10,9 @@ in
 {
   hello-mruby = final.callPackage ./hello-mruby {};
   mrbgems = final.callPackage ./mrbgems {};
-  mruby = (final.callPackage ./mruby {}).overrideAttrs({passthru ? {}, ...}: {
-    passthru = passthru // {
-      builder = final.callPackage ./mruby/builder.nix {
-    	inherit static;
-      };
+  mruby = final.callPackage ./mruby {
+    builder = final.callPackage ./mruby/builder.nix {
+      inherit static;
     };
-  });
+  };
 }
