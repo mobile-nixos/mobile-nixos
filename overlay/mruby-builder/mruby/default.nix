@@ -210,6 +210,7 @@ stdenv.mkDerivation rec {
 
   # TODO: Allow cross-compiling the binaries too.
   installPhase = ''
+    runHook preInstall
     mkdir -p $out/share/mruby/
     cp build_config.rb $out/share/mruby
     cp -R build/${targetName}/bin $out
@@ -217,16 +218,16 @@ stdenv.mkDerivation rec {
     cp -R include $out
     mkdir -p $out/nix-support
     cp mruby_linker_flags.sh $out/nix-support/
-  '';
 
-  # Wrap `mrbc` with -g conditional to the debug flag.
-  postInstall = ''
+    # Wrap `mrbc` with -g conditional to the debug flag.
     mkdir -p $out/libexec/
     mv $out/bin/mrbc $out/libexec/mrbc
     cat > $out/bin/mrbc <<EOF
     #!${runtimeShell}
     exec $out/libexec/mrbc ${optionalString mrbWithDebug "-g"} "\''${@}"
     EOF
+    chmod +x $out/bin/mrbc
+    runHook postInstall
   '';
 
   passthru = {
