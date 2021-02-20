@@ -48,6 +48,10 @@ in
         };
 
       };
+
+      # Ensures this demo rootfs is useable for platforms requiring FBIOPAN_DISPLAY.
+      quirks.fb-refresher.enable = true;
+
       powerManagement.enable = true;
       hardware.pulseaudio.enable = true;
 
