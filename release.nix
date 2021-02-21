@@ -105,7 +105,7 @@ let
     lib.genAttrs systems (system:
       (evalWithConfiguration {
         nixpkgs.localSystem = knownSystems.${system};
-      } device).build.default
+      } device).config.system.build.default
     )
   );
 
