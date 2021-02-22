@@ -16,6 +16,11 @@ in
       default = false;
       description = "enable when SOC is Mediatek MT6785 (Helio G90)";
     };
+    hardware.socs.mediatek-mt8127.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is Mediatek MT8127";
+    };
   };
 
   config = mkMerge [
@@ -28,6 +33,12 @@ in
     {
       mobile = mkIf cfg.mediatek-mt6785.enable {
         system.system = "aarch64-linux";
+      };
+    }
+    {
+      mobile = mkIf cfg.mediatek-mt8127.enable {
+        system.system = "armv7l-linux";
+        quirks.fb-refresher.enable = true;
       };
     }
   ];
