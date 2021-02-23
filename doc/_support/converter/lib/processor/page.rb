@@ -128,7 +128,7 @@ module Processor
         {
           article: Article.new(filename),
           # Assumes links will be relative to the root of the site.
-          url: filename.sub(/\.adoc$/, ".html").sub(%r{^/build/doc/}, "")
+          url: filename.sub(/\.adoc$/, ".html").sub(%r{^#{Dir.pwd}}, "")
         }
       end
       @output.sub!(
