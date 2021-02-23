@@ -1,0 +1,1174 @@
+From 8282bea99f667d22bfcb5f5f5282030d680397f9 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 22 Feb 2021 20:20:16 -0500
+Subject: [PATCH] [mobile-nixos]: Could you be more quiet?
+
+---
+ arch/arm/mach-mt8127/include/mach/hotplug.h   |   2 +-
+ arch/arm/mach-mt8127/mt_dbg.c                 |   1 -
+ .../common_detect/mtk_wcn_stub_alps.c         |   1 -
+ drivers/misc/mediatek/keypad/kpd.c            |  10 +-
+ .../misc/mediatek/trustzone/tz_secure_clock.c |   4 +-
+ drivers/misc/mediatek/video/mt8127/mtkfb.c    |   1 -
+ drivers/mmc/card/block.c                      |  28 +--
+ drivers/power/mediatek/battery_common.c       |  10 +-
+ drivers/staging/android/lowmemorykiller.c     |   2 -
+ drivers/thermal/virtual_sensor_thermal.c      |   2 +-
+ include/linux/kpd.h                           |   2 +-
+ include/linux/printk.h                        |   2 -
+ include/linux/sched.h                         |   3 -
+ kernel/exit.c                                 |  22 --
+ kernel/fork.c                                 | 165 ++-------------
+ kernel/printk.c                               | 198 ++----------------
+ kernel/signal.c                               |  15 +-
+ 17 files changed, 48 insertions(+), 420 deletions(-)
+
+diff --git a/arch/arm/mach-mt8127/include/mach/hotplug.h b/arch/arm/mach-mt8127/include/mach/hotplug.h
+index fa139f2ade564..93cb10b0aa6aa 100644
+--- a/arch/arm/mach-mt8127/include/mach/hotplug.h
++++ b/arch/arm/mach-mt8127/include/mach/hotplug.h
+@@ -11,7 +11,7 @@
+ #define HOTPLUG_LOG_WITH_XLOG                           1
+ #define HOTPLUG_LOG_WITH_PRINTK                         2
+ 
+-#define HOTPLUG_LOG_PRINT                               HOTPLUG_LOG_WITH_PRINTK
++#define HOTPLUG_LOG_PRINT                               HOTPLUG_LOG_NONE
+ 
+ #if (HOTPLUG_LOG_PRINT == HOTPLUG_LOG_NONE)
+ #define HOTPLUG_INFO(fmt, args...)                    
+diff --git a/arch/arm/mach-mt8127/mt_dbg.c b/arch/arm/mach-mt8127/mt_dbg.c
+index 3391891a4e56c..99d992f554e02 100644
+--- a/arch/arm/mach-mt8127/mt_dbg.c
++++ b/arch/arm/mach-mt8127/mt_dbg.c
+@@ -71,7 +71,6 @@ regs_hotplug_callback(struct notifier_block *nfb, unsigned long action, void *hc
+ //        printk(KERN_ALERT "In hotplug callback\n");
+ 	int i;
+         unsigned int cpu = (unsigned int) hcpu;
+-        printk("regs_hotplug_callback cpu = %d\n", cpu);
+         switch (action) {
+         case CPU_ONLINE:
+ 	case CPU_ONLINE_FROZEN:
+diff --git a/drivers/misc/mediatek/connectivity/common_detect/mtk_wcn_stub_alps.c b/drivers/misc/mediatek/connectivity/common_detect/mtk_wcn_stub_alps.c
+index c2d20e1ab36f6..de72eaad1ed4e 100644
+--- a/drivers/misc/mediatek/connectivity/common_detect/mtk_wcn_stub_alps.c
++++ b/drivers/misc/mediatek/connectivity/common_detect/mtk_wcn_stub_alps.c
+@@ -307,7 +307,6 @@ signed long mtk_wcn_cmb_stub_query_ctrl()
+ 	}
+ 	else
+ 	{
+-		CMB_STUB_LOG_DBG("[cmb_stub] thermal_ctrl_cb null\n");
+ 	}
+ 
+ 	return temp;
+diff --git a/drivers/misc/mediatek/keypad/kpd.c b/drivers/misc/mediatek/keypad/kpd.c
+index 42ed255667f39..917aab6ca13cb 100755
+--- a/drivers/misc/mediatek/keypad/kpd.c
++++ b/drivers/misc/mediatek/keypad/kpd.c
+@@ -42,8 +42,8 @@ static unsigned int kp_irqnr;
+ #endif
+ struct input_dev *kpd_input_dev;
+ static bool kpd_suspend = false;
+-static int kpd_show_hw_keycode = 1;
+-static int kpd_show_register = 1;
++static int kpd_show_hw_keycode = 0;
++static int kpd_show_register = 0;
+ static volatile int call_status = 0;
+ static int kpd_swap_hw_vol_key = 0;
+ static u32 kpd_swap_up_code, kpd_swap_down_code;
+@@ -206,7 +206,7 @@ static const u16 kpd_auto_keymap[] = {
+ #define AEE_VOLUMEDOWN_BIT	1
+ #define AEE_DELAY_TIME		15
+ /* enable volup + voldown was pressed 5~15 s Trigger aee manual dump */
+-#define AEE_ENABLE_5_15		1
++#define AEE_ENABLE_5_15		0
+ static struct hrtimer aee_timer;
+ static unsigned long aee_pressed_keys;
+ static bool aee_timer_started;
+@@ -369,7 +369,6 @@ static void kpd_pwrkey_eint_handler(void)
+ #if KPD_PWRKEY_USE_PMIC
+ void kpd_pwrkey_pmic_handler(unsigned long pressed)
+ {
+-	printk(KPD_SAY "Power Key generate, pressed=%ld\n", pressed);
+ 	if (!kpd_input_dev) {
+ 		printk("KPD input device not ready\n");
+ 		return;
+@@ -381,7 +380,6 @@ void kpd_pwrkey_pmic_handler(unsigned long pressed)
+ 
+ void kpd_pmic_rstkey_handler(unsigned long pressed)
+ {
+-	printk(KPD_SAY "PMIC reset Key generate, pressed=%ld\n", pressed);
+ 	if (!kpd_input_dev) {
+ 		printk("KPD input device not ready\n");
+ 		return;
+@@ -417,8 +415,6 @@ static void kpd_keymap_handler(unsigned long data)
+ 			/* bit is 1: not pressed, 0: pressed */
+ 			pressed = !(new_state[i] & mask);
+ 			if (kpd_show_hw_keycode) {
+-				printk(KPD_SAY "(%s) HW keycode = %u\n",
+-				       pressed ? "pressed" : "released", hw_keycode);
+ 			}
+ 			BUG_ON(hw_keycode >= KPD_NUM_KEYS);
+ 			linux_keycode = kpd_keymap[hw_keycode];
+diff --git a/drivers/misc/mediatek/trustzone/tz_secure_clock.c b/drivers/misc/mediatek/trustzone/tz_secure_clock.c
+index 1931191690e9c..4094b26d928e8 100644
+--- a/drivers/misc/mediatek/trustzone/tz_secure_clock.c
++++ b/drivers/misc/mediatek/trustzone/tz_secure_clock.c
+@@ -184,7 +184,7 @@ if (err) {
+ }
+ 
+ rtc_tm_to_time(&tm, &time_count);
+-#if 1
++#if 0
+ pr_notice("securetime increase result: %d %d %d %d %d %d %d\n", tm.tm_yday, tm.tm_year, tm.tm_mon
+ 	, tm.tm_mday, tm.tm_hour, tm.tm_min, tm.tm_sec);
+ #endif	
+@@ -194,7 +194,7 @@ ret = KREE_TeeServiceCall(session, TZCMD_SECURETIME_INC_CURRENT_COUNTER, paramTy
+ if (ret != TZ_RESULT_SUCCESS)
+ 	pr_err("ServiceCall error %d\n", ret);
+ 
+-#if 1
++#if 0
+ pr_notice("securetime increase result: %d %d %d %d %d %d %d\n", ((struct TM_GB *) shm_p)->tm_yday
+ 	, ((struct TM_GB *) shm_p)->tm_year, ((struct TM_GB *) shm_p)->tm_mon, ((struct TM_GB *) shm_p)->tm_mday
+ 	, ((struct TM_GB *) shm_p)->tm_hour, ((struct TM_GB *) shm_p)->tm_min, ((struct TM_GB *) shm_p)->tm_sec);
+diff --git a/drivers/misc/mediatek/video/mt8127/mtkfb.c b/drivers/misc/mediatek/video/mt8127/mtkfb.c
+index 50bfbcd017ef3..ff7ade71b4c7d 100644
+--- a/drivers/misc/mediatek/video/mt8127/mtkfb.c
++++ b/drivers/misc/mediatek/video/mt8127/mtkfb.c
+@@ -851,7 +851,6 @@ static int mtkfb_pan_display_impl(struct fb_var_screeninfo *var, struct fb_info
+         layerInfo.identity = 0;
+         layerInfo.connected_type = 0;
+         layerInfo.security = 0;
+-        pr_info("[mtkfb] pan display set va=0x%x, pa=0x%x \n",(unsigned int)vaStart,paStart);
+         Disp_Ovl_Engine_Set_layer_info(mtkfb_instance, &layerInfo);
+ 
+         layerInfo.layer_id = 1;
+diff --git a/drivers/mmc/card/block.c b/drivers/mmc/card/block.c
+index 4c66b2553abde..737f24239c124 100644
+--- a/drivers/mmc/card/block.c
++++ b/drivers/mmc/card/block.c
+@@ -2264,8 +2264,6 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
+ 			t_period = time1 - mmccid_tag_t1;
+ 			if(t_period >= (unsigned long long )((PRT_TIME_PERIOD)*(unsigned long long )10))
+ 			{
+-				xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "MMC Queue Thread:%d, %d, %d, %d, %d \n", mmcqd[0], mmcqd[1], mmcqd[2], mmcqd[3], mmcqd[4]);  
+-				xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "MMC CID: %lx %lx %lx %lx \n", g_u32_cid[0], g_u32_cid[1], g_u32_cid[2], g_u32_cid[3]);
+ 				mmccid_tag_t1 = time1;
+ 			}
+ 			if(mmcqd_tag_t1[idx]==0)
+@@ -2279,24 +2277,19 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
+ 				mmcqd_r_throughput[idx] = 0;
+ 				mmcqd_w_throughput[idx] = 0;
+ 				t_usage = mmcqd_t_usage_wr [idx] + mmcqd_t_usage_rd[idx];
+-				if(t_period > t_usage*100)
+-					xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd:%d Workload < 1%%, duty %lld, period %lld, req_cnt=%d \n", mmcqd[idx], t_usage, t_period, mmcqd_rq_count[idx]);
+-				else
++				if(t_period <= t_usage*100)
+ 				{
+ 					do_div(t_period, 100);	//boundary issue
+ 					t_percent =((unsigned int)t_usage)/((unsigned int)t_period);						
+ 					mmcqd_work_percent[idx] = t_percent;
+-					xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd:%d Workload=%d%%, duty %lld, period %lld00, req_cnt=%d \n", mmcqd[idx], t_percent, t_usage, t_period, mmcqd_rq_count[idx]);	//period %lld00 == period %lld x100
+ 				}
+ 				if(mmcqd_wr_rq_count[idx] >= 2)
+ 				{
+ 					diversity = mmcqd_wr_offset[idx]/(mmcqd_wr_rq_count[idx]-1);
+-					xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd:%d Write Diversity=%d sectors offset, req_cnt=%d, break_cnt=%d, tract_cnt=%d, bit_cnt=%d\n", mmcqd[idx], diversity, mmcqd_wr_rq_count[idx], mmcqd_wr_break[idx], mmcqd_wr_tract[idx], mmcqd_wr_bit[idx]);
+ 				}
+ 				if(mmcqd_rd_rq_count[idx] >= 2)
+ 				{
+ 					diversity = mmcqd_rd_offset[idx]/(mmcqd_rd_rq_count[idx]-1);
+-					xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd:%d Read Diversity=%d sectors offset, req_cnt=%d, break_cnt=%d, tract_cnt=%d, bit_cnt=%d\n", mmcqd[idx], diversity, mmcqd_rd_rq_count[idx], mmcqd_rd_break[idx], mmcqd_rd_tract[idx], mmcqd_rd_bit[idx]);
+ 				}
+ 				if(mmcqd_t_usage_wr[idx])
+ 				{
+@@ -2305,7 +2298,6 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
+ 					{
+ 						perf_meter = (mmcqd_rq_size_wr[idx])/((unsigned int)mmcqd_t_usage_wr[idx]); //kb/s
+ 						mmcqd_w_throughput[idx] = perf_meter;
+-						xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd:%d Write Throughput=%d kB/s, size: %d bytes, time:%lld ms\n", mmcqd[idx], perf_meter, mmcqd_rq_size_wr[idx], mmcqd_t_usage_wr[idx]);
+ 					}
+ 				}
+ 				if(mmcqd_t_usage_rd[idx])
+@@ -2315,18 +2307,12 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
+ 					{
+ 						perf_meter = (mmcqd_rq_size_rd[idx])/((unsigned int)mmcqd_t_usage_rd[idx]); //kb/s					
+ 						mmcqd_r_throughput[idx] = perf_meter;
+-						xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd:%d Read Throughput=%d kB/s, size: %d bytes, time:%lld ms\n", mmcqd[idx], perf_meter, mmcqd_rq_size_rd[idx], mmcqd_t_usage_rd[idx]);  					
+ 					}
+ 				}
+ 				mmcqd_tag_t1[idx]=time1;
+ 				g_var_clear(idx);
+ #ifdef FEATURE_STORAGE_META_LOG			
+ 				mmcmetaindex = mmc_get_devidx(md->disk);
+-				xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd metarw WR:%d NWR:%d HR:%d WDR:%d HDR:%d WW:%d NWW:%d HW:%d\n", 
+-					metadata_logger[mmcmetaindex].metadata_rw_logger[0], metadata_logger[mmcmetaindex].metadata_rw_logger[1], 
+-					metadata_logger[mmcmetaindex].metadata_rw_logger[2], metadata_logger[mmcmetaindex].metadata_rw_logger[3], 
+-					metadata_logger[mmcmetaindex].metadata_rw_logger[4], metadata_logger[mmcmetaindex].metadata_rw_logger[5], 
+-					metadata_logger[mmcmetaindex].metadata_rw_logger[6], metadata_logger[mmcmetaindex].metadata_rw_logger[7]);  					
+ 				clear_metadata_rw_status(md->disk->first_minor);
+ #endif
+ #if defined(FEATURE_STORAGE_PID_LOGGER)
+@@ -2347,9 +2333,6 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
+ 
+ 					}
+ 					if( i != 0) {
+-						xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "mmcqd pid:%d %s\n", g_pid_logger[index].current_pid, g_pid_logger[index].pid_buffer);
+-						//xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "sizeof(&(g_pid_logger[index].pid_logger)):%d\n", sizeof(unsigned short)*PID_LOGGER_COUNT);
+-						//memset( &(g_pid_logger[index].pid_logger), 0, sizeof(struct struct_pid_logger)-(unsigned long)&(((struct struct_pid_logger *)0)->pid_logger));
+ 						memset( &(g_pid_logger[index].pid_logger), 0, sizeof(unsigned short)*PID_LOGGER_COUNT);
+ 						memset( &(g_pid_logger[index].pid_logger_counter), 0, sizeof(unsigned short)*PID_LOGGER_COUNT);
+ 						memset( &(g_pid_logger[index].pid_logger_length), 0, sizeof(unsigned int)*PID_LOGGER_COUNT);
+@@ -2363,15 +2346,6 @@ static int mmc_blk_issue_rw_rq(struct mmc_queue *mq, struct request *rqc)
+ 					
+ 				} while(0);
+ #endif
+-				
+-#if defined(FEATURE_STORAGE_VMSTAT_LOGGER)
+-                xlog_printk(ANDROID_LOG_DEBUG, "BLOCK_TAG", "vmstat (FP:%ld)(FD:%ld)(ND:%ld)(WB:%ld)(NW:%ld)\n",
+-                            ((global_page_state(NR_FILE_PAGES)) << (PAGE_SHIFT - 10)),
+-                            ((global_page_state(NR_FILE_DIRTY)) << (PAGE_SHIFT - 10)),
+-                            ((global_page_state(NR_DIRTIED))    << (PAGE_SHIFT - 10)),
+-                            ((global_page_state(NR_WRITEBACK))  << (PAGE_SHIFT - 10)),
+-                            ((global_page_state(NR_WRITTEN))    << (PAGE_SHIFT - 10)));
+-#endif
+ 
+ 			}
+ 		if( rqc )
+diff --git a/drivers/power/mediatek/battery_common.c b/drivers/power/mediatek/battery_common.c
+index 7f1ccc3d292a1..e31c2c0f5475a 100644
+--- a/drivers/power/mediatek/battery_common.c
++++ b/drivers/power/mediatek/battery_common.c
+@@ -87,7 +87,7 @@
+ /* ////////////////////////////////////////////////////////////////////////////// */
+ /* Battery Logging Entry */
+ /* ////////////////////////////////////////////////////////////////////////////// */
+-int Enable_BATDRV_LOG = BAT_LOG_CRTI;
++int Enable_BATDRV_LOG = BAT_LOG_ERROR;
+ 
+ /* ///////////////////////////////////////////////////////////////////////////////////////// */
+ /* // Smart Battery Structure */
+@@ -2397,12 +2397,6 @@ void mt_battery_GetBatteryData(void)
+ 	if (g_battery_soc_ready == KAL_FALSE)
+ 		g_battery_soc_ready = KAL_TRUE;
+ 
+-	pr_notice("AvgVbat=(%d),bat_vol=(%d),AvgI=(%d),I=(%d),VChr=(%d),AvgT=(%d),T=(%d),pre_SOC=(%d),SOC=(%d),ZCV=(%d)\n",
+-			BMT_status.bat_vol, bat_vol, BMT_status.ICharging, ICharging,
+-			BMT_status.charger_vol, BMT_status.temperature, temperature,
+-			previous_SOC, BMT_status.SOC, BMT_status.ZCV);
+-
+-
+ }
+ 
+ #if defined(CONFIG_AUSTIN_PROJECT)
+@@ -2415,10 +2409,8 @@ static PMU_STATUS mt_battery_CheckBatteryConnect(void)
+ 
+ 	ret = IMM_GetOneChannelValue(13, data, &voltage);
+ 	if (ret != 0){
+-		printk("[mt_battery_CheckBatteryConnect]Id voltage read fail\n");
+ 	} else {
+ 		battery_idV = (voltage*1500)/4096;
+-		printk("[mt_battery_CheckBatteryConnect]Id voltage = %d\n", battery_idV);
+ 	}
+ 
+ 	if (battery_idV > 500) {
+diff --git a/drivers/staging/android/lowmemorykiller.c b/drivers/staging/android/lowmemorykiller.c
+index b5bf6cf92c396..567ef262b5e12 100644
+--- a/drivers/staging/android/lowmemorykiller.c
++++ b/drivers/staging/android/lowmemorykiller.c
+@@ -538,7 +538,6 @@ static int __init lowmem_init(void)
+   }  	
+ #endif
+ 
+-	task_free_register(&task_nb);
+ 	register_shrinker(&lowmem_shrinker);
+ 
+ #ifdef CONFIG_HIGHMEM
+@@ -553,7 +552,6 @@ static int __init lowmem_init(void)
+ static void __exit lowmem_exit(void)
+ {
+ 	unregister_shrinker(&lowmem_shrinker);
+-	task_free_unregister(&task_nb);
+ }
+ 
+ #ifdef CONFIG_ANDROID_LOW_MEMORY_KILLER_AUTODETECT_OOM_ADJ_VALUES
+diff --git a/drivers/thermal/virtual_sensor_thermal.c b/drivers/thermal/virtual_sensor_thermal.c
+index c41b562dc7dda..0f47cb8f8af6b 100644
+--- a/drivers/thermal/virtual_sensor_thermal.c
++++ b/drivers/thermal/virtual_sensor_thermal.c
+@@ -150,7 +150,7 @@ static int virtual_sensor_thermal_get_temp(struct thermal_zone_device *thermal,
+ 		weight = tdev->tdp->weight;
+ 
+ 		if (0 == sec_counter)
+-			pr_warning("%s %s t=%ld a=%d o=%d w=%d\n",
++			pr_debug("%s %s t=%ld a=%d o=%d w=%d\n",
+ 			       __func__,
+ 			       tdev->name,
+ 			       temp,
+diff --git a/include/linux/kpd.h b/include/linux/kpd.h
+index 0be308a3e3b08..f0ea1a7dbd28d 100644
+--- a/include/linux/kpd.h
++++ b/include/linux/kpd.h
+@@ -47,7 +47,7 @@
+ #include <mach/hal_pub_kpd.h>
+ 
+ #define KPD_AUTOTEST	KPD_YES
+-#define KPD_DEBUG	KPD_YES
++#define KPD_DEBUG	KPD_NO
+ 
+ #if KPD_AUTOTEST
+ #define PRESS_OK_KEY		_IO('k', 1)
+diff --git a/include/linux/printk.h b/include/linux/printk.h
+index 2dfee488eded4..708b8a84f6c02 100644
+--- a/include/linux/printk.h
++++ b/include/linux/printk.h
+@@ -47,10 +47,8 @@ static inline void console_silent(void)
+ 
+ static inline void console_verbose(void)
+ {
+-/* Do not change loglevel unexpectedly
+ 	if (console_loglevel)
+ 		console_loglevel = 15;
+-*/
+ }
+ 
+ struct va_format {
+diff --git a/include/linux/sched.h b/include/linux/sched.h
+index b290b0c030126..3f9331aaf2ce4 100644
+--- a/include/linux/sched.h
++++ b/include/linux/sched.h
+@@ -1741,9 +1741,6 @@ static inline cputime_t task_gtime(struct task_struct *t)
+ extern void task_cputime_adjusted(struct task_struct *p, cputime_t *ut, cputime_t *st);
+ extern void thread_group_cputime_adjusted(struct task_struct *p, cputime_t *ut, cputime_t *st);
+ 
+-extern int task_free_register(struct notifier_block *n);
+-extern int task_free_unregister(struct notifier_block *n);
+-
+ /*
+  * Per process flags
+  */
+diff --git a/kernel/exit.c b/kernel/exit.c
+index 72bde1db3bd22..33fde71b83d05 100644
+--- a/kernel/exit.c
++++ b/kernel/exit.c
+@@ -59,10 +59,6 @@
+ #include <asm/pgtable.h>
+ #include <asm/mmu_context.h>
+ 
+-#ifdef CONFIG_MT_PRIO_TRACER
+-# include <linux/prio_tracer.h>
+-#endif
+-
+ static void exit_mm(struct task_struct * tsk);
+ 
+ static void __unhash_process(struct task_struct *p, bool group_dead)
+@@ -716,25 +712,12 @@ static void check_stack_usage(void)
+ static inline void check_stack_usage(void) {}
+ #endif
+ 
+-#ifdef CONFIG_SCHEDSTATS
+-/* mt shceduler profiling*/
+-extern void end_mtproc_info(struct task_struct *p);
+-#endif
+ void do_exit(long code)
+ {
+ 	struct task_struct *tsk = current;
+ 	int group_dead;
+ 
+ 	profile_task_exit(tsk);
+-#ifdef CONFIG_SCHEDSTATS
+-	/* mt shceduler profiling*/
+-	printk(KERN_DEBUG "[%d:%s] exit\n", tsk->pid, tsk->comm);
+-	end_mtproc_info(tsk);
+-#endif
+-
+-#ifdef CONFIG_MT_PRIO_TRACER
+-	delete_prio_tracer(tsk->pid);
+-#endif
+ 
+ 	WARN_ON(blk_needs_flush_plug(tsk));
+ 
+@@ -778,11 +761,6 @@ void do_exit(long code)
+ 	}
+ 
+ 	exit_signals(tsk);  /* sets PF_EXITING */
+-
+-	if (tsk->flags & PF_SU) {
+-		su_exit();
+-	}
+-
+ 	/*
+ 	 * tsk->flags are checked in the futex code to protect against
+ 	 * an exiting task cleaning up the robust pi futexes.
+diff --git a/kernel/fork.c b/kernel/fork.c
+index 99408165ded41..612e78d821948 100644
+--- a/kernel/fork.c
++++ b/kernel/fork.c
+@@ -84,10 +84,6 @@
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/task.h>
+ 
+-#ifdef CONFIG_MT_PRIO_TRACER
+-# include <linux/prio_tracer.h>
+-#endif
+-
+ /*
+  * Protected counters by write_lock_irq(&tasklist_lock)
+  */
+@@ -202,9 +198,6 @@ struct kmem_cache *vm_area_cachep;
+ /* SLAB cache for mm_struct structures (tsk->mm) */
+ static struct kmem_cache *mm_cachep;
+ 
+-/* Notifier list called when a task struct is freed */
+-static ATOMIC_NOTIFIER_HEAD(task_free_notifier);
+-
+ static void account_kernel_stack(struct thread_info *ti, int account)
+ {
+ 	struct zone *zone = page_zone(virt_to_page(ti));
+@@ -238,18 +231,6 @@ static inline void put_signal_struct(struct signal_struct *sig)
+ 		free_signal_struct(sig);
+ }
+ 
+-int task_free_register(struct notifier_block *n)
+-{
+-	return atomic_notifier_chain_register(&task_free_notifier, n);
+-}
+-EXPORT_SYMBOL(task_free_register);
+-
+-int task_free_unregister(struct notifier_block *n)
+-{
+-	return atomic_notifier_chain_unregister(&task_free_notifier, n);
+-}
+-EXPORT_SYMBOL(task_free_unregister);
+-
+ void __put_task_struct(struct task_struct *tsk)
+ {
+ 	WARN_ON(!tsk->exit_state);
+@@ -261,7 +242,6 @@ void __put_task_struct(struct task_struct *tsk)
+ 	delayacct_tsk_free(tsk);
+ 	put_signal_struct(tsk->signal);
+ 
+-	atomic_notifier_call_chain(&task_free_notifier, 0, tsk);
+ 	if (!profile_handoff_task(tsk))
+ 		free_task(tsk);
+ }
+@@ -319,34 +299,18 @@ static struct task_struct *dup_task_struct(struct task_struct *orig)
+ 	int err;
+ 
+ 	tsk = alloc_task_struct_node(node);
+-	if (!tsk){
+-		printk("[%d:%s] fork fail at alloc_tsk_node, please check kmem_cache_alloc_node()\n", current->pid, current->comm);
++	if (!tsk)
+ 		return NULL;
+-	}
++
+ 	ti = alloc_thread_info_node(tsk, node);
+-	if (!ti) {
+-		printk("[%d:%s] fork fail at alloc_t_info_node, please check alloc_pages_node()\n", current->pid, current->comm);
++	if (!ti)
+ 		goto free_tsk;
+-	}
+ 
+ 	err = arch_dup_task_struct(tsk, orig);
+-	if (err){
+-		printk("[%d:%s] fork fail at arch_dup_task_struct, err:%d \n", current->pid, current->comm, err);
++	if (err)
+ 		goto free_ti;
+-	}
+-
+-	tsk->flags &= ~PF_SU;
+ 
+ 	tsk->stack = ti;
+-#ifdef CONFIG_SECCOMP
+-	/*
+-	 * We must handle setting up seccomp filters once we're under
+-	 * the sighand lock in case orig has changed between now and
+-	 * then. Until then, filter must be NULL to avoid messing up
+-	 * the usage counts on the error path calling free_task.
+-	 */
+-	tsk->seccomp.filter = NULL;
+-#endif
+ 
+ 	setup_thread_stack(tsk, orig);
+ 	clear_user_return_notifier(tsk);
+@@ -733,8 +697,7 @@ struct mm_struct *mm_access(struct task_struct *task, unsigned int mode)
+ 
+ 	mm = get_task_mm(task);
+ 	if (mm && mm != current->mm &&
+-			!ptrace_may_access(task, mode) &&
+-			!capable(CAP_SYS_RESOURCE)) {
++			!ptrace_may_access(task, mode)) {
+ 		mmput(mm);
+ 		mm = ERR_PTR(-EACCES);
+ 	}
+@@ -907,9 +870,6 @@ static int copy_mm(unsigned long clone_flags, struct task_struct *tsk)
+ 	int retval;
+ 
+ 	tsk->min_flt = tsk->maj_flt = 0;
+-#ifdef CONFIG_ZRAM
+-    tsk->fm_flt = tsk->swap_in = tsk->swap_out = 0;
+-#endif
+ 	tsk->nvcsw = tsk->nivcsw = 0;
+ #ifdef CONFIG_DETECT_HUNG_TASK
+ 	tsk->last_switch_count = tsk->nvcsw + tsk->nivcsw;
+@@ -1129,39 +1089,6 @@ static void copy_flags(unsigned long clone_flags, struct task_struct *p)
+ 	p->flags = new_flags;
+ }
+ 
+-static void copy_seccomp(struct task_struct *p)
+-{
+-#ifdef CONFIG_SECCOMP
+-	/*
+-	 * Must be called with sighand->lock held, which is common to
+-	 * all threads in the group. Holding cred_guard_mutex is not
+-	 * needed because this new task is not yet running and cannot
+-	 * be racing exec.
+-	 */
+-	assert_spin_locked(&current->sighand->siglock);
+-
+-	/* Ref-count the new filter user, and assign it. */
+-	get_seccomp_filter(current);
+-	p->seccomp = current->seccomp;
+-
+-	/*
+-	 * Explicitly enable no_new_privs here in case it got set
+-	 * between the task_struct being duplicated and holding the
+-	 * sighand lock. The seccomp state and nnp must be in sync.
+-	 */
+-	if (task_no_new_privs(current))
+-		task_set_no_new_privs(p);
+-
+-	/*
+-	 * If the parent gained a seccomp mode after copying thread
+-	 * flags and between before we held the sighand lock, we have
+-	 * to manually enable the seccomp thread flag here.
+-	 */
+-	if (p->seccomp.mode != SECCOMP_MODE_DISABLED)
+-		set_tsk_thread_flag(p, TIF_SECCOMP);
+-#endif
+-}
+-
+ SYSCALL_DEFINE1(set_tid_address, int __user *, tidptr)
+ {
+ 	current->clear_child_tid = tidptr;
+@@ -1198,32 +1125,6 @@ static void posix_cpu_timers_init(struct task_struct *tsk)
+ 	INIT_LIST_HEAD(&tsk->cpu_timers[2]);
+ }
+ 
+-#ifdef CONFIG_MTK_SCHED_CMP_TGS
+-static void mt_init_thread_group(struct task_struct *p){
+-#ifdef CONFIG_MT_SCHED_INFO
+-	struct task_struct *tg = p->group_leader;
+-#endif
+-
+-	p->thread_group_info[0].cfs_nr_running = 0;
+-	p->thread_group_info[0].nr_running = 0 ;
+-	p->thread_group_info[0].load_avg_ratio = 0;
+-	p->thread_group_info[1].cfs_nr_running = 0;
+-	p->thread_group_info[1].nr_running = 0;
+-	p->thread_group_info[1].load_avg_ratio = 0;
+-
+-#ifdef CONFIG_MT_SCHED_INFO
+-	mt_sched_printf("fork %d:%s %d:%s %lu %lu %lu, %lu %lu %lu",
+-	   tg->pid, tg->comm, p->pid, p->comm,
+-	   tg->thread_group_info[0].nr_running,
+-	   tg->thread_group_info[0].cfs_nr_running,
+-	   tg->thread_group_info[0].load_avg_ratio,
+-	   tg->thread_group_info[1].cfs_nr_running,
+-	   tg->thread_group_info[1].nr_running,
+-	   tg->thread_group_info[1].load_avg_ratio);
+-#endif
+-}
+-#endif
+-
+ /*
+  * This creates a new process as a copy of the old one,
+  * but does not actually start it yet.
+@@ -1242,10 +1143,9 @@ static struct task_struct *copy_process(unsigned long clone_flags,
+ 	int retval;
+ 	struct task_struct *p;
+ 
+-	if ((clone_flags & (CLONE_NEWNS|CLONE_FS)) == (CLONE_NEWNS|CLONE_FS)){
+-		printk("[%d:%s] fork fail at cpp 1, clone_flags:0x%x\n", current->pid, current->comm, (unsigned int)clone_flags);
++	if ((clone_flags & (CLONE_NEWNS|CLONE_FS)) == (CLONE_NEWNS|CLONE_FS))
+ 		return ERR_PTR(-EINVAL);
+-	}
++
+ 	if ((clone_flags & (CLONE_NEWUSER|CLONE_FS)) == (CLONE_NEWUSER|CLONE_FS))
+ 		return ERR_PTR(-EINVAL);
+ 
+@@ -1253,19 +1153,17 @@ static struct task_struct *copy_process(unsigned long clone_flags,
+ 	 * Thread groups must share signals as well, and detached threads
+ 	 * can only be started up within the thread group.
+ 	 */
+-	if ((clone_flags & CLONE_THREAD) && !(clone_flags & CLONE_SIGHAND)){
+-		printk("[%d:%s] fork fail at cpp 2, clone_flags:0x%x\n", current->pid, current->comm, (unsigned int)clone_flags);
++	if ((clone_flags & CLONE_THREAD) && !(clone_flags & CLONE_SIGHAND))
+ 		return ERR_PTR(-EINVAL);
+-	}
++
+ 	/*
+ 	 * Shared signal handlers imply shared VM. By way of the above,
+ 	 * thread groups also imply shared VM. Blocking this case allows
+ 	 * for various simplifications in other code.
+ 	 */
+-	if ((clone_flags & CLONE_SIGHAND) && !(clone_flags & CLONE_VM)){
+-		printk("[%d:%s] fork fail at cpp 3, clone_flags:0x%x\n", current->pid, current->comm, (unsigned int)clone_flags);
++	if ((clone_flags & CLONE_SIGHAND) && !(clone_flags & CLONE_VM))
+ 		return ERR_PTR(-EINVAL);
+-	}
++
+ 	/*
+ 	 * Siblings of global init remain as zombies on exit since they are
+ 	 * not reaped by their parent (swapper). To solve this and to avoid
+@@ -1273,10 +1171,9 @@ static struct task_struct *copy_process(unsigned long clone_flags,
+ 	 * from creating siblings.
+ 	 */
+ 	if ((clone_flags & CLONE_PARENT) &&
+-				current->signal->flags & SIGNAL_UNKILLABLE){
+-		printk("[%d:%s] fork fail at cpp 4, clone_flags:0x%x\n", current->pid, current->comm, (unsigned int)clone_flags);
++				current->signal->flags & SIGNAL_UNKILLABLE)
+ 		return ERR_PTR(-EINVAL);
+-	}
++
+ 	/*
+ 	 * If the new process will be in a different pid namespace don't
+ 	 * allow it to share a thread group or signal handlers with the
+@@ -1292,17 +1189,13 @@ static struct task_struct *copy_process(unsigned long clone_flags,
+ 
+ 	retval = -ENOMEM;
+ 	p = dup_task_struct(current);
+-	if (!p){
+-		printk("[%d:%s] fork fail at dup_task_struc, p=%p\n", current->pid, current->comm, p);
++	if (!p)
+ 		goto fork_out;
+-	}
+ 
+ 	ftrace_graph_init_task(p);
++	get_seccomp_filter(p);
+ 
+ 	rt_mutex_init_task(p);
+-#ifdef CONFIG_MTK_SCHED_CMP_TGS
+-	raw_spin_lock_init(&p->thread_group_info_lock);
+-#endif
+ 
+ #ifdef CONFIG_PROVE_LOCKING
+ 	DEBUG_LOCKS_WARN_ON(!p->hardirqs_enabled);
+@@ -1526,9 +1419,6 @@ static struct task_struct *copy_process(unsigned long clone_flags,
+ 	 */
+ 	p->group_leader = p;
+ 	INIT_LIST_HEAD(&p->thread_group);
+-#ifdef CONFIG_MTK_SCHED_CMP_TGS
+-	mt_init_thread_group(p);
+-#endif
+ 	p->task_works = NULL;
+ 
+ 	/* Need tasklist lock for parent etc handling! */
+@@ -1545,12 +1435,6 @@ static struct task_struct *copy_process(unsigned long clone_flags,
+ 
+ 	spin_lock(&current->sighand->siglock);
+ 
+-	/*
+-	 * Copy seccomp details explicitly here, in case they were changed
+-	 * before holding sighand lock.
+-	 */
+-	copy_seccomp(p);
+-
+ 	/*
+ 	 * Process group and session signals need to be delivered to just the
+ 	 * parent before the fork or both the parent and the child after the
+@@ -1654,7 +1538,6 @@ bad_fork_cleanup_count:
+ bad_fork_free:
+ 	free_task(p);
+ fork_out:
+-	printk("[%d:%s] fork fail retval:0x%x\n", current->pid, current->comm, retval);
+ 	return ERR_PTR(retval);
+ }
+ 
+@@ -1686,10 +1569,6 @@ struct task_struct * __cpuinit fork_idle(int cpu)
+  * It copies the process, and if successful kick-starts
+  * it and waits for it to finish using the VM if required.
+  */
+-#ifdef CONFIG_SCHEDSTATS
+-/* mt shceduler profiling*/
+-extern void save_mtproc_info(struct task_struct *p, unsigned long long ts);
+-#endif
+ long do_fork(unsigned long clone_flags,
+ 	      unsigned long stack_start,
+ 	      unsigned long stack_size,
+@@ -1705,10 +1584,8 @@ long do_fork(unsigned long clone_flags,
+ 	 * actually start allocating stuff
+ 	 */
+ 	if (clone_flags & (CLONE_NEWUSER | CLONE_NEWPID)) {
+-		if (clone_flags & (CLONE_THREAD|CLONE_PARENT)) {
+-			printk("[%d:%s] fork fail at clone_thread, flags:0x%x\n", current->pid, current->comm, (unsigned int)clone_flags);
++		if (clone_flags & (CLONE_THREAD|CLONE_PARENT))
+ 			return -EINVAL;
+-		}
+ 	}
+ 
+ 	/*
+@@ -1753,11 +1630,6 @@ long do_fork(unsigned long clone_flags,
+ 			get_task_struct(p);
+ 		}
+ 
+-#ifdef CONFIG_SCHEDSTATS
+-        /* mt shceduler profiling*/
+-        save_mtproc_info(p, sched_clock());	
+-        printk(KERN_DEBUG "[%d:%s] fork [%d:%s]\n", current->pid, current->comm, p->pid, p->comm);
+-#endif
+ 		wake_up_new_task(p);
+ 
+ 		/* forking complete and child started to run, tell ptracer */
+@@ -1770,13 +1642,8 @@ long do_fork(unsigned long clone_flags,
+ 		}
+ 
+ 		put_pid(pid);
+-#ifdef CONFIG_MT_PRIO_TRACER
+-		create_prio_tracer(task_pid_nr(p));
+-		update_prio_tracer(task_pid_nr(p), p->prio, p->policy, PTS_KRNL);
+-#endif
+ 	} else {
+ 		nr = PTR_ERR(p);
+-		printk("[%d:%s] fork fail:[%p, %d]\n", current->pid, current->comm, p,(int) nr);
+ 	}
+ 	return nr;
+ }
+diff --git a/kernel/printk.c b/kernel/printk.c
+index e20087156cdb2..e4d6fefedfaaf 100644
+--- a/kernel/printk.c
++++ b/kernel/printk.c
+@@ -16,7 +16,6 @@
+  *	01Mar01 Andrew Morton
+  */
+ 
+-
+ #include <linux/kernel.h>
+ #include <linux/mm.h>
+ #include <linux/tty.h>
+@@ -35,7 +34,6 @@
+ #include <linux/memblock.h>
+ #include <linux/aio.h>
+ #include <linux/syscalls.h>
+-#include <linux/suspend.h>
+ #include <linux/kexec.h>
+ #include <linux/kdb.h>
+ #include <linux/ratelimit.h>
+@@ -47,32 +45,19 @@
+ #include <linux/poll.h>
+ #include <linux/irq_work.h>
+ #include <linux/utsname.h>
+-#include <linux/mt_sched_mon.h>
+-#include <linux/aee.h>
+ 
+ #include <asm/uaccess.h>
+ 
+ #define CREATE_TRACE_POINTS
+ #include <trace/events/printk.h>
+ 
+-/* Some options {*/
+-#define LOG_TOO_MUCH_WARNING
+-#ifdef LOG_TOO_MUCH_WARNING
+-static int log_in_resume;
+-#endif
+-/* Some options }*/
+-#ifdef CONFIG_EARLY_PRINTK_DIRECT
+-extern void printascii(char *);
+-#endif
+-
+-bool printk_disable_uart = 0;
+-static DEFINE_PER_CPU(char, printk_state);
++bool printk_disable_uart = 0; // MTK compat
+ /* printk's without a loglevel use this.. */
+ #define DEFAULT_MESSAGE_LOGLEVEL CONFIG_DEFAULT_MESSAGE_LOGLEVEL
+ 
+ /* We show everything that is MORE important than this.. */
+ #define MINIMUM_CONSOLE_LOGLEVEL 1 /* Minimum loglevel we let people use */
+-#define DEFAULT_CONSOLE_LOGLEVEL 6 /* anything MORE serious than KERN_INFO */
++#define DEFAULT_CONSOLE_LOGLEVEL 7 /* anything MORE serious than KERN_DEBUG */
+ 
+ int console_printk[4] = {
+ 	DEFAULT_CONSOLE_LOGLEVEL,	/* console_loglevel */
+@@ -80,7 +65,6 @@ int console_printk[4] = {
+ 	MINIMUM_CONSOLE_LOGLEVEL,	/* minimum_console_loglevel */
+ 	DEFAULT_CONSOLE_LOGLEVEL,	/* default_console_loglevel */
+ };
+-EXPORT_SYMBOL_GPL(console_printk);
+ 
+ /*
+  * Low level drivers may need that to know if they can schedule in
+@@ -242,12 +226,12 @@ static enum log_flags syslog_prev;
+ static size_t syslog_partial;
+ 
+ /* index and sequence number of the first record stored in the buffer */
+-/*static*/ u64 log_first_seq;
+-/*static*/ u32 log_first_idx;
++static u64 log_first_seq;
++static u32 log_first_idx;
+ 
+ /* index and sequence number of the next record to store in the buffer */
+-/*static*/ u64 log_next_seq;
+-/*static*/ u32 log_next_idx;
++static u64 log_next_seq;
++static u32 log_next_idx;
+ 
+ /* the next printk record to write to the console */
+ static u64 console_seq;
+@@ -272,31 +256,6 @@ static char __log_buf[__LOG_BUF_LEN] __aligned(LOG_ALIGN);
+ static char *log_buf = __log_buf;
+ static u32 log_buf_len = __LOG_BUF_LEN;
+ 
+-#ifdef CONFIG_MT_PRINTK_UART_CONSOLE
+-
+-extern int mt_need_uart_console;
+-inline void mt_disable_uart()
+-{
+-    if (mt_need_uart_console == 0) {
+-        printk("<< printk console disable >>\n");
+-        printk_disable_uart = 1;
+-    } else {
+-        printk("<< printk console can't be disabled >>\n");
+-    }
+-}
+-inline void mt_enable_uart()
+-{
+-    if (mt_need_uart_console == 1) {
+-        if (printk_disable_uart == 0)
+-            return;
+-        printk_disable_uart = 0;
+-        printk("<< printk console enable >>\n");
+-    } else {
+-        printk("<< printk console can't be enabled >>\n");
+-    }
+-}
+-
+-#endif
+ /* cpu currently holding logbuf_lock */
+ static volatile unsigned int logbuf_cpu = UINT_MAX;
+ 
+@@ -352,24 +311,9 @@ static void log_store(int facility, int level,
+ {
+ 	struct log *msg;
+ 	u32 size, pad_len;
+-    int this_cpu = smp_processor_id();
+-    char state = __raw_get_cpu_var(printk_state);
+-    if (state == 0) {
+-    	__raw_get_cpu_var(printk_state) = ' ';
+-    	state = ' ';
+-    }
+-    /*printk prefix {*/
+-    char tbuf[50];
+-    unsigned tlen;
+-    if (console_suspended == 0) {
+-       tlen = snprintf(tbuf, sizeof(tbuf), "%c(%x)[%d:%s]",
+-               state, this_cpu, current->pid, current->comm); 
+-    } else {
+-        tlen = snprintf(tbuf, sizeof(tbuf), "%c%x)", state, this_cpu);
+-    }
+-    /*printk prefix }*/
++
+ 	/* number of '\0' padding bytes to next message */
+-	size = sizeof(struct log) + text_len +tlen + dict_len;
++	size = sizeof(struct log) + text_len + dict_len;
+ 	pad_len = (-size) & (LOG_ALIGN - 1);
+ 	size += pad_len;
+ 
+@@ -401,10 +345,7 @@ static void log_store(int facility, int level,
+ 
+ 	/* fill message */
+ 	msg = (struct log *)(log_buf + log_next_idx);
+-	//memcpy(log_text(msg), text, text_len);
+-    memcpy(log_text(msg), tbuf, tlen);
+-	memcpy(log_text(msg) + tlen, text, text_len);
+-    text_len += tlen;
++	memcpy(log_text(msg), text, text_len);
+ 	msg->text_len = text_len;
+ 	memcpy(log_dict(msg), dict, dict_len);
+ 	msg->dict_len = dict_len;
+@@ -927,7 +868,6 @@ static bool printk_time = 1;
+ static bool printk_time;
+ #endif
+ module_param_named(time, printk_time, bool, S_IRUGO | S_IWUSR);
+-module_param_named(disable_uart, printk_disable_uart, bool, S_IRUGO | S_IWUSR);
+ 
+ static size_t print_time(u64 ts, char *buf)
+ {
+@@ -939,9 +879,9 @@ static size_t print_time(u64 ts, char *buf)
+ 	rem_nsec = do_div(ts, 1000000000);
+ 
+ 	if (!buf)
+-		return snprintf(NULL, 0, "[%5lu.000000]", (unsigned long)ts);
++		return snprintf(NULL, 0, "[%5lu.000000] ", (unsigned long)ts);
+ 
+-	return sprintf(buf, "[%5lu.%06lu]",
++	return sprintf(buf, "[%5lu.%06lu] ",
+ 		       (unsigned long)ts, rem_nsec / 1000);
+ }
+ 
+@@ -1339,8 +1279,6 @@ static void call_console_drivers(int level, const char *text, size_t len)
+ 		return;
+ 
+ 	for_each_console(con) {
+-        if (printk_disable_uart && (con->flags & CON_CONSDEV))
+-            continue;
+ 		if (exclusive_console && con != exclusive_console)
+ 			continue;
+ 		if (!(con->flags & CON_ENABLED))
+@@ -1568,11 +1506,7 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 	unsigned long flags;
+ 	int this_cpu;
+ 	int printed_len = 0;
+-    int in_irq_disable, in_non_preempt;
+-    in_irq_disable = irqs_disabled();
+-    in_non_preempt = in_atomic();
+-	vscnprintf(text, sizeof(textbuf), fmt, args);
+-	memset(text, 0x0, sizeof(textbuf));
++
+ 	boot_delay_msec(level);
+ 	printk_delay();
+ 
+@@ -1645,27 +1579,12 @@ asmlinkage int vprintk_emit(int facility, int level,
+ 		}
+ 	}
+ 
+-#ifdef CONFIG_EARLY_PRINTK_DIRECT
+-	printascii(text);
+-#endif
+-
+ 	if (level == -1)
+ 		level = default_message_loglevel;
+ 
+ 	if (dict)
+ 		lflags |= LOG_PREFIX|LOG_NEWLINE;
+-        
+-#ifdef CONFIG_PRINTK_PROCESS_INFO
+-    if (in_irq_disable)
+-        __raw_get_cpu_var(printk_state) = '-';
+-#ifdef CONFIG_MT_PRINTK_UART_CONSOLE
+-    else if (printk_disable_uart == 0)
+-        __raw_get_cpu_var(printk_state) = '.';
+-#endif
+-    else
+-        __raw_get_cpu_var(printk_state) = ' ';
+-#endif
+-	
++
+ 	if (!(lflags & LOG_NEWLINE)) {
+ 		/*
+ 		 * Flush the conflicting buffer. An earlier newline was missing,
+@@ -1981,28 +1900,16 @@ void suspend_console(void)
+ 	console_lock();
+ 	console_suspended = 1;
+ 	up(&console_sem);
+-	mutex_release(&console_lock_dep_map, 1, _RET_IP_);
+ }
+-EXPORT_SYMBOL_GPL(suspend_console);
+ 
+ void resume_console(void)
+ {
+ 	if (!console_suspend_enabled)
+ 		return;
+ 	down(&console_sem);
+-	mutex_acquire(&console_lock_dep_map, 0, 0, _RET_IP_);
+ 	console_suspended = 0;
+-#ifdef LOG_TOO_MUCH_WARNING
+-//    __raw_get_cpu_var(MT_trace_in_resume_console) = 1;
+-//    log_in_resume = 1;
+-    console_unlock();
+-//    log_in_resume = 0;
+-//    __raw_get_cpu_var(MT_trace_in_resume_console) = 0;
+-#else
+-    console_unlock();
+-#endif
++	console_unlock();
+ }
+-EXPORT_SYMBOL_GPL(resume_console);
+ 
+ /**
+  * console_cpu_notify - print deferred console messages after CPU hotplug
+@@ -2121,10 +2028,6 @@ out:
+  *
+  * console_unlock(); may be called from any context.
+  */
+-#ifdef LOG_TOO_MUCH_WARNING
+-static int console_log_max = 400000;
+-static int already_skip_log;
+-#endif
+ void console_unlock(void)
+ {
+ 	static char text[LOG_LINE_MAX + PREFIX_MAX];
+@@ -2132,13 +2035,6 @@ void console_unlock(void)
+ 	unsigned long flags;
+ 	bool wake_klogd = false;
+ 	bool do_cond_resched, retry;
+-#ifdef LOG_TOO_MUCH_WARNING
+-    unsigned long total_log_size = 0;
+-    unsigned long long t1 = 0, t2 = 0;
+-    char aee_str[512];
+-    int org_loglevel = console_loglevel;
+-#endif
+-
+ 
+ 	if (console_suspended) {
+ 		up(&console_sem);
+@@ -2167,12 +2063,6 @@ again:
+ 		int level;
+ 
+ 		raw_spin_lock_irqsave(&logbuf_lock, flags);
+-#ifdef LOG_TOO_MUCH_WARNING /*For Resume log too much*/
+-        if (log_in_resume) {
+-            t1 = sched_clock();
+-        }
+-#endif
+-
+ 		if (seen_seq != log_next_seq) {
+ 			wake_klogd = true;
+ 			seen_seq = log_next_seq;
+@@ -2215,41 +2105,8 @@ skip:
+ 		raw_spin_unlock(&logbuf_lock);
+ 
+ 		stop_critical_timings();	/* don't trace print latency */
+-#ifdef LOG_TOO_MUCH_WARNING
+-        /*
+-           For uart console, 10us/per chars
+-           400,000 chars = need to wait 4.0 sec
+-                normal case: 4sec
+-         */
+-        if (log_in_resume) {
+-            org_loglevel = console_loglevel;
+-            console_loglevel = 4;
+-        }
+-        total_log_size += len;
+-        if (total_log_size < console_log_max)
+-		    call_console_drivers(level, text, len);
+-        else if (!already_skip_log) {
+-            sprintf(aee_str, "PRINTK too much:%lu", total_log_size);
+-            aee_kernel_warning(aee_str, "Need to shrink kernel log");
+-            already_skip_log = 1;
+-        }
+-        /**/
+-        start_critical_timings();
+-        /* For Resume log too much*/
+-        if (log_in_resume) {
+-            t2 = sched_clock();
+-            console_loglevel = org_loglevel;
+-            if (t2 - t1 > 100000000) {
+-                sprintf( aee_str,"[RESUME CONSOLE too long:%lluns>100ms] s:%lluns, e:%lluns\n", t2 - t1, t1, t2);
+-                aee_kernel_warning(aee_str, "Need to shrink kernel log");
+-            }
+-        }
+-
+-        /**/
+-#else
+-        start_critical_timings();
+-        call_console_drivers(level, text, len);
+-#endif
++		call_console_drivers(level, text, len);
++		start_critical_timings();
+ 		local_irq_restore(flags);
+ 
+ 		if (do_cond_resched)
+@@ -2635,7 +2492,6 @@ late_initcall(printk_late_init);
+ 
+ static DEFINE_PER_CPU(int, printk_pending);
+ static DEFINE_PER_CPU(char [PRINTK_BUF_SIZE], printk_sched_buf);
+-static DEFINE_PER_CPU(int, printk_sched_length);
+ 
+ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ {
+@@ -2643,10 +2499,7 @@ static void wake_up_klogd_work_func(struct irq_work *irq_work)
+ 
+ 	if (pending & PRINTK_PENDING_SCHED) {
+ 		char *buf = __get_cpu_var(printk_sched_buf);
+-		printk(KERN_WARNING "[printk_delayed:start]\n");
+-		printk(KERN_WARNING "%s", buf);
+-		printk(KERN_WARNING "[printk_delayed:done]\n");
+-    __get_cpu_var(printk_sched_length) = 0;
++		printk(KERN_WARNING "[sched_delayed] %s", buf);
+ 	}
+ 
+ 	if (pending & PRINTK_PENDING_WAKEUP)
+@@ -2674,19 +2527,12 @@ int printk_deferred(const char *fmt, ...)
+ 	va_list args;
+ 	char *buf;
+ 	int r;
+-    int buf_length;
++
+ 	local_irq_save(flags);
+ 	buf = __get_cpu_var(printk_sched_buf);
+-    buf_length = __get_cpu_var(printk_sched_length);
+ 
+ 	va_start(args, fmt);
+-    if(PRINTK_BUF_SIZE >= buf_length){
+-	    r = vsnprintf((buf_length + buf), PRINTK_BUF_SIZE-buf_length, fmt, args);
+-        __get_cpu_var(printk_sched_length) += r;
+-    }else{
+-        printk("delayed log buf overflow,  size:%d\n", buf_length);
+-        r = 0;
+-    }
++	r = vsnprintf(buf, PRINTK_BUF_SIZE, fmt, args);
+ 	va_end(args);
+ 
+ 	__this_cpu_or(printk_pending, PRINTK_PENDING_SCHED);
+@@ -3111,10 +2957,4 @@ void show_regs_print_info(const char *log_lvl)
+ 	       task_thread_info(current));
+ }
+ 
+-void get_kernel_log_buffer(unsigned long *addr, unsigned long *size, unsigned long *start)
+-{
+-	*addr = (unsigned long)log_buf;
+-	*size = log_buf_len;
+-	*start = (unsigned long)&log_first_idx;
+-}
+ #endif
+diff --git a/kernel/signal.c b/kernel/signal.c
+index 28db04b54a9bd..7b81c53b00973 100644
+--- a/kernel/signal.c
++++ b/kernel/signal.c
+@@ -861,10 +861,8 @@ static bool prepare_signal(int sig, struct task_struct *p, bool force)
+ 	struct task_struct *t;
+ 
+ 	if (signal->flags & (SIGNAL_GROUP_EXIT | SIGNAL_GROUP_COREDUMP)) {
+-		if (signal->flags & SIGNAL_GROUP_COREDUMP) {
+-			printk(KERN_DEBUG "[%d:%s] is in the middle of dying so skip sig %d\n",p->pid, p->comm, sig);
+-		}
+-		return 0;
++		if (signal->flags & SIGNAL_GROUP_COREDUMP)
++			return sig == SIGKILL;
+ 		/*
+ 		 * The process is in the middle of dying, nothing to do.
+ 		 */
+@@ -1045,8 +1043,6 @@ static inline void userns_fixup_signal_uid(struct siginfo *info, struct task_str
+ }
+ #endif
+ 
+-static const char stat_nam[] = TASK_STATE_TO_CHAR_STR;
+-
+ static int __send_signal(int sig, struct siginfo *info, struct task_struct *t,
+ 			int group, int from_ancestor_ns)
+ {
+@@ -1054,12 +1050,7 @@ static int __send_signal(int sig, struct siginfo *info, struct task_struct *t,
+ 	struct sigqueue *q;
+ 	int override_rlimit;
+ 	int ret = 0, result;
+-	unsigned state;
+ 
+-	state = t->state ? __ffs(t->state) + 1 : 0;
+-	printk(KERN_DEBUG "[%d:%s] sig %d to [%d:%s] stat=%c\n",
+-	       current->pid, current->comm, sig, t->pid, t->comm,
+-	       state < sizeof(stat_nam) - 1 ? stat_nam[state] : '?');
+ 	assert_spin_locked(&t->sighand->siglock);
+ 
+ 	result = TRACE_SIGNAL_IGNORED;
+@@ -2858,7 +2849,7 @@ int do_sigtimedwait(const sigset_t *which, siginfo_t *info,
+ 		recalc_sigpending();
+ 		spin_unlock_irq(&tsk->sighand->siglock);
+ 
+-		timeout = freezable_schedule_timeout_interruptible(timeout);
++		timeout = schedule_timeout_interruptible(timeout);
+ 
+ 		spin_lock_irq(&tsk->sighand->siglock);
+ 		__set_task_blocked(tsk, &tsk->real_blocked);
+-- 
+2.29.2
+
