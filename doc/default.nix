@@ -71,14 +71,23 @@ stdenv.mkDerivation {
     process-doc "**/*.adoc" "**/*.md" \
       --styles-dir="${styles}" \
       --output-dir="$out"
+  '';
 
+  installPhase = ''
     rsync --prune-empty-dirs --verbose --archive \
       --exclude="*.src.svg" \
       --include="*.svg" \
       --include="*.jpeg" \
       --include="*.png" \
       --include="*/" --exclude="*" . $out/
-  '';
 
-  dontInstall = true;
+    (
+      cd $out
+      if grep -RIi "$NIX_BUILD_TOP"; then
+        echo "error: References to $NIX_BUILD_TOP found in output:"
+        grep -RIi "$NIX_BUILD_TOP"
+        exit 1
+      fi
+    )
+  '';
 }
