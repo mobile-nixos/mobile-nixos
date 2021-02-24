@@ -4,7 +4,7 @@ let
   # Original `evalConfig`
   evalConfig = import "${toString pkgs.path}/nixos/lib/eval-config.nix";
 in
-{
+rec {
   # This should *never* rely on lib or pkgs.
   all-devices =
     builtins.filter
@@ -36,7 +36,7 @@ in
     ;
   };
 
-  # These can rely freely on lib, avoir depending on pkgs.
+  # These can rely freely on lib, avoid depending on pkgs.
   withPkgs = pkgs:
     let
       inherit (pkgs) lib;
@@ -67,10 +67,13 @@ in
         armv7l-linux  = lib.systems.examples.armv7l-hf-multiplatform;
       };
 
-      # Given a device compatible with `default.nix`, eval.
+      # Eval with a configuration, for the given device.
+      evalWithConfiguration = configuration: device: evalWith {
+        modules = [ configuration ];
+        inherit device;
+      };
+
+      # The simplest eval for a device, with an empty configuration.
       evalFor = evalWithConfiguration {};
-      evalWithConfiguration = additionalConfiguration: device:
-        import ../. { inherit device additionalConfiguration; }
-      ;
     };
 }

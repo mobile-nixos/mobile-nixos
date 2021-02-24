@@ -1,23 +1,11 @@
-{ device ? null }:
-let
-  system-build = import ../../. {
-    inherit device;
-    configuration = [ { imports = [ ./configuration.nix ]; } ];
-  };
-  burn-tool-build = import ../../. {
-    inherit device;
-    configuration = [ { imports = [ ./android-burn-tool.nix ]; } ];
-  };
-in
-  {
-    inherit (system-build) build;
-    inherit (system-build.build)
-      # Android devices
-      android-bootimg android-device
-      # QEMU VM
-      vm
-      # Depthcharge
-      disk-image
-    ;
-    android-burn-tool = burn-tool-build.build.android-bootimg;
-  }
+{ device ? null, pkgs ? null }@args:
+
+import ../../lib/eval-with-configuration.nix (args // {
+  configuration = [ (import ./configuration.nix) ];
+  additionalHelpInstructions = ''
+    You can build the `-A build.default` attribute to build the default output
+    for your device.
+
+     $ nix-build examples/demo --argstr device ${device} -A build.default
+  '';
+})
