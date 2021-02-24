@@ -1,0 +1,112 @@
+#!/usr/bin/env nix-shell
+#!nix-shell -p ruby -i ruby
+#!nix-shell -p hydra-unstable
+
+# This script uses hydra's `hydra-eval-jobs` to evaluate a given expression,
+# defaulting to `release.nix`.
+
+require "open3"
+require "json"
+require "shellwords"
+
+module MD
+  extend self
+
+  def _title(s, level)
+    "\n#{"#" * level} #{s}\n\n"
+  end
+
+  def title(s)
+    "\n#{s}\n#{s.gsub(/./, "=")}\n\n"
+  end
+
+  def section(s)
+    "\n#{s}\n#{s.gsub(/./, "-")}\n\n"
+  end
+
+  def list_item(s)
+    "  * #{s}"
+  end
+
+  def code(s)
+    "`#{s}`"
+  end
+
+  def pre(s)
+    "```\n#{s}\n```"
+  end
+
+  def paragraph(s)
+    "#{s.strip}\n\n"
+  end
+
+  def subtitle(s)
+    _title(s, 3)
+  end
+end
+
+def usage(io=$stdout)
+  io.puts "Usage: bin/hydra-eval [args...]"
+  io.puts ""
+  io.puts "Arguments are passed-through to `hydra-eval-jobs`."
+  io.puts ""
+  io.puts "You are likely to want to use:"
+  io.puts ""
+  io.puts %q{    $ bin/hydra-eval release.nix --arg systems '[ "x86_64-linux" "aarch64-linux" ]' > out.md}
+  io.puts ""
+end
+
+# No arguments, or `--help`?
+if ARGV.length == 0 || ARGV.grep(/^--help/).length > 0
+  usage()
+  exit 0
+end
+
+# We're only keeping `NIX_PATH` from the env.
+env = ENV.filter do |k, v|
+  [
+    "NIX_PATH",
+  ].include?(k)
+end
+
+args = []
+
+# Allow access to files in CWD
+args << "-I"
+args << "./"
+
+# Run the eval
+out, ret = Open3.capture2(env, "hydra-eval-jobs", *args, *ARGV)
+
+# Read the output JSON
+hydra_eval = JSON.parse(out)
+
+errors, valid_jobs = hydra_eval.partition do |k, v|
+  v.has_key?("error")
+end.map(&:to_h)
+
+out = $stdout
+
+out.puts MD.title "Hydra-like evaluation"
+
+out.puts MD.paragraph "Command used to generate this report:"
+out.puts MD.pre " $ " + (["bin/hydra-eval"] + ARGV).shelljoin()
+
+out.puts MD.section "#{valid_jobs.length} valid jobs"
+
+valid_jobs.each do |attrname, job|
+  out.puts MD.list_item(
+    MD.code(attrname) +
+    " → " +
+    MD.code(job["drvPath"])
+  )
+end
+
+out.puts MD.section "#{errors.length} errors"
+
+errors.each do |attrname, obj|
+  out.puts MD.subtitle(MD.code(attrname))
+  out.puts MD.pre(obj["error"])
+end
+
+# vim: ft=ruby
