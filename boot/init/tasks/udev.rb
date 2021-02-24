@@ -10,6 +10,7 @@ class Tasks::UDev < SingletonTask
     # Make the Devices target depend on this task.
     # It is preferred to depend on the specific device rather than this target.
     Targets[:Devices].add_dependency(:Task, self)
+    Targets[:SwitchRoot].add_dependency(:Task, self)
   end
 
   def udevadm(*args)
