@@ -58,11 +58,10 @@ let
     let
       # Trick the overlay in giving us its attributes.
       # Using the values is likely to fail. Thank lazyness!
-      overlay = import ./overlay/overlay.nix {} {};
+      overlayAttrNames = builtins.attrNames (import ./overlay/overlay.nix {} {});
     in
-    eval: 
-    (lib.genAttrs (builtins.attrNames overlay) (name: eval.pkgs.${name})) //
-    {
+    eval: let overlay = (lib.genAttrs overlayAttrNames (name: eval.pkgs.${name})); in
+    overlay // {
       # We only "monkey patch" over top of the main nixos one.
       xorg = {
         xf86videofbdev = eval.pkgs.xorg.xf86videofbdev;
@@ -71,9 +70,12 @@ let
       # lib-like attributes...
       # How should we handle these?
       imageBuilder = null;
-      kernel-builder = null;
-      kernel-builder-gcc49 = null;
-      kernel-builder-gcc6 = null;
+      mobile-nixos = overlay.mobile-nixos // {
+        kernel-builder = null;
+        kernel-builder-clang_9 = null;
+        kernel-builder-gcc49 = null;
+        kernel-builder-gcc6 = null;
+      };
 
       # Also lib-like, but a "global" like attribute :/
       defaultKernelPatches = null;
