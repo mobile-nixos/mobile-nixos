@@ -128,7 +128,7 @@ let
       aarch64-linux.rootfs = aarch64-eval.build.rootfs;
     };
 in
-{
+rec {
   inherit device;
   inherit examples-demo;
 
@@ -158,6 +158,34 @@ in
     inherit constituents;
     meta = {
       description = "Representative subset of devices that have to succeed.";
+    };
+  };
+
+  # Uses the constituents of tested
+  testedPlus = let
+    hasSystem = name: lib.lists.any (el: el == name) systems;
+
+    constituents = tested.constituents
+      ++ lib.optionals (hasSystem "x86_64-linux") [
+        device.asus-flo.x86_64-linux
+      ]
+      ++ lib.optionals (hasSystem "aarch64-linux") [
+      ]
+      ++ lib.optionals (hasSystem "armv7l-linux") [
+        device.asus-flo.armv7l-linux
+      ]
+      ;
+  in
+  releaseTools.aggregate {
+    name = "mobile-nixos-tested";
+    inherit constituents;
+    meta = {
+      description = ''
+        Other targets that may be failing more often than `tested`.
+        This contains more esoteric and less tested platforms.
+
+        For a future release, `testedPlus` shoud also pass.
+      '';
     };
   };
 }
