@@ -106,8 +106,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-fiddle";
       owner = "mobile-nixos";
-      rev = "b8b7f82a98a24384995a38012b7e08c7bc6c630c";
-      sha256 = "1138vsk6pyqxw64xnic6a91ip9bxn9zxck4kcdx653ba5s0wzaz4";
+      rev = "f4ee03fcf9022d21e68de6d3b6e58e14b9c6cf43";
+      sha256 = "1w2mzmdgkk9qvn0cz0i09xs14mjcvryjxicl2n09l2bjk0plqdm4";
     };
 
     gemBuildInputs = [
@@ -279,12 +279,15 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-regexp-pcre";
       owner = "iij";
-      rev = "bcf0fb72f3baa2efb474232fd016edc021982d97";
-      sha256 = "00bwca5as5hd0pgq2a7dw6c7g3h6k9xww72p5vni6zilhnl4kllj";
+      rev = "a961225c0953dd2bd987111f0836821573616de2";
+      sha256 = "1d6frx8xxjkjly11pl6y7shncvnrsbw4fhdpcxzayilvg8v4csi7";
     };
 
     patches = [
-      ./mruby-regexp-pcre/0001-Fix-String-match-removed-in-mruby-2.1.0.patch
+      (fetchpatch {
+        url = "https://github.com/iij/mruby-regexp-pcre/commit/d07d8b4689554da825d3b30725a3ecb272079de0.patch";
+        sha256 = "0n0bf3x4j98nps3yvdngpkbkjfhijz1q9yxdfnp0jmr3nws6asb4";
+      })
     ];
 
     meta.license = licenses.mit;

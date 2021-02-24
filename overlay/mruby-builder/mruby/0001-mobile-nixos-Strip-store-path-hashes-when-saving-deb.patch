@@ -1,0 +1,58 @@
+From 6dab6fb118ece6c47e0407d4a7aa80e842b3747d Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Mon, 15 Feb 2021 23:18:06 -0500
+Subject: [PATCH] [mobile-nixos] Strip store path hashes when saving debug
+ information
+
+This is required for breaking the dependency on the source files, as
+`nuke-refs` break the irep otherwise.
+
+This patch could be applied strictly to an `mrbc` used to compile for
+the initrd, rather than always.
+---
+ src/debug.c | 15 ++++++++++++++-
+ 1 file changed, 14 insertions(+), 1 deletion(-)
+
+diff --git a/src/debug.c b/src/debug.c
+index b44c7d10..022d32bb 100644
+--- a/src/debug.c
++++ b/src/debug.c
+@@ -3,6 +3,8 @@
+ #include <mruby/irep.h>
+ #include <mruby/debug.h>
+ 
++#define NIX_STORE  "/nix/store/"
++
+ static mrb_irep_debug_info_file*
+ get_file(mrb_irep_debug_info *info, uint32_t pc)
+ {
+@@ -130,6 +132,7 @@ mrb_debug_info_append_file(mrb_state *mrb, mrb_irep_debug_info *d,
+   uint32_t file_pc_count;
+   size_t fn_len;
+   uint32_t i;
++  char *obfuscated_filename;
+ 
+   if (!d) return NULL;
+   if (start_pos == end_pos) return NULL;
+@@ -156,7 +159,17 @@ mrb_debug_info_append_file(mrb_state *mrb, mrb_irep_debug_info *d,
+   d->pc_count = end_pos;
+ 
+   fn_len = strlen(filename);
+-  f->filename_sym = mrb_intern(mrb, filename, fn_len);
++  obfuscated_filename = strdup(filename);
++
++  // filename starts with the string to obfuscate?
++  if (strstr(obfuscated_filename, NIX_STORE) == obfuscated_filename) {
++    // Transforms:
++    // /nix/store/00000bgcw03vv7m7407w22brc0g638dw-source
++    // Into:
++    // /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-source
++    strncpy(obfuscated_filename, NIX_STORE "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", 32 + strlen(NIX_STORE));
++  }
++  f->filename_sym = mrb_intern(mrb, obfuscated_filename, fn_len);
+ 
+   f->line_type = select_line_type(lines + start_pos, end_pos - start_pos);
+   f->lines.ptr = NULL;
+-- 
+2.29.2
+
