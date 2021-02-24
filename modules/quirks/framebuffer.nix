@@ -18,12 +18,22 @@ in
         may be useful for other vendors too.
       '';
     };
+    quirks.fb-refresher.stage-1.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Add `msm-fb-refresher` to stage-1.
+
+        It should not be needed for the usual assortment of Mobile NixOS tools.
+        They already handle flipping the framebuffer as needed.
+      '';
+    };
   };
 
   config = mkMerge [
     {
       mobile.boot = mkMerge [
-        (mkIf cfg.fb-refresher.enable {
+        (mkIf cfg.fb-refresher.stage-1.enable {
           stage-1 = {
             extraUtils = with pkgs; [
               msm-fb-refresher
