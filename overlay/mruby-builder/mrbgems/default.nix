@@ -344,6 +344,23 @@ rec {
     meta.licenses = licenses.mit;
   };
 
+  mruby-tempfile = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-tempfile";
+      owner = "iij";
+      rev = "b8e4fb65ecce9f0cc3584480d93b53a60cc6dd36";
+      sha256 = "05g3yq8l0m0r0ipa4wxcv9d45iyzwgbcw6qdklrfcgg7r1q2bivz";
+    };
+
+    requiredGems = [
+      mruby-dir
+      mruby-env
+      mruby-errno
+    ];
+
+    meta.licenses = licenses.mit;
+  };
+
   mruby-time-strftime = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-time-strftime";
