@@ -75,6 +75,12 @@ let
         kernel-builder-clang_9 = null;
         kernel-builder-gcc49 = null;
         kernel-builder-gcc6 = null;
+
+        # Ugly, but this allows the cross-canary-test to be distinct tests.
+        cross-canary-test = overlay.mobile-nixos.cross-canary-test // {
+          override = null;
+          overrideDerivation = null;
+        };
       };
 
       # Also lib-like, but a "global" like attribute :/
@@ -143,7 +149,8 @@ rec {
     hasSystem = name: lib.lists.any (el: el == name) systems;
 
     constituents =
-      lib.optionals (hasSystem "x86_64-linux") [
+      (builtins.attrValues overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.cross-canary-test)
+      ++ lib.optionals (hasSystem "x86_64-linux") [
         device.uefi-x86_64.x86_64-linux              # UEFI system
         # Cross builds
         device.asus-z00t.x86_64-linux                # Android
@@ -174,6 +181,7 @@ rec {
     hasSystem = name: lib.lists.any (el: el == name) systems;
 
     constituents = tested.constituents
+      ++ (builtins.attrValues overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.cross-canary-test)
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.asus-flo.x86_64-linux
         overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
@@ -187,7 +195,7 @@ rec {
       ;
   in
   releaseTools.aggregate {
-    name = "mobile-nixos-tested";
+    name = "mobile-nixos-tested-plus";
     inherit constituents;
     meta = {
       description = ''
