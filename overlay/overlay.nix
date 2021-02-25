@@ -136,6 +136,8 @@ in
       make-flashable-zip = callPackage ./mobile-nixos/android-flashable-zip/make-flashable-zip.nix {};
 
       map-dtbs = callPackage ./mobile-nixos/map-dtbs {};
+
+      cross-canary-test = callPackage ./mobile-nixos/cross-canary/test.nix {};
     };
 
     imageBuilder = callPackage ../lib/image-builder {};
