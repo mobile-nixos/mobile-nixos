@@ -183,8 +183,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-open3";
       owner = "mrbgems";
-      rev = "5d343deeffc161d517d14deacb8b38c7bc5daef8";
-      sha256 = "046xv1dqf2lh50sj7m74wdff5mhpvz5adhqziyrsia07rb5dcyl4";
+      rev = "d6ab1bcd13446661c2e134ad8343caba9d15e59a";
+      sha256 = "1kx4ibzm1s6m1q5nrpx10s4l3qbgbsca0kxx5vgm3i2frz5rxrm7";
     };
 
     requiredGems = [
