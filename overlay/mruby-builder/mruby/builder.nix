@@ -24,6 +24,7 @@ in
 { src
 , buildPhase
 , passthru ? {}
+, nativeBuildInputs ? []
 , ...
 }@ attrs:
 
@@ -36,7 +37,7 @@ assert attrs ? gems == false;
   nativeBuildInputs = [
     # For mrbc
     buildPackages.mruby
-  ];
+  ] ++ nativeBuildInputs;
 
   buildInputs = mruby.buildInputs;
 
