@@ -21,7 +21,6 @@ in
 , builder
 , runtimeShell
 , writeText
-, writeShellScriptBin
 
 # When unset the default gembox will be used.
 # For a native build, use the default gembox
@@ -161,7 +160,7 @@ let
   # As 2.2 will require other invasive changes, this is worked around until 2.2 is released.
   # The default (without other inputs) mruby build does not use `pkg-config`,
   # but its `#search_package` implementation does.
-  pkgconfig-helper = writeShellScriptBin "pkg-config" ''
+  pkgconfig-helper = buildPackages.writeShellScriptBin "pkg-config" ''
     exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
   '';
   mruby = stdenv.mkDerivation rec {
