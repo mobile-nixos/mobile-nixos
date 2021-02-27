@@ -21,6 +21,7 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
+  mobile.system.android.device_name = "a5y17lte";
   mobile.system.android = {
     bootimg.flash = {
       offset_base = "0x10000000";
