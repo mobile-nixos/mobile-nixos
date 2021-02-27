@@ -19,6 +19,7 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.system.android.device_name = "pioneer";
   mobile.system.android = {
     ab_partitions = true;
 
