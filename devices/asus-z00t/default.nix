@@ -24,6 +24,7 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
+  mobile.system.android.device_name = "Z00T";
   mobile.system.android.bootimg = {
     flash = {
       offset_base = "0x10000000";
