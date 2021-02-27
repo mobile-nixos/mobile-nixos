@@ -1,6 +1,7 @@
 class FlashPlan
   class AssertDevice
-    def initialize(device_name)
+    def initialize(plan, device_name)
+      @plan = plan
       @device_name = device_name
     end
 
@@ -33,10 +34,15 @@ class FlashPlan
     def relative_size()
       0
     end
+
+    def handles_progress?()
+      false
+    end
   end
 
   class FlashPartition
-    def initialize(partname, zip: nil)
+    def initialize(plan, partname, zip: nil)
+      @plan = plan
       @partname = partname
       @zip = zip
       @device = nil
@@ -59,17 +65,45 @@ class FlashPlan
     end
 
     def execute()
-      # FIXME
-      Edify.ui_print("Flashing #{@partname.inspect}")
-      args = [
-        "if=#{file}",
-        "of=#{@device}",
-        "conv=fsync",
-        "bs=#{4*1024*1024}",
-      ]
-      Edify.ui_print(" $ " + ["dd", *args].shelljoin)
-      Edify.ui_print(Busybox.dd(*args))
-      Busybox.last_status.success?
+      Edify.ui_print("Flashing #{@partname.inspect}...")
+      current_block = 0
+
+      while current_block*block_size <= file_size do
+        args = [
+          "if=#{file}",
+          "of=#{@device}",
+          "count=1",
+          "bs=#{block_size}",
+          "skip=#{current_block}",
+          "seek=#{current_block}",
+          "status=none",
+        ]
+
+        # Debug logging if needed...
+        #Edify.ui_print(" $ " + ["dd", *args].shelljoin)
+        $stdout.puts(" $ " + ["dd", *args].shelljoin)
+
+        output = Busybox.dd(*args)
+        Edify.ui_print(output) if output.strip != ""
+        return false unless Busybox.last_status.success?
+
+        left = file_size - current_block*block_size
+        flashed =
+          if left > block_size
+            block_size
+          else
+            left
+          end
+        @plan.increase_progress(flashed)
+        current_block += 1
+      end
+
+      Edify.ui_print("Syncing #{@partname.inspect}...")
+      output = Busybox.sync(@device)
+      Edify.ui_print(output) if output.strip != ""
+
+      # Operation was a success
+      true
     end
 
     def file()
@@ -90,12 +124,23 @@ class FlashPlan
       ).to_i
     end
 
+    # This mostly affects the granularity of the progress bar updates, at the
+    # cost of sometimes a bit slower flashes if done on a low block size.
+    def block_size()
+      #    KB     MB
+      4 * 1024 * 1024
+    end
+
     def explain()
       "Flash partition #{@partname.inspect} with image #{@zip.inspect}"
     end
 
     def relative_size()
       file_size
+    end
+
+    def handles_progress?()
+      true
     end
   end
 
@@ -104,11 +149,11 @@ class FlashPlan
   end
 
   def flash_partition(*args)
-    @plan << FlashPartition.new(*args)
+    @plan << FlashPartition.new(self, *args)
   end
 
   def assert_device(*args)
-    @plan << AssertDevice.new(*args)
+    @plan <<  AssertDevice.new(self, *args)
   end
 
   def execute!()
@@ -136,10 +181,10 @@ class FlashPlan
     Edify.ui_print("Plan looks okay... Continuing.")
 
     # 100% is the relative size of all those tasks.
-    total = @plan.map(&:relative_size).reduce(&:+).to_f
+    @total_progress = @plan.map(&:relative_size).reduce(&:+).to_f
 
     # Startings at 0%
-    current = 0
+    @current_progress = 0
 
     Edify.ui_print("")
     Edify.ui_print(":: Executing flash plan...")
@@ -155,14 +200,18 @@ class FlashPlan
         next
       end
 
-      # Progress up to now
-      current += item.relative_size / total
-      Edify.set_progress(current)
+      increase_progress(item.relative_size) unless item.handles_progress?
     end
 
     Edify.ui_print("")
     Edify.ui_print(":: Flash plan completed successfully.")
     Edify.ui_print("No errors to report.")
     Edify.ui_print("")
+  end
+
+  def increase_progress(added)
+    # Progress up to now
+    @current_progress += added / @total_progress
+    Edify.set_progress(@current_progress)
   end
 end
