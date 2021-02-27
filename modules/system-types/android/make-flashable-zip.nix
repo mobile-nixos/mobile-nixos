@@ -1,7 +1,7 @@
-{ runCommandNoCC, writeText, zip, pkgsStatic }:
+{ runCommandNoCC, writeText, zip, mobile-nixos }:
 
 let
-  inherit (pkgsStatic.mobile-nixos) android-flashable-zip-binaries;
+  inherit (mobile-nixos) android-flashable-zip-binaries;
 in
 
 { script, copyFiles, name }:
