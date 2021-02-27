@@ -19,6 +19,7 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.system.android.device_name = "flo";
   mobile.system.android.bootimg = {
     flash = {
       offset_base = "0x80200000";
