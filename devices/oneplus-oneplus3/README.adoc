@@ -10,8 +10,11 @@ Using `fastboot` to burn system.img to the userdata partition will fail.
 It seems like it flashes successfully like other devices do, but the flashed
 image will not boot.
 
-The current workaround is to `fastboot boot` TWRP and use `dd` through `adb` to
-flash the image.
+The current workaround is to use the flashable zip for the system image, or for
+the full device install.
+
+Alternatively, `fastboot boot` TWRP and use `dd` through `adb` to flash the
+image.
 
 ```
  $ cat .../.system.img | adb shell dd of=/dev/block/by-name/userdata bs=8m
