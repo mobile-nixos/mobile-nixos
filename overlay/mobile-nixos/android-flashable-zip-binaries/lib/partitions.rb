@@ -3,6 +3,7 @@ module Partitions
     "/dev",
     "/dev/block",
   ]
+  SUFFIX = Android.get_prop("ro.boot.slot_suffix", "")
   extend self
 
   # Returns the path to the device node for the partition.
@@ -10,7 +11,7 @@ module Partitions
     candidate = Dir.glob("/sys/class/block/*/uevent").map do |path|
       File.read(path)
     end.select do |uevent|
-      uevent.match(/^PARTNAME=#{name}$/)
+      uevent.match(/^PARTNAME=#{name}(#{SUFFIX})?$/)
     end
 
     # Found nothing?
