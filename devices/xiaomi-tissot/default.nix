@@ -25,6 +25,7 @@
     idProduct = "d001";
   };
 
+  mobile.system.android.device_name = "tissot";
   mobile.system.android = {
     bootimg.flash = {
       offset_base = "0x80000000";
