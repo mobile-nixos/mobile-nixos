@@ -21,6 +21,7 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
+  mobile.system.android.device_name = "marlin";
   mobile.system.android = {
     # This device has an A/B partition scheme
     ab_partitions = true;
