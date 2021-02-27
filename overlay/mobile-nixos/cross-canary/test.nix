@@ -1,4 +1,4 @@
-{ stdenv, runCommandNoCC, runtimeShell, busybox, hello-mruby, pkgsBuildBuild }:
+{ stdenv, runCommandNoCC, runtimeShell, busybox, hello-mruby, pkgsBuildBuild, pkgsStatic }:
 
 let
   inherit (stdenv) system;
@@ -41,5 +41,9 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else
   runtimeShell = mkTest "runtimeShell" ''
     # And what about runtimeShell?
     ${emulator} ${runtimeShell} -c 'echo runtimeShell works...'
+  '';
+
+  static-mruby = mkTest "static-mruby" ''
+    ${emulator} ${pkgsStatic.hello-mruby}/bin/hello
   '';
 }
