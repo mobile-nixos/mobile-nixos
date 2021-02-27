@@ -66,6 +66,10 @@ let
   };
 in
 {
+  imports = [
+    ./flashable-zip.nix
+  ];
+
   options = {
     mobile.system.android = {
       ab_partitions = lib.mkOption {
