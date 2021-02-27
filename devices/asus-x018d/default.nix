@@ -20,6 +20,7 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.system.android.device_name = "ww_x018";
   mobile.system.android = {
     bootimg.flash = {
       offset_base = "0x40078000";
