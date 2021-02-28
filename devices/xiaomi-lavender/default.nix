@@ -22,6 +22,7 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.system.android.device_name = "lavender";
   mobile.system.android = {
     # This device adds skip_initramfs to cmdline for normal boots
     boot_as_recovery = true;

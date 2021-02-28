@@ -19,6 +19,7 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.system.android.device_name = "walleye";
   mobile.system.android = {
     # This device has an A/B partition scheme
     ab_partitions = true;

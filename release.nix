@@ -148,11 +148,17 @@ rec {
         # Cross builds
         device.asus-z00t.x86_64-linux                # Android
         device.asus-dumo.x86_64-linux                # Depthcharge
+
+        # Flashable zip binaries are universal for a platform.
+        overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.android-flashable-zip-binaries
       ]
       ++ lib.optionals (hasSystem "aarch64-linux") [
         device.asus-z00t.aarch64-linux               # Android
         device.asus-dumo.aarch64-linux               # Depthcharge
         examples-demo.aarch64-linux.rootfs
+
+        # Flashable zip binaries are universal for a platform.
+        overlay.aarch64-linux.aarch64-linux.mobile-nixos.android-flashable-zip-binaries
       ];
   in
   releaseTools.aggregate {
@@ -170,11 +176,13 @@ rec {
     constituents = tested.constituents
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.asus-flo.x86_64-linux
+        overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
       ]
       ++ lib.optionals (hasSystem "aarch64-linux") [
       ]
       ++ lib.optionals (hasSystem "armv7l-linux") [
         device.asus-flo.armv7l-linux
+        overlay.armv7l-linux.armv7l-linux.mobile-nixos.android-flashable-zip-binaries
       ]
       ;
   in

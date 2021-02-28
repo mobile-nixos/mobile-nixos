@@ -1,15 +1,35 @@
-== Building
+== Building and installing
 
-This will build the default output for your _<%= info["fullName"] %>_.
+There are multiple installation methods for your _<%= info["fullName"] %>_.
+They all rely on flashing one or more partitions on your device.
 
- $ nix-build --argstr device <%= info["identifier"] %> -A build.default
+[WARNING]
+====
+*All installation methods can lead to data loss.*
 
-== Installation
+Flashing a partition *will erase everything on the partition*. Additionally,
+the common backups methods, e.g. TWRP, will *not* backup the `userdata`
+partition, which may be the installation target.
+
+Make backups.
+====
+
+=== Using Heimdall
+
+This will produce a folder with a flashing script, and the partition images for
+your _<%= info["fullName"] %>_.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-fastboot-images
+
+Alternatively, you can build a specific partition image:
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-bootimg
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.rootfs
 
 The device will need to be booted in its bootloader, or *odin*, mode.
 
-The boot image can be installed using the following command, assuming it was
-built using the previous command.
+The boot images can be installed using the following command, assuming the
+`android-fastboot-images` output was used.
 
  $ result/flash-critical.sh
 
@@ -17,8 +37,26 @@ If you have a system image (`system.img`) built, you can use `heimdall` to
 flash it to the device. Note that it might be too big to fit over the `SYSTEM`
 partition. In such case, it can be flashed on the `USERDATA` partition.
 
-WARNING: *This will erase everything on the partition*. Additionally, the
-common backups methods, e.g. TWRP, will *not* backup the `USERDATA` partition.
-
  $ heimdall flash --USERDATA system.img
 
+=== Using a flashable zip
+
+An alternative installation method is to use a flashable zip. The flashable zip
+can be built for your _<%= info["fullName"] %>_ using one of the following
+commands:
+
+ $ nix-build --argstr device <%= info["identifier"] %>-A build.android-flashable-bootimg
+ $ nix-build --argstr device <%= info["identifier"] %>-A build.android-flashable-system
+ $ nix-build --argstr device <%= info["identifier"] %>-A build.android-flashable-zip
+
+The first two will flash only a specific partition. The last one contains the
+partitions of the two previous one.
+
+The zip can either be copied to the device and selected in a compatible
+Android recovery, or sent to the device through `adb sideload`.
+
+ $ adb sideload /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-flashable-<%= info["identifier"] %>-boot.zip
+
+By default it will flash to the `system` partition. Some configurations may
+change this to flash to the `userdata` partition. In that case, *no warning is
+given before flashing*.

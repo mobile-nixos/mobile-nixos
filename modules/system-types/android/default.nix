@@ -30,8 +30,7 @@ let
   # either of fastboot or the outputs.
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
-  # TODO: Embed device-specific fastboot instructions as `echo` in the script.
-  android-device = pkgs.runCommandNoCC "android-device-${device.name}" {} ''
+  android-fastboot-images = pkgs.runCommandNoCC "android-fastboot-images-${device.name}" {} ''
     mkdir -p $out
     cp -v ${rootfs}/${rootfs.filename} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
@@ -42,6 +41,12 @@ let
     #!/usr/bin/env bash
     dir="$(cd "$(dirname "''${BASH_SOURCE[0]}")"; echo "$PWD")"
     PS4=" $ "
+    ${if has_recovery_partition then ''
+    echo "NOTE: This script flashes the boot and recovery partitions only."
+    '' else ''
+    echo "NOTE: This script flashes the boot partition only."
+    ''}
+    (
     set -x
     ${if flashingMethod == "fastboot" then ''
       fastboot flash ${optionalString ab_partitions "--slot=all"} boot "$dir"/boot.img
@@ -55,10 +60,18 @@ let
         --RECOVERY "$dir"/recovery.img
       ''}
     ''
-    else builtins.throw "No flashing method for ${flashingMethod}"}
+    else builtins.throw "No flashing method for ${flashingMethod}"})
+    echo ""
+    echo "Flashing completed."
+    echo "The system image needs to be flashed manually to the ${config.mobile.system.android.system_partition_destination} partition."
     EOF
     chmod +x $out/flash-critical.sh
   '';
+
+  # The output name `android-device` does not describe well what it is.
+  # This is kept for some backwards compatibility (6 months)
+  # Change to a throw by or after September 2021.
+  android-device = builtins.trace "The output `android-device` has been renamed to: `android-systems-image`." android-fastboot-images;
 
   mkBootimgOption = name: lib.mkOption {
     type = types.str;
@@ -66,6 +79,10 @@ let
   };
 in
 {
+  imports = [
+    ./flashable-zip.nix
+  ];
+
   options = {
     mobile.system.android = {
       ab_partitions = lib.mkOption {
@@ -82,10 +99,34 @@ in
         internal = true;
       };
 
+      device_name = lib.mkOption {
+        type = types.nullOr types.str;
+        description = "Value of `ro.product.device` or `ro.build.product`. Used to compare against in flashable zips.";
+        default = null;
+        internal = true;
+      };
+
+      flashingMethod = lib.mkOption {
+        type = types.enum [
+          "fastboot" # Default, using `fastboot`
+          "odin"     # Mainly Samsung, using `heimdall`
+        ];
+        description = "Configures which flashing method is used by the device.";
+        default = "fastboot";
+        internal = true;
+      };
+
       has_recovery_partition = lib.mkOption {
         type = types.bool;
         description = "Configures whether the device uses a distinct recovery partition";
         default = !config.mobile.system.android.boot_as_recovery;
+        internal = true;
+      };
+
+      system_partition_destination = lib.mkOption {
+        type = types.str;
+        description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
+        default = "system";
         internal = true;
       };
 
@@ -113,16 +154,6 @@ in
           "pagesize"
         ] mkBootimgOption;
       };
-
-      flashingMethod = lib.mkOption {
-        type = types.enum [
-          "fastboot" # Default, using `fastboot`
-          "odin"     # Mainly Samsung, using `heimdall`
-        ];
-        description = "Configures which flashing method is used by the device.";
-        default = "fastboot";
-        internal = true;
-      };
     };
   };
 
@@ -131,8 +162,13 @@ in
 
     (lib.mkIf enabled {
       system.build = {
-        default = android-device;
-        inherit android-bootimg android-recovery android-device;
+        default = android-fastboot-images;
+        inherit
+          android-device
+          android-bootimg
+          android-recovery
+          android-fastboot-images
+        ;
       };
 
       mobile.HAL.boot.rebootModes = [

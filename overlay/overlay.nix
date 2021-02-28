@@ -123,12 +123,17 @@ in
         boot-splash = callPackage ../boot/splash {};
       };
 
+      # Flashable zip binaries are always static.
+      android-flashable-zip-binaries = self.pkgsStatic.callPackage ./mobile-nixos/android-flashable-zip-binaries {};
+
       autoport = callPackage ./mobile-nixos/autoport {};
 
       boot-recovery-menu-simulator = callPackage ../boot/recovery-menu/simulator.nix {};
       boot-splash-simulator = callPackage ../boot/splash/simulator.nix {};
 
       fdt-forward = callPackage ./mobile-nixos/fdt-forward {};
+
+      make-flashable-zip = callPackage ./mobile-nixos/android-flashable-zip/make-flashable-zip.nix {};
 
       map-dtbs = callPackage ./mobile-nixos/map-dtbs {};
     };

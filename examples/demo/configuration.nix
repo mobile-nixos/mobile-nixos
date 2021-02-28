@@ -255,5 +255,11 @@ in
         videoDrivers = [ "modesetting" ];
       };
     })
+
+    {
+      # Force userdata for the target partition. It is assumed it will not
+      # fit in the `system` partition.
+      mobile.system.android.system_partition_destination = "userdata";
+    }
   ];
 }

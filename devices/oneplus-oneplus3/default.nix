@@ -21,6 +21,7 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
+  mobile.system.android.device_name = "OnePlus3";
   mobile.system.android.bootimg = {
     flash = {
       offset_base = "0x80000000";

@@ -183,8 +183,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-open3";
       owner = "mrbgems";
-      rev = "5d343deeffc161d517d14deacb8b38c7bc5daef8";
-      sha256 = "046xv1dqf2lh50sj7m74wdff5mhpvz5adhqziyrsia07rb5dcyl4";
+      rev = "d6ab1bcd13446661c2e134ad8343caba9d15e59a";
+      sha256 = "1kx4ibzm1s6m1q5nrpx10s4l3qbgbsca0kxx5vgm3i2frz5rxrm7";
     };
 
     requiredGems = [
@@ -340,6 +340,23 @@ rec {
       rev = "73dd4bae1a47d82e49b8f85bf27f49ec4462052e";
       sha256 = "0yyf9vfsm46m2fi46f8w6ympkwzlaqnbpjkfnkzyapf94rg23g6i";
     };
+
+    meta.licenses = licenses.mit;
+  };
+
+  mruby-tempfile = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-tempfile";
+      owner = "iij";
+      rev = "b8e4fb65ecce9f0cc3584480d93b53a60cc6dd36";
+      sha256 = "05g3yq8l0m0r0ipa4wxcv9d45iyzwgbcw6qdklrfcgg7r1q2bivz";
+    };
+
+    requiredGems = [
+      mruby-dir
+      mruby-env
+      mruby-errno
+    ];
 
     meta.licenses = licenses.mit;
   };

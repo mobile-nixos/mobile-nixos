@@ -19,6 +19,10 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  # cheryl2 is "ro.build.product";
+  # Different models of the Razer Phone 2 have different ro.product.device.
+  # It is unknown how supporting `bolt` or `linus` would actually differ.
+  mobile.system.android.device_name = "aura";
   mobile.system.android = {
     # This device has an A/B partition scheme.
     ab_partitions = true;
