@@ -42,6 +42,12 @@ let
     #!/usr/bin/env bash
     dir="$(cd "$(dirname "''${BASH_SOURCE[0]}")"; echo "$PWD")"
     PS4=" $ "
+    ${if has_recovery_partition then ''
+    echo "NOTE: This script flashes the boot and recovery partitions only."
+    '' else ''
+    echo "NOTE: This script flashes the boot partition only."
+    ''}
+    (
     set -x
     ${if flashingMethod == "fastboot" then ''
       fastboot flash ${optionalString ab_partitions "--slot=all"} boot "$dir"/boot.img
@@ -55,7 +61,10 @@ let
         --RECOVERY "$dir"/recovery.img
       ''}
     ''
-    else builtins.throw "No flashing method for ${flashingMethod}"}
+    else builtins.throw "No flashing method for ${flashingMethod}"})
+    echo ""
+    echo "Flashing completed."
+    echo "The system image needs to be flashed manually to the ${config.mobile.system.android.system_partition_destination} partition."
     EOF
     chmod +x $out/flash-critical.sh
   '';
@@ -86,10 +95,34 @@ in
         internal = true;
       };
 
+      device_name = lib.mkOption {
+        type = types.nullOr types.str;
+        description = "Value of `ro.product.device` or `ro.build.product`. Used to compare against in flashable zips.";
+        default = null;
+        internal = true;
+      };
+
+      flashingMethod = lib.mkOption {
+        type = types.enum [
+          "fastboot" # Default, using `fastboot`
+          "odin"     # Mainly Samsung, using `heimdall`
+        ];
+        description = "Configures which flashing method is used by the device.";
+        default = "fastboot";
+        internal = true;
+      };
+
       has_recovery_partition = lib.mkOption {
         type = types.bool;
         description = "Configures whether the device uses a distinct recovery partition";
         default = !config.mobile.system.android.boot_as_recovery;
+        internal = true;
+      };
+
+      system_partition_destination = lib.mkOption {
+        type = types.str;
+        description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
+        default = "system";
         internal = true;
       };
 
@@ -116,16 +149,6 @@ in
           "offset_tags"
           "pagesize"
         ] mkBootimgOption;
-      };
-
-      flashingMethod = lib.mkOption {
-        type = types.enum [
-          "fastboot" # Default, using `fastboot`
-          "odin"     # Mainly Samsung, using `heimdall`
-        ];
-        description = "Configures which flashing method is used by the device.";
-        default = "fastboot";
-        internal = true;
       };
     };
   };

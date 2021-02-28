@@ -62,24 +62,6 @@ let
   };
 in
 {
-  options = {
-    mobile.system.android = {
-      device_name = lib.mkOption {
-        type = types.nullOr types.str;
-        description = "Value of `ro.product.device` or `ro.build.product`. Used to compare against in flashable zips.";
-        default = null;
-        internal = true;
-      };
-
-      system_partition_destination = lib.mkOption {
-        type = types.str;
-        description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
-        default = "system";
-        internal = true;
-      };
-    };
-  };
-
   config = lib.mkMerge [
     (lib.mkIf enabled {
       system.build = {
