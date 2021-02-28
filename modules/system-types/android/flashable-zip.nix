@@ -6,8 +6,7 @@ let
   inherit (lib) types;
   inherit (config.mobile) device;
   inherit (config.system.build) android-bootimg rootfs;
-
-  make-flashable-zip = pkgs.callPackage ./make-flashable-zip.nix {};
+  inherit (pkgs.mobile-nixos) make-flashable-zip;
 
   # Fragments that will be re-used in the flashable zip builds
 
