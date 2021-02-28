@@ -30,8 +30,7 @@ let
   # either of fastboot or the outputs.
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
-  # TODO: Embed device-specific fastboot instructions as `echo` in the script.
-  android-device = pkgs.runCommandNoCC "android-device-${device.name}" {} ''
+  android-fastboot-images = pkgs.runCommandNoCC "android-fastboot-images-${device.name}" {} ''
     mkdir -p $out
     cp -v ${rootfs}/${rootfs.filename} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
@@ -68,6 +67,11 @@ let
     EOF
     chmod +x $out/flash-critical.sh
   '';
+
+  # The output name `android-device` does not describe well what it is.
+  # This is kept for some backwards compatibility (6 months)
+  # Change to a throw by or after September 2021.
+  android-device = builtins.trace "The output `android-device` has been renamed to: `android-systems-image`." android-fastboot-images;
 
   mkBootimgOption = name: lib.mkOption {
     type = types.str;
@@ -158,8 +162,13 @@ in
 
     (lib.mkIf enabled {
       system.build = {
-        default = android-device;
-        inherit android-bootimg android-recovery android-device;
+        default = android-fastboot-images;
+        inherit
+          android-device
+          android-bootimg
+          android-recovery
+          android-fastboot-images
+        ;
       };
 
       mobile.HAL.boot.rebootModes = [
