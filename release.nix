@@ -51,6 +51,9 @@ let
     ];
   };
 
+  onlyDerivations = lib.filterAttrs (k: v: lib.isDerivation v);
+  onlyDerivationsAndAttrsets = lib.filterAttrs (k: v: lib.isDerivation v || (lib.isAttrs v && !lib.isFunction v));
+
   # Given an evaluated "device", filters `pkgs` down to only our packages
   # unique to the overaly.
   # Also removes some non-packages from the overlay.
@@ -70,17 +73,11 @@ let
       # lib-like attributes...
       # How should we handle these?
       imageBuilder = null;
-      mobile-nixos = overlay.mobile-nixos // {
-        kernel-builder = null;
-        kernel-builder-clang_9 = null;
-        kernel-builder-gcc49 = null;
-        kernel-builder-gcc6 = null;
-
-        # Ugly, but this allows the cross-canary-test to be distinct tests.
-        cross-canary-test = overlay.mobile-nixos.cross-canary-test // {
-          override = null;
-          overrideDerivation = null;
-        };
+      mobile-nixos = (onlyDerivationsAndAttrsets overlay.mobile-nixos) // {
+        # The cross canaries attrsets will be used as constituents.
+        # Filter out `override` and `overrideAttrs` early.
+        cross-canary-test = onlyDerivations overlay.mobile-nixos.cross-canary-test;
+        cross-canary-test-static = onlyDerivations overlay.mobile-nixos.cross-canary-test-static;
       };
 
       # Also lib-like, but a "global" like attribute :/
