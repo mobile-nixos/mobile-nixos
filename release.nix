@@ -70,12 +70,7 @@ let
       # lib-like attributes...
       # How should we handle these?
       imageBuilder = null;
-      mobile-nixos = overlay.mobile-nixos // {
-        kernel-builder = null;
-        kernel-builder-clang_9 = null;
-        kernel-builder-gcc49 = null;
-        kernel-builder-gcc6 = null;
-      };
+      mobile-nixos = lib.filterAttrs (k: v: lib.isDerivation v) overlay.mobile-nixos;
 
       # Also lib-like, but a "global" like attribute :/
       defaultKernelPatches = null;
