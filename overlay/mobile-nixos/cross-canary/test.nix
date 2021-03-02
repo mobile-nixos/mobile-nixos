@@ -49,7 +49,11 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else (
   runtimeShell = mkTest "runtimeShell" ''
     ${emulator} ${runtimeShell} -c 'echo runtimeShell works...'
   '';
-}) // {
+
+}) //
+# Builds expected to work in both normal and static package sets.
+{
+
   busybox = mkTest "busybox" ''
     ${emulator} ${busybox}/bin/busybox uname -a
     ${emulator} ${busybox}/bin/busybox sh -c 'echo busybox works...'
