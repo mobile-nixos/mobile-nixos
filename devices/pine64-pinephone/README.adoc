@@ -27,7 +27,7 @@ NixOS boot partition.
 
 ```
  $ nix-build --argstr device pine64-pinephone -A build.boot-partition
- $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXp1 bs=8M oflag=sync,direct status=progress
+ $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXp3 bs=8M oflag=sync,direct status=progress
 ```
 
 === Building U-Boot
