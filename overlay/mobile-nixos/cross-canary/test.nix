@@ -59,7 +59,7 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else (
     ${emulator} ${hello}/bin/hello
   '';
 
-  mruby = mkTest "mruby" ''
+  hello-mruby = mkTest "hello-mruby" ''
     ${emulator} ${hello-mruby}/bin/hello
   '';
 
