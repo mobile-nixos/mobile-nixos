@@ -38,6 +38,11 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else (
 # We're not creating known-failing static builds.
 (if static then {} else
 {
+  # On armv7l, known to fails with `error: C compiler cannot create executables`
+  runtimeShell = mkTest "runtimeShell" ''
+    ${emulator} ${runtimeShell} -c 'echo runtimeShell works...'
+  '';
+
   # This is more of an integrated test. It ends up exercising the systemd build.
   # But this is still a _canary_ for us as it is at the root of our dependencies.
   mobile-nixos-script-loader = mkTest "mobile-nixos-script-loader" ''
@@ -45,11 +50,6 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else (
     ${emulator} ${mobile-nixos.stage-1.script-loader}/bin/loader
     ${emulator} ${mobile-nixos.stage-1.script-loader}/bin/loader ./test.rb okay
   '';
-
-  runtimeShell = mkTest "runtimeShell" ''
-    ${emulator} ${runtimeShell} -c 'echo runtimeShell works...'
-  '';
-
 }) //
 # Builds expected to work in both normal and static package sets.
 {
