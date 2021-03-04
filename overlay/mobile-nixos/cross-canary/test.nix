@@ -7,6 +7,7 @@ let
   emulators = {
     "aarch64-linux" = "qemu-aarch64";
     "armv7l-linux" = "qemu-arm";
+    "x86_64-linux" = "qemu-x86_64";
   };
   emulator =
     if stdenv.buildPlatform == stdenv.hostPlatform then ""
