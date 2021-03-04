@@ -142,11 +142,27 @@ rec {
     (evalForSystem system)
   );
 
+  cross-canaries = lib.genAttrs ["aarch64-linux" "armv7l-linux"] (system:
+    releaseTools.aggregate {
+      name = "cross-canaries-${system}";
+      constituents =
+        let
+          overlay' = overlay.x86_64-linux."${system}-cross";
+        in
+        (builtins.attrValues overlay'.mobile-nixos.cross-canary-test)
+        ++ (builtins.attrValues overlay'.mobile-nixos.cross-canary-test-static)
+      ;
+      meta = {
+        description = "Useful checks for cross-compilation.";
+      };
+    }
+  );
+
   tested = let
     hasSystem = name: lib.lists.any (el: el == name) systems;
 
     constituents =
-      (builtins.attrValues overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.cross-canary-test)
+      cross-canaries.aarch64-linux.constituents
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.uefi-x86_64.x86_64-linux              # UEFI system
         # Cross builds
@@ -178,7 +194,7 @@ rec {
     hasSystem = name: lib.lists.any (el: el == name) systems;
 
     constituents = tested.constituents
-      ++ (builtins.attrValues overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.cross-canary-test)
+      ++ cross-canaries.armv7l-linux.constituents
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.asus-flo.x86_64-linux
         overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
