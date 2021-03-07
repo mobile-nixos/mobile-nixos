@@ -1,8 +1,10 @@
-{ stdenv, runCommandNoCC, runtimeShell, busybox, hello, hello-mruby, pkgsBuildBuild, mruby, mrbgems, mobile-nixos }:
+{ stdenv, lib, runCommandNoCC, runtimeShell, busybox, hello, hello-mruby, pkgsBuildBuild, mruby, mrbgems, mobile-nixos }:
 
 let
   static = stdenv.hostPlatform.isStatic;
 
+  inherit (pkgsBuildBuild) file;
+  inherit (lib) optionalString;
   inherit (stdenv) system;
   emulators = {
     "aarch64-linux" = "qemu-aarch64";
@@ -14,6 +16,14 @@ let
     else "${pkgsBuildBuild.qemu}/bin/${emulators.${system}}"
   ;
   mkTest = what: script: runCommandNoCC "cross-canary-${what}-${stdenv.system}" {} ''
+    assert_static() {
+      if ! ${file}/bin/file "$1" | grep -q 'statically linked'; then
+        printf "Assertion failed: '%s' is not a static binary\n" "$1"
+        ${file}/bin/file "$1"
+        exit 2
+      fi
+    }
+
     (
     PS4=" $ "
     set -x
@@ -61,6 +71,7 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else (
   '';
 
   hello = mkTest "hello" ''
+    ${optionalString static "assert_static ${hello}/bin/hello"}
     ${emulator} ${hello}/bin/hello
   '';
 
