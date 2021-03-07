@@ -51,6 +51,9 @@ let
     ];
   };
 
+  onlyDerivations = lib.filterAttrs (k: v: lib.isDerivation v);
+  onlyDerivationsAndAttrsets = lib.filterAttrs (k: v: lib.isDerivation v || (lib.isAttrs v && !lib.isFunction v));
+
   # Given an evaluated "device", filters `pkgs` down to only our packages
   # unique to the overaly.
   # Also removes some non-packages from the overlay.
@@ -70,11 +73,11 @@ let
       # lib-like attributes...
       # How should we handle these?
       imageBuilder = null;
-      mobile-nixos = overlay.mobile-nixos // {
-        kernel-builder = null;
-        kernel-builder-clang_9 = null;
-        kernel-builder-gcc49 = null;
-        kernel-builder-gcc6 = null;
+      mobile-nixos = (onlyDerivationsAndAttrsets overlay.mobile-nixos) // {
+        # The cross canaries attrsets will be used as constituents.
+        # Filter out `override` and `overrideAttrs` early.
+        cross-canary-test = onlyDerivations overlay.mobile-nixos.cross-canary-test;
+        cross-canary-test-static = onlyDerivations overlay.mobile-nixos.cross-canary-test-static;
       };
 
       # Also lib-like, but a "global" like attribute :/
@@ -139,11 +142,28 @@ rec {
     (evalForSystem system)
   );
 
+  cross-canaries = lib.genAttrs ["aarch64-linux" "armv7l-linux"] (system:
+    releaseTools.aggregate {
+      name = "cross-canaries-${system}";
+      constituents =
+        let
+          overlay' = overlay.x86_64-linux."${system}-cross";
+        in
+        (builtins.attrValues overlay'.mobile-nixos.cross-canary-test)
+        ++ (builtins.attrValues overlay'.mobile-nixos.cross-canary-test-static)
+      ;
+      meta = {
+        description = "Useful checks for cross-compilation.";
+      };
+    }
+  );
+
   tested = let
     hasSystem = name: lib.lists.any (el: el == name) systems;
 
     constituents =
-      lib.optionals (hasSystem "x86_64-linux") [
+      cross-canaries.aarch64-linux.constituents
+      ++ lib.optionals (hasSystem "x86_64-linux") [
         device.uefi-x86_64.x86_64-linux              # UEFI system
         # Cross builds
         device.asus-z00t.x86_64-linux                # Android
@@ -174,6 +194,7 @@ rec {
     hasSystem = name: lib.lists.any (el: el == name) systems;
 
     constituents = tested.constituents
+      ++ cross-canaries.armv7l-linux.constituents
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.asus-flo.x86_64-linux
         overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
@@ -187,7 +208,7 @@ rec {
       ;
   in
   releaseTools.aggregate {
-    name = "mobile-nixos-tested";
+    name = "mobile-nixos-tested-plus";
     inherit constituents;
     meta = {
       description = ''

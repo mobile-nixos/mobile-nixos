@@ -9,7 +9,10 @@ let
     config.nixpkgs.localSystem.system != null &&
     config.nixpkgs.crossSystem.system != config.nixpkgs.localSystem.system;
 
-  AArch32Overlay = final: super: {
+  AArch32Overlay = final: super: 
+    # Ensure pkgsBuildBuild ends up unmodified, otherwise the canary test will
+    # get super expensive to build.
+    if super.stdenv.buildPlatform == super.stdenv.hostPlatform then {} else {
     # Works around libselinux failure with python on armv7l.
     # LONG_BIT definition appears wrong for platform
     libselinux = (super.libselinux

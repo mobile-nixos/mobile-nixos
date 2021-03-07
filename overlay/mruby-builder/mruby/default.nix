@@ -12,9 +12,9 @@ in
 { stdenv
 , lib
 , buildPackages
+, pkgsBuildBuild
 , ruby
 , bison
-, rake
 , fetchFromGitHub
 , file
 , mruby
@@ -189,7 +189,7 @@ let
         --replace '//#define MRB_INT64' '#define MRB_INT64'
     '';
 
-    nativeBuildInputs = [ pkgconfig-helper ruby bison rake ] ++ gemNativeBuildInputs;
+    nativeBuildInputs = [ pkgconfig-helper ruby bison pkgsBuildBuild.rake ] ++ gemNativeBuildInputs;
     buildInputs = gemBuildInputs;
 
     # Necessary so it uses `gcc` instead of `ld` for linking.
