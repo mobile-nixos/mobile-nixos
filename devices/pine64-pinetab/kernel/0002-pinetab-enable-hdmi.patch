@@ -1,0 +1,57 @@
+From c8da73c7ae6192f0229aa728c6443c768bf3450f Mon Sep 17 00:00:00 2001
+From: Danct12 <danct12@disroot.org>
+Date: Tue, 13 Oct 2020 08:30:32 +0700
+Subject: [PATCH] arm64: dts: allwinner: pinetab: enable HDMI
+
+Signed-off-by: Danct12 <danct12@disroot.org>
+---
+ .../boot/dts/allwinner/sun50i-a64-pinetab.dts | 26 +++++++++++++++++++
+ 1 file changed, 26 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts
+index 407837d7fbec..9c96c1532a1e 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts
+@@ -35,6 +35,17 @@ chosen {
+ 		stdout-path = "serial0:115200n8";
+ 	};
+ 
++	hdmi-connector {
++		compatible = "hdmi-connector";
++		type = "a";
++
++		port {
++			hdmi_con_in: endpoint {
++				remote-endpoint = <&hdmi_out_con>;
++			};
++		};
++	};
++
+ 	i2c-csi {
+ 		compatible = "i2c-gpio";
+ 		sda-gpios = <&pio 4 13 GPIO_ACTIVE_HIGH>; /* PE13 */
+@@ -462,6 +473,21 @@ &reg_rtc_ldo {
+ 	regulator-name = "vcc-rtc";
+ };
+ 
++&simplefb_hdmi {
++	vcc-hdmi-supply = <&reg_dldo1>;
++};
++
++&hdmi {
++	hvcc-supply = <&reg_dldo1>;
++	status = "okay";
++};
++
++&hdmi_out {
++	hdmi_out_con: endpoint {
++		remote-endpoint = <&hdmi_con_in>;
++	};
++};
++
+ &sound {
+ 	status = "okay";
+ 	simple-audio-card,aux-devs = <&codec_analog>, <&speaker_amp>;
+-- 
+2.28.0
+
