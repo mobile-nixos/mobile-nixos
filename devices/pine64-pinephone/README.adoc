@@ -1,4 +1,4 @@
-= PinePhone
+= Pine64 PinePhone
 include::_support/common.inc[]
 
 == Device-specific notes
