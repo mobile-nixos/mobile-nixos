@@ -34,6 +34,8 @@
     "earlycon=uart,mmio32,0x01c28000"
     "panic=10"
     "consoleblank=0"
+    # Uncomment to show console output during boot.
+    # "console=tty1"
   ];
 
   mobile.system.type = "u-boot";
