@@ -19,6 +19,8 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+
   mobile.system.android.device_name = "rav";
   mobile.system.android = {
     # This device has an A/B partition scheme.
