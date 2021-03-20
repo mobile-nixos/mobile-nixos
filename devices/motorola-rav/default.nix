@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 
 {
   mobile.device.name = "motorola-rav";
@@ -21,7 +21,9 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
-  mobile.system.android.device_name = "rav";
+  # While the actual device is `rav`, TWRP is built for a common family.
+  # TODO: allow a list of compatible device names?
+  mobile.system.android.device_name = "sofiar";
   mobile.system.android = {
     # This device has an A/B partition scheme.
     ab_partitions = true;
