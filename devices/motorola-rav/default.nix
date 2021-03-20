@@ -21,6 +21,10 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
+  mobile.boot.stage-1.firmware = [
+    config.mobile.device.firmware
+  ];
+
   # While the actual device is `rav`, TWRP is built for a common family.
   # TODO: allow a list of compatible device names?
   mobile.system.android.device_name = "sofiar";
@@ -45,8 +49,6 @@
       pagesize = "4096";
     };
   };
-
-  mobile.system.vendor.partition = "/dev/disk/by-partlabel/vendor_a";
 
   boot.kernelParams = [
     # Extracted from an Android boot image
