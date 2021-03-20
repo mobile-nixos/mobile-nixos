@@ -8,11 +8,19 @@ mobile-nixos.kernel-builder-clang_8 {
   version = "4.14.117";
   configfile = ./config.aarch64;
 
+  # Using the downstream kernel from the vendor ould require at least these
+  # trees to be merged:
+  #
+  #   - https://github.com/MotorolaMobilityLLC/kernel-msm/tree/MMI-QPJS30.131-43-2
+  #   - https://github.com/MotorolaMobilityLLC/motorola-kernel-modules/tree/MMI-QPJS30.131-43-2
+  #
+  # A community kernel tree did the busy work of merging the kernel modules.
+  # Hopefully upstream LinageOS picks it up along the way.
   src = fetchFromGitHub {
-    owner = "MotorolaMobilityLLC";
-    repo = "kernel-msm";
-    rev = "efdfc01dfa6001d47f3e2d186df5e5222914dd03"; # MMI-QPJS30.131-43-2
-    sha256 = "1wcp79bxkx8wlbhvrjv7kdv62k16cps6mr1f18n0hcmajfwk8pvg";
+    owner = "sjllls";
+    repo = "android_kernel_motorola_sm6125";
+    rev = "7163007022ae1b946263ae077af63ac68101df78"; # lineage-18.1
+    sha256 = "0ad26wj3z3zqwyjwc144s8x35s011mjxy7h73y8ssg81d5n470s4";
   };
 
   patches = [
