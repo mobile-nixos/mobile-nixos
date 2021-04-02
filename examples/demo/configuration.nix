@@ -18,15 +18,6 @@ let
   '';
 in
 {
-  imports = [
-    ../../profiles/installer.nix
-  ];
-
-  disabledModules = [
-    "installer/cd-dvd/iso-image.nix"
-    "installer/cd-dvd/installation-cd-base.nix"
-  ];
-
   config = lib.mkMerge [
     {
 
@@ -121,7 +112,7 @@ in
     # Networking, modem and misc.
     {
       users.extraUsers.nixos.extraGroups = [ "dialout" ];
-
+      networking.wireless.enable = false;
       # FIXME : Stop relying on initrd for `ssh` via USB.
       networking.networkmanager.enable = true;
       networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
