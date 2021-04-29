@@ -40,11 +40,10 @@
 
   mobile.usb.mode = "gadgetfs";
 
-  # FIXME: This should really be something owned by Pine64
-  # http://pid.codes/1209/
-  mobile.usb.idVendor = "1209";
-  # "common tasks, such as testing, generic USB-CDC devices, etc."
-  mobile.usb.idProduct = "0069";
+  # Commonly re-used values, Nexus 4 (debug)
+  # (These identifiers have well-known default udev rules.)
+  mobile.usb.idVendor = "18d1";
+  mobile.usb.idProduct = "d002";
 
   mobile.usb.gadgetfs.functions = {
     rndis = "rndis.usb0";
