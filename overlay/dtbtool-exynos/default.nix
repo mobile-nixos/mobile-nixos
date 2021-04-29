@@ -23,6 +23,11 @@ stdenv.mkDerivation {
     dtc
   ];
 
+  postPatch = ''
+    substituteInPlace Makefile \
+      --replace "strip" "${stdenv.cc.targetPrefix}strip"
+  '';
+
   installPhase = ''
     mkdir -p $out/bin
     mv dtbTool-exynos $out/bin/
