@@ -1,0 +1,38 @@
+From 7dd3866d9c2bef4bb73a781861aeeec595510509 Mon Sep 17 00:00:00 2001
+From: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+Date: Fri, 3 Apr 2020 17:13:55 +0200
+Subject: [PATCH] arm64: dts: allwinner: pinetab: enable jack detection
+
+---
+ arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts
+index a87790df9..a72c2ec8c 100644
+--- a/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts
++++ b/arch/arm64/boot/dts/allwinner/sun50i-a64-pinetab.dts
+@@ -117,11 +117,13 @@ wifi_pwrseq: wifi_pwrseq {
+ };
+ 
+ &codec {
++	allwinner,inverted-jack-detection;
+ 	status = "okay";
+ };
+ 
+ &codec_analog {
+ 	cpvdd-supply = <&reg_eldo1>;
++	allwinner,internal-bias-resistor;
+ 	status = "okay";
+ };
+ 
+@@ -448,6 +450,7 @@ &reg_rtc_ldo {
+ 
+ &sound {
+ 	status = "okay";
++	simple-audio-card,name = "PineTab";
+ 	simple-audio-card,aux-devs = <&codec_analog>, <&speaker_amp>;
+ 	simple-audio-card,widgets = "Microphone", "Internal Microphone Left",
+ 				    "Microphone", "Internal Microphone Right",
+-- 
+2.28.0
+

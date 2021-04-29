@@ -1,7 +1,11 @@
-= Pine64 PinePhone
+= Pine64 PineTab
 include::_support/common.inc[]
 
 == Device-specific notes
+
+This configuration is for the retail version of PineTab, with the Feixin K101
+IM2BYL02 display panel. For display to work on the early dev units with IM2BA02
+panels, you need to use the correct device tree.
 
 === Building a full disk image
 
@@ -9,12 +13,12 @@ This platform uses the `u-boot` system-type. This means that a full disk image
 can be produced, and this full disk image flashed _outright_ to the block
 device. That block device can be the internal eMMC or the SD card.
 
-The PinePhone will boot from SD card if a bootloader can be found. This means
+The PineTab will boot from SD card if a bootloader can be found. This means
 that the full disk image can be flashed to an SD card, and it will prioritise
 booting it.
 
 ```
- $ nix-build --argstr device pine64-pinephone -A build.disk-image
+ $ nix-build --argstr device pine64-pinetab -A build.disk-image
  $ dd if=result of=/dev/mmcblkX bs=8M oflag=sync,direct status=progress
 ```
 
@@ -26,7 +30,7 @@ The boot partition can be built, and then flashed on top of an existing Mobile
 NixOS boot partition.
 
 ```
- $ nix-build --argstr device pine64-pinephone -A build.boot-partition
+ $ nix-build --argstr device pine64-pinetab -A build.boot-partition
  $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXp3 bs=8M oflag=sync,direct status=progress
 ```
 
@@ -37,27 +41,6 @@ Flashing the boot partition will not affect the installed U-Boot bootloader.
 U-Boot can be built and then flashed the usual way for Allwinner platforms.
 
 ```
- $ nix-build --argstr device pine64-pinephone -A build.u-boot
+ $ nix-build --argstr device pine64-pinetab -A build.u-boot
  $ dd if=result/u-boot-sunxi-with-spl.bin of=/dev/mmcblkX bs=1024 seek=8
 ```
-
-=== Usage notes
-
-==== LED
-
-In the default setup, the LED has been configured to show status information.
-Its colour or pattern can be used to infer the status.
-
-During boot:
-
- * Red as early as possible in our U-Boot build
- * Yellow when our U-Boot "boot script" ran
- * Green by the kernel whenever it sets it up
-
-At any time:
-
- * The red LED will flash on panic
-
-As it does not reset the other LED colours, it may flash green/yellow rather
-than off/red. If applications customize the LED status, it may flash in other
-patterns involving red.
