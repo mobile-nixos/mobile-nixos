@@ -37,14 +37,14 @@ As Mobile NixOS is a superset of NixOS Linux, the following documentation applie
 
 == Community
 
-Mobile NixOS development and questions is currently hosted on the AArch64
-channel for NixOS.
+Mobile NixOS development and questions is currently hosted on the
+**NixOS on ARM** channel.
 
- * link:irc://irc.freenode.net/#nixos-aarch64[IRC - #nixos-aarch64 on freenode.net]
+ * link:https://matrix.to/#/#nixos-on-arm:nixos.org?via=nixos.org&via=matrix.org[NixOS on ARM on the NixOS Matrix Space]
 
 The following community resources are also available, for NixOS questions.
 
- * link:irc://irc.freenode.net/#nixos[IRC - #nixos on freenode.net]
+ * link:https://matrix.to/#/#nix:nixos.org?via=nixos.org&via=matrix.org[Nix and NixOS support channel on the NixOS Matrix Space]
  * link:https://discourse.nixos.org/[Discourse Forum]
 
 == Other Project Repositories
