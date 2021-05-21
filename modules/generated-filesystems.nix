@@ -8,13 +8,14 @@ let
 
   filesystemFunctions = {
     "ext4" = pkgs.imageBuilder.fileSystem.makeExt4;
+    "btrfs" = pkgs.imageBuilder.fileSystem.makeBtrfs;
   };
 
   filesystemSubmodule =
     { name, config, ... }: {
       options = {
         type = lib.mkOption {
-          type = types.enum [ "ext4" ];
+          type = types.enum [ "ext4" "btrfs" ];
           description = ''
             Type of the generated filesystem.
           '';
