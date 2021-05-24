@@ -1,9 +1,9 @@
 { config, lib, pkgs, ... }:
 
 {
-  mobile.device.name = "motorola-addison";
+  mobile.device.name = "motorola-potter";
   mobile.device.identity = {
-    name = "Moto Z Play";
+    name = "Moto G5 Plus";
     manufacturer = "Motorola";
   };
 
@@ -21,7 +21,7 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
-  mobile.system.android.device_name = "addison";
+  mobile.system.android.device_name = "potter";
   mobile.system.android.bootimg = {
     flash = {
       offset_base = "0x80000000";
