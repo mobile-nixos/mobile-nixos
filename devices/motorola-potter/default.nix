@@ -21,6 +21,12 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
+  hardware.firmware = [
+    (config.mobile.device.firmware.override {
+      modem = ../../vendor/modem;
+    })
+  ];
+
   mobile.system.android.device_name = "potter";
   mobile.system.android.bootimg = {
     flash = {
