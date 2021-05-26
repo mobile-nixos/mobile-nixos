@@ -5,18 +5,10 @@
 , ...
 }:
 
-#
-# Note:
-# This kernel build is special, it supports both armv7l and aarch64.
-# This is because motorola ships an armv7l userspace from stock ROM.
-#
-# in local.nix:
-#  mobile.system.system = lib.mkForce "armv7l-linux";
-#
 
 mobile-nixos.kernel-builder-gcc6 {
   version = "3.18.113";
-  configfile = ./. + "/config.${stdenv.hostPlatform.parsed.cpu.name}";
+  configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "boulzordev";
