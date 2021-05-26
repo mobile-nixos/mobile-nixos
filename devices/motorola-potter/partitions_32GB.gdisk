@@ -1,76 +1,67 @@
-GPT fdisk (gdisk) version 1.0.4
+# This is taken from a 32GB XT1685 P3B RETGB with baseband
+# M8953_41.50.07.85.01R and firmware from Nougat (predates Oreo).
 
-Partition table scan:
-  MBR: protective
-  BSD: not present
-  APM: not present
-  GPT: present
+bash-4.4# fdisk -l -o Device,Start,End,Size,Attrs,Name
+Disk /dev/mmcblk0: 29.12 GiB, 31268536320 bytes, 61071360 sectors
+Units: sectors of 1 * 512 = 512 bytes
+Sector size (logical/physical): 512 bytes / 512 bytes
+I/O size (minimum/optimal): 512 bytes / 512 bytes
+Disklabel type: gpt
+Disk identifier: 98101B32-BBE2-4BF2-A06E-2BB33D000C20
 
-Found valid GPT with protective MBR; using GPT.
+Device            Start      End  Size Attrs   Name
+/dev/mmcblk0p1      256     1279  512K GUID:60 sbl1
+/dev/mmcblk0p2     1280     1791  256K GUID:60 rpm
+/dev/mmcblk0p3     2304     5887  1.8M GUID:60 tz
+/dev/mmcblk0p4     6400     6527   64K GUID:60 devcfg
+/dev/mmcblk0p5     6912     9983  1.5M GUID:60 aboot
+/dev/mmcblk0p6     9984    10495  256K GUID:60 cmnlib
+/dev/mmcblk0p7    10496    11007  256K GUID:60 cmnlib64
+/dev/mmcblk0p8    11008    11519  256K GUID:60 keymaster
+/dev/mmcblk0p9    11520    11903  192K GUID:60 prov
+/dev/mmcblk0p10   12032    13055  512K GUID:60 sbl1bak
+/dev/mmcblk0p11   13056    13567  256K GUID:60 rpmbak
+/dev/mmcblk0p12   14080    17663  1.8M GUID:60 tzbak
+/dev/mmcblk0p13   18176    18303   64K GUID:60 devcfgbak
+/dev/mmcblk0p14   18688    21759  1.5M GUID:60 abootbak
+/dev/mmcblk0p15   21760    22271  256K GUID:60 cmnlibbak
+/dev/mmcblk0p16   22272    22783  256K GUID:60 cmnlib64bak
+/dev/mmcblk0p17   22784    23295  256K GUID:60 keymasterbak
+/dev/mmcblk0p18   23296    23679  192K GUID:60 provbak
+/dev/mmcblk0p19   23808   228607  100M GUID:60 modem
+/dev/mmcblk0p20  228608   228609    1K         fsc
+/dev/mmcblk0p21  228610   228625    8K         ssd
+/dev/mmcblk0p22  228626   261393   16M         dsp
+/dev/mmcblk0p23  261632   261695   32K GUID:60 DDR
+/dev/mmcblk0p24  261696   261727   16K GUID:60 sec
+/dev/mmcblk0p25  261888   262911  512K         utags
+/dev/mmcblk0p26  262912   263935  512K         utagsBackup
+/dev/mmcblk0p27  263936   268031    2M         modemst1
+/dev/mmcblk0p28  268032   272127    2M         modemst2
+/dev/mmcblk0p29  272128   288511    8M GUID:60 fsg
+/dev/mmcblk0p30  288512   354047   32M         persist
+/dev/mmcblk0p31  354048   355071  512K         frp
+/dev/mmcblk0p32  355072   355327  128K         cid
+/dev/mmcblk0p33  355328   388095   16M         logo
+/dev/mmcblk0p34  388096   420863   16M         carrier
+/dev/mmcblk0p35  420864   421887  512K         metadata
+/dev/mmcblk0p36  421888   438271    8M         kpan
+/dev/mmcblk0p37  438272   471039   16M GUID:60 boot
+/dev/mmcblk0p38  471040   512199 20.1M GUID:60 recovery
+/dev/mmcblk0p39  512256   514303    1M         misc
+/dev/mmcblk0p40  514304   514367   32K GUID:60 limits
+/dev/mmcblk0p41  514560   515583  512K         mota
+/dev/mmcblk0p42  515584   517631    1M         dip
+/dev/mmcblk0p43  517632   518655  512K         syscfg
+/dev/mmcblk0p44  518656   522751    2M         logs
+/dev/mmcblk0p45  522752   523263  256K GUID:60 apdp
+/dev/mmcblk0p46  523264   523775  256K GUID:60 msadp
+/dev/mmcblk0p47  523776   523791    8K GUID:60 dpo
+/dev/mmcblk0p48  524032   524287  128K         padA
+/dev/mmcblk0p49  524288   540671    8M         sp
+/dev/mmcblk0p50  540672   557055    8M         hw
+/dev/mmcblk0p51  557056  1900543  656M GUID:60 oem
+/dev/mmcblk0p52 1900544  2424831  256M         cache
+/dev/mmcblk0p53 2424832  9502719  3.4G GUID:60 system
+/dev/mmcblk0p54 9502720 61071326 24.6G         userdata
 
-Command (? for help): Disk /dev/mmcblk0: 61071360 sectors, 29.1 GiB
-Sector size (logical/physical): 512/512 bytes
-Disk identifier (GUID): 98101B32-BBE2-4BF2-A06E-2BB33D000C20
-Partition table holds up to 54 entries
-Main partition table begins at sector 2 and ends at sector 15
-First usable sector is 34, last usable sector is 61071326
-Partitions will be aligned on 2-sector boundaries
-Total free space is 4180 sectors (2.0 MiB)
-
-Number  Start (sector)    End (sector)  Size       Code  Name
-   1             256            1279   512.0 KiB   A012  sbl1
-   2            1280            1791   256.0 KiB   A018  rpm
-   3            2304            5887   1.8 MiB     A016  tz
-   4            6400            6527   64.0 KiB    FFFF  devcfg
-   5            6912            9983   1.5 MiB     A015  aboot
-   6            9984           10495   256.0 KiB   FFFF  cmnlib
-   7           10496           11007   256.0 KiB   FFFF  cmnlib64
-   8           11008           11519   256.0 KiB   FFFF  keymaster
-   9           11520           11903   192.0 KiB   FFFF  prov
-  10           12032           13055   512.0 KiB   0700  sbl1bak
-  11           13056           13567   256.0 KiB   FFFF  rpmbak
-  12           14080           17663   1.8 MiB     FFFF  tzbak
-  13           18176           18303   64.0 KiB    FFFF  devcfgbak
-  14           18688           21759   1.5 MiB     FFFF  abootbak
-  15           21760           22271   256.0 KiB   FFFF  cmnlibbak
-  16           22272           22783   256.0 KiB   FFFF  cmnlib64bak
-  17           22784           23295   256.0 KiB   FFFF  keymasterbak
-  18           23296           23679   192.0 KiB   FFFF  provbak
-  19           23808          228607   100.0 MiB   0700  modem
-  20          228608          228609   1024 bytes  A029  fsc
-  21          228610          228625   8.0 KiB     A02C  ssd
-  22          228626          261393   16.0 MiB    0700  dsp
-  23          261632          261695   32.0 KiB    A01A  DDR
-  24          261696          261727   16.0 KiB    A01D  sec
-  25          261888          262911   512.0 KiB   FFFF  utags
-  26          262912          263935   512.0 KiB   FFFF  utagsBackup
-  27          263936          268031   2.0 MiB     A027  modemst1
-  28          268032          272127   2.0 MiB     A028  modemst2
-  29          272128          288511   8.0 MiB     A02A  fsg
-  30          288512          354047   32.0 MiB    A026  persist
-  31          354048          355071   512.0 KiB   FFFF  frp
-  32          355072          355327   128.0 KiB   FFFF  cid
-  33          355328          388095   16.0 MiB    A036  logo
-  34          388096          420863   16.0 MiB    FFFF  carrier
-  35          420864          421887   512.0 KiB   FFFF  metadata
-  36          421888          438271   8.0 MiB     FFFF  kpan
-  37          438272          471039   16.0 MiB    A036  boot
-  38          471040          504007   16.1 MiB    A025  recovery
-  39          504064          506111   1024.0 KiB  A01F  misc
-  40          506112          506175   32.0 KiB    A040  limits
-  41          506368          507391   512.0 KiB   0700  mota
-  42          507392          509439   1024.0 KiB  FFFF  dip
-  43          509440          510463   512.0 KiB   A018  syscfg
-  44          510464          514559   2.0 MiB     FFFF  logs
-  45          514560          515071   256.0 KiB   A022  apdp
-  46          515072          515583   256.0 KiB   A023  msadp
-  47          515584          515599   8.0 KiB     A024  dpo
-  48          515840          524287   4.1 MiB     0700  padA
-  49          524288          540671   8.0 MiB     FFFF  sp
-  50          540672          557055   8.0 MiB     FFFF  hw
-  51          557056         2129919   768.0 MiB   FFFF  oem
-  52         2129920         2654207   256.0 MiB   A039  cache
-  53         2654208        11042815   4.0 GiB     A038  system
-  54        11042816        61071326   23.9 GiB    A03A  userdata
-
-Command (? for help): 
