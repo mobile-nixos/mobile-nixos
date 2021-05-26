@@ -1,4 +1,4 @@
-= Motorola Moto Z Play
+= Motorola Moto G5 Plus
 include::_support/common.inc[]
 
 == Device-specific notes

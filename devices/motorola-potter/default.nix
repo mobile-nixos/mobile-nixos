@@ -39,10 +39,10 @@
     };
   };
 
-  # Using `xz` allows us to fit the kernel + dt + initrd in 16MiB
-  #   Kernel: ~8.8M
-  #   DT:      1.2M
-  # We're left with ~6MB for the compressed initrd.
+  # The boot partition on this phone is 16MB, which is a squeeze for
+  # kernel and initrd (the smallest image I've produced yet is 18MB),
+  # so using `xz` compression to give us a fighting chance of
+  # reaching that goal
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
   boot.kernelParams = [
