@@ -20,7 +20,8 @@ mobile-nixos.kernel-builder-gcc6 {
   patches = [
     ./04_fix_camera_msm_isp.patch
     # these two don't apply to boulzordev kernel, and I am
-    # hoping/assuming are not needed
+    # hoping/assuming are not needed. Will dig into it before
+    # merge
     #    ./05_misc_msm_fixes.patch
     #    ./06_prima_gcc6.patch
     ./99_framebuffer.patch
