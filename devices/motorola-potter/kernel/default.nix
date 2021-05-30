@@ -32,4 +32,5 @@ mobile-nixos.kernel-builder-gcc6 {
   enableRemovingWerror = true;
   isModular = false;
   isQcdt = true;
+  outOfTreeDtbs = ./dts;
 }
