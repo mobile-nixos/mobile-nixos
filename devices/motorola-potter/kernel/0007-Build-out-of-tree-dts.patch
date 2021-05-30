@@ -14,7 +14,7 @@ index 6cdf596102e6..bda927287811 100644
 -	msm8953-potter-p2b.dtb \
 -	msm8953-potter-p3a.dtb
 +dtb-$(CONFIG_ARCH_MSM8953) += msm8953-potter-p0a-p1a.dtb \
-+	msm8953-potter-p1b-p2a.dtb
++	msm8953-potter-p1b-p2a.dtb \
 +	msm8953-potter-p2a2-plus.dtb
  endif
  

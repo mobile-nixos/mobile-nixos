@@ -31,6 +31,13 @@ By browsing the commit messages, we find
 U = "Change usbid-gpio from 66 to 59" git sha 305e2610c598dc4e
 D = "boost clock use pdm clock instead" git sha c42744ebf80da79a0
 
+Thus,we can accommodate all revisions with three DTs:
+
+- msm8953-potter-p0a-p1a.dtb   (contains U and D fixes)
+- msm8953-potter-p1b-p2a.dtb   (contains D fix only)
+- msm8953-potter-p2a2-plus.dtb (contains no fix)
+
+
 ==== What about P3B?
 
 The vendor kernel does not include a device tree source with
