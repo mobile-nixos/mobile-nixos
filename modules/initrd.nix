@@ -1,12 +1,12 @@
 { config, pkgs, lib, utils, ... }:
 
 let
+  udev = pkgs.systemdMinimal;
   inherit (pkgs)
     busybox
     makeInitrd
     mkExtraUtils
     runCommandNoCC
-    udev
     writeText
   ;
   inherit (lib)
@@ -168,7 +168,7 @@ let
       package = runCommandNoCC "empty" {} "mkdir -p $out";
       extraCommand =
       let
-        inherit (pkgs) udev;
+        inherit udev;
       in
         ''
           # Copy udev.
