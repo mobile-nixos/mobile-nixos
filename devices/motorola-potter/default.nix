@@ -65,7 +65,9 @@
 
   mobile.system.type = "android";
 
-  mobile.quirks.qualcomm.fb-notify.enable = true;
-
-  mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+  mobile.quirks.qualcomm = {
+    fb-notify.enable = true; # copied from addison, don't know if needed
+    wcnss-wlan.enable = true;
+    touchscreen-powerup.enable = true;
+  };
 }
