@@ -7,14 +7,14 @@
 
 
 mobile-nixos.kernel-builder-gcc6 {
-  version = "3.18.113";
+  version = "3.18.140";
   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "boulzordev";
     repo = "android_kernel_motorola_msm8953";
-    rev = "efeb95ed634079eb520922f6f78f16f9d967a6d4";
-    sha256 = "03xmlyq06fvn0v4nvrs2nhmb88axg45ccd1vb3nam6jj1381zv4w";
+    rev = "32b6f05688ff51e54958a8e97df24cd63a62b880";
+    sha256 = "0r0xkf6cq60bvckn311k43yxrm0qjp9psi6g3jfc6l5z4k549glm";
   };
 
   patches = [
