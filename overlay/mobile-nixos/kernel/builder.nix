@@ -208,7 +208,7 @@ stdenv.mkDerivation (inputArgs // {
   ''
   + optionalString (outOfTreeDtbs != null) ''
     # We use tar to preserve directory structure in the source files
-    # (e.g. qcom/foo.dtb shoudl end up in arch/arm/boot/dts/qcom/foo.dtb).
+    # (e.g. qcom/foo.dtb should end up in arch/arm/boot/dts/qcom/foo.dtb).
     # The options are to ensure the files/dirs are created writable so that
     # sed can edit them in postPatch
     tar -C ${outOfTreeDtbs} -cf - . | tar -C arch/arm/boot/dts/ --mode=a+w --no-overwrite-dir -xvvpf -
