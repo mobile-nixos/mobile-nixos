@@ -21,11 +21,15 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
-  hardware.firmware = [
-    (config.mobile.device.firmware.override {
-      modem = ../../vendor/modem;
-    })
-  ];
+  # WiFi needs firmware from the device. Refer to README.adoc in this
+  # directory for instructions on how to get it, then uncomment this
+  # and change the path appropriately
+  
+  # hardware.firmware = [
+  #   (config.mobile.device.firmware.override {
+  #     modem = ../../vendor/modem;
+  #   })
+  # ];
 
   mobile.system.android.device_name = "potter";
   mobile.system.android.bootimg = {
@@ -39,10 +43,8 @@
     };
   };
 
-  # The boot partition on this phone is 16MB, which is a squeeze for
-  # kernel and initrd (the smallest image I've produced yet is 18MB),
-  # so using `xz` compression to give us a fighting chance of
-  # reaching that goal
+  # The boot partition on this phone is 16MB, so use `xz` compression
+  # as smaller than gzip
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
   boot.kernelParams = [
