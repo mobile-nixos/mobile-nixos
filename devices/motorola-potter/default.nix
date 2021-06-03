@@ -38,18 +38,6 @@
 
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
-  boot.kernelParams = [
-    "androidboot.console=ttyHSL0"
-    "androidboot.hardware=qcom"
-    "user_debug=30"
-    "msm_rtb.filter=0x237"
-    "ehci-hcd.park=3"
-    "androidboot.bootdevice=7824900.sdhci"
-    "lpm_levels.sleep_disabled=1"
-    "vmalloc=350M"
-    "buildvariant=userdebug"
-  ];
-
   mobile.usb.mode = "android_usb";
   # Google
   mobile.usb.idVendor = "18D1";
