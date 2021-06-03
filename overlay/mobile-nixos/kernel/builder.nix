@@ -83,9 +83,6 @@ in
 # Enable support for android-specific "Image.gz-dtb" appended images
 , isImageGzDtb ? false
 
-# DTBs provided externally, to be copied into the kernel tree
-, outOfTreeDtbs ? null
-
 # Mark the kernel as compressed, assumes .gz
 , isCompressed ? "gz"
 
@@ -206,13 +203,6 @@ stdenv.mkDerivation (inputArgs // {
       sed -i scripts/ld-version.sh -e "s|/usr/bin/awk|${buildPackages.gawk}/bin/awk|"
     fi
   ''
-  + optionalString (outOfTreeDtbs != null) ''
-    # We use tar to preserve directory structure in the source files
-    # (e.g. qcom/foo.dtb shoudl end up in arch/arm/boot/dts/qcom/foo.dtb).
-    # The options are to ensure the files/dirs are created writable so that
-    # sed can edit them in postPatch
-    tar -C ${outOfTreeDtbs} -cf - . | tar -C arch/arm/boot/dts/ --mode=a+w --no-overwrite-dir -xvvpf -
-    ''
   + maybeString prePatch
   ;
 

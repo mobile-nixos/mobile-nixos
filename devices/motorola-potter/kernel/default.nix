@@ -22,11 +22,10 @@ mobile-nixos.kernel-builder-gcc6 {
     ./99_framebuffer.patch
     ./0001-Allow-building-WCD9335_CODEC-without-REGMAP_ALLOW_WR.patch
     ./0005-Allow-building-with-sound-disabled.patch
-    ./0007-Build-out-of-tree-dts.patch
+    ./0007-Coalesce-identical-device-trees.patch
   ];
 
   enableRemovingWerror = true;
   isModular = false;
   isQcdt = true;
-  outOfTreeDtbs = ./dts;
 }
