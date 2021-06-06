@@ -24,7 +24,7 @@
   # WiFi needs firmware from the device. Refer to README.adoc in this
   # directory for instructions on how to get it, then uncomment this
   # and change the path appropriately
-  
+
   # hardware.firmware = [
   #   (config.mobile.device.firmware.override {
   #     modem = ../../vendor/modem;
@@ -56,8 +56,6 @@
   mobile.system.type = "android";
 
   mobile.quirks.qualcomm = {
-    fb-notify.enable = true; # copied from addison, don't know if needed
     wcnss-wlan.enable = true;
-    touchscreen-powerup.enable = true;
   };
 }

@@ -23,6 +23,7 @@ mobile-nixos.kernel-builder-gcc6 {
     ./0001-Allow-building-WCD9335_CODEC-without-REGMAP_ALLOW_WR.patch
     ./0005-Allow-building-with-sound-disabled.patch
     ./0007-Coalesce-identical-device-trees.patch
+    ./0008-Notify-clients-when-FB-opened.patch
   ];
 
   enableRemovingWerror = true;
