@@ -3,6 +3,7 @@
 , lib
 , fetchFromGitHub
 , pkg-config
+, freetype
 , SDL2
 , libdrm
 , withSimulator ? false
@@ -94,13 +95,13 @@ let
 in
   stdenv.mkDerivation {
     pname = "lvgui";
-    version = "2021-02-20";
+    version = "2021-07-19";
 
     src = fetchFromGitHub {
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "5ff9b43732d44480f14fd6107d6d989106940be7";
-      sha256 = "1j65byqshxbngqrnj6lj5jhjp13z1j70ahj3dcp5a8bpadhlkgvb";
+      rev = "26ae35bb501912224c36e35a68f3b6f02fe5c751";
+      sha256 = "04qq328nf7pcnyfw0864zcns3y3wj8zv05caixbfqxl2w5v45c2q";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
@@ -115,6 +116,7 @@ in
     ];
 
     buildInputs = [
+      freetype
       libevdev
       libdrm
       libinput
