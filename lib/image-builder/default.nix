@@ -16,6 +16,7 @@ makeScope newScope (self:
     # Use stand-alone (outside of a disk image) is supported.
     fileSystem = {
       makeExt4 = callPackage ./makeExt4.nix {};
+      makeBtrfs = callPackage ./makeBtrfs.nix {};
       makeFAT32 = callPackage ./makeFAT32.nix {};
       # Specialization of `makeFAT32` with (1) filesystemType showing as ESP,
       # and (2) the name defaults to ESP.
