@@ -1,4 +1,7 @@
 { lib, imageBuilder, libfaketime, btrfs-progs }:
+
+/*  */ let scope = { "fileSystem.makeBtrfs" =
+
 { partitionID, ... }@args:
 imageBuilder.makeFilesystem (args // {
   filesystemType = "btrfs";
@@ -13,3 +16,5 @@ imageBuilder.makeFilesystem (args // {
       "$img"
   '';
 })
+
+/*  */ ;}; in scope."fileSystem.makeBtrfs"
