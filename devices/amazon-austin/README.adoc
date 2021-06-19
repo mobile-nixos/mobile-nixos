@@ -26,31 +26,4 @@ least once to exploit a boot ROM flaw.
 WARNING: **DO NOT** flash on top of the hacked TWRP. As it is the image is not
 modified to hold the "hacked" payload, which means recovery would be unusable.
 
-Flashing the boot image requires unergonomic steps.
-
-First, push the built image on the device (e.g. in the temporary rootfs).
-
-```
- $ adb push /nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-mobile-nixos_amazon-austin_boot.img /boot.img
-/nix/store/eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee-mobile-nixos_amazon-austin_boot.img: 1 file pushed, 0 skipped. 7.4 MB/s (13455360 bytes in 1.729s)
-```
-
-Then, `dd` it in the appropriate partition. Make sure you copy the exact given
-command. Flashing to the wrong partition could (temporarily) brick the device.
-
-```
- $ adb shell dd if=/boot.img bs=1M of=/dev/block/platform/mtk-msdc.0/by-name/boot
-12+1 records in
-12+1 records out
-13455360 bytes (12.8MB) copied, 0.543268 seconds, 23.6MB/s
-```
-
-At this point, the image is flashed unmodified. It will not be bootable. To
-make the image bootable, boot back once into the hacked TWRP. At boot, it will
-apply the necessary modifications to the boot image.
-
-```
- $ adb shell reboot recovery 
-```
-
-At this point, you can reboot normally.
+Only *Using a flashable zip* is supported and works.
