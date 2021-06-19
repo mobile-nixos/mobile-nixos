@@ -100,6 +100,13 @@ in
         ln -sfT ${minesDesktopFile} ${desktopDir + "mines.desktop"}
       '';
 
+      users.users.nixos = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "networkmanager" "video" ];
+      };
+    }
+
+    {
       # Forcibly set a password on users...
       # FIXME: highly insecure!
       # FIXME: Figure out why this breaks...
