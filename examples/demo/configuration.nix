@@ -18,6 +18,10 @@ let
   '';
 in
 {
+  imports = [
+    ./workaround-v4l_id-hang.nix
+  ];
+
   config = lib.mkMerge [
     {
 
@@ -96,17 +100,19 @@ in
         ln -sfT ${minesDesktopFile} ${desktopDir + "mines.desktop"}
       '';
 
+      users.users.nixos = {
+        isNormalUser = true;
+        extraGroups = [ "wheel" "networkmanager" "video" ];
+      };
+    }
+
+    {
       # Forcibly set a password on users...
       # FIXME: highly insecure!
       # FIXME: Figure out why this breaks...
       #services.openssh.extraConfig = "PermitEmptyPasswords yes";
       users.users.nixos.password = "nixos";
       users.users.root.password = "nixos";
-
-      # Okay, systemd-udev-settle times out... no idea why yet...
-      # Though, it seems fine to simply disable it.
-      # FIXME : figure out why systemd-udev-settle doesn't work.
-      systemd.services.systemd-udev-settle.enable = false;
     }
 
     # Networking, modem and misc.
