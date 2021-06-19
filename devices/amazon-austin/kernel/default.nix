@@ -7,20 +7,18 @@
 }:
 
 mobile-nixos.kernel-builder-gcc49 {
-  version = "3.10.108";
+  version = "3.10.54";
   configfile = ./config.armv7;
 
   src = fetchFromGitHub {
-    # https://forum.xda-developers.com/t/rom-unlocked-ford-austin-lineage-14-1-17-jan-2021.3962457/
-    owner = "ggow";
-    repo = "android_kernel_amazon_mt8127-common";
-    rev = "4045305775d6bbbfaf45fd4f33109937a1eb4057";
-    sha256 = "0w9shnxdyvf90h1yzbk5q7m9i0ps3zlwiz760vnv7sbf25kcr746";
+    owner = "mobile-nixos";
+    repo = "linux";
+    rev = "4312630fc893949d7a75075c6ca70a9ccaaefb83";
+    sha256 = "165jqyn107bfifqgpizpkp35p72ykfzbsx7bqvh44i3nvhzg2dg7";
   };
 
   patches = [
     ./90_dtbs-install.patch
-    ./0001-mobile-nixos-Could-you-be-more-quiet.patch
   ];
 
   isImageGzDtb = true;
