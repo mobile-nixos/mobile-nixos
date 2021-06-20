@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, dtc }:
+{ stdenv, lib, fetchFromGitHub, dtc, python }:
 
 stdenv.mkDerivation {
   pname = "ufdt-apply-overlay";
@@ -13,6 +13,7 @@ stdenv.mkDerivation {
 
   buildInputs = [
     dtc
+    python
   ];
 
   postPatch = ''
@@ -24,7 +25,8 @@ stdenv.mkDerivation {
   ];
 
   installPhase = ''
-    echo "(already installed)"
+    cp utils/src/mkdtboimg.py $out/bin/
+    chmod +x $out/bin/mkdtboimg.py
   '';
 
   meta = with lib; {
