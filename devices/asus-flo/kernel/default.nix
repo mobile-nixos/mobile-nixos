@@ -5,16 +5,16 @@
 }:
 
 mobile-nixos.kernel-builder rec {
-  version = "5.13.0-rc6-next-20210615"; # ???? next??
+  version = "5.13.0-rc5-next-20210608"; # ???? next?? ah... localversion-next
   configfile = ./config.armv7;
 
   # FIXME: apply patchsets directly on top of mainline
   src = fetchFromGitHub {
     owner = "okias";
     repo = "linux";
-    # https://github.com/okias/linux/commits/qcom-apq8064-next
-    rev = "2bdf536dcda035cc49dbb36087ec0992a2af8839";
-    sha256 = "06nwz93whl5zcvc8m7r95pnmk3lmb3l9nj0k503h1nks6lwfxa84";
+    # https://github.com/okias/linux/commits/flo-v5.13
+    rev = "e50acb2eabbf20837f6e9784c23d222a58529eac";
+    sha256 = "1dcmg13z7l9k8yzw1xllhjji2iy84ig43axv8haiwk1560m7mcm0";
   };
 
   # Using the compiled device tree
