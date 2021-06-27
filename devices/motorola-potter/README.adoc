@@ -6,32 +6,37 @@ include::_support/common.inc[]
 === Hardware Revisions
 
 This device has been through several hardware revisions: the kernel
-describes `P0A`, `P1A`, `P1B`, `P2A`, `P2A2`, `P2B`, and `P3A` but that's not an
-exhaustive list.  Each of these revisions corresponds to a separate
-hardware configuration description (device tree) in the vendor kernel,
-but on examination it turns out that several are identical to each
-other. These identical DTBs take significant space, so to shrink the
-boot image to fit in the allotted 16MB partition we have merged the
-duplicates.
+describes `P0A`, `P1A`, `P1B`, `P2A`, `P2A2`, `P2B`, and `P3A` but
+that's not an exhaustive list.  Each of these revisions corresponds to
+a separate hardware configuration description (device tree) in the
+vendor kernel, but on examination it turns out that several are
+identical to each other.
 
-hwrev  board-id     (mis)features
+According to the commit messages, the two hardware changes that required
+device tree changes were
 
-P0A  <0x44 0x80a0>   U D
-P1A  <0x44 0x81a0>   U D
-P1B  <0x44 0x81b0>   D
-P2A  <0x44 0x82a0>   D
-     <0x45 0x82a0>   D
-P2A2 <0x45 0x82a2> 
-P2B  <0x45 0x82b0> 
-P3A  <0x46 0x83a0> 
-P3B  <0x46 0x83b0> 
+* (U) "Change usbid-gpio from 66 to 59" (git sha 305e2610c598dc4e)
+* (D) "boost clock use pdm clock instead" (git sha c42744ebf80da79a0)
 
-By browsing the commit messages, we find
+[width="50%",options="header"]
+|==========================
+|hwrev | board-id | (mis)features
 
-U = "Change usbid-gpio from 66 to 59" git sha 305e2610c598dc4e
-D = "boost clock use pdm clock instead" git sha c42744ebf80da79a0
+|P0A  | <0x44 0x80a0> |  U D
+|P1A  | <0x44 0x81a0> |  U D
+|P1B  | <0x44 0x81b0> |  D
+|P2A  | <0x44 0x82a0> |  D
+|     | <0x45 0x82a0> |  D
+|P2A2 | <0x45 0x82a2> | 
+|P2B  | <0x45 0x82b0> |
+|P3A  | <0x46 0x83a0> |
+|P3B  | <0x46 0x83b0> |
+|==========================
 
-Thus,we can accommodate all revisions with three DTs:
+
+Thus we can describe the complete range of hardware using only three
+variations instead of seven, which represents a significant space
+saving on the boot partition
 
 - msm8953-potter-p0a-p1a.dtb   (contains U and D fixes)
 - msm8953-potter-p1b-p2a.dtb   (contains D fix only)
@@ -93,5 +98,5 @@ options specify a weird mismash of that code and and some of the files
 in the parent folder. I tried cleaning this up but it broke more than
 it fixed.
 
-The option for CONFIG_SCREEN_OFF_GESTURES is disabled because it is
-incompatible with CONFIG_FB
+The option for `CONFIG_SCREEN_OFF_GESTURES` is disabled because it is
+incompatible with `CONFIG_FB`
