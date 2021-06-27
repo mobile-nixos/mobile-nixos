@@ -9,7 +9,7 @@
 
   mobile.hardware = {
     soc = "qualcomm-msm8953";
-    ram = 1024 * 3;
+    ram = 1024 * 2;
     screen = {
       width = 1080; height = 1920;
     };
