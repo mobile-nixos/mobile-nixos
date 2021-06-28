@@ -1,0 +1,102 @@
+= Motorola Moto G5 Plus
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Hardware Revisions
+
+This device has been through several hardware revisions: the kernel
+describes `P0A`, `P1A`, `P1B`, `P2A`, `P2A2`, `P2B`, and `P3A` but
+that's not an exhaustive list.  Each of these revisions corresponds to
+a separate hardware configuration description (device tree) in the
+vendor kernel, but on examination it turns out that several are
+identical to each other.
+
+According to the commit messages, the two hardware changes that required
+device tree changes were
+
+* (U) "Change usbid-gpio from 66 to 59" (git sha 305e2610c598dc4e)
+* (D) "boost clock use pdm clock instead" (git sha c42744ebf80da79a0)
+
+[width="50%",options="header"]
+|==========================
+|hwrev | board-id | (mis)features
+
+|P0A  | <0x44 0x80a0> |  U D
+|P1A  | <0x44 0x81a0> |  U D
+|P1B  | <0x44 0x81b0> |  D
+|P2A  | <0x44 0x82a0> |  D
+|     | <0x45 0x82a0> |  D
+|P2A2 | <0x45 0x82a2> | 
+|P2B  | <0x45 0x82b0> |
+|P3A  | <0x46 0x83a0> |
+|P3B  | <0x46 0x83b0> |
+|==========================
+
+
+Thus we can describe the complete range of hardware using only three
+variations instead of seven, which represents a significant space
+saving on the boot partition
+
+- msm8953-potter-p0a-p1a.dtb   (contains U and D fixes)
+- msm8953-potter-p1b-p2a.dtb   (contains D fix only)
+- msm8953-potter-p2a2-plus.dtb (contains no fix)
+
+
+==== What about `P3B`?
+
+The vendor kernel does not include a device tree source with
+appropriate board-id for hwrev `P3B`, but empirically (by consulting
+`/proc/device-tree/board-id` on a device running Android) it looks like
+the bootloader chooses the `P3A` DTB instead. As far as I understand it
+this goes against the https://github.com/xiaolu/mkbootimg_tools/blob/master/dtbtool.txt[documented rules]
+for choosing a device tree - https://android.googlesource.com/kernel/msm.git/+/android-msm-bullhead-3.10-n-preview-1/Documentation/devicetree/bindings/arm/msm/board-id.txt?autodive=0%2F%2F%2F%2F[according to
+sources]
+the platform subtype is the lowest 8 bits of the second element of the
+`board-id`, and clearly `0xa0 != 0xb0`, but it seems to do it anyway.
+
+If you have a device with a hwrev *after* `P3B`, I'd love to hear from
+you about how it behaves in this regard.
+
+
+=== Firmware for Wi-Fi
+
+This particular phone keeps the firmware files on a partition named
+`modem`.
+
+To make use of the Wi-Fi capabilities of this phone you will need to
+make them available to the firmware derivation.
+
+The files can be acquired through different methods. You can use an
+alternate recovery like TWRP, mount the partition (identified using
+`blkid`) and copy the files.
+
+Another way is to do it using an installed Mobile NixOS system, where,
+too, you mount the partition and copy them:
+
+```
+$ sudo mount -o ro /dev/disk/by-partlabel/modem /mnt
+$ cp -r /mnt ./modem
+$ sudo umount /mnt
+```
+
+The copy of the firmware files will be in the modem directory, in the
+current working directory, ready to be referred to.
+
+=== Touchscreen
+
+There seem to be three distinct versions of the Synaptics DSx
+touchscreen driver in the vendor kernel: one in
+`drivers/input/touchscreen/synaptics_*.[ch]/`, plus two others in
+subdirectories `drivers/input/touchscreen/synaptics_dsx/`
+
+Since commit 219587de9e92a in the vendor kernel, the touchscreen is
+declared in the device tree as `compatible = "synaptics,dsx-i2c"`
+which corresponds to the code in
+`drivers/input/touchscreen/synaptics_dsx_2.6/`, but the kernel config
+options specify a weird mismash of that code and and some of the files
+in the parent folder. I tried cleaning this up but it broke more than
+it fixed.
+
+The option for `CONFIG_SCREEN_OFF_GESTURES` is disabled because it is
+incompatible with `CONFIG_FB`
