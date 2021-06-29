@@ -39,15 +39,8 @@
   mobile.system.vendor.partition = "/dev/disk/by-partlabel/vendor_a";
 
   boot.kernelParams = [
-    "console=ttyHSL0,115200,n8"
-    "androidboot.console=ttyHSL0"
-    "androidboot.hardware=marlin"
-    "user_debug=31"
-    "ehci-hcd.park=3"
-    "lpm_levels.sleep_disabled=1"
-    "cma=32M@0-0xffffffff"
-    "loop.max_part=7"
-    "buildvariant=eng"
+    # For use with the "Nexus-style" UART cable, add the following kernel parameter.
+    # "console=ttyHSL0,115200,n8"
   ];
 
   mobile.usb.mode = "android_usb";
