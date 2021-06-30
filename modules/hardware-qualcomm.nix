@@ -47,6 +47,11 @@ in
       default = false;
       description = "enable when SOC is SDM845";
     };
+    hardware.socs.qualcomm-sm6125.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is SM6125";
+    };
   };
 
   config = mkMerge [
@@ -89,6 +94,12 @@ in
     {
       mobile = mkIf cfg.qualcomm-sdm845.enable {
         system.system = "aarch64-linux";
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-sm6125.enable {
+        system.system = "aarch64-linux";
+        quirks.fb-refresher.enable = true;
       };
     }
     {
