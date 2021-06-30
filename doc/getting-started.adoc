@@ -150,7 +150,7 @@ import the Mobile NixOS configuration for your device by doing the following.
 
 While it is possible, it is discouraged to directly import the configuration
 files from the `examples` directories. They may change in ways breaking your
-system configuration. It is recommender to copy and edit the configuration
+system configuration. It is recommended to copy and edit the configuration
 files from the `examples` directories if you are basing your configuration off
 of an example.
 
