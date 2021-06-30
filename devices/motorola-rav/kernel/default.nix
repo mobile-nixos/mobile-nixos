@@ -35,4 +35,6 @@ mobile-nixos.kernel-builder-clang_8 {
   enableRemovingWerror = true;
   isImageGzDtb = true;
   isModular = false;
+
+  dtboImg = true;
 }
