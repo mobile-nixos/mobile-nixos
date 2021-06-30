@@ -28,6 +28,7 @@ mobile-nixos.kernel-builder-clang_8 {
     ./0001-HACK-himax_mmi-Fix-early-init-and-work-around-suspen.patch
     ./0001-himax_0flash_mmi-Fix-for-built-in-module.patch
     ./0003-arch-arm64-Add-config-option-to-fix-bootloader-cmdli.patch
+    ./0001-Mobile-NixOS-Enable-simplefb-framebuffer.patch
   ];
 
   enableRemovingWerror = true;
