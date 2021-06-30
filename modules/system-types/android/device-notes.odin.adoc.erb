@@ -45,9 +45,9 @@ An alternative installation method is to use a flashable zip. The flashable zip
 can be built for your _<%= info["fullName"] %>_ using one of the following
 commands:
 
- $ nix-build --argstr device <%= info["identifier"] %>-A build.android-flashable-bootimg
- $ nix-build --argstr device <%= info["identifier"] %>-A build.android-flashable-system
- $ nix-build --argstr device <%= info["identifier"] %>-A build.android-flashable-zip
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-flashable-bootimg
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-flashable-system
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-flashable-zip
 
 The first two will flash only a specific partition. The last one contains the
 partitions of the two previous one.
