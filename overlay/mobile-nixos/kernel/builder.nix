@@ -33,6 +33,7 @@
 , dtc
 , dtbTool
 , dtbTool-exynos
+, ufdt-apply-overlay
 
 , cpio
 , elfutils
@@ -85,6 +86,9 @@ in
 
 # Mark the kernel as compressed, assumes .gz
 , isCompressed ? "gz"
+
+# Enable build of dtbo.img
+, dtboImg ? false
 
 # Linux logo centering (as a boot logo)
 , enableCenteredLinuxLogo ? true
@@ -183,6 +187,7 @@ stdenv.mkDerivation (inputArgs // {
     ++ [ dtc ]
     ++ optional isQcdt dtbTool
     ++ optional isExynosDT dtbTool-exynos
+    ++ optional (dtboImg != false) ufdt-apply-overlay
     ++ nativeBuildInputs
   ;
 
@@ -398,6 +403,11 @@ stdenv.mkDerivation (inputArgs // {
     echo ":: Copying platform-specific -dtb image file"
     cp -v "$buildRoot/arch/${platform.linuxArch}/boot/${kernelTarget}-dtb" "$out/"
 
+  '' + optionalString (dtboImg != false) ''
+   echo ":: Building dtbo.img"
+   mkdtboimg.py create \
+     $out/dtbo.img \
+     $(find $buildRoot/arch/*/boot/dts/ -iname '*.dtbo' | sort)
   ''
     + maybeString postInstall
   ;
