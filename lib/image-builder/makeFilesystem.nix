@@ -62,7 +62,7 @@ stdenvNoCC.mkDerivation (args // rec {
       # multiple of blockSize.
       # Use of `--apparent-size` is to ensure we don't get the block size of the underlying FS.
       # Use of `--block-size` is to get *our* block size.
-      size=$(find . ! -type d -exec 'du' '--apparent-size' '--block-size' "$blockSize" '{}' ';' | cut -f1 | sum-lines)
+      size=$(find . ! -type d -print0 | xargs -0 'du' '--apparent-size' '--block-size' "$blockSize" | cut -f1 | sum-lines)
       echo "Reserving $size sectors for files..." 1>&2
 
       # Adds one blockSize per directory, they do take some place, in the end.
