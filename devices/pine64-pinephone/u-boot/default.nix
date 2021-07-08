@@ -23,22 +23,20 @@ let
     url = "https://gitlab.com/pine64-org/u-boot/-/commit/${rev}.patch";
   };
 
-  # use a version of ATF that has all the Crust goodies in it
-  crustATF = armTrustedFirmwareAllwinner.overrideAttrs(old: rec {
-    name = "arm-trusted-firmware-crust-${version}";
-    version = "2.4";
+  atf = armTrustedFirmwareAllwinner.overrideAttrs(old: rec {
+    version = "2.5";
     src = fetchFromGitHub {
-      owner = "crust-firmware";
+      owner = "ARM-software";
       repo = "arm-trusted-firmware";
-      rev = "42b9ab0cbe6c1d687fe331c547d28489e12260c3";
-      sha256 = "13q0946qk2brda1ci3bsri359ly8zhz76f2d1svnlh45rrrfn984";
+      rev = "v${version}";
+      sha256 = "0w3blkqgmyb5bahlp04hmh8abrflbzy0qg83kmj1x9nv4mw66f3b";
     };
   });
 in
 (buildUBoot {
   defconfig = "pinephone_defconfig";
   extraMeta.platforms = ["aarch64-linux"];
-  BL31 = "${crustATF}/bl31.bin";
+  BL31 = "${atf}/bl31.bin";
   SCP = "${crustFirmware}/scp.bin";
 
   extraPatches = [
