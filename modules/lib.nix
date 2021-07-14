@@ -1,4 +1,4 @@
-args@{ config, lib, pkgs, baseModules, modules, ... }:
+parentArgs@{ config, lib, pkgs, baseModules, modules, ... }:
 
 let
   # Keep modules from this eval around
@@ -28,7 +28,7 @@ in
         inherit baseModules;
         # Newer versions of module system pass specialArgs to modules, so try
         # to pass that to eval if possible.
-        specialArgs = args.specialArgs or { };
+        specialArgs = parentArgs.specialArgs or { };
         # Merge in this eval's modules with the argument's modules, and finally
         # with the given config.
         modules = modules' ++ modules ++ [ config ];
