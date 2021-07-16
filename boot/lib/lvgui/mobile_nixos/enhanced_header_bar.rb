@@ -1,6 +1,15 @@
 class MobileNixOS::EnhancedHeaderBar < LVGUI::HeaderBar
   def initialize(parent)
-    super(parent)
+    # Wrap the header bar so we can constrain to 720 scaled pixels wide.
+    # The contents will be centered.
+    @container = LVGL::LVContainer.new(parent)
+    @container.set_fit2(LVGL::FIT::NONE, LVGL::FIT::NONE)
+    @container.set_layout(LVGL::LAYOUT::COL_M)
+    @container.set_height(LVGUI.pixel_scale(128))
+    @container.set_width(parent.get_width())
+    super(@container)
+    @container.set_style(LVGL::CONT_STYLE::MAIN, self.get_style(LVGL::CONT_STYLE::MAIN))
+    self.set_style(LVGL::CONT_STYLE::MAIN, LVGL::LVStyle::STYLE_TRANSP)
 
     logo_path = LVGL::Hacks.get_asset_path("logo.svg")
     if File.exist?(logo_path)
