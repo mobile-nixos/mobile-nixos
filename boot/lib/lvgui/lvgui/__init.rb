@@ -60,11 +60,19 @@ module LVGUI
   module Fonts
     extend self
 
-    def primary(size = 24)
+    def primary_size()
+      24
+    end
+
+    def secondary_size()
+      25
+    end
+
+    def primary(size = primary_size)
       LVGL::Hacks.get_font("fonts/Roboto-Regular.ttf", size)
     end
 
-    def secondary(size = 25)
+    def secondary(size = secondary_size)
       LVGL::Hacks.get_font("fonts/overpass-bold.otf", size)
     end
   end
