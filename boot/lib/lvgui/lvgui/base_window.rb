@@ -14,13 +14,20 @@ module LVGUI
     def initialize()
       super()
       # Initializes LVGUI things if required...
-      LVGUI.init
+      LVGUI.init(theme: :nixos)
 
       # Preps a basic display
       @screen = Screen.new()
-      @header = Header.new(@screen)
+      on_background_init()
+      @status_bar = StatusBar.new(@screen)
+      on_header_init()
       @toolbar = Toolbar.new(@screen)
       @container = Page.new(@screen)
+
+      [@toolbar, @container, @status_bar].each do |el|
+        el.set_width(LVGUI.pixel_scale(720))
+        el.set_x((@screen.get_width() - el.get_width()) / 2) # center
+      end
 
       @focus_group = []
       # Dummy object used as a "null" focus
@@ -32,6 +39,8 @@ module LVGUI
       self.class.class_variable_get(:@@_after_initialize_callback).each do |cb|
         instance_eval &cb
       end
+
+      on_initialization_finished()
     end
 
     # Adds an object to the focus group list, and add it to the
@@ -67,7 +76,31 @@ module LVGUI
       on_present
     end
 
+    # Hooking point for custom behaviour on present
     def on_present()
+    end
+
+    # Hooking point to customize header building
+    def on_header_init()
+    end
+
+    # Hooking point to customize initialization
+    def on_initialization_finished()
+    end
+
+    # Hook point to customize the background
+    def on_background_init()
+      background_path = LVGL::Hacks.get_asset_path("app-background.svg")
+      if File.exist?(background_path)
+        @background = LVGL::LVImage.new(@screen).tap do |el|
+          el.set_protect(LVGL::PROTECT::POS)
+          el.set_height(LVGUI.pixel_scale(1280))
+          el.set_width(LVGUI.pixel_scale(720))
+          el.set_src("#{background_path}?height=#{LVGUI.pixel_scale(1280)}")
+          el.set_x((@screen.get_width() - el.get_width()) / 2) # center
+          el.set_y(@screen.get_height() - el.get_height()) # Stick to the bottom
+        end
+      end
     end
   end
 end
