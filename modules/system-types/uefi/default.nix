@@ -4,7 +4,7 @@ let
   enabled = config.mobile.system.type == "uefi";
 
   inherit (lib) mkEnableOption mkIf mkOption types;
-  inherit (pkgs) hostPlatform buildPackages imageBuilder runCommandNoCC;
+  inherit (pkgs) hostPlatform imageBuilder runCommandNoCC;
   inherit (config.system.build) recovery stage-0;
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
@@ -22,12 +22,12 @@ let
   kernelParamsFile = pkgs.writeText "${deviceName}-boot.cmd" config.boot.kernelParams;
 
   efiKernel = pkgs.runCommandNoCC "${deviceName}-efiKernel" {
-    buildInputs = [
-      buildPackages.binutils
+    nativeBuildInputs = [
+      pkgs.stdenv.cc.bintools.bintools_bin
     ];
   } ''
     (PS4=" $ "; set -x
-    objcopy \
+    ${pkgs.stdenv.cc.bintools.targetPrefix}objcopy \
       --add-section .cmdline="${kernelParamsFile}"          --change-section-vma  .cmdline=0x30000 \
       --add-section .linux="${kernelFile}"                  --change-section-vma  .linux=0x2000000 \
       --add-section .initrd="${config.system.build.initrd}" --change-section-vma .initrd=0x3000000 \
