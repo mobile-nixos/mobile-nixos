@@ -15,8 +15,8 @@ class LVGUI::Toolbar < LVGUI::Widget
     style.body_padding_left = LVGUI.col_padding()
     style.body_padding_right = LVGUI.col_padding()
 
-    # Fills the width, fits content
-    set_fit2(LVGL::FIT::FLOOD, LVGL::FIT::TIGHT)
+    # Don't touch the width, fits content
+    set_fit2(LVGL::FIT::NONE, LVGL::FIT::TIGHT)
 
     # Layout...
     set_layout(LVGL::LAYOUT::PRETTY)

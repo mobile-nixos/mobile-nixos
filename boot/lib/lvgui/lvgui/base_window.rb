@@ -24,6 +24,11 @@ module LVGUI
       @toolbar = Toolbar.new(@screen)
       @container = Page.new(@screen)
 
+      [@toolbar, @container, @status_bar].each do |el|
+        el.set_width(LVGUI.pixel_scale(720))
+        el.set_x((@screen.get_width() - el.get_width()) / 2) # center
+      end
+
       @focus_group = []
       # Dummy object used as a "null" focus
       LVGUI::Dummy.new(@screen).tap do |obj|
@@ -87,14 +92,13 @@ module LVGUI
     def on_background_init()
       background_path = LVGL::Hacks.get_asset_path("app-background.svg")
       if File.exist?(background_path)
-
         @background = LVGL::LVImage.new(@screen).tap do |el|
           el.set_protect(LVGL::PROTECT::POS)
-          el.set_height(@screen.get_height())
-          el.set_width(@screen.get_width())
-          el.set_x(0)
-          el.set_y(LVGUI.pixel_scale(0))
-          el.set_src("#{background_path}?height=#{el.get_height()}")
+          el.set_height(LVGUI.pixel_scale(1280))
+          el.set_width(LVGUI.pixel_scale(720))
+          el.set_src("#{background_path}?height=#{LVGUI.pixel_scale(1280)}")
+          el.set_x((@screen.get_width() - el.get_width()) / 2) # center
+          el.set_y(@screen.get_height() - el.get_height()) # Stick to the bottom
         end
       end
     end
