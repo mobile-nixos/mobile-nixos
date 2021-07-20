@@ -54,7 +54,7 @@ let
   modDirify = v: v;
 
   # Shortcuts
-  inherit (lib) optionals optional optionalString;
+  inherit (lib) concatMapStringsSep optionals optional optionalString;
   platform = stdenv.hostPlatform;
 
   maybeString = str: optionalString (str != null) str;
@@ -302,11 +302,19 @@ stdenv.mkDerivation (inputArgs // {
         cd $buildRoot
         for f in .config{,.old}; do
           sed \
-            -e 's;CONFIG_CC_VERSION_TEXT=.*;CONFIG_CC_VERSION_TEXT=;' \
-            -e 's;CONFIG_GCC_VERSION=.*;CONFIG_GCC_VERSION=;' \
-            -e 's;CONFIG_LD_VERSION=.*;CONFIG_LD_VERSION=;' \
-            -e 's;CONFIG_CLANG_VERSION=.*;CONFIG_CLANG_VERSION=;' \
-            -e '/CONFIG_DEBUG_INFO_SPLIT/d;' \
+            ${concatMapStringsSep " \\\n" (token: "-e '/${token}/d;'") [
+              # Keep this sorted
+              "CONFIG_ARCH_USES_HIGH_VMA_FLAGS"
+              "CONFIG_ARM64_AS_HAS_MTE"
+              "CONFIG_ARM64_MTE"
+              "CONFIG_ARM64_PTR_AUTH"
+              "CONFIG_AS_HAS_CFI_NEGATE_RA_STATE"
+              "CONFIG_CC_VERSION_TEXT"
+              "CONFIG_CLANG_VERSION"
+              "CONFIG_DEBUG_INFO_SPLIT"
+              "CONFIG_GCC_VERSION"
+              "CONFIG_LD_VERSION"
+            ]} \
             $f > .tmp$f
         done
         )
