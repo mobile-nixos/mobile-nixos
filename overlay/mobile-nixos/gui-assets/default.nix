@@ -1,6 +1,7 @@
 { runCommand
 , overpass
 , roboto
+, fira-mono
 , font-awesome_4
 , nodePackages
 }:
@@ -25,6 +26,7 @@ cp -t $out/fonts \
   ${roboto}/share/fonts/truetype/Roboto-Regular.ttf \
   ${overpass}/share/fonts/opentype/overpass-bold.otf \
   ${overpass}/share/fonts/opentype/overpass-extrabold.otf \
+  ${fira-mono}/share/fonts/opentype/FiraMono-Regular.otf \
   ${font-awesome_4}/share/fonts/opentype/FontAwesome.otf
 
 (
