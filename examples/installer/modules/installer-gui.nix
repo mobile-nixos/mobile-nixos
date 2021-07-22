@@ -25,17 +25,25 @@ in
     enable = false;
   };
 
-  systemd.services.installer-gui = {
-    description = "GUI for the installer for Mobile NixOS";
-    wantedBy = [ "multi-user.target" ];
-    serviceConfig = {
-      Restart = "always";
-      SyslogIdentifier = "installer-gui";
-      ExecStart = ''
-        ${installer-gui}/bin/installer-gui
-      '';
-    };
-  };
+  systemd.services.installer-gui =
+    # Slip an assertion here; nixos asserts only operate on `build.toplevel`.
+    if config.mobile.system.type == "android" then
+      # Heed this warning.
+      # The installer *as currently implemented* may cause irreparable damages to android-based devices.
+      builtins.throw "Building the installer for '${config.mobile.system.type}' system types is not supported and may be dangerous."
+    else
+      {
+        description = "GUI for the installer for Mobile NixOS";
+        wantedBy = [ "multi-user.target" ];
+        serviceConfig = {
+          Restart = "always";
+          SyslogIdentifier = "installer-gui";
+          ExecStart = ''
+            ${installer-gui}/bin/installer-gui
+          '';
+        };
+      }
+  ;
 
   system.build = {
     app-simulator = app.simulator;
