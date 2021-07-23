@@ -35,6 +35,7 @@
     "earlycon=uart,mmio32,0x01c28000"
     "panic=10"
     "consoleblank=0"
+    "cma=128M"
   ];
 
   mobile.system.type = "u-boot";
