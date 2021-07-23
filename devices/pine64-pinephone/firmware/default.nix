@@ -14,4 +14,5 @@ runCommandNoCC "pine64-pinephone-firmware" {
 } ''
   mkdir -p "$out/lib/firmware"
   cp -vrf "$src/rtl_bt" $out/lib/firmware/
+  cp -vf "$src/anx7688-fw.bin" $out/lib/firmware/
 ''
