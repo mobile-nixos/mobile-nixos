@@ -1,9 +1,7 @@
 module GUI
-  class QuitWindow < LVGUI::BaseWindow
+  class QuitWindow < BaseWindow
     include LVGUI::BaseUIElements
     include LVGUI::ButtonPalette
-    include LVGUI::Window::WithBackButton
-    goes_back_to ->() { MainWindow.instance }
 
     def run(*cmd)
       $stderr.puts " $ " + cmd.join(" ")

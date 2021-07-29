@@ -1,5 +1,5 @@
 module GUI
-  class MainWindow < LVGUI::BaseWindow
+  class MainWindow < BaseWindow
     include LVGUI::BaseUIElements
     include LVGUI::ButtonPalette
     def initialize()
