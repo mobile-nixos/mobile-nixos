@@ -92,5 +92,9 @@ module LVGL::Hacks
       LVGUI::Native.lv_task_handler()
       #$stderr.puts "<- handle_tasks"
     end
+
+    def self.delete_task(t)
+      LVGUI::Native.lv_task_del(t)
+    end
   end
 end
