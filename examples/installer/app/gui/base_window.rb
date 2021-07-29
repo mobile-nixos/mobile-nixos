@@ -15,4 +15,11 @@ class GUI::BaseWindow < LVGUI::BaseWindow
     @header_bar = MobileNixOS::EnhancedHeaderBar.new(@screen)
     @header_bar.set_label("Installer")
   end
+
+  def present()
+    unless self.class == GUI::QuitWindow
+      GUI::QuitWindow.instance.back_location = self
+    end
+    super()
+  end
 end
