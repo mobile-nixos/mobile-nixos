@@ -123,6 +123,13 @@ in
         internal = true;
       };
 
+      boot_partition_destination = lib.mkOption {
+        type = types.str;
+        description = "Partition label on which to install the boot image. Some OEM name the partition BOOT.";
+        default = "boot";
+        internal = true;
+      };
+
       system_partition_destination = lib.mkOption {
         type = types.str;
         description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
