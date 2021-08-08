@@ -16,7 +16,7 @@ let
   ;
 
   android-flashable-fragment-burnBoot = ''
-    flash_partition("boot", zip: "boot.img")
+    flash_partition(${builtins.toJSON config.mobile.system.android.boot_partition_destination}, zip: "boot.img")
   '';
 
   android-flashable-fragment-burnSystem = ''

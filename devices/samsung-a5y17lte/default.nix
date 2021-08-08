@@ -32,6 +32,7 @@
       pagesize = "2048";
     };
     flashingMethod = "odin";
+    boot_partition_destination = "BOOT";
   };
 
   boot.kernelParams = [
