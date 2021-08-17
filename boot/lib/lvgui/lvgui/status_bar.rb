@@ -23,7 +23,7 @@ class LVGUI::StatusBar < LVGUI::Widget
       get_width -
       style.body_padding_left -
       style.body_padding_right -
-      style.body_padding_inner*2
+      style.body_padding_inner
     ) / 2
 
     # [00:00                           ]
