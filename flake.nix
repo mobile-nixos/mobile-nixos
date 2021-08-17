@@ -12,7 +12,12 @@
       nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
     in
     {
-      overlay = import ./overlay/overlay.nix;
+      overlay = final: prev: (self.overlays.default final prev) // (self.overlays.mruby-builder final prev);
+
+      overlays = {
+        default = import ./overlay/overlay.nix;
+        mruby-builder = import ./overlay/mruby-builder/overlay.nix;
+      };
 
       legacyPackages = forAllSystems (system: nixpkgsFor.${system});
     };
