@@ -50,6 +50,14 @@ module LVGUI
         LVGUI.focus_group.add_obj(obj)
     end
 
+    # Call instead of `#del` for objects added to the focus group.
+    # Totally unergonomic, but a workaround to the issue where `#del`
+    # frees the object, but we don't get notified.
+    def dispose_focusable_object(obj)
+      @focus_group.delete(obj)
+      obj.del
+    end
+
     # Re-build the focus group from the elements on the window.
     def reset_focus_group()
       # Clear the focus group
