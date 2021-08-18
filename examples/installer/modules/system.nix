@@ -24,4 +24,7 @@
       echo $brightness > /sys/class/leds/lcd-backlight/brightness
     fi
   '';
+
+  networking.networkmanager.enable = true;
+  networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
 }

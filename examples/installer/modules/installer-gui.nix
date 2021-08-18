@@ -9,6 +9,7 @@ let
     applet = "${app}/libexec/app.mrb";
     env = {
       PATH = "${makeBinPath (with pkgs;[
+        networkmanager
         #systemd     # journalctl
       ])}:$PATH";
     };
