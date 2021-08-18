@@ -4,6 +4,7 @@
   environment.systemPackages = with pkgs; [
     htop
     vim
+    tmux
   ];
 
   # Override stage-0 support for the installer.

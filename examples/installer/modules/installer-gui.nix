@@ -10,6 +10,7 @@ let
     env = {
       PATH = "${makeBinPath (with pkgs;[
         networkmanager
+        tmux
         #systemd     # journalctl
       ])}:$PATH";
     };
