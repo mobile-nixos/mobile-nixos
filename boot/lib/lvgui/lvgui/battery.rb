@@ -40,4 +40,9 @@ class LVGUI::Battery < LVGUI::Widget
       set_text("")
     end
   end
+
+  def del()
+    LVGL::Hacks::LVTask.delete_task(@task)
+    super()
+  end
 end
