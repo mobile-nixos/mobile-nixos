@@ -70,6 +70,7 @@ assert attrs ? gems == false;
       (set -x
       rm -f irep.{c,o}
       mrbc \
+        ${optionalString mruby.debug "-g"} \
         -Bruby_irep \
         -oirep.c \
         "$@"
