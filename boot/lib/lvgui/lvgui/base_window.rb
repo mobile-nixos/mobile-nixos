@@ -55,7 +55,7 @@ module LVGUI
     # frees the object, but we don't get notified.
     def dispose_focusable_object(obj)
       @focus_group.delete(obj)
-      obj.del
+      obj.del_async
     end
 
     # Re-build the focus group from the elements on the window.
