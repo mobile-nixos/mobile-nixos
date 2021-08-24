@@ -93,6 +93,11 @@ module LVGL::Hacks
       #$stderr.puts "<- handle_tasks"
     end
 
+    def self.once(prc, prio: LVGL::TASK_PRIO::MID)
+      t = self.create_task(0, prio, prc)
+      LVGUI::Native.lv_task_once(t)
+    end
+
     def self.delete_task(t)
       LVGUI::Native.lv_task_del(t)
     end
