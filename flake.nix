@@ -12,6 +12,27 @@
       mruby-builder = import ./overlay/mruby-builder/overlay.nix;
     };
 
+    lib = {
+      mobileFlake = { hostname, system, modules, outputs }:
+        let
+          mkMobile = buildSystem: nixpkgs.lib.nixosSystem {
+            system = buildSystem;
+            inherit modules;
+          };
+
+          mkOutput = mobile: output:
+            {
+              name = "${hostname}_${output}";
+              value = mobile.config.system.build.${output};
+            };
+        in
+        {
+          nixosConfigurations.${hostname} = mkMobile system;
+        } // flake-utils.lib.eachDefaultSystem (buildSystem: {
+          packages = builtins.listToAttrs (builtins.map (mkOutput (mkMobile buildSystem)) outputs);
+        });
+    };
+
     nixosModules =
       let
         supportedDevices = builtins.filter
