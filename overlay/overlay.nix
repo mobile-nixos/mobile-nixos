@@ -33,6 +33,7 @@ in
     ply-image = callPackage ./ply-image { };
     ufdt-apply-overlay = callPackage ./ufdt-apply-overlay {};
 
+    openmttools = callPackage ./openmttools { };
     mtk-mkimage = callPackage ./mtk-mkimage { };
 
     # Extra "libs"
