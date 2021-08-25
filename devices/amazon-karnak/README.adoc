@@ -1,0 +1,23 @@
+= Amazon Fire HD 8 (8th generation) (2018)
+include::_support/common.inc[]
+
+== Device-specific notes
+
+[NOTE]
+====
+*Do not acquire any Amazon Fire devices with the intent to run Mobile NixOS on
+it.*
+
+They are *not* recommended devices. They are not designed to allow the end-user
+to run customized operating systems.
+====
+
+This works on top of the *amonet* hack, which allows unsigned images to be
+booted on some Amazon Fire devices.
+
+* https://forum.xda-developers.com/t/unlock-root-twrp-unbrick-fire-hd-8-2018-karnak-amonet-3.3963496
+
+=== Flashing
+
+You can either use the flashable ZIP, or manually flash the individual partitions.
+With the default partition layout, it's recommended to flash `system.img` to `userdata` otherwise you might not have enough space.
