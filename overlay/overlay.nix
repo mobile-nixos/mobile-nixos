@@ -33,6 +33,8 @@ in
     ply-image = callPackage ./ply-image { };
     ufdt-apply-overlay = callPackage ./ufdt-apply-overlay {};
 
+    mtk-mkimage = callPackage ./mtk-mkimage { };
+
     # Extra "libs"
     mkExtraUtils = import ./lib/extra-utils.nix {
       inherit (self)
