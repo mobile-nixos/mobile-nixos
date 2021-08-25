@@ -152,6 +152,12 @@ in
           internal = true;
         };
 
+        mtkHeaders = lib.mkOption {
+          type = types.bool;
+          default = false;
+          description = "Whether to prepend MediaTek headers to the kernel and ramdisk";
+        };
+
         flash = lib.attrsets.genAttrs [
           "offset_base"
           "offset_kernel"
