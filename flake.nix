@@ -13,6 +13,13 @@
     };
 
     lib = {
+      /* Create a flake configuration with proper cross compilation setup.
+
+        @hostname: defines the hostname of the nixosConfiguration
+        @system: defines the system of the target device
+        @modules: selects which modules you want to import for the NixOS config
+        @outputs: selects which derivations under `config.system.build.*` you want to export as `packages`
+      */
       mobileFlake = { hostname, system, modules, outputs }:
         let
           mkMobile = buildSystem: nixpkgs.lib.nixosSystem {

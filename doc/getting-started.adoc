@@ -124,6 +124,45 @@ system configuration. It is recommended to copy and edit the configuration
 files from the `examples` directories if you are basing your configuration off
 of an example.
 
+== Configuration via flakes
+
+Mobile NixOS is flakes compatible, meaning you can configure it entirely using
+flakes.
+All devices are exported as `nixosModules` so you just need to import them to
+setup NixOS. You can also use the provided helper `mobileFlake` to simplify
+the process and setup proper cross compilation.
+
+```nix
+{
+  description = "nixos mobile distro";
+
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
+  inputs.mobile-nixos.url = "github:NixOS/mobile-nixos";
+
+  outputs = { self, nixpkgs, mobile-nixos }:
+    mobile-nixos.lib.mobileFlake {
+      hostname = "ark-test";
+      system = "x86_64-linux";
+      modules = [
+        mobile-nixos.nixosModules.uefi-x86_64
+        ({
+          users.users.root.password = "111111";
+        })
+      ];
+      outputs = [ "disk-image" ];
+    };
+}
+```
+
+The helper creates a `nixosConfigurations` attribute with `hostname` so you
+can update the system with `nixos-rebuild` but it also sets up some `packages`
+attributes so you can create a flashable-zip for example for the first-time
+install with `nix build .#<hostname>_<output>`.
+
+`outputs` is used to define which derivations in `config.system.build.*` you
+want to build. This primarily depends on your target device. On `uefi-x86_64`
+you may want to build the `disk-image` output while on any android device you
+might need `android-flashable-zip`.
 
 == Contributing
 
