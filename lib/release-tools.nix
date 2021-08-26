@@ -1,5 +1,6 @@
-{ pkgs ? import <nixpkgs> {} }: 
+{ pkgs ? null }: 
 
+if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided to release-tools.nix") else
 let
   # Original `evalConfig`
   evalConfig = import "${toString pkgs.path}/nixos/lib/eval-config.nix";
