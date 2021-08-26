@@ -1,6 +1,14 @@
-{
-  pkgs ? import ./pkgs.nix
-}:
+{ pkgs ? import ../pkgs.nix { } }:
+if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided to doc/default.nix") else
+
+let pkgs' = pkgs; in # Break the cycle
+let
+  pkgs = pkgs'.appendOverlays [
+    (final: super: {
+      mobile-nixos-process-doc = final.callPackage ./_support/converter {};
+    })
+  ];
+in
 
 let
   inherit (pkgs) stdenv mobile-nixos-process-doc rsync;
