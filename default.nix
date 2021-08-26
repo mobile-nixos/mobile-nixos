@@ -1,6 +1,14 @@
-{ device ? null, configuration ? null, pkgs ? null }@args:
+{ device ? null
+, configuration ? null
+, pkgs ? (import ./pkgs.nix {})
+}@args':
 
 let
+  # Inherit default values correctly in `args`
+  args = args' // {
+    inherit pkgs;
+  };
+
   # Selection of the configuration can by made either through NIX_PATH,
   # through local.nix or as a parameter.
   defaultConfiguration =
