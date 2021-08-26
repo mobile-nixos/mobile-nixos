@@ -4,7 +4,11 @@
   inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
   inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs, flake-utils }: {
+  outputs = { self, nixpkgs, flake-utils }: let
+
+    buildSystems = [ "aarch64-linux" "x86_64-linux" ];
+
+  in {
     overlay = final: prev: (self.overlays.default final prev) // (self.overlays.mruby-builder final prev);
 
     overlays = {
@@ -35,7 +39,7 @@
         in
         {
           nixosConfigurations.${hostname} = mkMobile system;
-        } // flake-utils.lib.eachDefaultSystem (buildSystem: {
+        } // flake-utils.lib.eachSystem buildSystems (buildSystem: {
           packages = builtins.listToAttrs (builtins.map (mkOutput (mkMobile buildSystem)) outputs);
         });
     };
@@ -54,7 +58,7 @@
       in
       builtins.listToAttrs (builtins.map mkModule supportedDevices);
 
-  } // flake-utils.lib.eachDefaultSystem (system:
+  } // flake-utils.lib.eachSystem buildSystems (system:
     let
       pkgs = import nixpkgs {
         inherit system;
