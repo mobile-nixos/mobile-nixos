@@ -1,4 +1,7 @@
-{ device ? null, pkgs ? null }@args:
+{ device ? null
+, pkgs ? (import ../../pkgs.nix {})
+}@args':
+let args = args' // { inherit pkgs; }; in
 
 import ../../lib/eval-with-configuration.nix (args // {
   configuration = [ (import ./configuration.nix) ];
