@@ -4,7 +4,7 @@
 # This is meant for use internally by Mobile NixOS, the interface here
 # should not be assumed to be *stable*.
 {
-  pkgs ? import <nixpkgs> {}
+  pkgs ? null
   # The identifier of the device this should be built for.
   # (This gets massaged later on)
 , device ? null
@@ -13,6 +13,7 @@
 , additionalConfiguration ? {}
 , additionalHelpInstructions ? ""
 }:
+if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided to eval-with-configuration.nix") else
 let
   inherit (pkgs.lib) optionalString strings;
   inherit (strings) concatStringsSep stringAsChars;
