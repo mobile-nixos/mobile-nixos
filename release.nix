@@ -132,10 +132,15 @@ let
     {
       aarch64-linux.rootfs = aarch64-eval.build.rootfs;
     };
+
+    doc = import ./doc {
+      pkgs = pkgs';
+    };
 in
 rec {
   inherit device;
   inherit examples-demo;
+  inherit doc;
 
   # Overlays build native, and cross, according to shouldEvalOn
   overlay = lib.genAttrs systems (system:
