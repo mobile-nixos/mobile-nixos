@@ -5,7 +5,8 @@ let
 
   inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (pkgs) hostPlatform imageBuilder runCommandNoCC;
-  inherit (config.system.build) recovery stage-0;
+  inherit (config.mobile.outputs) recovery;
+  inherit (config.system.build) stage-0;
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
