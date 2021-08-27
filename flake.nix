@@ -22,25 +22,29 @@
         @hostname: defines the hostname of the nixosConfiguration
         @system: defines the system of the target device
         @modules: selects which modules you want to import for the NixOS config
-        @outputs: selects which derivations under `config.system.build.*` you want to export as `packages`
       */
-      mobileFlake = { hostname, system, modules, outputs }:
+      mobileFlake = { hostname, system, modules }:
         let
           mkMobile = buildSystem: nixpkgs.lib.nixosSystem {
             system = buildSystem;
             inherit modules;
           };
-
-          mkOutput = mobile: output:
-            {
-              name = "${hostname}_${output}";
-              value = mobile.config.system.build.${output};
-            };
         in
         {
           nixosConfigurations.${hostname} = mkMobile system;
         } // flake-utils.lib.eachSystem buildSystems (buildSystem: {
-          packages = builtins.listToAttrs (builtins.map (mkOutput (mkMobile buildSystem)) outputs);
+          packages = with nixpkgs.lib;
+            let
+              eval = mkMobile buildSystem;
+
+              potentialOutputs = eval.config.mobile.outputs // eval.config.mobile.outputs.${eval.config.mobile.system.type};
+              actualOutputs = filterAttrs (_key: isDerivation) potentialOutputs;
+            in
+              mapAttrs'
+                (key: nameValuePair ("${hostname}_${key}"))
+                actualOutputs;
+
+          defaultPackage = (mkMobile buildSystem).config.mobile.outputs.default;
         });
     };
 

@@ -151,7 +151,6 @@ which simplifies the process and sets up proper cross compilation.
           users.users.root.password = "111111";
         })
       ];
-      outputs = [ "disk-image" ];
     };
 }
 ```
@@ -159,12 +158,9 @@ which simplifies the process and sets up proper cross compilation.
 The helper creates a `nixosConfigurations` attribute with `hostname` so you
 can update the system with `nixos-rebuild` but it also sets up some `packages`
 attributes so you can create a flashable-zip for example for the first-time
-install with `nix build .#<hostname>_<output>`.
-
-`outputs` is used to define which derivations in `config.system.build.*` you
-want to build. This primarily depends on your target device. On `uefi-x86_64`
-you may want to build the `disk-image` output while on many android devices you
-might need `android-flashable-zip`.
+install with `nix build .#<hostname>_<output>`. It also sets the default
+package to the default output so a simple `nix build` will probably build
+your desired output. You can check all available outputs with `nix flake show`.
 
 === Manual setup with `nixpkgs.lib.nixosSystem`
 You may also manually setup the `nixosConfigurations` attribute for the flake
@@ -192,7 +188,7 @@ further complication in regards to cross compilation.
 }
 ```
 
-Now you can build this configuration using `nix build .#nixosConfigurations.mobile.config.system.build.android-flashable-zip`.
+Now you can build this configuration using `nix build .#nixosConfigurations.mobile.config.mobile.outputs.default`.
 However, it may lead to an error like:
 ```
 error: a 'aarch64-linux' with features {} is required to build ...
