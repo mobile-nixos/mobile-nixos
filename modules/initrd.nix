@@ -309,10 +309,25 @@ in
         '';
         internal = true;
       };
+
+      mobile.outputs = {
+        extraUtils = mkOption {
+          type = types.package;
+          internal = true;
+          description = ''
+            Stripped packages for use in stage-1.
+
+            See `mobile.boot.stage-1.extraUtils`.
+          '';
+        };
+      };
     };
 
     config = {
-      system.build.extraUtils = extraUtils;
+      mobile.outputs = {
+        inherit extraUtils;
+      };
+
       system.build.initrd = "${initrd}/initrd";
       system.build.initrd-meta = initrd-meta;
 
