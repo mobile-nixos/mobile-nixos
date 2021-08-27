@@ -10,7 +10,7 @@ let
   build = pkgs.callPackage ./depthcharge-build.nix {
     inherit (config.mobile.system.depthcharge.kpart) dtbs;
     device_name = config.mobile.device.name;
-    initrd = stage-0.system.build.initrd;
+    inherit (config.mobile.outputs) initrd;
     system = config.system.build.rootfs;
     cmdline = lib.concatStringsSep " " config.boot.kernelParams;
     kernel = kernel.package;
