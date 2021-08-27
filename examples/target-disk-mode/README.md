@@ -24,7 +24,7 @@ This will have different implications depending on the device.
 (E.g. `pine64-pinephone`)
 
 ```
- $ nix-build examples/target-disk-mode/ --argstr device pine64-pinephone -A build.default
+ $ nix-build examples/target-disk-mode/ --argstr device pine64-pinephone -A outputs.default
  $ file -L result
 result: DOS/MBR boot sector; partition 1 : ID=0xee, start-CHS (0x0,0,2), end-CHS (0x3ff,255,63), startsector 1, 319555 sectors, extended partition table (last)
 ```
@@ -41,7 +41,7 @@ The disk image produced can be flashed to a bootable medium (e.g. an SD card).
 > actually bricked** devices.
 
 ```
- $ nix-build examples/target-disk-mode/ --argstr device ____ -A build.android-bootimg
+ $ nix-build examples/target-disk-mode/ --argstr device ____ -A outputs.android-bootimg
  $ file -L result
 result: Android bootimg, kernel (0x10008000), ramdisk (0x11000000), page size: 2048, cmdline (...)
 ```
