@@ -346,7 +346,8 @@ in
         initrd = "${initrd}/initrd";
       };
 
-
+      # This is not a Mobile NixOS output; this is to "dis"-integrate with the
+      # default NixOS outputs. Do not refer to this in Mobile NixOS.
       system.build.initialRamdisk =
         if config.mobile.rootfs.shared.enabled
         then pkgs.runCommandNoCC "dummy" {} "touch $out"
