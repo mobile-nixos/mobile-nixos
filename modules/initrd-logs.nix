@@ -2,7 +2,7 @@
 
 let
   inherit (lib) mkIf mkMerge mkOption optionalString types;
-  inherit (config.system.build) extraUtils;
+  inherit (config.mobile.outputs) extraUtils;
   cfg = config.mobile.boot.stage-1.bootlog;
 in
 {
