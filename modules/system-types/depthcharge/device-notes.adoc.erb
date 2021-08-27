@@ -2,7 +2,7 @@
 
 This will build the default output for your _<%= info["fullName"] %>_.
 
- $ nix-build --argstr device <%= info["identifier"] %> -A build.default
+ $ nix-build --argstr device <%= info["identifier"] %> -A outputs.default
 
 The default output is a disk-image that can be written on a storage media that
 your device can boot from.
@@ -22,7 +22,7 @@ image to a storage media, either external or internal.
 The `kpart` output can be used to build only the stage-1, which is helpful for
 updating the kernel and the stage-1 boot program.
 
- $ nix-build --argstr device <%= info["identifier"] %> -A build.kpart
+ $ nix-build --argstr device <%= info["identifier"] %> -A outputs.kpart
 
 This can be `dd`'d over the first partition on an existing storage media
 containing a Mobile NixOS installation.
