@@ -21,7 +21,7 @@ let
     kernel = "${kernelPackage}/${kernelPackage.file}";
   };
 
-  android-recovery = recovery.mobile.outputs.android-bootimg;
+  android-recovery = recovery.mobile.outputs.android.android-bootimg;
 
   inherit (config.mobile.outputs.generatedFilesystems) rootfs;
 
@@ -159,23 +159,25 @@ in
     };
     mobile = {
       outputs = {
-        android-bootimg = lib.mkOption {
-          type = types.package;
-          description = ''
-            `boot.img` type image for Android-based systems.
-          '';
-        };
-        android-recovery = lib.mkOption {
-          type = types.package;
-          description = ''
-            `recovery.img` type image for Android-based systems.
-          '';
-        };
-        android-fastboot-images = lib.mkOption {
-          type = types.package;
-          description = ''
-            Flashing scripts and images for use with fastboot or odin.
-          '';
+        android = {
+          android-bootimg = lib.mkOption {
+            type = types.package;
+            description = ''
+              `boot.img` type image for Android-based systems.
+            '';
+          };
+          android-recovery = lib.mkOption {
+            type = types.package;
+            description = ''
+              `recovery.img` type image for Android-based systems.
+            '';
+          };
+          android-fastboot-images = lib.mkOption {
+            type = types.package;
+            description = ''
+              Flashing scripts and images for use with fastboot or odin.
+            '';
+          };
         };
       };
     };
@@ -187,11 +189,13 @@ in
     (lib.mkIf enabled {
       mobile.outputs = {
         default = android-fastboot-images;
-        inherit
-          android-bootimg
-          android-recovery
-          android-fastboot-images
-        ;
+        android = {
+          inherit
+            android-bootimg
+            android-recovery
+            android-fastboot-images
+          ;
+        };
       };
 
       mobile.HAL.boot.rebootModes = [
