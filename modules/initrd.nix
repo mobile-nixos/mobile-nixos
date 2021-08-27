@@ -320,16 +320,32 @@ in
             See `mobile.boot.stage-1.extraUtils`.
           '';
         };
+        initrd = mkOption {
+          type = types.str;
+          internal = true;
+          description = ''
+            Path to the initrd, likely compressed, for the system.
+          '';
+        };
+        initrd-meta = mkOption {
+          type = types.package;
+          internal = true;
+          description = ''
+            Additional metadata about the initrd; used for debugging.
+          '';
+        };
       };
     };
 
     config = {
       mobile.outputs = {
-        inherit extraUtils;
+        inherit
+          extraUtils
+          initrd-meta
+        ;
+        initrd = "${initrd}/initrd";
       };
 
-      system.build.initrd = "${initrd}/initrd";
-      system.build.initrd-meta = initrd-meta;
 
       system.build.initialRamdisk =
         if config.mobile.rootfs.shared.enabled
