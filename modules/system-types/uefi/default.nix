@@ -36,6 +36,7 @@ let
     )
   '';
 
+  # TODO: use generatedFilesystems
   boot-partition =
     imageBuilder.fileSystem.makeESP {
       name = "mobile-nixos-ESP";
@@ -49,8 +50,8 @@ let
 
       populateCommands = ''
         mkdir -p EFI/boot
-        cp ${stage-0.system.build.efiKernel}  EFI/boot/boot${uefiPlatform}.efi
-        cp ${recovery.system.build.efiKernel} EFI/boot/recovery${uefiPlatform}.efi
+        cp ${stage-0.mobile.outputs.uefi.efiKernel}  EFI/boot/boot${uefiPlatform}.efi
+        cp ${recovery.mobile.outputs.uefi.efiKernel} EFI/boot/recovery${uefiPlatform}.efi
       '';
     }
   ;
@@ -80,10 +81,10 @@ let
     diskID = "01234567";
     headerHole = cfg.initialGapSize;
     partitions = [
-      config.system.build.boot-partition
+      boot-partition
       miscPartition
       persistPartition
-      config.system.build.rootfs
+      config.mobile.outputs.generatedFilesystems.rootfs
     ];
   };
 in
@@ -102,16 +103,41 @@ in
         '';
       };
     };
+
+    outputs = {
+      uefi = {
+        boot-partition = mkOption {
+          type = types.package;
+          description = ''
+            Boot partition for the system.
+          '';
+        };
+        disk-image = lib.mkOption {
+          type = types.package;
+          description = ''
+            Full Mobile NixOS disk image for a UEFI-based system.
+          '';
+        };
+        efiKernel = mkOption {
+          type = types.package;
+          description = ''
+            EFI executable with the kernel, cmdline and initramfs built-in.
+          '';
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
     { mobile.system.types = [ "uefi" ]; }
     (mkIf enabled {
-      system.build = {
-        inherit efiKernel;
-        inherit boot-partition;
-        inherit disk-image;
-        default = config.system.build.disk-image;
+      mobile.outputs = {
+        default = config.mobile.outputs.uefi.disk-image;
+        uefi = {
+          inherit efiKernel;
+          inherit boot-partition;
+          inherit disk-image;
+        };
       };
     })
   ];
