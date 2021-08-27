@@ -23,7 +23,7 @@ let
 
   android-recovery = recovery.system.build.android-bootimg;
 
-  inherit (config.system.build) rootfs;
+  inherit (config.mobile.outputs.generatedFilesystems) rootfs;
 
   # Note:
   # The flash scripts, by design, are not using nix-provided paths for
