@@ -36,6 +36,7 @@
   ./luks.nix
   ./mobile-device.nix
   ./nixpkgs.nix
+  ./outputs.nix
   ./quirks
   ./recovery.nix
   ./rootfs.nix
