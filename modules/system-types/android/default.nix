@@ -21,7 +21,7 @@ let
     kernel = "${kernelPackage}/${kernelPackage.file}";
   };
 
-  android-recovery = recovery.system.build.android-bootimg;
+  android-recovery = recovery.mobile.outputs.android-bootimg;
 
   inherit (config.mobile.outputs.generatedFilesystems) rootfs;
 
@@ -67,11 +67,6 @@ let
     EOF
     chmod +x $out/flash-critical.sh
   '';
-
-  # The output name `android-device` does not describe well what it is.
-  # This is kept for some backwards compatibility (6 months)
-  # Change to a throw by or after September 2021.
-  android-device = builtins.trace "The output `android-device` has been renamed to: `android-systems-image`." android-fastboot-images;
 
   mkBootimgOption = name: lib.mkOption {
     type = types.str;
@@ -162,16 +157,37 @@ in
         ] mkBootimgOption;
       };
     };
+    mobile = {
+      outputs = {
+        android-bootimg = lib.mkOption {
+          type = types.package;
+          description = ''
+            `boot.img` type image for Android-based systems.
+          '';
+        };
+        android-recovery = lib.mkOption {
+          type = types.package;
+          description = ''
+            `recovery.img` type image for Android-based systems.
+          '';
+        };
+        android-fastboot-images = lib.mkOption {
+          type = types.package;
+          description = ''
+            Flashing scripts and images for use with fastboot or odin.
+          '';
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
     { mobile.system.types = [ "android" ]; }
 
     (lib.mkIf enabled {
-      system.build = {
+      mobile.outputs = {
         default = android-fastboot-images;
         inherit
-          android-device
           android-bootimg
           android-recovery
           android-fastboot-images
