@@ -4,7 +4,7 @@ let
   enabled = config.mobile.system.type == "depthcharge";
 
   inherit (lib) types;
-  inherit (config.system.build) stage-0;
+  inherit (config.mobile.outputs) stage-0;
   inherit (stage-0.mobile.boot.stage-1) kernel;
 
   build = pkgs.callPackage ./depthcharge-build.nix {
