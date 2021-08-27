@@ -4,8 +4,7 @@ let
   enabled = config.mobile.system.type == "android";
 
   inherit (lib) concatStringsSep optionalString types;
-  inherit (config.mobile.outputs) recovery;
-  inherit (config.system.build) stage-0;
+  inherit (config.mobile.outputs) recovery stage-0;
   inherit (config.mobile) device;
   inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition flashingMethod;
   inherit (stage-0.mobile.boot.stage-1) kernel;
