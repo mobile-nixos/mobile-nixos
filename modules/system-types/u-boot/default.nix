@@ -3,7 +3,8 @@
 let
   enabled = config.mobile.system.type == "u-boot";
 
-  inherit (config.system.build) recovery stage-0;
+  inherit (config.mobile.outputs) recovery;
+  inherit (config.system.build) stage-0;
   inherit (pkgs) buildPackages imageBuilder runCommandNoCC;
   inherit (lib) mkIf mkOption types;
   cfg = config.mobile.quirks.u-boot;
