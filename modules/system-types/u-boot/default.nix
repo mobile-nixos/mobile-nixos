@@ -109,6 +109,7 @@ let
     mkimage -C none -A ${ubootPlatforms.${pkgs.targetPlatform.system}} -T script -d ${bootcmd} $out
   '';
 
+  # TODO: use generatedFilesystems
   boot-partition =
     imageBuilder.fileSystem.makeExt4 {
       name = "mobile-nixos-boot";
@@ -169,8 +170,8 @@ let
     partitions = [
       miscPartition
       persistPartition
-      config.system.build.boot-partition
-      config.system.build.rootfs
+      boot-partition
+      config.mobile.outputs.generatedFilesystems.rootfs
     ];
   };
 
@@ -235,6 +236,29 @@ in
         '';
       };
     };
+
+    outputs = {
+      u-boot = {
+        boot-partition = mkOption {
+          type = types.package;
+          description = ''
+            Boot partition for the system.
+          '';
+        };
+        disk-image = lib.mkOption {
+          type = types.package;
+          description = ''
+            Full Mobile NixOS disk image for a u-boot-based system.
+          '';
+        };
+        u-boot = mkOption {
+          type = types.package;
+          description = ''
+            U-Boot build for the system.
+          '';
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
@@ -245,11 +269,13 @@ in
           u-boot = cfg.package;
         };
       })];
-      system.build = {
-        inherit boot-partition;
-        disk-image = withBootloader;
-        u-boot = cfg.package;
-        default = config.system.build.disk-image;
+      mobile.outputs = {
+        default = config.mobile.outputs.u-boot.disk-image;
+        u-boot = {
+          inherit boot-partition;
+          disk-image = withBootloader;
+          u-boot = cfg.package;
+        };
       };
     })
   ];
