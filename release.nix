@@ -110,7 +110,7 @@ let
     lib.genAttrs systems (system:
       (evalWithConfiguration {
         nixpkgs.localSystem = knownSystems.${system};
-      } device).config.system.build.default
+      } device).config.mobile.outputs.default
     )
   );
 
@@ -130,7 +130,7 @@ let
       };
     in
     {
-      aarch64-linux.rootfs = aarch64-eval.build.rootfs;
+      aarch64-linux.rootfs = aarch64-eval.outputs.rootfs;
     };
 in
 rec {
