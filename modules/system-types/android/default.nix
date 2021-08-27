@@ -16,7 +16,7 @@ let
   android-bootimg = pkgs.callPackage ./bootimg.nix rec {
     inherit (config.mobile.system.android) bootimg;
     inherit cmdline;
-    initrd = stage-0.system.build.initrd;
+    inherit (config.mobile.outputs) initrd;
     name = "mobile-nixos_${device.name}_${bootimg.name}";
     kernel = "${kernelPackage}/${kernelPackage.file}";
   };
