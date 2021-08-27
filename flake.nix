@@ -2,34 +2,38 @@
   description = "Flakes for mobile-nixos";
 
   inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
+  inputs.flake-utils.url = "github:numtide/flake-utils";
 
-  outputs = { self, nixpkgs }:
-    let
-      supportedSystems = [ "x86_64-linux" "i686-linux" "aarch64-linux" ];
-      supportedDevices = builtins.filter
-        (device: builtins.pathExists(./. + "/devices/${device}/default.nix"))
-        (builtins.attrNames (builtins.readDir ./devices));
+  outputs = { self, nixpkgs, flake-utils }: {
+    overlay = final: prev: (self.overlays.default final prev) // (self.overlays.mruby-builder final prev);
 
-      forAllSystems = f: nixpkgs.lib.genAttrs supportedSystems (system: f system);
+    overlays = {
+      default = import ./overlay/overlay.nix;
+      mruby-builder = import ./overlay/mruby-builder/overlay.nix;
+    };
 
-      nixpkgsFor = forAllSystems (system: import nixpkgs { inherit system; overlays = [ self.overlay ]; });
-    in
-    {
-      overlay = final: prev: (self.overlays.default final prev) // (self.overlays.mruby-builder final prev);
+    nixosModules =
+      let
+        supportedDevices = builtins.filter
+          (device: builtins.pathExists (./. + "/devices/${device}/default.nix"))
+          (builtins.attrNames (builtins.readDir ./devices));
 
-      overlays = {
-        default = import ./overlay/overlay.nix;
-        mruby-builder = import ./overlay/mruby-builder/overlay.nix;
-      };
-
-      nixosModules = builtins.listToAttrs (builtins.map
-        (device:
+        mkModule = device:
           {
             name = device;
             value = (import ./lib/configuration.nix { inherit device; });
-          })
-        supportedDevices);
+          };
+      in
+      builtins.listToAttrs (builtins.map mkModule supportedDevices);
 
-      legacyPackages = forAllSystems (system: nixpkgsFor.${system});
-    };
+  } // flake-utils.lib.eachDefaultSystem (system:
+    let
+      pkgs = import nixpkgs {
+        inherit system;
+        overlays = [ self.overlay ];
+      };
+    in
+    {
+      legacyPackages = pkgs;
+    });
 }
