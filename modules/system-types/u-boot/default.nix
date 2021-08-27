@@ -123,13 +123,13 @@ let
         mkdir -vp mobile-nixos/{boot,recovery}
         (
         cd mobile-nixos/boot
-        cp -v ${stage-0.system.build.initrd} stage-1
+        cp -v ${stage-0.mobile.outputs.initrd} stage-1
         cp -v ${kernel_file} kernel
         cp -vr ${kernel}/dtbs dtbs
         )
         (
         cd mobile-nixos/recovery
-        cp -v ${recovery.system.build.initrd} stage-1
+        cp -v ${recovery.mobile.outputs.initrd} stage-1
         cp -v ${kernel_file} kernel
         cp -vr ${kernel}/dtbs dtbs
         )
