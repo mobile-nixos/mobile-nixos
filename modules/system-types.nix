@@ -34,6 +34,10 @@ in
         produced for the system.
       '';
     };
+
+    # Useless attrset for the special "none" system-type.
+    outputs.none = {
+    };
   };
 
   config = {
