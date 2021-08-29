@@ -15,6 +15,8 @@ in
 
             The default depends on the system type in use.
           '';
+          # Mark internal so that the documentation does not expose a bogus description.
+          internal = true;
         };
       };
     };
