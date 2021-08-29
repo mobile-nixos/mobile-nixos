@@ -14,6 +14,7 @@ in
     mobile = {
       outputs = {
         recovery = mkOption {
+          internal = true;
           description = ''
             The configuration, re-evaluated with assumptions for recovery use.
           '';
