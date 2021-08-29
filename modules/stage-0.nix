@@ -57,6 +57,7 @@ in
     mobile = {
       outputs = {
         stage-0 = mkOption {
+          internal = true;
           description = ''
             The configuration, re-evaluated with assumptions for stage-0 use.
           '';
