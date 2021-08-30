@@ -37,12 +37,14 @@ in
             description = ''
               Full Mobile NixOS disk image for a depthcharge-based system.
             '';
+            visible = false;
           };
           kpart = lib.mkOption {
             type = types.package;
             description = ''
               Kernel partition for a depthcharge-based system.
             '';
+            visible = false;
           };
         };
       };
