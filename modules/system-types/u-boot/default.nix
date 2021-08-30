@@ -244,18 +244,21 @@ in
           description = ''
             Boot partition for the system.
           '';
+          visible = false;
         };
         disk-image = lib.mkOption {
           type = types.package;
           description = ''
             Full Mobile NixOS disk image for a u-boot-based system.
           '';
+          visible = false;
         };
         u-boot = mkOption {
           type = types.package;
           description = ''
             U-Boot build for the system.
           '';
+          visible = false;
         };
       };
     };
