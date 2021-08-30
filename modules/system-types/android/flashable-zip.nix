@@ -71,18 +71,21 @@ in
             description = ''
               `boot.img` in Android flashable zip format.
             '';
+            visible = false;
           };
           android-flashable-system = mkOption {
             type = types.package;
             description = ''
               `system.img` in Android flashable zip format.
             '';
+            visible = false;
           };
           android-flashable-zip = mkOption {
             type = types.package;
             description = ''
               Android flashable zip which will install `boot.img` and `system.img`.
             '';
+            visible = false;
           };
         };
       };
