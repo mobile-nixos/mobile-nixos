@@ -188,6 +188,9 @@ stdenv.mkDerivation (inputArgs // {
   # Set to false when normalizing the kernel config.
   forceNormalizedConfig = true;
 
+  # Allows updating the kernel config to conform to the structured config.
+  updateConfigFromStructuredConfig = false;
+
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.linux-kernel.target == "uImage") buildPackages.ubootTools
@@ -298,10 +301,29 @@ stdenv.mkDerivation (inputArgs // {
     echo "manual-config configurePhase buildRoot=$buildRoot pwd=$PWD"
 
     if [ -f "$buildRoot/.config" ]; then
-      echo "Could not link $buildRoot/.config : file exists"
+      echo "ERROR: $buildRoot/.config : file exists."
+      echo "       The kernel source tree must not contain a .config file."
+      echo "       Remove the .config file and provide it as an input for the derivation."
       exit 1
     fi
-    ln -sv ${configfile} $buildRoot/.config
+
+    # Catting so we can write to the config file
+    cat ${configfile} > $buildRoot/.config
+
+    if [ -n "$updateConfigFromStructuredConfig" ]; then
+      cat <<EOF >> $buildRoot/.config
+    #
+    # From structured config
+    #
+    ${evaluatedStructuredConfig.config.configfile}
+    EOF
+      echo
+      echo ":: Updating config to conform to structured config"
+      echo
+      make $makeFlags "''${makeFlagsArray[@]}" oldconfig
+      rm $buildRoot/.config.old
+      echo
+    fi
 
     # reads the existing .config file and prompts the user for options in
     # the current kernel source that are not found in the file.
@@ -483,6 +505,7 @@ stdenv.mkDerivation (inputArgs // {
     # Derivation with the as-built normalized kernel config
     normalizedConfig = kernelDerivation.overrideAttrs({ ... }: {
       forceNormalizedConfig = false;
+      updateConfigFromStructuredConfig = true;
       buildPhase = "echo Skipping build phase...";
       installPhase = ''
         cp .config $out
