@@ -19,6 +19,13 @@ options = JSON.parse(File.read(ENV["optionsJSON"]))
     v["declarations"].any? {|path| path.match(/^#{$root}/)}
   end
 
+if options.keys.any? { |k| k.match(/^mobile\.outputs/) }
+  $stderr.puts "The options listing unexpectedly contains `mobile.outputs` options."
+  $stderr.puts "This is likely happening when adding `mobile.outputs` options without marking them `internal` or `visible = false;`."
+  $stderr.puts "Bailing!"
+  exit 1
+end
+
 if options.keys.include?("nixpkgs.system")
   $stderr.puts "The options listing unexpectedly contains NixOS options."
   $stderr.puts "Bailing!"
