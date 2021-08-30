@@ -23,6 +23,7 @@ in
             description = ''
               Script to start a UEFI-based virtual machine.
             '';
+            visible = false;
           };
         };
       };
