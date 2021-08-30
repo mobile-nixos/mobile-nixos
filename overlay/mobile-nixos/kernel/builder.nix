@@ -47,6 +47,16 @@
 , ncurses
 , pkgconfig
 , runtimeShell
+
+# A structured Linux configuration option attrset.
+# When present, it will be used to validate the configuration.
+# The kernel is not configured with it *directly*. It is assumed that any
+# configuration scheme can be used, but validation always happens with the
+# structured configuration. Thus allowing fully normalized kernel configuration
+# file to be used if desired.
+# It is expected this will have been added to the Nixpkgs overlay by the
+# system build.
+, systemBuild-structuredConfig ? {}
 }:
 
 let
@@ -130,6 +140,11 @@ in
 } @ inputArgs:
 
 let
+  evaluatedStructuredConfig = import ./eval-config.nix {
+    inherit lib path version;
+    structuredConfig = (systemBuild-structuredConfig version);
+  };
+
   # Path within <nixpkgs> to refer to the kernel build system's file.
   nixosKernelPath = path + "/pkgs/os-specific/linux/kernel";
 
@@ -333,6 +348,14 @@ stdenv.mkDerivation (inputArgs // {
       fi
     fi
     runHook postConfigure
+
+    (
+    cd $buildRoot/
+    echo
+    echo ":: Validating required and suggested kernel config options"
+    echo
+    ${evaluatedStructuredConfig.config.validatorSnippet}
+    )
 
     make $makeFlags "''${makeFlagsArray[@]}" prepare
     actualModDirVersion="$(cat $buildRoot/include/config/kernel.release)"
