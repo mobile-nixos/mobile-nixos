@@ -32,6 +32,7 @@
   ./initrd-vendor.nix
   ./initrd.nix
   ./internal.nix
+  ./kernel-config.nix
   ./lib.nix
   ./luks.nix
   ./mobile-device.nix
