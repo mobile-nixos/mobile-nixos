@@ -94,6 +94,7 @@ in
     };
     mobile.outputs.rootfs = lib.mkOption {
       type = types.package;
+      visible = false;
       description = ''
         The rootfs image for the build.
       '';
