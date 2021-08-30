@@ -43,6 +43,9 @@ let
     in
     builtins.trace (concatStringsSep "\ntrace: " [line str' line])
   ;
+
+  # Merge the system-type outputs at the root of the outputs.
+  outputs = eval.config.mobile.outputs // eval.config.mobile.outputs.${eval.config.mobile.system.type};
 in
   (
     # Don't break if `device` is not set.
@@ -55,7 +58,8 @@ in
   )
 {
   # The build artifacts from the modules system.
-  inherit (eval.config.system) build;
+  inherit outputs;
+  build = builtins.trace "The `build` argument has been renamed `outputs`. This alias will be removed after 2022-05." outputs;
 
   # The evaluated config
   inherit (eval) config;

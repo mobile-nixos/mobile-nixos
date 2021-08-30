@@ -4,14 +4,14 @@ let
   enabled = config.mobile.system.type == "depthcharge";
 
   inherit (lib) types;
-  inherit (config.system.build) stage-0;
+  inherit (config.mobile.outputs) stage-0;
   inherit (stage-0.mobile.boot.stage-1) kernel;
 
   build = pkgs.callPackage ./depthcharge-build.nix {
     inherit (config.mobile.system.depthcharge.kpart) dtbs;
     device_name = config.mobile.device.name;
-    initrd = stage-0.system.build.initrd;
-    system = config.system.build.rootfs;
+    inherit (config.mobile.outputs) initrd;
+    system = config.mobile.outputs.generatedFilesystems.rootfs;
     cmdline = lib.concatStringsSep " " config.boot.kernelParams;
     kernel = kernel.package;
     arch = lib.strings.removeSuffix "-linux" config.mobile.system.system;
@@ -29,15 +29,37 @@ in
         };
       };
     };
+    mobile = {
+      outputs = {
+        depthcharge = {
+          disk-image = lib.mkOption {
+            type = types.package;
+            description = ''
+              Full Mobile NixOS disk image for a depthcharge-based system.
+            '';
+            visible = false;
+          };
+          kpart = lib.mkOption {
+            type = types.package;
+            description = ''
+              Kernel partition for a depthcharge-based system.
+            '';
+            visible = false;
+          };
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
     { mobile.system.types = [ "depthcharge" ]; }
 
     (lib.mkIf enabled {
-      system.build = {
-        inherit (build) disk-image kpart;
+      mobile.outputs = {
         default = build.disk-image;
+        depthcharge = {
+          inherit (build) disk-image kpart;
+        };
       };
     })
   ];

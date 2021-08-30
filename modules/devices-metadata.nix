@@ -1,14 +1,28 @@
-{ config, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (config) mobile;
+  inherit (lib)
+    mkOption
+    types
+  ;
   inherit (mobile.device) identity;
 in
 {
-  # The device-metadata output is used internally by the documentation
-  # generation to generate the per-device pages.
-  # Assume this format is fluid and will change.
-  system.build.device-metadata = pkgs.writeTextFile {
+  options = {
+    mobile.outputs.device-metadata = mkOption {
+      type = types.package;
+      internal = true;
+      description = ''
+        The device-metadata output is used internally by the documentation
+        generation to generate the per-device pages.
+
+        Assume this format is fluid and will change.
+      '';
+    };
+  };
+
+  config.mobile.outputs.device-metadata = pkgs.writeTextFile {
     name = "${mobile.device.name}-metadata";
     destination = "/${mobile.device.name}.json";
     text = (builtins.toJSON {

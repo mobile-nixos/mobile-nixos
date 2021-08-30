@@ -4,7 +4,7 @@ let
   enabled = config.mobile.system.type == "android";
 
   inherit (lib) concatStringsSep optionalString types;
-  inherit (config.system.build) recovery stage-0;
+  inherit (config.mobile.outputs) recovery stage-0;
   inherit (config.mobile) device;
   inherit (config.mobile.system.android) ab_partitions boot_as_recovery has_recovery_partition flashingMethod;
   inherit (stage-0.mobile.boot.stage-1) kernel;
@@ -16,14 +16,14 @@ let
   android-bootimg = pkgs.callPackage ./bootimg.nix rec {
     inherit (config.mobile.system.android) bootimg;
     inherit cmdline;
-    initrd = stage-0.system.build.initrd;
+    inherit (config.mobile.outputs) initrd;
     name = "mobile-nixos_${device.name}_${bootimg.name}";
     kernel = "${kernelPackage}/${kernelPackage.file}";
   };
 
-  android-recovery = recovery.system.build.android-bootimg;
+  android-recovery = recovery.mobile.outputs.android.android-bootimg;
 
-  inherit (config.system.build) rootfs;
+  inherit (config.mobile.outputs.generatedFilesystems) rootfs;
 
   # Note:
   # The flash scripts, by design, are not using nix-provided paths for
@@ -67,11 +67,6 @@ let
     EOF
     chmod +x $out/flash-critical.sh
   '';
-
-  # The output name `android-device` does not describe well what it is.
-  # This is kept for some backwards compatibility (6 months)
-  # Change to a throw by or after September 2021.
-  android-device = builtins.trace "The output `android-device` has been renamed to: `android-systems-image`." android-fastboot-images;
 
   mkBootimgOption = name: lib.mkOption {
     type = types.str;
@@ -162,20 +157,48 @@ in
         ] mkBootimgOption;
       };
     };
+    mobile = {
+      outputs = {
+        android = {
+          android-bootimg = lib.mkOption {
+            type = types.package;
+            description = ''
+              `boot.img` type image for Android-based systems.
+            '';
+            visible = false;
+          };
+          android-recovery = lib.mkOption {
+            type = types.package;
+            description = ''
+              `recovery.img` type image for Android-based systems.
+            '';
+            visible = false;
+          };
+          android-fastboot-images = lib.mkOption {
+            type = types.package;
+            description = ''
+              Flashing scripts and images for use with fastboot or odin.
+            '';
+            visible = false;
+          };
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
     { mobile.system.types = [ "android" ]; }
 
     (lib.mkIf enabled {
-      system.build = {
+      mobile.outputs = {
         default = android-fastboot-images;
-        inherit
-          android-device
-          android-bootimg
-          android-recovery
-          android-fastboot-images
-        ;
+        android = {
+          inherit
+            android-bootimg
+            android-recovery
+            android-fastboot-images
+          ;
+        };
       };
 
       mobile.HAL.boot.rebootModes = [

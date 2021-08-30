@@ -5,7 +5,7 @@ let
 
   inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (pkgs) hostPlatform imageBuilder runCommandNoCC;
-  inherit (config.system.build) recovery stage-0;
+  inherit (config.mobile.outputs) recovery stage-0;
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
@@ -28,14 +28,15 @@ let
   } ''
     (PS4=" $ "; set -x
     ${pkgs.stdenv.cc.bintools.targetPrefix}objcopy \
-      --add-section .cmdline="${kernelParamsFile}"          --change-section-vma  .cmdline=0x30000 \
-      --add-section .linux="${kernelFile}"                  --change-section-vma  .linux=0x2000000 \
-      --add-section .initrd="${config.system.build.initrd}" --change-section-vma .initrd=0x3000000 \
+      --add-section .cmdline="${kernelParamsFile}"            --change-section-vma  .cmdline=0x30000 \
+      --add-section .linux="${kernelFile}"                    --change-section-vma  .linux=0x2000000 \
+      --add-section .initrd="${config.mobile.outputs.initrd}" --change-section-vma .initrd=0x3000000 \
       "${pkgs.libudev}/lib/systemd/boot/efi/linux${uefiPlatform}.efi.stub" \
       "$out"
     )
   '';
 
+  # TODO: use generatedFilesystems
   boot-partition =
     imageBuilder.fileSystem.makeESP {
       name = "mobile-nixos-ESP";
@@ -49,8 +50,8 @@ let
 
       populateCommands = ''
         mkdir -p EFI/boot
-        cp ${stage-0.system.build.efiKernel}  EFI/boot/boot${uefiPlatform}.efi
-        cp ${recovery.system.build.efiKernel} EFI/boot/recovery${uefiPlatform}.efi
+        cp ${stage-0.mobile.outputs.uefi.efiKernel}  EFI/boot/boot${uefiPlatform}.efi
+        cp ${recovery.mobile.outputs.uefi.efiKernel} EFI/boot/recovery${uefiPlatform}.efi
       '';
     }
   ;
@@ -80,10 +81,10 @@ let
     diskID = "01234567";
     headerHole = cfg.initialGapSize;
     partitions = [
-      config.system.build.boot-partition
+      boot-partition
       miscPartition
       persistPartition
-      config.system.build.rootfs
+      config.mobile.outputs.generatedFilesystems.rootfs
     ];
   };
 in
@@ -102,16 +103,44 @@ in
         '';
       };
     };
+
+    outputs = {
+      uefi = {
+        boot-partition = mkOption {
+          type = types.package;
+          description = ''
+            Boot partition for the system.
+          '';
+          visible = false;
+        };
+        disk-image = lib.mkOption {
+          type = types.package;
+          description = ''
+            Full Mobile NixOS disk image for a UEFI-based system.
+          '';
+          visible = false;
+        };
+        efiKernel = mkOption {
+          type = types.package;
+          description = ''
+            EFI executable with the kernel, cmdline and initramfs built-in.
+          '';
+          visible = false;
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
     { mobile.system.types = [ "uefi" ]; }
     (mkIf enabled {
-      system.build = {
-        inherit efiKernel;
-        inherit boot-partition;
-        inherit disk-image;
-        default = config.system.build.disk-image;
+      mobile.outputs = {
+        default = config.mobile.outputs.uefi.disk-image;
+        uefi = {
+          inherit efiKernel;
+          inherit boot-partition;
+          inherit disk-image;
+        };
       };
     })
   ];

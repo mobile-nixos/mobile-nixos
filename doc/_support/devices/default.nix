@@ -15,7 +15,7 @@ let
   devicesDir = ../../../devices;
   devicesInfo = symlinkJoin {
     name = "devices-metadata";
-    paths = (map (device: (evalFor device).config.system.build.device-metadata) all-devices);
+    paths = (map (device: (evalFor device).config.mobile.outputs.device-metadata) all-devices);
   };
 in
 

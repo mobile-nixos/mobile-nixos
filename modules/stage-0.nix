@@ -53,10 +53,21 @@ in
         '';
       };
     };
+
+    mobile = {
+      outputs = {
+        stage-0 = mkOption {
+          internal = true;
+          description = ''
+            The configuration, re-evaluated with assumptions for stage-0 use.
+          '';
+        };
+      };
+    };
   };
 
   config = {
-    system.build.stage-0 = (config.lib.mobile-nixos.composeConfig {
+    mobile.outputs.stage-0 = (config.lib.mobile-nixos.composeConfig {
       config = { config, ... }: {
         mobile.boot.stage-1.stage = if supportsStage-0 then 0 else 1;
         mobile.boot.stage-1.extraUtils = with pkgs; [

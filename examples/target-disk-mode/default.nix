@@ -7,14 +7,14 @@ import ../../lib/eval-with-configuration.nix (args // {
 
     Pinephone, other u-boot, and depthcharge devices: 
 
-      $ nix-build examples/target-disk-mode --argstr device ${device} -A build.default
+      $ nix-build examples/target-disk-mode --argstr device ${device} -A outputs.default
 
     Android-based devices:
 
-      $ nix-build examples/target-disk-mode --argstr device ${device} -A build.android-bootimg
+      $ nix-build examples/target-disk-mode --argstr device ${device} -A outputs.android-bootimg
 
     App "simulator":
 
-      $ nix-build examples/target-disk-mode --argstr device uefi-x86_64 -A build.app-simulator
+      $ nix-build examples/target-disk-mode --argstr device uefi-x86_64 -A outputs.app-simulator
   '';
 })

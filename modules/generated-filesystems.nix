@@ -85,10 +85,24 @@ in
         Filesystem definitions that will be created at build.
       '';
     };
+    mobile.outputs.generatedFilesystems = lib.mkOption {
+      type = with types; attrsOf package;
+      internal = true;
+      description = ''
+        All generated filesystems from the build.
+      '';
+    };
+    mobile.outputs.rootfs = lib.mkOption {
+      type = types.package;
+      visible = false;
+      description = ''
+        The rootfs image for the build.
+      '';
+    };
   };
 
   config = {
-    system.build.generatedFilesystems = lib.attrsets.mapAttrs (name: {raw, type, id, label, ...} @ attrs:
+    mobile.outputs.generatedFilesystems = lib.attrsets.mapAttrs (name: {raw, type, id, label, ...} @ attrs:
     if raw != null then raw else
       filesystemFunctions."${type}" (attrs // {
         name = label;
@@ -96,7 +110,12 @@ in
       })
     ) config.mobile.generatedFilesystems;
 
+    mobile.outputs.rootfs = config.mobile.outputs.generatedFilesystems.rootfs;
+
     # Compatibility alias with the previous path.
-    system.build.rootfs = config.system.build.generatedFilesystems.rootfs;
+    system.build.rootfs =
+      builtins.trace "`system.build.rootfs` is being deprecated. Use `mobile.outputs.rootfs` instead. It will be removed after 2022-05"
+      config.mobile.outputs.generatedFilesystems.rootfs
+    ;
   };
 }

@@ -41,7 +41,7 @@ When the device is not a _"Boot as recovery"_, or still uses a recovery
 partition, you will need to flash a recovery image to the recovery partition.
 
 ....
- $ nix-build --argstr device $DEVICE -A build.android-recovery
+ $ nix-build --argstr device $DEVICE -A outputs.android-recovery
  $ fastboot flash recovery result
 ....
 

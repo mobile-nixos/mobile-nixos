@@ -5,7 +5,7 @@
 
 ```
  $ cd .../mobile-nixos
- $ nix-build examples/hello --argstr device DEVICE-NAME -A build.default
+ $ nix-build examples/hello --argstr device DEVICE-NAME -A outputs.default
 ```
 
 ## Installing

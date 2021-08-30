@@ -26,7 +26,7 @@ in
 import ./lib/eval-with-configuration.nix (args // {
   configuration = defaultConfiguration;
   additionalHelpInstructions = ''
-    You can build the `-A build.default` attribute to build an empty and
+    You can build the `-A outputs.default` attribute to build an empty and
     un-configured image. That image can be configured using `local.nix`.
 
      ** Note that an unconfigured image may appear to hang at boot. **
@@ -36,6 +36,6 @@ import ./lib/eval-with-configuration.nix (args // {
     cross-compilation is the `examples/hello` system. Read its README for more
     information.
 
-     $ nix-build examples/hello --argstr device ${device} -A build.default
+     $ nix-build examples/hello --argstr device ${device} -A outputs.default
   '';
 })

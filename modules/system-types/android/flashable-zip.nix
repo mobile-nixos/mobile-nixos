@@ -3,9 +3,10 @@
 let
   enabled = config.mobile.system.type == "android";
 
-  inherit (lib) types;
+  inherit (lib) mkOption types;
   inherit (config.mobile) device;
-  inherit (config.system.build) android-bootimg rootfs;
+  inherit (config.mobile.outputs.generatedFilesystems) rootfs;
+  inherit (config.mobile.outputs.android) android-bootimg;
   inherit (pkgs.mobile-nixos) make-flashable-zip;
 
   # Fragments that will be re-used in the flashable zip builds
@@ -61,9 +62,39 @@ let
   };
 in
 {
+  options = {
+    mobile = {
+      outputs = {
+        android = {
+          android-flashable-bootimg = mkOption {
+            type = types.package;
+            description = ''
+              `boot.img` in Android flashable zip format.
+            '';
+            visible = false;
+          };
+          android-flashable-system = mkOption {
+            type = types.package;
+            description = ''
+              `system.img` in Android flashable zip format.
+            '';
+            visible = false;
+          };
+          android-flashable-zip = mkOption {
+            type = types.package;
+            description = ''
+              Android flashable zip which will install `boot.img` and `system.img`.
+            '';
+            visible = false;
+          };
+        };
+      };
+    };
+  };
+
   config = lib.mkMerge [
     (lib.mkIf enabled {
-      system.build = {
+      mobile.outputs.android = {
         inherit
           android-flashable-bootimg
           android-flashable-system

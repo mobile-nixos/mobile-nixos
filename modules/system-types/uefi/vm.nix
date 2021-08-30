@@ -4,16 +4,31 @@ let
   # This particular VM module is only enabled for the uefi system type.
   enabled = config.mobile.system.type == "uefi";
 
-  inherit (lib) mkAfter mkIf;
+  inherit (lib) mkAfter mkIf mkOption types;
   inherit (config.mobile) device hardware;
   inherit (config.mobile.boot) stage-1;
-  inherit (config.system.build) disk-image;
+  inherit (config.mobile.outputs.uefi) disk-image;
 
   ram  = toString hardware.ram;
   xres = toString hardware.screen.width;
   yres = toString hardware.screen.height;
 in
 {
+  options = {
+    mobile = {
+      outputs = {
+        uefi = {
+          vm = mkOption {
+            type = types.package;
+            description = ''
+              Script to start a UEFI-based virtual machine.
+            '';
+            visible = false;
+          };
+        };
+      };
+    };
+  };
   config = mkIf enabled {
     boot.kernelParams = mkAfter [
       "console=ttyS0"
@@ -29,7 +44,7 @@ in
       # Video
       "bochs_drm"
     ];
-    system.build = {
+    mobile.outputs.uefi = {
       vm = pkgs.writeShellScript "run-vm-${device.name}" ''
         ARGS=(
           -enable-kvm

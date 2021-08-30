@@ -3,7 +3,7 @@
 let
   enabled = config.mobile.system.type == "u-boot";
 
-  inherit (config.system.build) recovery stage-0;
+  inherit (config.mobile.outputs) recovery stage-0;
   inherit (pkgs) buildPackages imageBuilder runCommandNoCC;
   inherit (lib) mkIf mkOption types;
   cfg = config.mobile.quirks.u-boot;
@@ -109,6 +109,7 @@ let
     mkimage -C none -A ${ubootPlatforms.${pkgs.targetPlatform.system}} -T script -d ${bootcmd} $out
   '';
 
+  # TODO: use generatedFilesystems
   boot-partition =
     imageBuilder.fileSystem.makeExt4 {
       name = "mobile-nixos-boot";
@@ -123,13 +124,13 @@ let
         mkdir -vp mobile-nixos/{boot,recovery}
         (
         cd mobile-nixos/boot
-        cp -v ${stage-0.system.build.initrd} stage-1
+        cp -v ${stage-0.mobile.outputs.initrd} stage-1
         cp -v ${kernel_file} kernel
         cp -vr ${kernel}/dtbs dtbs
         )
         (
         cd mobile-nixos/recovery
-        cp -v ${recovery.system.build.initrd} stage-1
+        cp -v ${recovery.mobile.outputs.initrd} stage-1
         cp -v ${kernel_file} kernel
         cp -vr ${kernel}/dtbs dtbs
         )
@@ -169,8 +170,8 @@ let
     partitions = [
       miscPartition
       persistPartition
-      config.system.build.boot-partition
-      config.system.build.rootfs
+      boot-partition
+      config.mobile.outputs.generatedFilesystems.rootfs
     ];
   };
 
@@ -235,6 +236,32 @@ in
         '';
       };
     };
+
+    outputs = {
+      u-boot = {
+        boot-partition = mkOption {
+          type = types.package;
+          description = ''
+            Boot partition for the system.
+          '';
+          visible = false;
+        };
+        disk-image = lib.mkOption {
+          type = types.package;
+          description = ''
+            Full Mobile NixOS disk image for a u-boot-based system.
+          '';
+          visible = false;
+        };
+        u-boot = mkOption {
+          type = types.package;
+          description = ''
+            U-Boot build for the system.
+          '';
+          visible = false;
+        };
+      };
+    };
   };
 
   config = lib.mkMerge [
@@ -245,11 +272,13 @@ in
           u-boot = cfg.package;
         };
       })];
-      system.build = {
-        inherit boot-partition;
-        disk-image = withBootloader;
-        u-boot = cfg.package;
-        default = config.system.build.disk-image;
+      mobile.outputs = {
+        default = config.mobile.outputs.u-boot.disk-image;
+        u-boot = {
+          inherit boot-partition;
+          disk-image = withBootloader;
+          u-boot = cfg.package;
+        };
       };
     })
   ];

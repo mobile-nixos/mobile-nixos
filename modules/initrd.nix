@@ -309,13 +309,45 @@ in
         '';
         internal = true;
       };
+
+      mobile.outputs = {
+        extraUtils = mkOption {
+          type = types.package;
+          internal = true;
+          description = ''
+            Stripped packages for use in stage-1.
+
+            See `mobile.boot.stage-1.extraUtils`.
+          '';
+        };
+        initrd = mkOption {
+          type = types.str;
+          internal = true;
+          description = ''
+            Path to the initrd, likely compressed, for the system.
+          '';
+        };
+        initrd-meta = mkOption {
+          type = types.package;
+          internal = true;
+          description = ''
+            Additional metadata about the initrd; used for debugging.
+          '';
+        };
+      };
     };
 
     config = {
-      system.build.extraUtils = extraUtils;
-      system.build.initrd = "${initrd}/initrd";
-      system.build.initrd-meta = initrd-meta;
+      mobile.outputs = {
+        inherit
+          extraUtils
+          initrd-meta
+        ;
+        initrd = "${initrd}/initrd";
+      };
 
+      # This is not a Mobile NixOS output; this is to "dis"-integrate with the
+      # default NixOS outputs. Do not refer to this in Mobile NixOS.
       system.build.initialRamdisk =
         if config.mobile.rootfs.shared.enabled
         then pkgs.runCommandNoCC "dummy" {} "touch $out"

@@ -67,38 +67,6 @@ $ export NIX_PATH="nixpkgs=$HOME/Projects/nixpkgs"
 $ nix-build [...]
 ```
 
-=== Using a pre-built `system.img`
-
-When bootstrapping yourself up, without an aarch64-linux system, it may be
-easier to deal with some systems if you use a pre-built `rootfs` rather than
-rely on the dummy basic `rootfs`. For those systems, you can download a
-link:https://hydra.nixos.org/job/mobile-nixos/unstable/examples-demo.aarch64-linux.rootfs[pre-built rootfs],
-and configure the system build to use it. Assuming it is next to the
-`local.nix` file in your Mobile NixOS checkout.
-
-```nix
-# local.nix
-{ pkgs, ... }:
-
-let
-  fromPath = input: pkgs.runCommandNoCC "system.img" {
-    filename = "system.img";
-    filesystemType = "ext4";
-  } ''
-    mkdir -p "$out"
-    cp ${input} "$out/$filename"
-  '';
-in
-{
-  system.build.rootfs = fromPath ./system.img;
-}
-```
-
-Note that for Android-based devices, you can simply use the `system.img`. There
-is no need to configure it as such. This is most useful for _depthcharge_ and
-_u-boot_ systems.
-
-
 == Customizing
 
 You probably will want to toggle options and such things when fiddling with
