@@ -48,4 +48,12 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
+
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      # Vendor kernel fails to build with
+      # `POSIX_ACL not supported in 3.18 backport`
+      EXT4_FS_POSIX_ACL = lib.mkForce no;
+    })
+  ];
 }

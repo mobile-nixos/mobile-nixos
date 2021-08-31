@@ -23,6 +23,7 @@ mobile-nixos.kernel-builder-gcc49 {
     ./0001-mobile-nixos-Add-identifier-nodes-to-root-node.patch
     ./0001-center-logo.patch
     ./0001-mediatek-leds-Implement-default-trigger.patch
+    ./0001-Fix-crypto-algif_hash-Require-setkey-before-accept-2.patch
     ./0002-E262L-Green-LED-now-defaults-to-on.patch
   ];
 
