@@ -53,4 +53,11 @@
   mobile.system.type = "android";
 
   mobile.quirks.qualcomm.wcnss-wlan.enable = true;
+
+  # With the vendor kernel, setting to =n fails the build
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      FW_LOADER_USER_HELPER = lib.mkForce yes;
+    })
+  ];
 }
