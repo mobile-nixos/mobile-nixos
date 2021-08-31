@@ -85,4 +85,11 @@
 
   # 16 MiB boot partition, the kernel is a bit bloaty...
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
+
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      # With the vendor kernel, setting to =n fails the build
+      FW_LOADER_USER_HELPER = lib.mkForce yes;
+    })
+  ];
 }
