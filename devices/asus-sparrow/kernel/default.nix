@@ -25,6 +25,7 @@ mobile-nixos.kernel-builder-gcc49 {
 
   patches = [
     ./0001-mobile-nixos-Adds-and-sets-BGRA-as-default.patch
+    ./0001-Revert-Grants-system-server-access-to-proc-pid-oom_a.patch
     ./0001-it7260_ts_i2c-Silence.patch
     ./05_dtb-fix.patch
     ./90_dtbs-install.patch
