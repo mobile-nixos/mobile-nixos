@@ -11,8 +11,8 @@ mobile-nixos.kernel-builder-gcc6 {
   src = fetchFromGitHub {
     owner = "LineageOS";
     repo = "android_kernel_google_msm";
-    rev = "a4b9cf707b9acf6e5f6089d1121ae973efe399b0";
-    sha256 = "0q88sqmcd09m0wq27rvzvq588gbk3daji1zp36qpyzl1d66b37v6";
+    rev = "5c4b88269caf1a439440cb98b11c6239f49fc67c";
+    sha256 = "1iwhllfpb788hmjivddarg9waqarn7x3kf6glh5qm5brqbyy3vml";
   };
 
   patches = [
@@ -28,6 +28,7 @@ mobile-nixos.kernel-builder-gcc6 {
   enableCompilerGcc6Quirk = true;
   isModular = false;
 
+  enableCombiningBuildAndInstallQuirk = true;
   # mv: cannot stat 'arch/arm/boot/compressed/.misc.o.tmp': No such file or directory
-  enableCombiningBuildAndInstallQuirk = false;
+  enableParallelBuilding = false;
 }
