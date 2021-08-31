@@ -47,4 +47,11 @@
   ];
 
   mobile.system.type = "android";
+
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      # The vendor kernel requires this to be enabled to build.
+      FW_LOADER_USER_HELPER = lib.mkForce yes;
+    })
+  ];
 }
