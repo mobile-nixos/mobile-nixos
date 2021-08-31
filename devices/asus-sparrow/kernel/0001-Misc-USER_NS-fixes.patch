@@ -1,0 +1,201 @@
+From cf13b184fa0eec402a6624229a5f4b3f700e270d Mon Sep 17 00:00:00 2001
+From: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+Date: Thu, 7 Aug 2014 14:41:17 -0600
+Subject: [PATCH 1/3] net: ipc_router: Use kernel internal uid and gid
+
+Kernel UID and GID types are converted from integer to a structure
+containing a value. Currently this conversion is protected using
+UIDGID_STRICT_TYPE_CHECKS kernel config item.
+
+Start using kernel uid and gid types to avoid any potential compilation
+issues.
+
+Change-Id: Ic52c4a75fc7250ece2908add8a7fa88ec253d78a
+Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+(cherry picked from commit d6a2da9b703fcdc575b50b983c2433b844ab271c)
+---
+ net/ipc_router/ipc_router_security.c | 43 +++++++++++++++++++++-------
+ 1 file changed, 32 insertions(+), 11 deletions(-)
+
+diff --git a/net/ipc_router/ipc_router_security.c b/net/ipc_router/ipc_router_security.c
+index c29400c2af8cb..7b7da3283b700 100644
+--- a/net/ipc_router/ipc_router_security.c
++++ b/net/ipc_router/ipc_router_security.c
+@@ -42,7 +42,7 @@ struct security_rule {
+ 	uint32_t instance_id;
+ 	unsigned reserved;
+ 	int num_group_info;
+-	gid_t *group_id;
++	kgid_t *group_id;
+ };
+ 
+ static DECLARE_RWSEM(security_rules_lock_lha4);
+@@ -82,8 +82,8 @@ void signal_irsc_completion(void)
+ int check_permissions(void)
+ {
+ 	int rc = 0;
+-	if (!current_euid() || in_egroup_p(AID_NET_RAW) ||
+-        capable(CAP_NET_RAW) || capable(CAP_NET_BIND_SERVICE))
++	if (uid_eq(current_euid(), GLOBAL_ROOT_UID) ||
++	    in_egroup_p(KGIDT_INIT(AID_NET_RAW)))
+ 		rc = 1;
+ 	return rc;
+ }
+@@ -104,10 +104,13 @@ int msm_ipc_config_sec_rules(void *arg)
+ 	struct config_sec_rules_args sec_rules_arg;
+ 	struct security_rule *rule, *temp_rule;
+ 	int key;
+-	size_t group_info_sz;
++	size_t kgroup_info_sz;
+ 	int ret;
++	size_t group_info_sz;
++	gid_t *group_id = NULL;
++	int loop;
+ 
+-	if (current_euid())
++	if (!uid_eq(current_euid(), GLOBAL_ROOT_UID))
+ 		return -EPERM;
+ 
+ 	ret = copy_from_user(&sec_rules_arg, (void *)arg,
+@@ -125,15 +128,30 @@ int msm_ipc_config_sec_rules(void *arg)
+ 	}
+ 	group_info_sz = sec_rules_arg.num_group_info * sizeof(gid_t);
+ 
++	if (sec_rules_arg.num_group_info > (SIZE_MAX / sizeof(kgid_t))) {
++		pr_err("%s: Integer Overflow %zu * %d\n", __func__,
++			sizeof(kgid_t), sec_rules_arg.num_group_info);
++		return -EINVAL;
++	}
++	kgroup_info_sz = sec_rules_arg.num_group_info * sizeof(kgid_t);
++
+ 	rule = kzalloc(sizeof(struct security_rule), GFP_KERNEL);
+ 	if (!rule) {
+ 		pr_err("%s: security_rule alloc failed\n", __func__);
+ 		return -ENOMEM;
+ 	}
+ 
+-	rule->group_id = kzalloc(group_info_sz, GFP_KERNEL);
++	rule->group_id = kzalloc(kgroup_info_sz, GFP_KERNEL);
+ 	if (!rule->group_id) {
++		pr_err("%s: kgroup_id alloc failed\n", __func__);
++		kfree(rule);
++		return -ENOMEM;
++	}
++
++	group_id = kzalloc(group_info_sz, GFP_KERNEL);
++	if (!group_id) {
+ 		pr_err("%s: group_id alloc failed\n", __func__);
++		kfree(rule->group_id);
+ 		kfree(rule);
+ 		return -ENOMEM;
+ 	}
+@@ -142,14 +160,17 @@ int msm_ipc_config_sec_rules(void *arg)
+ 	rule->instance_id = sec_rules_arg.instance_id;
+ 	rule->reserved = sec_rules_arg.reserved;
+ 	rule->num_group_info = sec_rules_arg.num_group_info;
+-	ret = copy_from_user(rule->group_id,
+-			     ((void *)(arg + sizeof(sec_rules_arg))),
++	ret = copy_from_user(group_id, ((void *)(arg + sizeof(sec_rules_arg))),
+ 			     group_info_sz);
+ 	if (ret) {
++		kfree(group_id);
+ 		kfree(rule->group_id);
+ 		kfree(rule);
+ 		return -EFAULT;
+ 	}
++	for (loop = 0; loop < rule->num_group_info; loop++)
++		rule->group_id[loop] = KGIDT_INIT(group_id[loop]);
++	kfree(group_id);
+ 
+ 	key = rule->service_id & (SEC_RULES_HASH_SZ - 1);
+ 	down_write(&security_rules_lock_lha4);
+@@ -193,7 +214,7 @@ static int msm_ipc_add_default_rule(void)
+ 		return -ENOMEM;
+ 	}
+ 
+-	rule->group_id = kzalloc(sizeof(int), GFP_KERNEL);
++	rule->group_id = kzalloc(sizeof(*(rule->group_id)), GFP_KERNEL);
+ 	if (!rule->group_id) {
+ 		pr_err("%s: group_id alloc failed\n", __func__);
+ 		kfree(rule);
+@@ -203,7 +224,7 @@ static int msm_ipc_add_default_rule(void)
+ 	rule->service_id = ALL_SERVICE;
+ 	rule->instance_id = ALL_INSTANCE;
+ 	rule->num_group_info = 1;
+-	*(rule->group_id) = AID_NET_RAW;
++	*(rule->group_id) = KGIDT_INIT(AID_NET_RAW);
+ 	down_write(&security_rules_lock_lha4);
+ 	key = (ALL_SERVICE & (SEC_RULES_HASH_SZ - 1));
+ 	list_add_tail(&rule->list, &security_rules[key]);
+@@ -278,7 +299,7 @@ int msm_ipc_check_send_permissions(void *data)
+ 	struct security_rule *rule = (struct security_rule *)data;
+ 
+ 	/* Source/Sender is Root user */
+-	if (!current_euid())
++	if (uid_eq(current_euid(), GLOBAL_ROOT_UID))
+ 		return 1;
+ 
+ 	/* Destination has no rules defined, possibly a client. */
+-- 
+2.32.0
+
+
+From c9fdf9d40d5bbf356f99324ffe2f702c26f87e0c Mon Sep 17 00:00:00 2001
+From: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+Date: Fri, 19 Sep 2014 18:16:54 -0600
+Subject: [PATCH 2/3] net: ipc_router: Check for capabilities instead of group
+ IDs
+
+Permit the processes having CAP_NET_RAW or CAP_NET_BIND_SERVICE
+capabilities to bind a service with IPC Router.
+
+CRs-Fixed: 731805
+Change-Id: Ie57d39d6c8252bc2238714558c4809aaa561494a
+Signed-off-by: Karthikeyan Ramasubramanian <kramasub@codeaurora.org>
+(cherry picked from commit 536cdf4fd0c1a51ca21b272814671fda8005360e)
+---
+ net/ipc_router/ipc_router_security.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/net/ipc_router/ipc_router_security.c b/net/ipc_router/ipc_router_security.c
+index 7b7da3283b700..936592db5bde1 100644
+--- a/net/ipc_router/ipc_router_security.c
++++ b/net/ipc_router/ipc_router_security.c
+@@ -83,7 +83,7 @@ int check_permissions(void)
+ {
+ 	int rc = 0;
+ 	if (uid_eq(current_euid(), GLOBAL_ROOT_UID) ||
+-	    in_egroup_p(KGIDT_INIT(AID_NET_RAW)))
++	    capable(CAP_NET_RAW) || capable(CAP_NET_BIND_SERVICE))
+ 		rc = 1;
+ 	return rc;
+ }
+-- 
+2.32.0
+
+
+From dc2f886d2b80c15d3f7a97f08f98c2ba4a6a9f2e Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Tue, 31 Aug 2021 16:58:56 -0400
+Subject: [PATCH 3/3] sched/core: Fixes for USER_NS
+
+---
+ kernel/sched/core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/kernel/sched/core.c b/kernel/sched/core.c
+index dee1b1d1f9c6c..4d7035d85dc12 100644
+--- a/kernel/sched/core.c
++++ b/kernel/sched/core.c
+@@ -8989,7 +8989,7 @@ cpu_cgroup_allow_attach(struct cgroup *cgrp, struct cgroup_taskset *tset)
+ 		tcred = __task_cred(task);
+ 
+ 		if ((current != task) && !capable(CAP_SYS_NICE) &&
+-		    cred->euid != tcred->uid && cred->euid != tcred->suid)
++		    !uid_eq(cred->euid, tcred->uid) && !uid_eq(cred->euid, tcred->suid))
+ 			return -EACCES;
+ 	}
+ 
+-- 
+2.32.0
+
