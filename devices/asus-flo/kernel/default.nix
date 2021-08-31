@@ -23,6 +23,8 @@ mobile-nixos.kernel-builder-gcc6 {
     ./patch_lifebook_detect.patch
     ./90_dtbs-install.patch
     ./99_framebuffer.patch
+    ./0001-Fix-misc.-broken-backports-for-PID_NS-and-USER_NS.patch   
+    ./0001-mm-shmem-Fix-incomplete-backport-with-TMPFS_POSIX_AC.patch
   ];
 
   enableCompilerGcc6Quirk = true;
