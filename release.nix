@@ -5,10 +5,21 @@
 # instance. Though you can use it to run your builds, it is not as ergonomic as
 # using `nix-build` on `./default.nix`.
 #
+# Also note that *by design* it still relies on NIX_PATH being used for the
+# input Nixpkgs.
+#
 # Note:
 # Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
 let
-  mobileReleaseTools = (import ./lib/release-tools.nix {});
+  # An ambiant arbitrary Nixpkgs package set.
+  # This is assumed to be used for e.g. Hydra evals where <nixpkgs> is an input.
+  # This pkgs' is used as an input to release-tools, *and* to get a `lib`.
+  # Named pkgs' to reduce confusion with fully evaluated `pkgs`.
+  pkgs' = import <nixpkgs> {};
+
+  mobileReleaseTools = (import ./lib/release-tools.nix {
+    pkgs = pkgs';
+  });
   inherit (mobileReleaseTools) all-devices;
 in
 { mobile-nixos ? builtins.fetchGit ./.
@@ -25,8 +36,7 @@ in
 
 let
   # We require some `lib` stuff in here.
-  # Pick a lib from the ambient <nixpkgs>.
-  pkgs' = import <nixpkgs> {};
+  # Pick a lib from the arbitrary package set.
   inherit (pkgs') lib releaseTools;
   inherit (mobileReleaseTools.withPkgs pkgs')
     evalFor
@@ -132,10 +142,15 @@ let
     {
       aarch64-linux.rootfs = aarch64-eval.outputs.rootfs;
     };
+
+    doc = import ./doc {
+      pkgs = pkgs';
+    };
 in
 rec {
   inherit device;
   inherit examples-demo;
+  inherit doc;
 
   # Overlays build native, and cross, according to shouldEvalOn
   overlay = lib.genAttrs systems (system:

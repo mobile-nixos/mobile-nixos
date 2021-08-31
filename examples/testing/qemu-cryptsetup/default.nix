@@ -1,4 +1,6 @@
-{ pkgs ? null }@args:
+{ pkgs ? (import ../../../pkgs.nix {})
+}@args':
+let args = args' // { inherit pkgs; }; in
 
 let
   system-build = import ../../../lib/eval-with-configuration.nix (args // {
