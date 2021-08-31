@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ lib, pkgs, ... }:
 
 {
   mobile.device.name = "amazon-austin";
@@ -44,4 +44,13 @@
   mobile.usb.idVendor = "18D1";
   # "Nexus 4"
   mobile.usb.idProduct = "D001";
+
+  # The vendor kernel has loads of issues building with USER_NS.
+  # For now disable it. Patching should be possible, but will take time.
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      USER_NS = lib.mkForce no;
+      UIDGID_STRICT_TYPE_CHECKS = lib.mkForce no;
+    })
+  ];
 }
