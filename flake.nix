@@ -58,14 +58,10 @@
       in
       builtins.listToAttrs (builtins.map mkModule supportedDevices);
 
-  } // flake-utils.lib.eachSystem buildSystems (system:
-    let
-      pkgs = import nixpkgs {
-        inherit system;
-        overlays = [ self.overlay ];
-      };
-    in
-    {
-      legacyPackages = pkgs;
-    });
+  } // flake-utils.lib.eachSystem buildSystems (system: {
+    # shell.nix is already applying the overlay, so we do not need to import them ourself
+    devShell = import ./shell.nix { pkgs = import nixpkgs { inherit system; }; };
+
+    legacyPackages = import nixpkgs { inherit system; overlays = [ self.overlay ]; };
+  });
 }
