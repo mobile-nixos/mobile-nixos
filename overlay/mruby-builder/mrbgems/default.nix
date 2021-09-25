@@ -325,8 +325,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-simplemsgpack";
       owner = "Asmod4n";
-      rev = "9df3c4a4d6ff1b62cbedb6c680b2af2f72015e40";
-      sha256 = "1dlhxayx882wq7phhk9vpsw1lb36nh99bh22l17p1arkp78sl85p";
+      rev = "2d908b1c9cdfb5f12319866ef483179be22660ad";
+      sha256 = "0kssfzd53k4svl1mj63b4jgd3pfffz277iki91kdfkxxjmwas7z7";
       fetchSubmodules = true;
     };
 
