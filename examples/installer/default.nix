@@ -1,4 +1,7 @@
-{ device ? null, pkgs ? null }@args:
+{ device ? null
+, pkgs ? (import ../../pkgs.nix {})
+}@args':
+let args = args' // { inherit pkgs; }; in
 
 import ../../lib/eval-with-configuration.nix (args // {
   configuration = [ (import ./configuration.nix) ];
@@ -7,10 +10,10 @@ import ../../lib/eval-with-configuration.nix (args // {
 
     Pinephone, other u-boot, and depthcharge devices: 
 
-      $ nix-build examples/installer --argstr device ${device} -A build.default
+      $ nix-build examples/installer --argstr device ${device} -A outputs.default
 
     App "simulator":
 
-      $ nix-build examples/installer --argstr device uefi-x86_64 -A build.app-simulator
+      $ nix-build examples/installer --argstr device uefi-x86_64 -A ouptuts.app-simulator
   '';
 })
