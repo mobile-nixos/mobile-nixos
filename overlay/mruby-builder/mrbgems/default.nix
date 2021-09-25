@@ -227,8 +227,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-proc-irep-ext";
       owner = "Asmod4n";
-      rev = "d5364c79c85ee5dcc605b8f32d7969597dba1f58";
-      sha256 = "1j0278zfx322d0lwp2mm5d6hah4w0fnb0v79jkjmq6z516qp1hx2";
+      rev = "66ec9ed10982ff03e998b51a8652c9bb2b75ec44";
+      sha256 = "0jlsla7gkhkhf1x4gjwixyl1la3cjlqhpf0yrysfjpd17mr3wxjz";
     };
 
     meta.license = licenses.asl20;
