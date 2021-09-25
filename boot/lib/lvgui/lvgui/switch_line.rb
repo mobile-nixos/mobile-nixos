@@ -31,7 +31,7 @@ class LVGUI::SwitchLine < LVGUI::Widget
     @main_label = LVGL::LVLabel.new(@label_container).tap do |label|
       label.set_long_mode(LVGL::LABEL_LONG::BREAK)
     end
-    set_label(nil)
+    set_label("")
 
     # The description label (second row, optional)
     @description_label = LVGL::LVLabel.new(@label_container).tap do |label|
@@ -41,7 +41,7 @@ class LVGUI::SwitchLine < LVGUI::Widget
       label.set_style(LVGL::LABEL_STYLE::MAIN, style)
       label.set_long_mode(LVGL::LABEL_LONG::BREAK)
     end
-    set_description(nil)
+    set_description("")
 
     # Add the actual toggle control
     @switch = LVGL::LVSwitch.new(self)

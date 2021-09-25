@@ -9,7 +9,7 @@ class LVGUI::Clock < LVGUI::Widget
     update_clock
 
     # Then register a task to update regularly.
-    @task = LVGL::Hacks::LVTask.create_task(250, LVGL::TASK_PRIO::MID, ->() do
+    @task = LVGL::Hacks::LVTask.create_task(250, LVGL::TASK_PRIO::LOW, ->() do
       update_clock
     end)
   end

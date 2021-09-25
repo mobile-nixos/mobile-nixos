@@ -35,7 +35,7 @@ class LVGUI::TextArea < LVGUI::Widget
         LVGUI::Keyboard.instance.show()
       when LVGL::EVENT::INSERT
         # Not exactly right, but right enough.
-        char = LVGL::FFI.lv_event_get_data().to_str(1)
+        char = LVGUI::Native.lv_event_get_data().ref_to_char()
         # Assume there is only one input.
         # Also assume Enter sends; that it is a single line.
         if char == "\n"

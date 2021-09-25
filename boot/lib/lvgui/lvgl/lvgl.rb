@@ -20,7 +20,7 @@ module LVGL
     :TASK_PRIO,
     :TA_STYLE,
   ].each do |enum_name|
-    const_set(enum_name, LVGL::FFI.const_get("LV_#{enum_name}".to_sym))
+    const_set(enum_name, LVGUI::Native.const_get("LV_#{enum_name}".to_sym))
     LVGL.const_get(enum_name).module_exec do
       def self.from_value(needle)
         self.constants.find do |name|
@@ -31,17 +31,21 @@ module LVGL
   end
 
   def self.ffi_call!(klass, meth, *args, _initiator_class: nil)
+    #puts("[TRACE] #{klass.name}##{meth}(#{args.map(&:inspect).join(", ")});")
     _initiator_class ||= klass
+    if klass == Object
+      raise "Tried to ffi_call!(..., #{meth}) with a #{_initiator_class.name}, but could not find `#{meth}` in the ancestry."
+    end
     unless klass.const_defined?(:LV_TYPE)
-      raise "Tried to ffi_call!(..., #{meth}) with a #{_initiator_class.name}, which does not define LV_TYPE"
+      raise "Tried to ffi_call!(..., #{meth}) with a #{klass.name} (ancestor of #{_initiator_class.name}), which does not define LV_TYPE"
     end
 
     ffi_name = "lv_#{klass.const_get(:LV_TYPE)}_#{meth}".to_sym
-    if LVGL::FFI.respond_to?(ffi_name)
+    if LVGUI::Native.respond_to?(ffi_name)
       args = args.map do |arg|
         case arg
         when  nil
-          0
+          nil
         when false
           0
         when true
@@ -54,7 +58,7 @@ module LVGL
           end
         end
       end
-      return LVGL::FFI.send(ffi_name, *args)
+      return LVGUI::Native.send(ffi_name, *args)
     else
       if klass.superclass
         return ffi_call!(klass.superclass, meth, *args, _initiator_class: _initiator_class)
@@ -65,11 +69,11 @@ module LVGL
   end
 
   def self.layer_top()
-    LVObject.from_pointer(LVGL::FFI.lv_layer_top())
+    LVObject.from_pointer(LVGUI::Native.lv_layer_top())
   end
 
   def self.layer_sys()
-    LVObject.from_pointer(LVGL::FFI.lv_layer_sys())
+    LVObject.from_pointer(LVGUI::Native.lv_layer_sys())
   end
 
   class LVDisplay
@@ -77,13 +81,13 @@ module LVGL
 
     # Get default display
     def self.get_default()
-      LVGL::FFI.lv_disp_get_default()
+      LVGUI::Native.lv_disp_get_default()
     end
 
     # Gets the current active screen.
     def self.get_scr_act()
       LVObject.from_pointer(
-        LVGL::FFI.lv_disp_get_scr_act(get_default())
+        LVGUI::Native.lv_disp_get_scr_act(get_default())
       )
     end
   end
@@ -92,8 +96,7 @@ module LVGL
     LV_TYPE = :obj
 
     # Hack...
-    # I need to figure out how to use Fiddle's #to_value to rehydrate an mruby
-    # Object into its proper form.
+    # I need to figure out how to rehydrate an mruby Object into its proper form.
     REGISTRY = {
       # @self_pointer int value => instance
     }
@@ -113,9 +116,10 @@ module LVGL
       else
         @self_pointer = pointer
       end
+      REGISTRY[@self_pointer.to_i] = self
       register_userdata
       unless parent or pointer
-        LVGL::FFI.lv_disp_load_scr(@self_pointer)
+        LVGUI::Native.lv_disp_load_scr(@self_pointer)
       end
     end
 
@@ -143,24 +147,40 @@ module LVGL
     end
 
     def glue_obj(value)
+      # (function needed since it's in the lv_page namespace and not lv_obj)
       value =
         if value
           1
         else
           0
         end
-      LVGL::FFI.lv_page_glue_obj(@self_pointer, value)
+      LVGUI::Native.lv_page_glue_obj(@self_pointer, value)
     end
 
     def method_missing(meth, *args)
       LVGL.ffi_call!(self.class, meth, @self_pointer, *args)
     end
 
+    def handle_lv_event(event)
+      if @__event_handler_proc
+        @__event_handler_proc.call(event)
+      end
+    end
+
     def event_handler=(cb_proc)
       # Hook the handler on-the-fly, assuming it wasn't set if we didn't have
       # a handler proc.
       unless @__event_handler_proc
-        LVGL.ffi_call!(self.class, :set_event_cb, @self_pointer, LVGL::FFI["handle_lv_event"])
+        if LVGUI::Native::References[:lvgui_handle_lv_event_callback].nil?
+          raise "FATAL: bug in native impl of lvgui_handle_lv_event_callback (it is nil)..."
+        end
+
+        LVGL.ffi_call!(
+          self.class,
+          :set_event_cb,
+          @self_pointer,
+          LVGUI::Native::References[:lvgui_handle_lv_event_callback]
+        )
       end
       @__event_handler_proc = cb_proc
     end
@@ -170,9 +190,8 @@ module LVGL
     end
 
     def register_userdata()
-      userdata = Fiddle::Pointer[self]
-      REGISTRY[@self_pointer.to_i] = self
-      LVGL.ffi_call!(self.class, :set_user_data, @self_pointer, userdata)
+      # Skip ffi_call!; it tries to be helpful with `self`.
+      LVGUI::Native.lv_obj_set_user_data(@self_pointer, self)
     end
 
     def get_parent()
@@ -196,9 +215,6 @@ module LVGL
   class LVContainer < LVObject
     LV_TYPE = :cont
 
-    def set_layout(*args)
-      LVGL::FFI.lv_cont_set_layout(@self_pointer, *args)
-    end
 
     def get_style(type)
       # type is unused, see lvgl/src/lv_objx/lv_cont.h
@@ -222,18 +238,6 @@ module LVGL
     def set_style(type, style)
       # type is unused, see lvgl/src/lv_objx/lv_label.h
       super(style)
-    end
-
-    def set_text(text)
-      text ||= ""
-      # The "\0" thing is a bit scary; it seems that *something* related
-      # to C string and "\0" in either mruby or LVGL, likely mruby, may
-      # cause issues when using something like `split` to split a bigger
-      # string.
-      #
-      # My assumption is that the ruby string is not \0 completed, and
-      # given as-is to the C world via ffi.
-      LVGL.ffi_call!(self.class, :set_text, @self_pointer, text + "\0")
     end
   end
 
@@ -317,50 +321,6 @@ module LVGL
   class LVTextArea < LVObject
     LV_TYPE = :ta
 
-    def add_text(text)
-      # The "\0" thing is a bit scary; it seems that *something* related
-      # to C string and "\0" in either mruby or LVGL, likely mruby, may
-      # cause issues when using something like `split` to split a bigger
-      # string.
-      #
-      # My assumption is that the ruby string is not \0 completed, and
-      # given as-is to the C world via ffi.
-      LVGL.ffi_call!(self.class, :add_text, @self_pointer, text + "\0")
-    end
-
-    def set_text(text)
-      # The "\0" thing is a bit scary; it seems that *something* related
-      # to C string and "\0" in either mruby or LVGL, likely mruby, may
-      # cause issues when using something like `split` to split a bigger
-      # string.
-      #
-      # My assumption is that the ruby string is not \0 completed, and
-      # given as-is to the C world via ffi.
-      LVGL.ffi_call!(self.class, :set_text, @self_pointer, text + "\0")
-    end
-
-    def set_placeholder_text(text)
-      # The "\0" thing is a bit scary; it seems that *something* related
-      # to C string and "\0" in either mruby or LVGL, likely mruby, may
-      # cause issues when using something like `split` to split a bigger
-      # string.
-      #
-      # My assumption is that the ruby string is not \0 completed, and
-      # given as-is to the C world via ffi.
-      LVGL.ffi_call!(self.class, :set_placeholder_text, @self_pointer, text + "\0")
-    end
-
-    def set_accepted_chars(text)
-      # The "\0" thing is a bit scary; it seems that *something* related
-      # to C string and "\0" in either mruby or LVGL, likely mruby, may
-      # cause issues when using something like `split` to split a bigger
-      # string.
-      #
-      # My assumption is that the ruby string is not \0 completed, and
-      # given as-is to the C world via ffi.
-      LVGL.ffi_call!(self.class, :set_accepted_chars, @self_pointer, text + "\0")
-    end
-
     def get_style(style_type)
       style = LVGL.ffi_call!(self.class, :get_style, @self_pointer, style_type)
       LVGL::LVStyle.from_pointer(style)
@@ -392,7 +352,7 @@ module LVGL
 
   # Wraps an +lv_style_t+ in a class with some light duty housekeeping.
   class LVStyle
-    # Given a +Fiddle::Pointer+ pointing to an +lv_style_t+, instantiates
+    # Given an +OpaquePointer+ pointing to an +lv_style_t+, instantiates
     # an LVStyle class, wrapping the struct.
     def self.from_pointer(pointer)
       instance = LVGL::LVStyle.new()
@@ -406,8 +366,8 @@ module LVGL
     # Allocates a new +lv_style_t+, and copies the styles using the LVGL
     # +lv_style_copy+.
     def initialize_copy(orig)
-      @self_pointer = LVGL::FFI.lvgui_allocate_lv_style()
-      LVGL::FFI.lv_style_copy(@self_pointer, orig.lv_style_pointer)
+      @self_pointer = LVGUI::Native.lvgui_allocate_lv_style()
+      LVGUI::Native.lv_style_copy(@self_pointer, orig.lv_style_pointer)
     end
 
     def lv_style_pointer()
@@ -424,7 +384,8 @@ module LVGL
           "lvgui_get_lv_style__#{meth}".to_sym
         end
 
-      LVGL::FFI.send(meth, @self_pointer, *args)
+      #puts "[TRACE] #{self.class.name}##{meth}#(#{args.map(&:inspect).join(", ")})"
+      LVGUI::Native.send(meth, @self_pointer, *args)
     end
 
     private
@@ -453,10 +414,10 @@ module LVGL
       global_name = "lv_style_#{name}".downcase
       const_name = "style_#{name}".upcase.to_sym
       wrapped = self.from_pointer(
-        LVGL::FFI.handler.sym(global_name)
+        LVGUI::Native.send(global_name.to_sym)
       )
       const_set(const_name, wrapped)
-   end
+    end
   end
 
   class LVGroup
@@ -477,10 +438,11 @@ module LVGL
       else
         @self_pointer = pointer
       end
+      REGISTRY[@self_pointer.to_i] = self
       register_userdata
     end
 
-    # Given a +Fiddle::Pointer+ pointing to an +lv_group_t+, instantiates
+    # Given a +OpaquePointer+ pointing to an +lv_group_t+, instantiates
     # an LVGroup class, wrapping the struct.
     def self.from_pointer(pointer)
       if REGISTRY[pointer.to_i]
@@ -541,9 +503,7 @@ module LVGL
 
     def register_userdata()
       LVGL.ffi_call!(self.class, :remove_all_objs, @self_pointer)
-      userdata = Fiddle::Pointer[self]
-      REGISTRY[@self_pointer.to_i] = self
-      LVGL.ffi_call!(self.class, :set_user_data, @self_pointer, userdata)
+      LVGL.ffi_call!(self.class, :set_user_data, @self_pointer, self)
     end
 
     # Keep the previous focus group aside in memory, and empty the focus group.
@@ -581,9 +541,24 @@ module LVGL
       LVGL.ffi_call!(self.class, :add_obj, @self_pointer, ptr)
     end
 
+    def handle_lv_focus()
+      if prc = @focus_handler_proc_stack.last
+        prc.call()
+      end
+    end
+
     def _set_focus_handler(cb_proc)
+      if LVGUI::Native::References[:lvgui_handle_lv_focus_callback].nil?
+        raise "FATAL: bug in native impl of lvgui_handle_lv_focus_callback (it is nil)..."
+      end
+
       # Hook the handler on-the-fly.
-      LVGL.ffi_call!(self.class, :set_focus_cb, @self_pointer, LVGL::FFI["handle_lv_focus"])
+      LVGL.ffi_call!(
+        self.class,
+        :set_focus_cb,
+        @self_pointer,
+        LVGUI::Native::References[:lvgui_handle_lv_focus_callback]
+      )
     end
   end
 
@@ -591,34 +566,41 @@ module LVGL
   class LVAnim
     LV_TYPE = :anim
 
-    # Given a +Fiddle::Pointer+ pointing to an +lv_anim_t+, instantiates
+    # Given a +OpaquePointer+ pointing to an +lv_anim_t+, instantiates
     # an LVAnim class, wrapping the struct.
     def self.from_pointer(pointer)
       instance = LVGL::LVAnim.new()
       instance.instance_exec do
-        @self_pointer = pointer
+        @lv_anim_pointer = pointer
       end
 
       instance
     end
 
     def initialize()
-      @self_pointer = LVGL::FFI.lvgui_allocate_lv_anim()
+      @lv_anim_pointer = LVGUI::Native.lvgui_allocate_lv_anim()
       self.init
     end
 
     def lv_anim_pointer()
-      @self_pointer
+      @lv_anim_pointer
     end
 
-    def set_exec_cb(obj, cb_name)
-      fn = LVGL::FFI[cb_name.to_s]
-      raise "No function for #{cb_name} on LVGL::FFI" unless fn
-      LVGL.ffi_call!(self.class, "set_exec_cb", @self_pointer, obj.lv_obj_pointer, fn)
+    def set_exec_cb(target, cb_name)
+      if LVGUI::Native::References[cb_name].nil?
+        raise "No function for #{cb_name} on LVGUI::Native"
+      end
+      LVGL.ffi_call!(
+        self.class,
+        "set_exec_cb",
+        @lv_anim_pointer,
+        target.lv_obj_pointer,
+        LVGUI::Native::References[cb_name]
+      )
     end
 
     def method_missing(meth, *args)
-      LVGL.ffi_call!(self.class, meth, @self_pointer, *args)
+      LVGL.ffi_call!(self.class, meth, @lv_anim_pointer, *args)
     end
 
     module Path
@@ -634,7 +616,7 @@ module LVGL
       ].each do |name|
         const_set(
           name.upcase.to_sym,
-          LVGL::FFI.handler.sym("lv_anim_path_#{name}".downcase)
+          LVGUI::Native.send("lv_anim_path_#{name}".downcase.to_sym)
         )
       end
     end
@@ -729,7 +711,7 @@ module LVGL
 
   module LVColor
     def self.mix(col1, col2, mix)
-      LVGL::FFI.lv_color_mix(col1, col2, mix)
+      LVGUI::Native.lv_color_mix(col1, col2, mix)
     end
   end
 end
