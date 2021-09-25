@@ -1,2 +1,10 @@
 GUI::WelcomeWindow.instance.present
-LVGUI.main_loop
+
+if LVGL::Introspection.simulator?
+  LVGUI.main_loop do
+    # Torture test
+    GC.start()
+  end
+else
+  LVGUI.main_loop
+end
