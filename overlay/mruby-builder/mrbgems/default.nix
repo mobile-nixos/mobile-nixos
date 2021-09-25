@@ -121,8 +121,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-file-stat";
       owner = "ksss";
-      rev = "aa474589f065c71d9e39ab8ba976f3bea6f9aac2";
-      sha256 = "1clarmr67z133ivkbwla1a42wcjgj638j9w0mlv5n21mhim9rid5";
+      rev = "f3e858f01361b9b4a8e77ada52470068630c9530";
+      sha256 = "11lba0gyqmqj3rj0sh3ml3cj2yzz30w4wpbjazb0yhhjfl279ffj";
     };
 
     patches = [
