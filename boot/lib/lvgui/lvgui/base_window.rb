@@ -3,6 +3,9 @@ module LVGUI
   class BaseWindow
     include ::Singleton
 
+    attr_reader :keyboard
+    attr_reader :container
+
     def self.inherited(superclass)
       superclass.class_eval do
         unless self.class_variable_defined?(:@@_after_initialize_callback)
@@ -82,6 +85,8 @@ module LVGUI
 
       # Allow the window to do some work every time it is switched to.
       on_present
+
+      refresh_keyboard()
     end
 
     # Hooking point for custom behaviour on present
@@ -109,6 +114,27 @@ module LVGUI
           el.set_y(@screen.get_height() - el.get_height()) # Stick to the bottom
         end
       end
+    end
+
+    def refresh_keyboard()
+      # Ensures keyboard is hidden and unlinked when it needs to be.
+      keyboard = LVGUI::Keyboard.instance
+      keyboard.set_ta(nil)
+      keyboard.hide()
+
+      # Only do then next things if we linked the keyboard to this window (add_keyboard).
+      return unless @keyboard
+      # The keyboard is not added to the page; the page holds the elements that
+      # may move to ensure they're not covered by the keyboard.
+      @keyboard.set_parent(@screen)
+      @keyboard.set_protect(LVGL::PROTECT::POS)
+      @keyboard.container = @container
+
+      # XXX : wrong on landscape
+      @keyboard.set_height(@screen.get_width * 0.55)
+      @keyboard.set_width(@screen.get_width_fit)
+      @container.keyboard = @keyboard
+      @container.refresh()
     end
   end
 end

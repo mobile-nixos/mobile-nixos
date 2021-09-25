@@ -1,5 +1,7 @@
 # Scrolling page.
 class LVGUI::Page < LVGUI::Widget
+  attr_accessor :keyboard
+
   def initialize(parent)
     @parent = parent
     # A "holder" widget to work around idiosyncracies of pages.
@@ -59,7 +61,12 @@ class LVGUI::Page < LVGUI::Widget
   def refresh()
     # Filling the parent that is at the root of the screen is apparently broken :/.
     @holder.set_height(@parent.get_height_fit - @holder.get_y)
-    set_height(@holder.get_height - get_y)
+    page_height = @holder.get_height - get_y
+    if @keyboard then
+      page_height = page_height - @keyboard.get_visible_height()
+    end
+
+    set_height(page_height)
   end
 
   def inner_padding=(val)

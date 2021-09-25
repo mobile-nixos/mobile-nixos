@@ -83,6 +83,21 @@ module LVGUI
         end
       end
     end
+
+    def add_textarea()
+      add_keyboard
+      LVGUI::TextArea.new(@container).tap do |ta|
+        add_to_focus_group(ta)
+        ta.set_width(@container.get_width_fit)
+      end
+    end
+
+    def add_keyboard()
+      unless @keyboard
+        @keyboard = LVGUI::Keyboard.instance()
+        refresh_keyboard()
+      end
+    end
   end
 
   module Window

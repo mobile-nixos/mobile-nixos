@@ -1,9 +1,12 @@
 # Wraps a raw +lv_ta+ in minimal helpers
 class LVGUI::TextArea < LVGUI::Widget
   attr_reader :hidden
+  attr_reader :animation_length
 
   def initialize(parent)
     super(LVGL::LVTextArea.new(parent))
+
+    @animation_length = 400
 
     @hidden = false
     set_text("")
@@ -45,7 +48,6 @@ class LVGUI::TextArea < LVGUI::Widget
           # get_text() gives us a Fiddle::Pointer (leaky abstraction!!!)
           value = "#{get_text()}"
           @on_submit.call(value) if @on_submit
-          hide()
         end
       #else
       #  puts "Unhandled event for #{self}: #{LVGL::EVENT.from_value(event)}"
@@ -57,7 +59,7 @@ class LVGUI::TextArea < LVGUI::Widget
     @hidden = false
     LVGL::LVAnim.new().tap do |anim|
       anim.set_exec_cb(self, :lv_obj_set_opa_scale)
-      anim.set_time(FADE_LENGTH, 0)
+      anim.set_time(@animation_length, 0)
       anim.set_values(0, 255)
       anim.set_path_cb(LVGL::LVAnim::Path::EASE_OUT)
 
@@ -75,7 +77,7 @@ class LVGUI::TextArea < LVGUI::Widget
 
     LVGL::LVAnim.new().tap do |anim|
       anim.set_exec_cb(self, :lv_obj_set_opa_scale)
-      anim.set_time(FADE_LENGTH, 0)
+      anim.set_time(@animation_length, 0)
       anim.set_values(255, 0)
       anim.set_path_cb(LVGL::LVAnim::Path::EASE_IN)
 
