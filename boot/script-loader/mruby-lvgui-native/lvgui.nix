@@ -97,15 +97,14 @@ let
 in
   stdenv.mkDerivation {
     pname = "lvgui";
-    version = "2021-07-20";
+    version = "2021-09-22";
 
-    src = /Users/samuel/Projects/mobile-nixos/projects/lvgui;
-    #src = fetchFromGitHub {
-    #  repo = "lvgui";
-    #  owner = "mobile-nixos";
-    #  rev = "ba381a2749848ac69e08e9e59fe8a14054bcb24e";
-    #  sha256 = "0989m73kcrybgadszk1ffh4cbcfrmi0f79lbg87wrn5bxwaqbawr";
-    #};
+    src = fetchFromGitHub {
+      repo = "lvgui";
+      owner = "mobile-nixos";
+      rev = "1e5aca30d33217d607744444372f0d79ca2eecf6";
+      sha256 = "1gba001xgsf9w1y8ljb89qxfklg71wma86sfpgzwl91jqgb27nsw";
+    };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
     # This allows the mrbgem to know about it.
