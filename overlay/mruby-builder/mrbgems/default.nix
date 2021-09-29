@@ -121,8 +121,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-file-stat";
       owner = "ksss";
-      rev = "aa474589f065c71d9e39ab8ba976f3bea6f9aac2";
-      sha256 = "1clarmr67z133ivkbwla1a42wcjgj638j9w0mlv5n21mhim9rid5";
+      rev = "f3e858f01361b9b4a8e77ada52470068630c9530";
+      sha256 = "11lba0gyqmqj3rj0sh3ml3cj2yzz30w4wpbjazb0yhhjfl279ffj";
     };
 
     patches = [
@@ -227,8 +227,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-proc-irep-ext";
       owner = "Asmod4n";
-      rev = "d5364c79c85ee5dcc605b8f32d7969597dba1f58";
-      sha256 = "1j0278zfx322d0lwp2mm5d6hah4w0fnb0v79jkjmq6z516qp1hx2";
+      rev = "66ec9ed10982ff03e998b51a8652c9bb2b75ec44";
+      sha256 = "0jlsla7gkhkhf1x4gjwixyl1la3cjlqhpf0yrysfjpd17mr3wxjz";
     };
 
     meta.license = licenses.asl20;
@@ -325,8 +325,8 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-simplemsgpack";
       owner = "Asmod4n";
-      rev = "9df3c4a4d6ff1b62cbedb6c680b2af2f72015e40";
-      sha256 = "1dlhxayx882wq7phhk9vpsw1lb36nh99bh22l17p1arkp78sl85p";
+      rev = "2d908b1c9cdfb5f12319866ef483179be22660ad";
+      sha256 = "0kssfzd53k4svl1mj63b4jgd3pfffz277iki91kdfkxxjmwas7z7";
       fetchSubmodules = true;
     };
 
@@ -376,15 +376,11 @@ rec {
     src = fetchFromGitHub {
       repo = "mruby-zmq";
       owner = "zeromq";
-      rev = "39b6dab7cb944595064ca3e9376637024d3bf483";
-      sha256 = "03n9890wx18v7pwnk5w8s10l7yij6hyj8y5q4jf296k56dr4g01m";
+      rev = "ed45cef4d6f813978a0c3cc60b5f62208af7cf71";
+      sha256 = "0vx0akd4kmb1iwvxd5dn8q65f6f3paw2rswxy8h23lgf6yxyks3h";
     };
 
     patches = [
-      (fetchpatch {
-        url = "https://github.com/zeromq/mruby-zmq/pull/16.patch";
-        sha256 = "1m63yl84hg80whqpr3yznk06yalaasiszwm3pjvsr2di8gyi0bm5";
-      })
       ./mruby-zmq/0001-Work-around-missing-pthread.patch
       ./mruby-zmq/0001-HACK-cross-build-is-not-special-with-Nixpkgs.patch
     ];

@@ -1,14 +1,14 @@
-From a1fc7dc653ff247f06ef451f8f2a98b3dd621d08 Mon Sep 17 00:00:00 2001
+From 1f64a6134ddf6074538e75ee63c567fabdaa6af8 Mon Sep 17 00:00:00 2001
 From: Samuel Dionne-Riel <samuel@dionne-riel.com>
 Date: Tue, 24 Dec 2019 01:08:57 -0500
-Subject: [PATCH] [HACK] Rely on nixos-isms for ./configure
+Subject: [PATCH] Rely on nixos-isms for ./configure
 
 ---
  mrbgem.rake | 8 +-------
  1 file changed, 1 insertion(+), 7 deletions(-)
 
 diff --git a/mrbgem.rake b/mrbgem.rake
-index 4f4a0db..14f41f0 100644
+index adf097d..778feab 100644
 --- a/mrbgem.rake
 +++ b/mrbgem.rake
 @@ -3,12 +3,6 @@ MRuby::Gem::Specification.new('mruby-file-stat') do |spec|
@@ -24,15 +24,15 @@ index 4f4a0db..14f41f0 100644
    config = "#{build_dir}/config.h"
  
    file config do
-@@ -19,7 +13,7 @@ MRuby::Gem::Specification.new('mruby-file-stat') do |spec|
-         FileUtils.touch "#{build_dir}/config.h", :verbose => true
-       else
-         _pp './configure', dir
--        system env, "#{dir}/configure"
+@@ -23,7 +17,7 @@ MRuby::Gem::Specification.new('mruby-file-stat') do |spec|
+         if build.kind_of?(MRuby::CrossBuild) && build.host_target
+           host = "--host #{build.host_target}"
+         end
+-        system env, "#{dir}/configure #{host}"
 +        system "#{dir}/configure $configureFlags"
        end
      end
    end
 -- 
-2.23.0
+2.32.0
 

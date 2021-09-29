@@ -165,7 +165,7 @@ let
   '';
   mruby = stdenv.mkDerivation rec {
     pname = "mruby";
-    version = "2.1.1";
+    version = "2.1.2";
 
     inherit stripStorePathHashes;
 
@@ -173,13 +173,12 @@ let
       owner   = "mruby";
       repo    = "mruby";
       rev     = version;
-      sha256  = "gEEb0Vn/G+dNgeY6r0VP8bMSPrEOf5s+0GoOcnIPtEU=";
+      sha256  = "0fhfv8pi7i8jn2vgk2n2rjnbnfa12nhj514v8i4k353n7q4pmkh3";
     };
 
     patches = [
       ./0001-HACK-Ensures-a-host-less-build-can-be-made.patch
       ./0001-Nixpkgs-dump-linker-flags-for-re-use.patch
-      ./bison-36-compat.patch
     ]
     ++ optional stripStorePathHashes ./0001-mobile-nixos-Strip-store-path-hashes-when-saving-deb.patch
     ;
