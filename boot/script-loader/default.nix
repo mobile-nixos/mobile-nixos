@@ -35,14 +35,14 @@ let
       mruby-zmq
 
       # Glue that serves to link the proper dependencies into the project.
-      mruby-lvgui-native-fragment
+      mruby-lvgui-native
 
       # Though this needs to be the real last gem, as it has
       # special significance during the build.
       mruby-require
     ];
   });
-  mruby-lvgui-native-fragment = callPackage ./mruby-lvgui-native-fragment {
+  mruby-lvgui-native = callPackage ./mruby-lvgui-native {
     inherit withSimulator;
   };
 in

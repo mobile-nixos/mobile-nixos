@@ -69,7 +69,7 @@ module LVGUI
 
     # Switch to this window
     def present()
-      LVGL::FFI.lv_disp_load_scr(@screen.lv_obj_pointer)
+      LVGUI::Native.lv_disp_load_scr(@screen.lv_obj_pointer)
       reset_focus_group
 
       # Allow the window to do some work every time it is switched to.

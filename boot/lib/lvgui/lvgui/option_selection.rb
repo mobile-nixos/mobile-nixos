@@ -50,7 +50,7 @@ class LVGUI::OptionSelection < LVGUI::Widget
       label.set_long_mode(LVGL::LABEL_LONG::BREAK)
       label.set_click(false)
     end
-    set_label(nil)
+    set_label("")
 
     # The chosen option label (second row, optional)
     @chosen_option_label = LVGL::LVLabel.new(@label_container).tap do |label|
@@ -61,7 +61,7 @@ class LVGUI::OptionSelection < LVGUI::Widget
       label.set_long_mode(LVGL::LABEL_LONG::BREAK)
       label.set_click(false)
     end
-    set_chosen_option_label(nil)
+    set_chosen_option_label("")
 
     # Drill down icon
     @icon = LVGL::LVLabel.new(self).tap do |icon|

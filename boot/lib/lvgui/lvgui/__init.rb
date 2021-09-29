@@ -106,7 +106,7 @@ module LVGUI
     LVGL::Hacks.init(assets_path: assets_path)
 
     # Start the animation core
-    LVGL::FFI.lv_anim_core_init()
+    LVGUI::Native.lv_anim_core_init()
 
     if theme == :nixos then
       LVGL::Hacks.theme_nixos(LVGUI::Fonts.primary(), LVGUI::Fonts.secondary())
@@ -128,12 +128,12 @@ module LVGUI
 
   def self.focus_group()
     LVGL::LVGroup.from_pointer(
-      LVGL::FFI.lvgui_get_focus_group
+      LVGUI::Native.lvgui_get_focus_group
     )
   end
 
   def self.focus_ring_disable()
-    LVGL::FFI.lvgui_focus_ring_disable()
+    LVGUI::Native.lvgui_focus_ring_disable()
   end
 
   module Styles

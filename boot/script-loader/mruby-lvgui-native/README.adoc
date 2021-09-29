@@ -1,4 +1,4 @@
-= mruby-lvgui-native-fragment
+= mruby-lvgui-native
 
 This is glue code to build the mruby interpreter with the proper libraries.
 

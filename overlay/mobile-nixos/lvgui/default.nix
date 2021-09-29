@@ -29,7 +29,6 @@ let
   # Libraries assumed to be required by *all* LVGUI apps.
   libs = (concatMapStringsSep " " (name: "${../../../boot/lib}/${name}") [
     "lvgui/args.rb"
-    "lvgui/fiddlier.rb"
     "lvgui/lvgl/*.rb"
     "lvgui/lvgui/*.rb"
     "lvgui/mobile_nixos/*.rb"

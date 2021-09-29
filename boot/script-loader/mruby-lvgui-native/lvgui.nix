@@ -9,6 +9,8 @@
 , withSimulator ? false
 }:
 
+let stdenv = pkgs.stdenvAdapters.keepDebugInfo pkgs.stdenv; in
+
 let
   inherit (lib) optional optionals optionalString;
   simulatorDeps = [
@@ -97,12 +99,13 @@ in
     pname = "lvgui";
     version = "2021-07-20";
 
-    src = fetchFromGitHub {
-      repo = "lvgui";
-      owner = "mobile-nixos";
-      rev = "ba381a2749848ac69e08e9e59fe8a14054bcb24e";
-      sha256 = "0989m73kcrybgadszk1ffh4cbcfrmi0f79lbg87wrn5bxwaqbawr";
-    };
+    src = /Users/samuel/Projects/mobile-nixos/projects/lvgui;
+    #src = fetchFromGitHub {
+    #  repo = "lvgui";
+    #  owner = "mobile-nixos";
+    #  rev = "ba381a2749848ac69e08e9e59fe8a14054bcb24e";
+    #  sha256 = "0989m73kcrybgadszk1ffh4cbcfrmi0f79lbg87wrn5bxwaqbawr";
+    #};
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.
     # This allows the mrbgem to know about it.
