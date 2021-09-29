@@ -15,6 +15,7 @@ pkgs.mkShell rec {
     mobile-nixos.autoport     # Helps users kickstart their ports
 
     # Third party tools
+    android-tools             # For flashing android devices with fastboot
     dtc                       # For playing around with device tree files
     dtbTool                   # Combines multiple device tree blobs into one image
     file                      # Shows the type of files
