@@ -50,4 +50,61 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
+
+  hardware.enableRedistributableFirmware = true;
+  hardware.firmware = let
+    prefixFirmware = pkgs.runCommand "fw-override" {} ''
+        mkdir -p $out/lib
+        cp -r ${fw}/lib/firmware/postmarketos $out/lib/firmware
+    '';
+    fw = config.mobile.device.firmware;
+  in lib.mkBefore [ prefixFirmware fw ];
+
+
+  mobile.usb.gadgetfs.functions = {
+    adb = "ffs.adb";
+    rndis = "rndis.usb0";
+  };
+
+  systemd.services = {
+    rmtfs = rec {
+      wantedBy = [ "multi-user.target" ];
+      requires = [ "qrtr-ns.service" ];
+      after = requires;
+      serviceConfig = {
+        ExecStart = "${pkgs.rmtfs}/bin/rmtfs -r -P -s";
+        Restart = "always";
+        RestartSec = "1";
+      };
+    };
+    qrtr-ns = rec {
+      serviceConfig = {
+        ExecStart = "${pkgs.qrtr}/bin/qrtr-ns -f 1";
+        Restart = "always";
+      };
+    };
+    tqftpserv = rec {
+      wantedBy = [ "multi-user.target" ];
+      requires = [ "qrtr-ns.service" ];
+      after = requires;
+      serviceConfig = {
+        ExecStart = "${pkgs.tqftpserv}/bin/tqftpserv";
+        Restart = "always";
+      };
+    };
+    pd-mapper = rec {
+      wantedBy = [ "multi-user.target" ];
+      requires = [ "qrtr-ns.service" ];
+      after = requires;
+      serviceConfig = {
+        ExecStart = "${pkgs.pd-mapper}/bin/pd-mapper";
+        Restart = "always";
+      };
+    };
+  };
+
+
+  services.udev.extraRules = ''
+    SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="pmi8998_haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
+  '';
 }
