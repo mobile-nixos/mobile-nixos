@@ -13,7 +13,7 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: bin/kernel-normalize-config <device_name>"
+  puts "Usage: bin/kernel-normalize-config <device_name> [kernel variant name]"
 end
 
 # Poor approximation to arguments parsing.
@@ -26,14 +26,16 @@ if other_args.empty?
 end
 
 DEVICE = other_args.shift
-
-FILE =
-  # Is the device a path?
-  if DEVICE.match(%r{/})
-    Dir.glob(File.join(DEVICE, "kernel", "config.*")).sort.first
+VARIANT =
+  unless other_args.empty?
+    other_args.shift
   else
-    Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel", "config.*")).sort.first
+    nil
   end
+
+VARIANT_DIRNAME = ["kernel", VARIANT].compact.join("-")
+KERNEL_DIR = File.join(Dir.pwd, "devices", DEVICE, VARIANT_DIRNAME)
+KCONF_FILE = Dir.glob(File.join(KERNEL_DIR, "config.*")).sort.first
 
 unless params.empty?
   $stderr.puts "Unknown parameters #{params.join(", ")}."
@@ -47,8 +49,17 @@ unless other_args.empty?
   exit 1
 end
 
-unless FILE
+unless KCONF_FILE
   $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
+  variants = Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel-*"))
+  if variants.length > 0
+    $stderr.puts
+    $stderr.puts "Variants detected for #{DEVICE}:"
+    variants.each do |dir|
+      $stderr.puts " - #{File.basename(dir).sub(/^kernel-/, "")}"
+    end
+  end
+  $stderr.puts
   usage
   exit 1
 end
@@ -61,16 +72,29 @@ arg =
     ["--argstr", "device", DEVICE]
   end
 
+if VARIANT
+  arg << "--arg"
+  arg << "configuration"
+  arg << <<~EOF
+  { lib, ... }:
+
+  {
+    mobile.boot.stage-1.kernel.provenance = lib.mkForce "#{VARIANT}";
+  }
+  EOF
+end
+
 Dir.chdir(ROOT) do
   result = `#{[
     "nix-build",
+    "--show-trace",
     "--no-out-link",
     *arg,
     "-A", "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
   ].shelljoin}`.strip
 
   # We "cat" into the file to ensure we don't copy the store path access rights.
-  File.write(FILE, File.read(result))
+  File.write(KCONF_FILE, File.read(result))
 end
 
 # vim: ft=ruby
