@@ -72,7 +72,7 @@ in
         CRYPTO_HMAC = yes;
         CRYPTO_SHA256 = yes;
         SYSFS_DEPRECATED = no;
-        UEVENT_HELPER_PATH = freeform ''""'';
+        UEVENT_HELPER = no;
         FW_LOADER_USER_HELPER = option no;
         BLK_DEV_BSG = yes;
         DEVPTS_MULTIPLE_INSTANCES = whenOlder "4.7" yes;
