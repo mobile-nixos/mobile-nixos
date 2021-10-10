@@ -26,6 +26,13 @@ runCommandNoCC "google-blueline-firmware" {
   # Touch panel
   cp -vt $out/lib/firmware/ ${vendor-firmware-files}/lib/firmware/ftm5*.ftb
 
+  (
+    cd $out/lib/firmware/qcom
+    for f in sdm845/blueline/*; do
+     ln -sf $f
+    done
+  )
+
   # Firmware we can get from upstream
   for firmware in \
     qca/crbtfw21.tlv \
