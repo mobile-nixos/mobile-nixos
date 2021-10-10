@@ -6,17 +6,18 @@
 }:
 
 let
-  major = "5.13";
+  major = "5.15";
   minor = "0";
+  rc = "-rc4";
   downloadVersion = major;
 in
 mobile-nixos.kernel-builder rec {
-  version = "${major}.${minor}";
+  version = "${major}.${minor}${rc}";
   configfile = ./config.aarch64;
 
   src = fetchurl {
-    url = "mirror://kernel/linux/kernel/v5.x/linux-${downloadVersion}.tar.xz";
-    sha256 = "1nc9didbjlycs9h8xahny1gwl8m8clylybnza6gl663myfbslsrz";
+    url = "https://git.kernel.org/torvalds/t/linux-${major}${rc}.tar.gz";
+    sha256 = "0n5asfajskzzhmx316xjb57qzvshz4s57lrmmsic0rw19w705hxq";
   };
 
   patches = [
