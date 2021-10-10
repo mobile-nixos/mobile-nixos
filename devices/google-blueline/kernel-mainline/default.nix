@@ -32,6 +32,10 @@ mobile-nixos.kernel-builder rec {
     ./0002-Linaro-blueline-touch.patch
 
     ./0001-dts-blueline-Configure-device-specific-firmware-path.patch
+
+    # Fixes regression with SDM845 devices on advice.
+    # A panic during `icc_init`.
+    ./0001-Revert-usb-dwc3-dwc3-qcom-Enable-tx-fifo-resize-prop.patch
   ];
 
   # TODO: generic mainline build; append per-device...
