@@ -6390,50 +6390,6 @@ mrb_mruby_lvgui_native_lv_obj_is_children(mrb_state *mrb, mrb_value self)
 ////////
 
 ////////
-// Bindings for: `lv_obj_t * lv_obj_get_child_back(const lv_obj_t * unnamed_parameter_0, const lv_obj_t * unnamed_parameter_1)`
-
-static mrb_value
-mrb_mruby_lvgui_native_lv_obj_get_child_back(mrb_state *mrb, mrb_value self)
-{
-    lv_obj_t * ret;
-  
-    //
-    // Parameters handling
-    //
-    
-    // Parameter handling for native parameter `const lv_obj_t * unnamed_parameter_0`
-    mrb_value param_unnamed_parameter_0_instance;
-    const lv_obj_t * param_unnamed_parameter_0;
-    // Parameter handling for native parameter `const lv_obj_t * unnamed_parameter_1`
-    mrb_value param_unnamed_parameter_1_instance;
-    const lv_obj_t * param_unnamed_parameter_1;
-    
-    mrb_get_args(
-      mrb,
-      "oo",
-      &param_unnamed_parameter_0_instance,
-      &param_unnamed_parameter_1_instance
-    );
-    param_unnamed_parameter_0 = mrb_mruby_lvgui_native_unwrap_pointer(
-      mrb,
-      param_unnamed_parameter_0_instance
-    );
-    param_unnamed_parameter_1 = mrb_mruby_lvgui_native_unwrap_pointer(
-      mrb,
-      param_unnamed_parameter_1_instance
-    );
-  
-    // Calling native function
-    ret = lv_obj_get_child_back(param_unnamed_parameter_0, param_unnamed_parameter_1);
-  
-    // Converts return value back to a valid mruby value
-    return mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) ret);
-}
-
-//
-////////
-
-////////
 // Bindings for: `lv_obj_t * lv_btn_create(lv_obj_t * unnamed_parameter_0, const lv_obj_t * unnamed_parameter_1)`
 
 static mrb_value
@@ -11222,6 +11178,54 @@ mrb_mruby_lvgui_native_lvgui_get_font(mrb_state *mrb, mrb_value self)
   
     // Converts return value back to a valid mruby value
     return mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) ret);
+}
+
+//
+////////
+
+////////
+// Bindings for: `lv_obj_t * lv_obj_get_child_back(const lv_obj_t * unnamed_parameter_0, const lv_obj_t * unnamed_parameter_1)`
+
+static mrb_value
+mrb_mruby_lvgui_native_lv_obj_get_child_back(mrb_state *mrb, mrb_value self)
+{
+  lv_obj_t * ret;
+  
+  //
+  // Parameters handling
+  //
+  
+  // Parameter handling for native parameter `const lv_obj_t * unnamed_parameter_0`
+  mrb_value param_unnamed_parameter_0_instance;
+  const lv_obj_t * param_unnamed_parameter_0;
+  // Parameter handling for native parameter `const lv_obj_t * unnamed_parameter_1`
+  mrb_value param_unnamed_parameter_1_instance;
+  const lv_obj_t * param_unnamed_parameter_1;
+  
+  mrb_get_args(
+    mrb,
+    "oo",
+    &param_unnamed_parameter_0_instance,
+    &param_unnamed_parameter_1_instance
+  );
+  param_unnamed_parameter_0 = mrb_mruby_lvgui_native_unwrap_pointer(
+    mrb,
+    param_unnamed_parameter_0_instance
+  );
+  param_unnamed_parameter_1 = mrb_mruby_lvgui_native_unwrap_pointer(
+    mrb,
+    param_unnamed_parameter_1_instance
+  );
+  
+  // Calling native function
+  ret = lv_obj_get_child_back(param_unnamed_parameter_0, param_unnamed_parameter_1);
+  
+  if (ret == NULL) {
+    return mrb_nil_value();
+  }
+  
+  // Converts return value back to a valid mruby value
+  return mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) ret);
 }
 
 //
