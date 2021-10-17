@@ -104,6 +104,16 @@ in
       ];
     });
 
+    modemmanager = super.modemmanager.overrideDerivation (super: {
+      configureFlags = super.configureFlags ++ [
+        "--enable-plugin-qcom-soc"
+      ];
+    });
+    libqmi = super.libqmi.overrideDerivation (super: {
+      configureFlags = super.configureFlags ++ [
+        "--enable-qrtr"
+      ];
+    });
 
     # Things specific to mobile-nixos.
     # Not necessarily internals, but they probably won't go into <nixpkgs>.
