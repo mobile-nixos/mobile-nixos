@@ -16,6 +16,7 @@
   };
 
   mobile.boot.stage-1 = {
+    compression = "xz";
     kernel.package = pkgs.callPackage ./kernel { };
     firmware = [
       config.mobile.device.firmware
@@ -52,13 +53,7 @@
   mobile.system.type = "android";
 
   hardware.enableRedistributableFirmware = true;
-  hardware.firmware = let
-    prefixFirmware = pkgs.runCommand "fw-override" {} ''
-        mkdir -p $out/lib
-        cp -r ${fw}/lib/firmware/postmarketos $out/lib/firmware
-    '';
-    fw = config.mobile.device.firmware;
-  in lib.mkBefore [ prefixFirmware fw ];
+  hardware.firmware = lib.mkBefore [ config.mobile.device.firmware ];
 
 
   mobile.usb.gadgetfs.functions = {
