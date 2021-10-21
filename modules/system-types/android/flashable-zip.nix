@@ -38,7 +38,7 @@ let
   };
 
   android-flashable-system = make-flashable-zip {
-    name = "flashable-${device.name}-boot.zip";
+    name = "flashable-${device.name}-system.zip";
     script = ''
       ${android-flashable-fragment-assertDevice}
       ${android-flashable-fragment-burnSystem}
