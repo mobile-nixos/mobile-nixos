@@ -204,7 +204,7 @@ module LVGL
       last_child = nil
       loop do
         ptr = LVGL.ffi_call!(self.class, :get_child_back, @self_pointer, last_child)
-        break if ptr.null?
+        break if ptr.nil?
         last_child = LVObject.from_pointer(ptr)
         children << last_child
       end
