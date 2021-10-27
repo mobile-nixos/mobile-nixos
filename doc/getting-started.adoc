@@ -124,6 +124,83 @@ system configuration. It is recommended to copy and edit the configuration
 files from the `examples` directories if you are basing your configuration off
 of an example.
 
+== Configuration via flakes
+
+Mobile NixOS is flakes compatible, meaning you can configure it entirely using
+flakes.
+
+=== Quickstart
+All devices are exported as `nixosModules` so you need to import them to setup
+Mobile NixOS. For a quickstart you should use the provided helper `mobileFlake`
+which simplifies the process and sets up proper cross compilation.
+
+```nix
+{
+  description = "Mobile NixOS configuration";
+
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
+  inputs.mobile-nixos.url = "github:NixOS/mobile-nixos";
+
+  outputs = { self, nixpkgs, mobile-nixos }:
+    mobile-nixos.lib.mobileFlake {
+      hostname = "ark-test";
+      system = "x86_64-linux";
+      modules = [
+        mobile-nixos.nixosModules.uefi-x86_64
+        ({
+          users.users.root.password = "111111";
+        })
+      ];
+    };
+}
+```
+
+The helper creates a `nixosConfigurations` attribute with `hostname` so you
+can update the system with `nixos-rebuild` but it also sets up some `packages`
+attributes so you can create a flashable-zip for example for the first-time
+install with `nix build .#<hostname>_<output>`. It also sets the default
+package to the default output so a simple `nix build` will probably build
+your desired output. You can check all available outputs with `nix flake show`.
+
+=== Manual setup with `nixpkgs.lib.nixosSystem`
+You may also manually setup the `nixosConfigurations` attribute for the flake
+using the `nixpkgs.lib.nixosSystem` function. Note however that it may bring
+further complication in regards to cross compilation.
+
+```nix
+{
+  description = "Mobile NixOS configuration";
+
+  inputs.nixpkgs.url = "nixpkgs/nixos-unstable";
+  inputs.mobile-nixos.url = "github:NixOS/mobile-nixos";
+
+  outputs = { self, nixpkgs, mobile-nixos }:
+    nixosConfigurations.mobile = nixpkgs.lib.nixosSystem {
+      system = "aarch64-linux";
+      modules = [
+        mobile-nixos.nixosModules.xiaomi-begonia
+        ({
+          users.users.root.password = "111111";
+        })
+      ];
+    };
+  };
+}
+```
+
+Now you can build this configuration using `nix build .#nixosConfigurations.mobile.config.mobile.outputs.default`.
+However, it may lead to an error like:
+```
+error: a 'aarch64-linux' with features {} is required to build ...
+```
+Which occurs due to missing cross compilation. You can only use an "emulated
+native build" when your host NixOS is configured with `boot.binfmt.emulatedSystems = [ "aarch64-linux" ];`.
+
+To properly cross-compile you need to set the system attribute to your host's
+system as the mobile-nixos modules correctly configure `nixpkgs.crossSystem`.
+However, this makes the flake configuration dependent on the build machine which
+is undesirable. For this reason the `mobileFlake` helper sets up this cross
+compilation for different build hosts using the `packages` attribute.
 
 == Contributing
 
