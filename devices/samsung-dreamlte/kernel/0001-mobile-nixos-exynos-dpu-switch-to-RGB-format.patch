@@ -1,0 +1,39 @@
+From 345290b8595d71107cacef4f5882f35c2d1b14c2 Mon Sep 17 00:00:00 2001
+From: Brian McKenna <brian@brianmckenna.org>
+Date: Fri, 29 Oct 2021 13:18:57 +0000
+Subject: [PATCH] [mobile-nixos]: exynos/dpu: switch to RGB format
+
+---
+ drivers/video/fbdev/exynos/dpu/decon_core.c | 2 +-
+ drivers/video/fbdev/exynos/dpu/decon_dsi.c  | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/video/fbdev/exynos/dpu/decon_core.c b/drivers/video/fbdev/exynos/dpu/decon_core.c
+index 152c86e0..2bb964a7 100644
+--- a/drivers/video/fbdev/exynos/dpu/decon_core.c
++++ b/drivers/video/fbdev/exynos/dpu/decon_core.c
+@@ -4076,7 +4076,7 @@ static int decon_initial_display(struct decon_device *decon, bool is_colormap)
+ 	set_bit(decon->dt.dft_idma, &decon->prev_used_dpp);
+ 	memset(&config, 0, sizeof(struct decon_win_config));
+ 	config.dpp_parm.addr[0] = fbinfo->fix.smem_start;
+-	config.format = DECON_PIXEL_FORMAT_BGRA_8888;
++	config.format = DECON_PIXEL_FORMAT_RGBA_8888;
+ 	config.src.w = fbinfo->var.xres;
+ 	config.src.h = fbinfo->var.yres;
+ 	config.src.f_w = fbinfo->var.xres;
+diff --git a/drivers/video/fbdev/exynos/dpu/decon_dsi.c b/drivers/video/fbdev/exynos/dpu/decon_dsi.c
+index eeaa2ba1..71d274d9 100644
+--- a/drivers/video/fbdev/exynos/dpu/decon_dsi.c
++++ b/drivers/video/fbdev/exynos/dpu/decon_dsi.c
+@@ -963,7 +963,7 @@ int decon_pan_display(struct fb_var_screeninfo *var, struct fb_info *info)
+ 		break;
+ 	case 24:
+ 	case 32:
+-		config.format = DECON_PIXEL_FORMAT_ABGR_8888;
++		config.format = DECON_PIXEL_FORMAT_ARGB_8888;
+ 		shift = 4;
+ 		break;
+ 	default:
+-- 
+2.33.0
+
