@@ -96,11 +96,6 @@ in
       ];
       patches = patches ++ [
         ./u-boot/0001-mobile-nixos-work-around-ubootTools-cross-compilatio.patch
-        (fetchpatch {
-          # https://patchwork.ozlabs.org/project/uboot/patch/20210210194309.07d1dec7@DUFFMAN/
-          url = "https://patchwork.ozlabs.org/series/229060/mbox/";
-          sha256 = "1d3h1wh5227lqvqlxvnljbkmy89b9wmf52qfsx5jhpfa9g260xql";
-        })
       ];
     });
 
