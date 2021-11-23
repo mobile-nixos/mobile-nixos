@@ -346,6 +346,7 @@ stdenv.mkDerivation (inputArgs // {
               "CONFIG_ARM64_MTE"
               "CONFIG_ARM64_PTR_AUTH"
               "CONFIG_AS_HAS_CFI_NEGATE_RA_STATE"
+              "CONFIG_AS_VERSION"
               "CONFIG_CC_VERSION_TEXT"
               "CONFIG_CLANG_VERSION"
               "CONFIG_DEBUG_INFO_SPLIT"
