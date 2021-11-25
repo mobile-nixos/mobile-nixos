@@ -11,12 +11,6 @@
 }:
 
 let
-  pw = id: sha256: fetchpatch {
-    inherit sha256;
-    name = "${id}.patch";
-    url = "https://patchwork.ozlabs.org/patch/${id}/raw/";
-  };
-
   pine64Patch = rev: sha256: fetchpatch {
     inherit sha256;
     name = "pine64-${rev}.patch";
