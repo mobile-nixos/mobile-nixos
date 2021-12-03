@@ -124,6 +124,16 @@ let
     )
   );
 
+  # `kernel` here is indexed by the system it's being built on first.
+  # FIXME: can we better filter this?
+  kernel = lib.genAttrs devices (device:
+    lib.genAttrs systems (system:
+      (evalWithConfiguration {
+        nixpkgs.localSystem = knownSystems.${system};
+      } device).config.mobile.boot.stage-1.kernel.package
+    )
+  );
+
   examples-demo =
     let
       aarch64-eval = import ./examples/demo {
@@ -149,6 +159,7 @@ let
 in
 rec {
   inherit device;
+  inherit kernel;
   inherit examples-demo;
   inherit doc;
 

@@ -42,6 +42,21 @@ let
     in
       builtins.listToAttrs (flatten devicesList)
     ;
+  kernels =
+    let
+      # Listifies devices in a list of lists of nameValuePairs.
+      # This will be flattened and re-hydrated in a shallow attrset.
+      devicesList =
+        mapAttrsToList
+        (deviceName: list: mapAttrsToList (platformName: value: {
+            name = "kernel.${deviceName}.${platformName}";
+            value = value;
+          }) list)
+        release.kernel
+      ;
+    in
+      builtins.listToAttrs (flatten devicesList)
+    ;
 
   flattened =
     # If this fails, evaluations probably don't receive additional configuration
@@ -49,6 +64,7 @@ let
     assert devices."device.asus-z00t.aarch64-linux" != devices."device.asus-z00t.x86_64-linux";
     release //
     devices //
+    kernels //
     # We could try and do something smart to unwrap two levels of attrsets
     # automatically, but by stating we want those paths we are ensuring that
     # they are still present in the attrsets.
