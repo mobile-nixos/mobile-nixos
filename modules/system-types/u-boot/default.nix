@@ -205,6 +205,9 @@ let
   '';
 in
 {
+  imports = [
+    ./temp-tow-boot-install-script.nix
+  ];
   options.mobile = {
     quirks.u-boot = {
       soc.family = mkOption {
