@@ -36,21 +36,10 @@ let
     printenv kernel_addr_r
     printenv fdt_addr_r
     printenv ramdisk_addr_r
+    echo devtype = "$devtype"
+    echo devnum = "$devnum"
     echo === end of the debug information ===
     echo
-
-    if test "$mmc_bootdev" != ""; then
-      echo ":: Detected mmc booting"
-      devtype="mmc"
-    else
-      echo "!!! Could not detect devtype !!!"
-      exit
-    fi
-
-    if test "$devtype" = "mmc"; then
-      devnum="$mmc_bootdev"
-      echo ":: Booting from mmc $devnum"
-    fi
 
     bootpart=""
     echo part number $devtype $devnum boot bootpart
