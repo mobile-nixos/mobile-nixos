@@ -92,4 +92,7 @@
       STK3310 = yes; # Light sensor
     })
   ];
+
+  mobile.boot.stage-1.shell.console = "ttyS2";
+  mobile.boot.stage-1.shell.shellOnFail = true;
 }
