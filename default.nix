@@ -25,7 +25,7 @@ let
         ********************************************
         * WARNING: evaluation includes ./local.nix *
         ********************************************
-      '' [ (import ./local.nix) ]
+      '' [ ./local.nix ]
     else
       []
   ;
