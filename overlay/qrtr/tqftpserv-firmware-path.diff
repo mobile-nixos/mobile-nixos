@@ -1,0 +1,14 @@
+diff --git a/translate.c b/translate.c
+index e95dee5..f3f0811 100644
+--- a/translate.c
++++ b/translate.c
+@@ -45,7 +45,7 @@
+ #define READONLY_PATH	"/readonly/firmware/image/"
+ #define READWRITE_PATH	"/readwrite/"
+ 
+-#define FIRMWARE_BASE	"/lib/firmware/"
++#define FIRMWARE_BASE	"/run/current-system/firmware/"
+ 
+ /**
+  * translate_readonly() - open "file" residing with remoteproc firmware
+
