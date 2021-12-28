@@ -41,7 +41,6 @@
 
   boot.kernelParams = [
     "console=tty0"
-    "panic=10"
   ];
 
   mobile.usb.mode = "gadgetfs";
