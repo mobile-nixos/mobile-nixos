@@ -1,29 +1,28 @@
-{stdenv, lib, fetchFromGitHub, qrtr, ...}:
-
-with lib;
-with builtins;
+{ stdenv, lib, fetchFromGitHub, qrtr }:
 
 stdenv.mkDerivation {
-    pname = "tqftpserv";
-    version = "0_git20200207";
+  pname = "tqftpserv";
+  version = "unstable-2020-02-07";
 
-    buildInputs = [ qrtr ];
+  buildInputs = [ qrtr ];
 
-    src = fetchFromGitHub {
-        owner = "andersson";
-        repo = "tqftpserv";
-        rev = "783425b550de2a359db6aa3b41577c3fbaae5903";
-        hash = "sha256-Qybmd/mXhKotCem/xN0bOvWyAp2VJf+Hdh6PQyFnd3s==";
-    };
+  src = fetchFromGitHub {
+    owner = "andersson";
+    repo = "tqftpserv";
+    rev = "783425b550de2a359db6aa3b41577c3fbaae5903";
+    hash = "sha256-Qybmd/mXhKotCem/xN0bOvWyAp2VJf+Hdh6PQyFnd3s==";
+  };
 
-    patchPhase = ''
-        find . -type f -exec sed -i 's,/lib/firmware,/run/current-system/firmware,' {} ";"
-    '';
+  patches = [
+    ./tqftpserv-firmware-path.diff
+  ];
 
-    installPhase = ''
-        make DESTDIR="$out" install
-        mv $out/usr/local/* $out
-        rmdir $out/usr/local $out/usr
-        sed -i "s,/usr/local/bin,$out/bin," $out/lib/systemd/system/tqftpserv.service
-    '';
+  installFlags = [ "prefix=$(out)" ];
+
+  meta = with lib; {
+    description = "Trivial File Transfer Protocol server over AF_QIPCRTR";
+    homepage = "https://github.com/andersson/tqftpserv";
+    license = licenses.bsd3;
+    platforms = platforms.aarch64;
+  };
 }

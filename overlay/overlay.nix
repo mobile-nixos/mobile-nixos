@@ -59,6 +59,7 @@ in
     bootlogd = callPackage ./bootlogd {};
 
     qrtr = callPackage ./qrtr/qrtr.nix { };
+    qmic = callPackage ./qrtr/qmic.nix { };
     tqftpserv = callPackage ./qrtr/tqftpserv.nix { };
     pd-mapper = callPackage ./qrtr/pd-mapper.nix { };
     rmtfs = callPackage ./qrtr/rmtfs.nix { };

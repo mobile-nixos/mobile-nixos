@@ -1,37 +1,24 @@
-{stdenv, lib, fetchFromGitHub, udev, qrtr, writeScriptBin, ...}:
+{ stdenv, lib, fetchFromGitHub, udev, qrtr, qmic }:
 
-with lib;
-with builtins;
-
-let
-    # This is only being called when compiling on arm natively?
-    # It is not needed. Fix properly later.
-    qmic = writeScriptBin "qmic" ''
-        #!/bin/sh
-        true
-    '';
-in
 stdenv.mkDerivation {
-    pname = "rmtfs";
-    version = "0_git20200314";
+  pname = "rmtfs";
+  version = "unstable-2021-04-09";
 
-    buildInputs = [ udev qrtr qmic ];
+  buildInputs = [ udev qrtr qmic ];
 
-    src = fetchFromGitHub {
-        owner = "andersson";
-        repo = "rmtfs";
-        rev = "293ab8babb27ac0f24247bb101fed9420c629c29";
-        hash = "sha256-TG6M8fOyyEabJgMlhe/zBX6BFBTNL0i8yH2h0zRouAI=";
-    };
+  src = fetchFromGitHub {
+    owner = "andersson";
+    repo = "rmtfs";
+    rev = "b08ef6f98ec567876d7d45f15c85c6ed00d7c463";
+    hash = "sha256-v7xcbo+KYPqUr0xNjj4IZrVmsMHx99Cmy2Sm5Z4WDaQ=";
+  };
 
-    patchPhase = ''
-        find . -type f -exec sed -i 's,/lib/firmware,/run/current-system/firmware,' {} ";"
-    '';
+  installFlags = [ "prefix=$(out)" ];
 
-    installPhase = ''
-        make DESTDIR="$out" install
-        mv $out/usr/local/* $out
-        rmdir $out/usr/local $out/usr
-        sed -i "s,/usr/local/bin,$out/bin," $out/lib/systemd/system/rmtfs.service
-    '';
+  meta = with lib; {
+    description = "Qualcomm Remote Filesystem Service";
+    homepage = "https://github.com/andersson/rmtfs";
+    license = licenses.bsd3;
+    platforms = platforms.aarch64;
+  };
 }

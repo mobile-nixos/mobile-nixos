@@ -1,27 +1,22 @@
-{stdenv, lib, fetchFromGitHub, ...}:
-
-with lib;
-with builtins;
+{ stdenv, lib, fetchFromGitHub }:
 
 stdenv.mkDerivation {
-    pname = "qrtr";
-    version = "0.3_git20201110";
+  pname = "qrtr";
+  version = "unstable-2020-12-07";
 
-    src = fetchFromGitHub {
-        owner = "andersson";
-        repo = "qrtr";
-        rev = "cb1a6476e69dcb455f6c0251b8ceca1dd67d368a";
-        hash = "sha256-BVH+arYSnaIDCFUBZkKgdlOIHL2ZEkB70FqIG2wkQTM=";
-    };
+  src = fetchFromGitHub {
+    owner = "andersson";
+    repo = "qrtr";
+    rev = "9dc7a88548c27983e06465d3fbba2ba27d4bc050";
+    hash = "sha256-eJyErfLpIv4ndX2MPtjLTOQXrcWugQo/03Kz4S8S0xw=";
+  };
 
-    patchPhase = ''
-        find . -type f -exec sed -i 's,/lib/firmware,/run/current-system/firmware,' {} ";"
-    '';
+  installFlags = [ "prefix=$(out)" ];
 
-    installPhase = ''
-        make DESTDIR="$out" install
-        mv $out/usr/local/* $out
-        rmdir $out/usr/local $out/usr
-        sed -i "s,/usr/local/bin,$out/bin," $out/lib/systemd/system/qrtr-ns.service
-    '';
+  meta = with lib; {
+    description = "QMI IDL compiler";
+    homepage = "https://github.com/andersson/qrtr";
+    license = licenses.bsd3;
+    platforms = platforms.aarch64;
+  };
 }
