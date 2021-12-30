@@ -10,7 +10,7 @@ in
       type = types.bool;
       default = false;
       description = ''
-        Enable this on a device sdm845 device for modem support
+        Enable this on a mainline-based SDM845 device for modem support
       '';
     };
   };
