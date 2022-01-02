@@ -28,8 +28,8 @@ in
   config = {
     assertions = [
       {
-        assertion = pkgs.targetPlatform.system == cfg.system;
-        message = "pkgs.targetPlatform.system expected to be `${cfg.system}`, is `${pkgs.targetPlatform.system}`";
+        assertion = pkgs.stdenv.targetPlatform.system == cfg.system;
+        message = "pkgs.stdenv.targetPlatform.system expected to be `${cfg.system}`, is `${pkgs.stdenv.targetPlatform.system}`";
       }
     ];
 

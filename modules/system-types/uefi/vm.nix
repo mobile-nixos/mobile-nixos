@@ -65,7 +65,7 @@ in
           -netdev "user,id=user.0"
         )
 
-        ${pkgs.qemu}/bin/qemu-system-${pkgs.targetPlatform.qemuArch} "''${ARGS[@]}" "''${@}"
+        ${pkgs.qemu}/bin/qemu-system-${pkgs.stdenv.targetPlatform.qemuArch} "''${ARGS[@]}" "''${@}"
       '';
     };
   };
