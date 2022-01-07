@@ -7,8 +7,8 @@
 runCommandNoCC "pine64-pinephone-firmware" {
   src = fetchgit {
     url = "https://megous.com/git/linux-firmware";
-    rev = "4ec2645b007ba4c3f2962e38b50c06f274abbf7c";
-    sha256 = "0mx5h2r7j5bik4wdkgdyzjpj1x6fx2y4p8y1ir4ic76902xhipr6";
+    rev = "6e8e591e17e207644dfe747e51026967bb1edab5";
+    hash = "sha256-TaGwT0XvbxrfqEzUAdg18Yxr32oS+RffN+yzSXebtac=";
   };
   meta.license = lib.licenses.unfreeRedistributable;
 } ''
