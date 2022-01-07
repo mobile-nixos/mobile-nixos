@@ -24,12 +24,12 @@ let
   };
 
   atf = armTrustedFirmwareAllwinner.overrideAttrs(old: rec {
-    version = "2.5";
+    version = "2.6";
     src = fetchFromGitHub {
       owner = "ARM-software";
       repo = "arm-trusted-firmware";
       rev = "v${version}";
-      sha256 = "0w3blkqgmyb5bahlp04hmh8abrflbzy0qg83kmj1x9nv4mw66f3b";
+      hash = "sha256-qT9DdTvMcUrvRzgmVf2qmKB+Rb1WOB4p1rM+fsewGcg=";
     };
     patches = [
       # "allwinner: Choose PSCI states to avoid translation"
