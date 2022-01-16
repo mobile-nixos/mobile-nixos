@@ -137,11 +137,16 @@ in
     {
       # Start SSH by default...
       systemd.services.sshd.wantedBy = lib.mkOverride 10 [ "multi-user.target" ];
-      services.openssh.permitRootLogin = lib.mkForce "yes";
 
       # Don't start it in stage-1 though.
       # (Currently doesn't quit on switch root)
       #mobile.boot.stage-1.ssh.enable = true;
+
+      services.openssh = {
+        enable = true;
+        permitRootLogin = "yes";
+        forwardX11 = true;
+      };
     }
 
     # Customized XFCE environment
