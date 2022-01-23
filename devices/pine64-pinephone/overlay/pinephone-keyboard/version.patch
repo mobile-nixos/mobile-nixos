@@ -1,0 +1,32 @@
+diff --git a/Makefile b/Makefile
+index 57def23..dfd1591 100644
+--- a/Makefile
++++ b/Makefile
+@@ -1,4 +1,4 @@
+-VERSION := $(shell git describe) $(shell git log -1 --format=%cd --date=iso)
++VERSION := "nixpkgs"
+ 
+ OUT ?= build/
+ CFLAGS ?= -O2 -g0
+diff --git a/firmware/build.sh b/firmware/build.sh
+index 383832f..6dd9c68 100755
+--- a/firmware/build.sh
++++ b/firmware/build.sh
+@@ -24,7 +24,7 @@ sdcc \
+ 	--code-size 0x2000 --code-loc 0x2130 \
+ 	-Wl-bIVECT=0x2000 \
+ 	-I. \
+-	-DFW_REVISION_STR="\"$(git describe) $(git log -1 --format=%cd --date=iso)\"" \
++	-DFW_REVISION_STR="\"nixpkgs\"" \
+ 	-DCONFIG_STOCK_FW=1 \
+ 	build/stock-ivt.rel main.c \
+ 	-o build/fw-stock.ihx
+@@ -38,7 +38,7 @@ sdcc \
+ 	-mmcs51 --iram-size 255 --xram-size 2048 \
+ 	--code-size 0x4000 --code-loc 0x4000 \
+ 	-I. \
+-	-DFW_REVISION_STR="\"$(git describe) $(git log -1 --format=%cd --date=iso)\"" \
++	-DFW_REVISION_STR="\"nixpkgs\"" \
+ 	-DCONFIG_STOCK_FW=0 \
+ 	-DCONFIG_USB_STACK=0 \
+ 	-DCONFIG_DEBUG_LOG=1 \
