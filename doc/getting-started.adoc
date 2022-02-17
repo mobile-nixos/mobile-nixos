@@ -50,12 +50,17 @@ page, will likely contain the necessary instructions.
 Things change, and sometimes things break. This is even more true with Mobile
 NixOS as the project depends on another moving target, NixOS.
 
-You can look at the
+Mobile NixOS by default pins the nixpkgs version in `pkgs.nix`,
+which is imported from `default.nix`.
+
+If you wish to use a different version, it is recommended that you look at the
 link:https://hydra.nixos.org/job/mobile-nixos/unstable/tested/latest-finished#tabs-buildinputs[latest successful build's inputs]
 to see which _revisions_ were used for a successful build.
 
-You can then clone Nixpkgs somewhere, checkout that commit ID, and refer to it
-using `NIX_PATH`. The following is only an example of how one would do this.
+You can then clone Nixpkgs somewhere, checkout that commit ID, and either put it
+into `pkgs.nixs`, or override from on the command line using `NIX_PATH`.
+
+Here is an example of the command-line override:
 
 ```
 $ cd ~/Projects/
@@ -64,7 +69,7 @@ $ cd nixpkgs
 $ git checkout $revision
 $ cd ~/Projects/mobile-nixos/
 $ export NIX_PATH="nixpkgs=$HOME/Projects/nixpkgs"
-$ nix-build [...]
+$ nix-build --arg pkgs 'import /home/user/Projects/nixpkgs {}' [...]
 ```
 
 == Customizing
@@ -95,6 +100,8 @@ overview of all the Mobile NixOS specific options.
 
 == Using in your system configuration
 
+Once you have NixOS on your actual mobile device:
+
 As the Mobile NixOS configuration may include fixes and quirks for your device,
 it is useful to include its configuration into your system's
 `configuration.nix`.
@@ -103,7 +110,7 @@ Assuming your `NIX_PATH` includes `mobile-nixos=/path/to/mobile-nixos` you can
 import the Mobile NixOS configuration for your device by doing the following.
 
 ```nix
-# configuration.nix
+# configuration.nix (on your actual mobile device)
 {
   # "xxx-yyy" is your device "Identifier" from https://mobile.nixos.org/devices,
   # e.g. "google-marlin".
