@@ -20,6 +20,7 @@ in
     android-headers = callPackage ./android-headers { };
     dtbTool = callPackage ./dtbtool { };
     dtbTool-exynos = callPackage ./dtbtool-exynos { };
+    eg25-manager = callPackage ./eg25-manager { };
     libhybris = callPackage ./libhybris {
       # FIXME : verify how it acts on native aarch64 build.
       stdenv = if self.buildPlatform != self.targetPlatform then
