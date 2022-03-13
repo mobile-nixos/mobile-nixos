@@ -226,7 +226,7 @@ in
           # A bit rude, but this ensures the keyboard always starts at a quarter
           # of the resolution.
           # onboard will not accept -s to set size with a docked keyboard.
-          height=$(( $( ${pkgs.xlibs.xwininfo}/bin/xwininfo -root | grep '^\s\+Height:' | cut -d':' -f2 ) / 4 ))
+          height=$(( $( ${pkgs.xorg.xwininfo}/bin/xwininfo -root | grep '^\s\+Height:' | cut -d':' -f2 ) / 4 ))
 
           ${pkgs.gnome3.dconf}/bin/dconf write /org/onboard/window/landscape/dock-height "$height" || :
           ${pkgs.gnome3.dconf}/bin/dconf write /org/onboard/window/portrait/dock-height "$height"  || :

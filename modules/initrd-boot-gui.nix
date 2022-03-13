@@ -6,14 +6,14 @@ let
   } ''
     (PS4=" $ "; set -x
     mkdir -p $out
-    cp -r ${pkgs.xlibs.xkeyboardconfig}/share/X11/xkb $out/xkb
-    cp -r ${pkgs.xlibs.libX11.out}/share/X11/locale $out/locale
+    cp -r ${pkgs.xorg.xkeyboardconfig}/share/X11/xkb $out/xkb
+    cp -r ${pkgs.xorg.libX11.out}/share/X11/locale $out/locale
     )
 
-    for f in $(grep -lIiR '${pkgs.xlibs.libX11.out}' $out); do
+    for f in $(grep -lIiR '${pkgs.xorg.libX11.out}' $out); do
       printf ':: substituting original path for $out in "%s".\n' "$f"
       substituteInPlace $f \
-        --replace "${pkgs.xlibs.libX11.out}/share/X11/locale/en_US.UTF-8/Compose" "$out/locale/en_US.UTF-8/Compose"
+        --replace "${pkgs.xorg.libX11.out}/share/X11/locale/en_US.UTF-8/Compose" "$out/locale/en_US.UTF-8/Compose"
     done
   '';
 in
