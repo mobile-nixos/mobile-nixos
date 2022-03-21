@@ -62,6 +62,24 @@ module LVGUI::HAL
     # POWER_SUPPLY_DP_DM=0
     # POWER_SUPPLY_CHARGE_COUNTER=1455951
     # POWER_SUPPLY_CYCLE_COUNT=849
+    # POWER_SUPPLY_NAME=rk817-battery
+    # POWER_SUPPLY_TYPE=Battery
+    # POWER_SUPPLY_PRESENT=1
+    # POWER_SUPPLY_STATUS=Discharging
+    # POWER_SUPPLY_CHARGE_TYPE=N/A
+    # POWER_SUPPLY_CHARGE_FULL=3801000
+    # POWER_SUPPLY_CHARGE_FULL_DESIGN=4000000
+    # POWER_SUPPLY_CHARGE_EMPTY_DESIGN=0
+    # POWER_SUPPLY_CHARGE_NOW=3793632
+    # POWER_SUPPLY_CONSTANT_CHARGE_VOLTAGE_MAX=4200000
+    # POWER_SUPPLY_VOLTAGE_BOOT=4151670
+    # POWER_SUPPLY_VOLTAGE_AVG=4117300
+    # POWER_SUPPLY_VOLTAGE_OCV=16000
+    # POWER_SUPPLY_CONSTANT_CHARGE_CURRENT_MAX=1500000
+    # POWER_SUPPLY_CURRENT_BOOT=-39560
+    # POWER_SUPPLY_CURRENT_AVG=-161508
+    # POWER_SUPPLY_VOLTAGE_MIN_DESIGN=3500000
+    # POWER_SUPPLY_VOLTAGE_MAX_DESIGN=4200000
     def uevent()
       File.read(File.join(@node, "uevent")).split("\n").map do |line|
         key, value = line.split("=", 2)
@@ -80,6 +98,8 @@ module LVGUI::HAL
     def percent()
       if uevent[:power_supply_capacity]
         uevent[:power_supply_capacity].to_i
+      elsif uevent[:power_supply_charge_now] and uevent[:power_supply_charge_full]
+        (uevent[:power_supply_charge_now].to_f / uevent[:power_supply_charge_full].to_f * 100).round
       else
         "unknown"
       end
