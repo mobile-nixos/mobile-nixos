@@ -3,9 +3,11 @@
 let
 
   inherit (lib)
+    literalExpression
     mergeEqualOption
     mkDefault
     mkIf
+    mkMerge
     mkOption
     types
   ;
@@ -25,6 +27,16 @@ in
   # Note: These options are provided  *instead* of `boot.initrd.*`, as we are
   # not re-using the `initrd` options.
   options.mobile.boot.stage-1.kernel = {
+    useNixOSKernel = mkOption {
+      type = types.bool;
+      default = !config.mobile.enable;
+      defaultText = literalExpression "!config.mobile.enable";
+      description = ''
+        Whether Mobile NixOS relies on upstream NixOS settings for kernel config.
+
+        Enable this when using the NixOS machinery for kernels.
+      '';
+    };
     modular = mkOption {
       type = types.bool;
       default = false;
@@ -73,50 +85,57 @@ in
     };
   };
 
-  config.mobile.boot.stage-1 = (mkIf cfg.modular {
-    firmware = [ modulesClosure ];
-    contents = [
-      { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
-    ];
-    kernel.modules = [
-      # Basic always-needed kernel modules.
-      "loop"
+  config = mkMerge [
+    # This can always be configured, as it does not affect the NixOS configuration.
+    {
+      mobile.boot.stage-1 = (mkIf cfg.modular {
+        firmware = [ modulesClosure ];
+        contents = [
+          { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
+        ];
+        kernel.modules = [
+          # Basic always-needed kernel modules.
+          "loop"
 
-      # Filesystems
-      "nls_cp437"
-      "nls_iso8859-1"
-      "fat"
-      "vfat"
+          # Filesystems
+          "nls_cp437"
+          "nls_iso8859-1"
+          "fat"
+          "vfat"
 
-      "ext4"
-      "crc32c"
-    ];
-  });
+          "ext4"
+          "crc32c"
+        ];
+      });
+    }
+    # Options affecting the NixOS configuration
+    (mkIf (!cfg.useNixOSKernel) {
+      boot.kernelPackages = mkDefault (
+        if (supportsStage-0 && config.mobile.rootfs.shared.enabled) || cfg.package == null
+        then let
+          self = {
+            # This must look legit enough so that NixOS thinks it's a kernel attrset.
+            stdenv = pkgs.stdenv;
+            # callPackage so that override / overrideAttrs exist.
+            kernel = pkgs.callPackage (
+              { runCommandNoCC, ... }: runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy"
+            ) {};
+            # Fake having `extend` available... probably dumb... but is it more
+            # dumb than faking a kernelPackages package set for eval??
+            extend = _: self;
+          };
+        in self
+        else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
+      );
 
-  config.boot.kernelPackages = mkDefault (
-    if (supportsStage-0 && config.mobile.rootfs.shared.enabled) || cfg.package == null
-    then let
-      self = {
-        # This must look legit enough so that NixOS thinks it's a kernel attrset.
-        stdenv = pkgs.stdenv;
-        # callPackage so that override / overrideAttrs exist.
-        kernel = pkgs.callPackage (
-          { runCommandNoCC, ... }: runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy"
-        ) {};
-        # Fake having `extend` available... probably dumb... but is it more
-        # dumb than faking a kernelPackages package set for eval??
-        extend = _: self;
-      };
-    in self
-    else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
-  );
+      system.boot.loader.kernelFile = mkIf (cfg.package != null && cfg.package ? file) (
+        mkDefault cfg.package.file
+      );
 
-  config.system.boot.loader.kernelFile = mkIf (cfg.package != null && cfg.package ? file) (
-    mkDefault cfg.package.file
-  );
-
-  # Disable kernel config checks as it's EXTREMELY nixpkgs-kernel centric.
-  # We're duplicating that good work for the time being.
-  config.system.requiredKernelConfig = lib.mkForce [];
+      # Disable kernel config checks as it's EXTREMELY nixpkgs-kernel centric.
+      # We're duplicating that good work for the time being.
+      system.requiredKernelConfig = lib.mkForce [];
+    })
+  ];
 }
 
