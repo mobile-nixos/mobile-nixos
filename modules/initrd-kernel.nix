@@ -16,7 +16,7 @@ let
 
   modulesClosure = pkgs.makeModulesClosure {
     kernel = cfg.package;
-    allowMissing = true;
+    allowMissing = cfg.allowMissingModules;
     rootModules = cfg.modules ++ cfg.additionalModules;
     firmware = config.hardware.firmware;
   };
@@ -62,6 +62,13 @@ in
       description = ''
         Module names to add to the closure.
         They will not be modprobed.
+      '';
+    };
+    allowMissingModules = mkOption {
+      type = types.bool;
+      default = true;
+      description = ''
+        Chooses whether the modules closure build fails if a module is missing.
       '';
     };
     # We cannot use `linuxPackagesFor` as older kernels cause eval-time assertions...
