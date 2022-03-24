@@ -178,6 +178,13 @@ module System
     args << source
     args << dest
 
+    # The kernel module for the filesystem may need to be probed.
+    begin
+      System.run("modprobe", type)
+    rescue System::CommandError
+      $logger.warn("Kernel filesystem module “#{type}” failed to load.")
+    end
+
     # We may have some mountpoints already mounted from, e.g. early logging in
     # /run/log... If we're not careful we will mount over the existing mount
     # point and hide the resulting files.
