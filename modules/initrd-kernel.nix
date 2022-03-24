@@ -18,7 +18,7 @@ let
     kernel = cfg.package;
     allowMissing = true;
     rootModules = cfg.modules ++ cfg.additionalModules;
-    firmware = cfg.firmwares;
+    firmware = config.hardware.firmware;
   };
 
   inherit (config.mobile.quirks) supportsStage-0;
@@ -62,13 +62,6 @@ in
       description = ''
         Module names to add to the closure.
         They will not be modprobed.
-      '';
-    };
-    firmwares = mkOption {
-      type = types.listOf types.str;
-      default = [];
-      description = ''
-        Firmwares to add to the closure.
       '';
     };
     # We cannot use `linuxPackagesFor` as older kernels cause eval-time assertions...
