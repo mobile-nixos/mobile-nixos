@@ -4,6 +4,7 @@
   ./_nixos-disintegration
   ./adb.nix
   ./boot-initrd.nix
+  ./bootloader.nix
   ./cross-workarounds.nix
   ./devices-metadata.nix
   ./documentation.nix

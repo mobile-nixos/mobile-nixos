@@ -10,9 +10,6 @@ let
   rootfsLabel = config.mobile.generatedFilesystems.rootfs.label;
 in
 {
-  boot.loader.grub.enable = false;
-  boot.loader.generic-extlinux-compatible.enable = false;
-
   boot.growPartition = lib.mkDefault true;
 
   mobile.generatedFilesystems.rootfs = lib.mkDefault {
