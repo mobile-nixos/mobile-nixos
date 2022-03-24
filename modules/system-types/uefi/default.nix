@@ -10,7 +10,7 @@ let
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
-  kernelFile = "${kernel}/${kernel.file}";
+  kernelFile = "${kernel}/${if kernel ? file then kernel.file else pkgs.stdenv.hostPlatform.linux-kernel.target}";
 
   # Look-up table to translate from targetPlatform to U-Boot names.
   uefiPlatforms = {
