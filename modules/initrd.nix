@@ -193,7 +193,7 @@ let
   };
 
   initrd = makeInitrd {
-    name = "initrd-${device_config.name}";
+    name = "mobile-nixos-initrd-${device_config.name}";
     inherit contents;
 
     compressor =  {
