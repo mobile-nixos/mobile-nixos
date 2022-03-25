@@ -9,6 +9,7 @@ let
     mkIf
     mkMerge
     mkOption
+    mkOverride
     types
   ;
   cfg = config.mobile.boot.stage-1.kernel;
@@ -96,7 +97,10 @@ in
         kernel.modules = [
           # Basic always-needed kernel modules.
           "loop"
-
+          "uinput"
+          "evdev"
+        ];
+        kernel.additionalModules = [
           # Filesystems
           "nls_cp437"
           "nls_iso8859-1"
