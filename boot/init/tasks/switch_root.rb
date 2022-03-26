@@ -6,6 +6,7 @@ class Tasks::SwitchRoot < SingletonTask
   SYSTEM_MOUNT_POINT = "/mnt"
 
   def initialize()
+    add_dependency(:Task, Tasks::Splash.instance)
     add_dependency(:Target, :SwitchRoot)
     @target = SYSTEM_MOUNT_POINT
   end
