@@ -16,6 +16,7 @@ in
         "feedbackd"
         "networkmanager"
         "video"
+        "wheel"
       ];
     };
     
