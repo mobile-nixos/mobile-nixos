@@ -4,7 +4,8 @@ let
   enabled = config.mobile.system.type == "uefi";
 
   inherit (lib) mkEnableOption mkIf mkOption types;
-  inherit (pkgs) hostPlatform imageBuilder runCommandNoCC;
+  inherit (pkgs.stdenv) hostPlatform;
+  inherit (pkgs) imageBuilder runCommandNoCC;
   inherit (config.mobile.outputs) recovery stage-0;
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
@@ -17,7 +18,7 @@ let
     "x86_64-linux"  =  "x64";
     "aarch64-linux" = "aa64";
   };
-  uefiPlatform = uefiPlatforms.${pkgs.targetPlatform.system};
+  uefiPlatform = uefiPlatforms.${pkgs.stdenv.targetPlatform.system};
 
   kernelParamsFile = pkgs.writeText "${deviceName}-boot.cmd" config.boot.kernelParams;
 
