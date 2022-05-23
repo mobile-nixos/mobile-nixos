@@ -495,10 +495,16 @@ stdenv.mkDerivation (inputArgs // {
   requiredSystemFeatures = [ "big-parallel" ];
   dontStrip = true;
 
-  passthru = {
+  passthru = let
+    baseVersion = lib.head (lib.splitString "-rc" version);
+  in {
     # Used by consumers of the kernel derivation to configure the build
     # appropriately for different quirks.
     inherit isQcdt isExynosDT;
+
+    inherit baseVersion;
+    kernelOlder = lib.versionOlder baseVersion;
+    kernelAtLeast = lib.versionAtLeast baseVersion;
 
     # Used by consumers to refer to the kernel build product.
     file = kernelTarget + optionalString isImageGzDtb "-dtb";
