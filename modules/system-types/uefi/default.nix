@@ -31,7 +31,7 @@ let
       --add-section .cmdline="${kernelParamsFile}"            --change-section-vma  .cmdline=0x30000 \
       --add-section .linux="${kernelFile}"                    --change-section-vma  .linux=0x2000000 \
       --add-section .initrd="${config.mobile.outputs.initrd}" --change-section-vma .initrd=0x3000000 \
-      "${pkgs.libudev}/lib/systemd/boot/efi/linux${uefiPlatform}.efi.stub" \
+      "${pkgs.udev}/lib/systemd/boot/efi/linux${uefiPlatform}.efi.stub" \
       "$out"
     )
   '';
