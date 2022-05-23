@@ -8,6 +8,9 @@ let
     config.nixpkgs.crossSystem != null &&
     config.nixpkgs.localSystem.system != null &&
     config.nixpkgs.crossSystem.system != config.nixpkgs.localSystem.system;
+  nullPackage = pkgs.runCommandNoCC "null" {} ''
+    mkdir -p $out
+  '';
 in
 lib.mkIf isCross (lib.mkMerge [
 
@@ -42,6 +45,10 @@ lib.mkIf isCross (lib.mkMerge [
           preInstall = ":";
         })
       ;
+
+      # btrfs-progs-armv7l-unknown-linux-gnueabihf-5.17.drv
+      # /nix/store/wnrc4daqbd6v5ifqlxsj75ky8556zy0p-python3-3.9.12/include/python3.9/pyport.h:741:2: error: #error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+      btrfs-progs = lib.warn "btrfs-progs neutered due to broken build with cross armv7l" nullPackage;
     })
   ];
 })
