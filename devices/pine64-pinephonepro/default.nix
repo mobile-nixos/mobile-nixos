@@ -1,5 +1,7 @@
 { config, lib, pkgs, ... }:
 {
+  imports = [ ./sound.nix ];
+
   mobile.device.name = "pine64-pinephonepro";
   mobile.device.identity = {
     name = "Pinephone Pro";

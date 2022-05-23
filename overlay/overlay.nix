@@ -56,6 +56,7 @@ in
     make_ext4fs = callPackage ./make_ext4fs {};
     hardshutdown = callPackage ./hardshutdown {};
     bootlogd = callPackage ./bootlogd {};
+    pine64-alsa-ucm = callPackage ./pine64-alsa-ucm {};
 
     #
     # Hacks
