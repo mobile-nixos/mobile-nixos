@@ -39,9 +39,9 @@ let
   # TODO: use generatedFilesystems
   boot-partition =
     imageBuilder.fileSystem.makeESP {
-      name = "mobile-nixos-ESP";
+      name = "mn-ESP"; # volume name (up to 11 characters long)
       partitionLabel = "mn-ESP";
-      partitionID   = "966D4E021684";
+      partitionID   = "4E021684"; # FIXME: forwarded to filesystem volume ID, it shouldn't be
       partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E2";
 
       # Let's give us a *bunch* of space to play around.
