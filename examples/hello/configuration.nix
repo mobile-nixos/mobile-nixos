@@ -112,7 +112,7 @@ in
     wheelNeedsPassword = lib.mkForce false;
   };
 
-  services.mingetty.autologinUser = "nixos";
+  services.getty.autologinUser = "nixos";
 
   # The LVGUI interface can be used with volume keys for selecting
   # and power to activate an option.
