@@ -39,6 +39,10 @@
 
   mobile.usb.mode = "gadgetfs";
 
+  # Alsa UCM profiles
+  mobile.quirks.audio.alsa-ucm-meld = true;
+  environment.systemPackages = [ pkgs.mobile-nixos.pine64-alsa-ucm ];
+
   # It seems Pine64 does not have an idVendor...
   mobile.usb.idVendor = "1209";  # http://pid.codes/1209/
   mobile.usb.idProduct = "0069"; # "common tasks, such as testing, generic USB-CDC devices, etc."

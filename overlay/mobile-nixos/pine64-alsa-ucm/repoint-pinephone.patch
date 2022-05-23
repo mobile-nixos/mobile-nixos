@@ -1,0 +1,18 @@
+diff --git a/ucm2/PinePhone/PinePhone.conf b/ucm2/PinePhone/PinePhone.conf
+index 9a8ea12..d136c4c 100644
+--- a/ucm2/PinePhone/PinePhone.conf
++++ b/ucm2/PinePhone/PinePhone.conf
+@@ -1,11 +1,11 @@
+ Syntax 2
+ 
+ SectionUseCase."HiFi" {
+-	File "HiFi.conf"
++	File "/PinePhone/HiFi.conf"
+ 	Comment "Play HiFi quality music"
+ }
+ 
+ SectionUseCase."Voice Call" {
+-	File "VoiceCall.conf"
++	File "/PinePhone/VoiceCall.conf"
+ 	Comment "Make a phone call"
+ }
