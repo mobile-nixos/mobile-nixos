@@ -228,8 +228,8 @@ in
           # onboard will not accept -s to set size with a docked keyboard.
           height=$(( $( ${pkgs.xorg.xwininfo}/bin/xwininfo -root | grep '^\s\+Height:' | cut -d':' -f2 ) / 4 ))
 
-          ${pkgs.gnome3.dconf}/bin/dconf write /org/onboard/window/landscape/dock-height "$height" || :
-          ${pkgs.gnome3.dconf}/bin/dconf write /org/onboard/window/portrait/dock-height "$height"  || :
+          ${pkgs.dconf}/bin/dconf write /org/onboard/window/landscape/dock-height "$height" || :
+          ${pkgs.dconf}/bin/dconf write /org/onboard/window/portrait/dock-height "$height"  || :
         '';
         in ''
           [Desktop Entry]
