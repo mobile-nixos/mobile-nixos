@@ -2,7 +2,6 @@
   runCommandCC
   , nukeReferences
   , glibc
-  , writeShellScriptBin
   , buildPackages
 }:
 
@@ -32,7 +31,7 @@ let
   install_packages = concat(map (install_package) packages);
 
   # A utility for enumerating the shared-library dependencies of a program
-  findLibs = writeShellScriptBin "find-libs" ''
+  findLibs = buildPackages.writeShellScriptBin "find-libs" ''
     set -euo pipefail
     declare -A seen
     declare -a left
