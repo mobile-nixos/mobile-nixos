@@ -32,7 +32,7 @@ let
       --add-section .cmdline="${kernelParamsFile}"            --change-section-vma  .cmdline=0x30000 \
       --add-section .linux="${kernelFile}"                    --change-section-vma  .linux=0x2000000 \
       --add-section .initrd="${config.mobile.outputs.initrd}" --change-section-vma .initrd=0x3000000 \
-      "${pkgs.libudev}/lib/systemd/boot/efi/linux${uefiPlatform}.efi.stub" \
+      "${pkgs.udev}/lib/systemd/boot/efi/linux${uefiPlatform}.efi.stub" \
       "$out"
     )
   '';
@@ -40,9 +40,9 @@ let
   # TODO: use generatedFilesystems
   boot-partition =
     imageBuilder.fileSystem.makeESP {
-      name = "mobile-nixos-ESP";
+      name = "mn-ESP"; # volume name (up to 11 characters long)
       partitionLabel = "mn-ESP";
-      partitionID   = "966D4E021684";
+      partitionID   = "4E021684"; # FIXME: forwarded to filesystem volume ID, it shouldn't be
       partitionUUID = "CFB21B5C-A580-DE40-940F-B9644B4466E2";
 
       # Let's give us a *bunch* of space to play around.
