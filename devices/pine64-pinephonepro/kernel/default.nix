@@ -5,27 +5,20 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "5.16.0-rc5";
+  version = "5.16.0";
   configfile = ./config.aarch64;
 
   src = fetchFromGitLab {
-    owner = "mobian1";
-    repo = "devices/rockchip-linux";
-    rev = "3c90f5eca702b5906e4707affadabd51c8f08603"; # update-rc5
-    sha256 = "sha256-dSbSWQYtziYYG+WS3UjKXJS8HFpImhheCKGr+pU+d/M=";
+    owner = "pine64-org";
+    repo = "linux";
+    rev = "cbaae8db31215ed315a8e3f66a075c278a5777ea";
+    sha256 = "sha256-w+7MMdGpKs5YpCN6uOCaP0F0GxdiDPiECIm7LLPurGA=";
   };
-
-  # Apply mobian debian-style bundled patches.
-  prePatch = ''
-    for f in $(cat debian/patches/series); do
-      patch -p1 < "debian/patches/$f";
-    done
-  '';
 
   patches = [
     ./0001-arm64-dts-rockchip-set-type-c-dr_mode-as-otg.patch
-    ./0001-usb-dwc3-Enable-userspace-role-switch-control.patch
     ./0001-dts-pinephone-pro-Setup-default-on-and-panic-LEDs.patch
+    ./0001-usb-dwc3-Enable-userspace-role-switch-control.patch
   ];
 
   postInstall = ''
