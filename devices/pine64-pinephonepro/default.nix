@@ -100,6 +100,9 @@
       # Keyboard
       KEYBOARD_KB151 = yes;
       IP5XXX_POWER = yes;
+
+      # Vibrate motor
+      INPUT_GPIO_VIBRA = yes;
     })
   ];
 
