@@ -15,10 +15,10 @@ control of the mode, using role switch.
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-index e46f36f698d80..22557e9a45269 100644
+index 520d998bae9a..9bf92a40ef71 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-@@ -1397,6 +1397,8 @@ &usbdrd3_0 {
+@@ -1330,6 +1330,8 @@ &usbdrd3_0 {
  &usbdrd_dwc3_0 {
  	dr_mode = "otg";
  	extcon = <&typec_extcon_bridge>;
@@ -27,6 +27,3 @@ index e46f36f698d80..22557e9a45269 100644
  	status = "okay";
  };
  
--- 
-2.34.0
-

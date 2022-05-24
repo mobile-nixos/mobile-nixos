@@ -10,10 +10,10 @@ without having to rely on debugfs.
  1 file changed, 1 insertion(+)
 
 diff --git a/drivers/usb/dwc3/drd.c b/drivers/usb/dwc3/drd.c
-index 3e1c1aacf002b..f08c4b0268902 100644
+index d7f76835137f..eb23ce88f3b6 100644
 --- a/drivers/usb/dwc3/drd.c
 +++ b/drivers/usb/dwc3/drd.c
-@@ -552,6 +552,7 @@ static int dwc3_setup_role_switch(struct dwc3 *dwc)
+@@ -555,6 +555,7 @@ static int dwc3_setup_role_switch(struct dwc3 *dwc)
  	dwc3_role_switch.set = dwc3_usb_role_switch_set;
  	dwc3_role_switch.get = dwc3_usb_role_switch_get;
  	dwc3_role_switch.driver_data = dwc;
