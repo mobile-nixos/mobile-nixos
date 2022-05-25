@@ -1,5 +1,6 @@
 {
   mobile-nixos
+, fetchpatch
 , fetchFromGitLab
 , ...
 }:
@@ -19,6 +20,10 @@ mobile-nixos.kernel-builder {
     ./0001-arm64-dts-rockchip-set-type-c-dr_mode-as-otg.patch
     ./0001-dts-pinephone-pro-Setup-default-on-and-panic-LEDs.patch
     ./0001-usb-dwc3-Enable-userspace-role-switch-control.patch
+    (fetchpatch {
+      url = "https://gitlab.com/pine64-org/linux/-/merge_requests/36.patch";
+      sha256 = "sha256-XUaxma/nEa19KyOum2EUhz3mL9LNlOoik6BDw90w1oc=";
+    })
   ];
 
   postInstall = ''
