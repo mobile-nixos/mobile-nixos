@@ -5,14 +5,14 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "5.16.0";
+  version = "5.16.7";
   configfile = ./config.aarch64;
 
   src = fetchFromGitLab {
     owner = "pine64-org";
     repo = "linux";
-    rev = "cbaae8db31215ed315a8e3f66a075c278a5777ea";
-    sha256 = "sha256-w+7MMdGpKs5YpCN6uOCaP0F0GxdiDPiECIm7LLPurGA=";
+    rev = "d31aea0338418c040856e93075a41d94b431368a"; # pine64-kernel-ppp-5.16.y-release
+    sha256 = "sha256-f8gJFm3NFpj6xaDKevQZ43I7HQokRpAXbldP+b+85cs=";
   };
 
   patches = [
