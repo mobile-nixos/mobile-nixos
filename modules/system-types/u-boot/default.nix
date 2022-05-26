@@ -159,14 +159,10 @@ let
     partitionType = "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1";
   };
 
-  # Without bootloader means "without u-boot"
-  withoutBootloader = imageBuilder.diskImage.makeGPT {
+  disk-image = imageBuilder.diskImage.makeGPT {
     name = "mobile-nixos";
     diskID = "01234567";
-    headerHole = cfg.initialGapSize;
 
-    # This has to follow the same order as defined in the u-boot bootloaders...
-    # This is not ideal... an alternative solution should be figured out.
     partitions = [
       miscPartition
       persistPartition
@@ -174,60 +170,10 @@ let
       config.mobile.outputs.generatedFilesystems.rootfs
     ];
   };
-
-  burnCommands = family: (
-    let
-      commands = {
-        allwinner = ''
-          dd if=${cfg.package}/u-boot-sunxi-with-spl.bin of=$out bs=1024 seek=8 conv=notrunc
-        '';
-        rockchip = ''
-          dd if=${cfg.package}/idbloader.img of=$out bs=512 seek=64 conv=notrunc
-          dd if=${cfg.package}/u-boot.itb    of=$out bs=512 seek=16384 conv=notrunc
-        '';
-      };
-    in
-    if commands ? "${family}"
-    then commands.${family}
-    else throw "No u-boot burn commands for SoC family '${family}'"
-  );
-
-  withBootloader = runCommandNoCC "${deviceName}_full-disk-image.img" {} ''
-    cp -v ${withoutBootloader}/mobile-nixos.img $out
-    chmod +w $out
-    echo ":: Burning bootloader"
-    (
-    PS4=" $ "
-    set -x
-    ${burnCommands soc.family}
-    )
-    echo ":: Burned"
-  '';
 in
 {
   options.mobile = {
     quirks.u-boot = {
-      soc.family = mkOption {
-        type = types.enum [ "allwinner" "rockchip" ];
-        internal = true;
-        description = ''
-          The (internal to this project) family name for the bootloader.
-          This is used to build upon assumptions like the location on the
-          backing storage that u-boot will be "burned" at.
-        '';
-      };
-      package = mkOption {
-        type = types.package;
-        description = ''
-          Which package handles u-boot for this system.
-        '';
-      };
-      initialGapSize = mkOption {
-        type = types.int;
-        description = ''
-          Size (in bytes) to keep reserved in front of the first partition.
-        '';
-      };
       additionalCommands = mkOption {
         type = types.lines;
         default = "";
@@ -267,17 +213,11 @@ in
   config = lib.mkMerge [
     { mobile.system.types = [ "u-boot" ]; }
     (mkIf enabled {
-      nixpkgs.overlays = [(final: super: {
-        device = {
-          u-boot = cfg.package;
-        };
-      })];
       mobile.outputs = {
         default = config.mobile.outputs.u-boot.disk-image;
         u-boot = {
           inherit boot-partition;
-          disk-image = withBootloader;
-          u-boot = cfg.package;
+          disk-image = disk-image;
         };
       };
     })
