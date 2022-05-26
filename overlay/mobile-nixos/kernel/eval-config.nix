@@ -4,6 +4,7 @@
 , modules ? []
 , structuredConfig
 , version
+, writeShellScript
 }: rec {
   module = import (path + "/nixos/modules/system/boot/kernel_config.nix");
   config = (lib.evalModules {
@@ -42,7 +43,7 @@
           mkConf = cfg: lib.concatStringsSep "\n" (lib.mapAttrsToList mkConfigLine cfg);
           configfile = mkConf config.settings;
 
-          validatorSnippet = ''
+          validatorSnippet = writeShellScript "kernel-configuration-validator-snippet" ''
             (
             # This can be executed outside of a Nix build script.
             set -eu
@@ -153,9 +154,9 @@
             };
             validatorSnippet = lib.mkOption {
               readOnly = true;
-              type = lib.types.str;
+              type = lib.types.package;
               description = ''
-                String that can directly be used as a kernel config file contents.
+                Path to a script that can directly be called to validate the kernel config.
               '';
             };
           };
