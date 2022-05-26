@@ -58,8 +58,6 @@
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
-  mobile.quirks.u-boot.package = pkgs.callPackage ./u-boot {};
-
   # Supports rebooting into generation kernel through kexec.
   mobile.quirks.supportsStage-0 = true;
 
