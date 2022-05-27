@@ -35,6 +35,7 @@
   ./kernel-config.nix
   ./lib.nix
   ./luks.nix
+  ./mobile.nix
   ./mobile-device.nix
   ./nixpkgs.nix
   ./outputs.nix
