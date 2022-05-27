@@ -122,7 +122,7 @@ in
             stdenv = pkgs.stdenv;
             # callPackage so that override / overrideAttrs exist.
             kernel = pkgs.callPackage (
-              { runCommandNoCC, ... }: runCommandNoCC "dummy" { version = "99"; } "mkdir $out; touch $out/dummy"
+              { runCommandNoCC, ... }: runCommandNoCC "null-kernel" { version = "99"; } "mkdir $out; touch $out/'<no-kernel>'"
             ) {};
             # Fake having `extend` available... probably dumb... but is it more
             # dumb than faking a kernelPackages package set for eval??
