@@ -30,7 +30,8 @@
 
       # Sync with <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-base.nix>
       #  and with <nixpkgs/nixos/modules/system/boot/kernel.nix>
-      modules = [
+      # FIXME: enable only when building generic images (e.g. USB images)
+      additionalModules = [
         # Some SATA/PATA stuff.
         "ahci"
         "sata_nv"
