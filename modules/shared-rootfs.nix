@@ -20,8 +20,8 @@ in
 
   config = mkIf enabled {
     # Ensure we don't bring a kernel or initrd into the system.
-    system.boot.loader.kernelFile = "dummy";
-    system.boot.loader.initrdFile = "dummy";
+    system.boot.loader.kernelFile = "<no-kernel>";
+    system.boot.loader.initrdFile = "<no-initrd>";
 
     # And totally obliterate device-specific files from stage-2.
     system.extraSystemBuilderCmds = ''
