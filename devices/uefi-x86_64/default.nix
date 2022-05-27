@@ -17,7 +17,8 @@
   };
 
   boot.kernelParams = [
-    "vt.global_cursor_default=0"
+    "fbcon=vc:2-6"
+    "console=tty0"
   ];
 
   mobile.system.type = "uefi";
