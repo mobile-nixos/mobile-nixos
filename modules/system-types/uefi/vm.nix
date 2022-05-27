@@ -40,7 +40,6 @@ in
   };
   config = mkMerge [
     (mkIf config.mobile.quirks.uefi.enableVM {
-      boot.kernelPackages = pkgs.linuxPackages_5_4;
       boot.kernelParams = mkAfter [
         "console=ttyS0"
       ];
