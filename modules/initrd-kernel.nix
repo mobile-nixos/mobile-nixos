@@ -136,6 +136,14 @@ in
       # We're duplicating that good work for the time being.
       system.requiredKernelConfig = lib.mkForce [];
     })
+    (mkIf (cfg.useNixOSKernel) {
+      mobile.boot.stage-1 = {
+        kernel = {
+          package = config.boot.kernelPackages.kernel;
+          modular = true;
+        };
+      };
+    })
   ];
 }
 
