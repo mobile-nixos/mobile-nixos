@@ -112,5 +112,5 @@
     };
   };
 
-  mobile.quirks.supportsStage-0 = true;
+  mobile.quirks.supportsStage-0 = lib.mkDefault true;
 }
