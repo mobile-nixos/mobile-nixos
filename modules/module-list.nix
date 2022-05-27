@@ -1,7 +1,6 @@
 # Then add our additional modules.
 # Keep this list `:sort`ed.
 [
-  ./_nixos-disintegration
   ./adb.nix
   ./boot-initrd.nix
   ./bootloader.nix
