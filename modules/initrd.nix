@@ -350,7 +350,7 @@ in
       # default NixOS outputs. Do not refer to this in Mobile NixOS.
       system.build.initialRamdisk =
         if config.mobile.rootfs.shared.enabled
-        then pkgs.runCommandNoCC "dummy" {} "touch $out"
+        then pkgs.runCommandNoCC "nullInitialRamdisk" {} "touch $out"
         else initrd
       ;
 
