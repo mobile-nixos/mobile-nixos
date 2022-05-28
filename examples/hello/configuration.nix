@@ -129,4 +129,7 @@ in
   # It's only noise, and the current stage-0 is not able to boot anything else
   # than a system it was built for anyway.
   mobile.quirks.supportsStage-0 = lib.mkForce false;
+
+  # Skip a long-running build for the documentation HTML.
+  documentation.enable = false;
 }
