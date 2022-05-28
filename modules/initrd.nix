@@ -230,6 +230,16 @@ let
 in
   {
     options = {
+      mobile.boot.stage-1.enable = mkOption {
+        type = types.bool;
+        default = config.mobile.enable;
+        description = ''
+          Whether to use the Mobile NixOS stage-1 implementation or not.
+
+          This will forcible override the NixOS stage-1 when enabled.
+        '';
+      };
+
       mobile.boot.stage-1.stage = mkOption {
         type = types.enum [ 0 1 ];
         default = 1;
@@ -337,7 +347,7 @@ in
       };
     };
 
-    config = {
+    config = mkIf config.mobile.boot.stage-1.enable {
       mobile.outputs = {
         inherit
           extraUtils
