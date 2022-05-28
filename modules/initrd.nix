@@ -46,8 +46,8 @@ let
   # TODO: define as an option
   withStrace = false;
 
-  device_config = config.mobile.device;
-  device_name = device_config.name;
+  inherit (config.mobile) device;
+  device_name = device.name;
 
   stage-1 = config.mobile.boot.stage-1;
 
@@ -193,7 +193,7 @@ let
   };
 
   initrd = makeInitrd {
-    name = "mobile-nixos-initrd-${device_config.name}";
+    name = "mobile-nixos-initrd-${device_name}";
     inherit contents;
 
     compressor =  {
@@ -207,7 +207,7 @@ let
   };
 
   # ncdu -f result/initrd.ncdu
-  initrd-meta = pkgs.runCommandNoCC "initrd-${device_config.name}-meta" {
+  initrd-meta = pkgs.runCommandNoCC "initrd-${device_name}-meta" {
     nativeBuildInputs = with pkgs.buildPackages; [
       ncdu
       cpio
@@ -357,7 +357,7 @@ in
       mobile.boot.stage-1.bootConfig = {
         inherit (config.mobile.boot.stage-1) stage;
         device = {
-          inherit (device_config) name;
+          name = device_name;
         };
         kernel = {
           inherit (config.mobile.boot.stage-1.kernel) modules;
