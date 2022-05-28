@@ -112,6 +112,29 @@ in
         ];
       });
     }
+    {
+      mobile.boot.stage-1 = (mkIf (!cfg.modular) {
+        contents = [
+          # Link an empty `/lib/modules` for the Modules task.
+          # This is better than implementing conditional loading of the task
+          # as the task is now always exercised.
+          {
+            object =
+              let
+                nullModules = pkgs.callPackage (
+                  { runCommandNoCC, ... }:
+                  runCommandNoCC "null-modules" { } ''
+                    mkdir -p $out/lib/modules
+                  ''
+                ) {};
+              in
+              "${nullModules}/lib/modules"
+            ;
+            symlink = "/lib/modules";
+          }
+        ];
+      });
+    }
     # Options affecting the NixOS configuration
     (mkIf (!cfg.useNixOSKernel) {
       boot.kernelPackages = mkDefault (
