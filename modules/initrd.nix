@@ -348,6 +348,16 @@ in
     };
 
     config = mkIf config.mobile.boot.stage-1.enable {
+      boot.initrd.enable = false;
+
+      # This isn't even used in our initrd...
+      boot.supportedFilesystems = lib.mkOverride 10 [ ];
+      boot.initrd.supportedFilesystems = lib.mkOverride 10 [];
+
+      system.build.initialRamdiskSecretAppender =
+        pkgs.runCommandNoCC "noopRamdiskSecretAppender" {} "touch $out"
+      ;
+
       mobile.outputs = {
         inherit
           extraUtils
