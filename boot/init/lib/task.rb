@@ -72,7 +72,7 @@ module Tasks
         # to be ran.
         # Serves nothing to point to tasks depending on other tasks.
         failed_tasks = todo.reject(&:depends_on_any_unfulfilled_task?)
-        failed_dependencies = failed_tasks.map(&:dependencies).inject(:+).uniq
+        failed_dependencies = failed_tasks.map(&:dependencies).inject(:+).uniq.reject(&:fulfilled?)
 
         if elapsed > HUNG_BOOT_NOTIFICATION
           label = "#{failed_tasks.length} tasks are waiting on #{failed_dependencies.length} unique dependencies.\n\n" +
@@ -82,15 +82,22 @@ module Tasks
         end
 
         if elapsed > HUNG_BOOT_TIMEOUT
-          # Building this message is not pretty!
-          msg =
+          msg = [
+            "",
             "#{failed_tasks.length} #{if failed_tasks.length == 1 then "task" else "tasks" end} " +
-            "did not run within #{HUNG_BOOT_TIMEOUT} seconds.\n" +
-            "\n" +
+            "did not run within #{HUNG_BOOT_TIMEOUT} seconds.\n",
             "#{failed_dependencies.length} #{if failed_dependencies.length == 1 then "dependency" else "dependencies" end} " +
-            "could not resolve:\n" +
-            failed_dependencies.map(&:pretty_name).join("\n") +
-            "\n"
+            "could not resolve:\n",
+            failed_tasks.map do |task|
+              [
+                "  - #{task.name}",
+                task.dependencies.map do |dep|
+                  "     - #{dep.pretty_name} [#{if dep.fulfilled? then "ok" else "  " end}]"
+                end.join("\n")
+              ].join("\n")
+            end.join("\n"),
+            ""
+          ].join("\n")
 
           # Fail with a black backdrop, and force the message to stay up 60s
           System.failure("TASKS_HANG_TIMEOUT", "Hung Tasks", msg, color: "000000", delay: 60)
