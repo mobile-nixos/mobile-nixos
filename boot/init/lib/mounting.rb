@@ -80,6 +80,17 @@ module Mounting
       Tasks::Luks.new(info["device"], mapper)
     end
   end
+
+  def self.mountpoint?(path)
+    begin
+      parent_path = File.dirname(path)
+      mp_stat = File.lstat(path)
+      pa_stat = File.lstat(parent_path)
+      mp_stat.dev == pa_stat.dev && mp_stat.ino == pa_stat.ino || mp_stat.dev != pa_stat.dev
+    rescue Errno::ENOENT
+      false
+    end
+  end
 end
 
 
