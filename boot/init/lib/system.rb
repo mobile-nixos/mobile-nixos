@@ -77,10 +77,13 @@ module System
 
   # Discovers the location of given program name.
   def self.which(program_name)
-    ENV["PATH"].split(":").each do |path|
+    (ENV["PATH"] or "").split(":").each do |path|
       full = File.join(path, program_name)
-      return full if File.stat(full).executable? && !File.directory?(full)
+      if File.exists?(full) && !File.directory?(full) && File.stat(full).executable? then
+        return full
+      end
     end
+    nil
   end
 
   def self.write(file, contents)
