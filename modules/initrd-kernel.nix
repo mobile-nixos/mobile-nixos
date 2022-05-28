@@ -145,6 +145,9 @@ in
         kernel = {
           package = config.boot.kernelPackages.kernel;
           modular = true;
+          # Use the modules described by the NixOS config.
+          modules = config.boot.initrd.kernelModules ++ [ "uinput" "evdev" ];
+          additionalModules = config.boot.initrd.availableKernelModules;
         };
       };
     })
