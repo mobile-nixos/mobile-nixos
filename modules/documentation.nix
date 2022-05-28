@@ -14,4 +14,7 @@ in
       };
     };
   };
+  config = {
+    documentation.nixos.options.splitBuild = false;
+  };
 }
