@@ -80,6 +80,11 @@ module Dependencies
       unless task
         $logger.warn("Missing Mount task for mount point #{@mount_point}")
       end
+
+      # Already mounted?
+      # (Could be e.g. mounted beforehand or mounted by the kernel implicitly)
+      return true if Mounting.mountpoint?(@mount_point)
+
       if task
         task.refresh_lvm
         task.ran
