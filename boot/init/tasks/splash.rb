@@ -28,6 +28,7 @@ class Tasks::Splash < SingletonTask
 
   # Implementation details-y; ask for the splash applet to be exited.
   def quit(reason, sticky: nil)
+    return if @pid.nil?
     # Ensures the progress is shown
     Progress.update({progress: 100, label: reason})
 
