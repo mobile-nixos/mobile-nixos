@@ -20,6 +20,7 @@
 , buildPackages
 
 , writeTextFile
+, writeShellScript
 , writeShellScriptBin
 
 , perl
@@ -141,7 +142,7 @@ in
 
 let
   evaluatedStructuredConfig = import ./eval-config.nix {
-    inherit lib path version;
+    inherit lib path version writeShellScript;
     structuredConfig = (systemBuild-structuredConfig version);
   };
 
