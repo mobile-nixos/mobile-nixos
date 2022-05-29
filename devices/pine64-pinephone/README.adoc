@@ -32,14 +32,10 @@ NixOS boot partition.
 
 === Building U-Boot
 
-Flashing the boot partition will not affect the installed U-Boot bootloader.
+Mobile NixOS is not managing platform firmware builds anymore.
 
-U-Boot can be built and then flashed the usual way for Allwinner platforms.
-
-```
- $ nix-build --argstr device pine64-pinephone -A build.u-boot
- $ dd if=result/u-boot-sunxi-with-spl.bin of=/dev/mmcblkX bs=1024 seek=8
-```
+We recommend installing link:https://tow-boot.org/[Tow-Boot] to dedicated storage
+(mmcboot).
 
 === Usage notes
 
@@ -50,11 +46,9 @@ Its colour or pattern can be used to infer the status.
 
 During boot:
 
- * Red as early as possible in our U-Boot build
- * Yellow when our U-Boot "boot script" ran
- * Green by the kernel whenever it sets it up
+ * Green when the kernel initializes the LED driver
 
-At any time:
+At any time after Linux booted:
 
  * The red LED will flash on panic
 
