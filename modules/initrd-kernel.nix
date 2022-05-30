@@ -155,7 +155,7 @@ in
                   kernelAtLeast = lib.versionAtLeast baseVersion;
                 };
                 version = "99";
-              } "mkdir $out; touch $out/'<no-kernel>'"
+              } "mkdir $out; touch $out/no-kernel"
             ) {};
             kernelOlder = self.kernel.kernelOlder;
             kernelAtLeast = self.kernel.kernelAtLeast;
