@@ -65,21 +65,6 @@ in
         sgtpuzzles
       ];
 
-      # Hacky way to setup an initial brightness
-      # TODO: better factor this out...
-      mobile.boot.stage-1.initFramebuffer = ''
-        brightness=10
-        echo "Setting brightness to $brightness"
-        if [ -e /sys/class/backlight/backlight/brightness ]; then
-          echo $(($(cat /sys/class/backlight/backlight/max_brightness) * brightness / 100)) > /sys/class/backlight/backlight/brightness
-        elif [ -e /sys/class/leds/lcd-backlight/max_brightness ]; then
-          echo $(($(cat /sys/class/leds/lcd-backlight/max_brightness)  * brightness / 100)) > /sys/class/leds/lcd-backlight/brightness
-        elif [ -e /sys/class/leds/lcd-backlight/brightness ]; then
-          # Assumes max brightness is 100... probably wrong, but good enough, eh.
-          echo $brightness > /sys/class/leds/lcd-backlight/brightness
-        fi
-      '';
-
       # Puts some icons on the desktop.
       system.activationScripts.fillDesktop = let
         minesDesktopFile = pkgs.writeScript "mines.desktop" ''
