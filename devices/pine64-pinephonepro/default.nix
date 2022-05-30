@@ -90,6 +90,12 @@
 
       # Sensors
       STK3310 = yes; # Light sensor
+
+      # SPI Flash
+      SPI = yes;
+      SPI_ROCKCHIP = yes;
+      MTD = yes;
+      MTD_SPI_NOR = yes;
     })
   ];
 
