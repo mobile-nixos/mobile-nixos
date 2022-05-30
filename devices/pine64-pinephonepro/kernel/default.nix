@@ -24,6 +24,10 @@ mobile-nixos.kernel-builder {
       url = "https://gitlab.com/pine64-org/linux/-/merge_requests/36.patch";
       sha256 = "sha256-XUaxma/nEa19KyOum2EUhz3mL9LNlOoik6BDw90w1oc=";
     })
+    (fetchpatch {
+      url = "https://gitlab.com/pine64-org/linux/-/merge_requests/34.patch";
+      sha256 = "sha256-4l/CngXCz1h22ftdt8A52HO+ru31cUCnRc1mxXeNwtg=";
+    })
   ];
 
   postInstall = ''
