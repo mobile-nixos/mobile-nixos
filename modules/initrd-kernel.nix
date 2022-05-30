@@ -145,8 +145,20 @@ in
             stdenv = pkgs.stdenv;
             # callPackage so that override / overrideAttrs exist.
             kernel = pkgs.callPackage (
-              { runCommandNoCC, ... }: runCommandNoCC "null-kernel" { version = "99"; } "mkdir $out; touch $out/'<no-kernel>'"
+              { runCommandNoCC, ... }: runCommandNoCC "null-kernel" {
+                passthru = rec {
+                  # minimum supported version~ish
+                  # The exact version doesn't matter much, as long as it
+                  # makes the few system options work correctly on a generic image.
+                  baseVersion = "3.18";
+                  kernelOlder = lib.versionOlder baseVersion;
+                  kernelAtLeast = lib.versionAtLeast baseVersion;
+                };
+                version = "99";
+              } "mkdir $out; touch $out/'<no-kernel>'"
             ) {};
+            kernelOlder = self.kernel.kernelOlder;
+            kernelAtLeast = self.kernel.kernelAtLeast;
             # Fake having `extend` available... probably dumb... but is it more
             # dumb than faking a kernelPackages package set for eval??
             extend = _: self;
