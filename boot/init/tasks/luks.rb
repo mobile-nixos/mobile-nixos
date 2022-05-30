@@ -31,6 +31,12 @@ class Tasks::Luks < Task
     add_dependency(:Devices, source)
     add_dependency(:Mount, "/run")
     add_dependency(:Target, :Environment)
+    # Or else we can't get the passphrase!!
+    # TODO: instead of depending on the Splash Task, depend on a new type of
+    #       dependency describing a "user input", which would be provided on
+    #       the "message bus"
+    #       e.g. `add_dependency(:Ask, :passphrase, "Passphrase for #{mapper}")`
+    add_dependency(:Task, Tasks::Splash.instance)
     self.class.register(@mapper, self)
   end
 

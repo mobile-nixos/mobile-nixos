@@ -36,4 +36,10 @@ with lib;
       '';
     };
   };
+
+  config = mkIf (!config.mobile.enable) {
+    mobile.device.name = mkOptionDefault "generic";
+    mobile.device.identity.name = mkOptionDefault "generic";
+    mobile.device.identity.manufacturer = mkOptionDefault "generic";
+  };
 }

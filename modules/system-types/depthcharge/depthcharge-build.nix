@@ -1,4 +1,5 @@
 { lib
+, stdenv
 , fetchurl
 , runCommandNoCC
 , initrd
@@ -36,7 +37,7 @@ let
   };
 
   # Kernel used in kpart.
-  kernel_file = "${kernel}/${kernel.file}";
+  kernel_file = "${kernel}/${if kernel ? file then kernel.file else stdenv.hostPlatform.linux-kernel.target}";
 
   # Kernel command line for vbutil_kernel.
   kpart_config = writeTextFile {

@@ -49,5 +49,12 @@ in
         message = "Cannot build unexpected system type: ${system_type}.\n  Known types: ${lib.concatStringsSep ", " known_system_types}";
       }
     ];
+
+    # When evaluating with the Mobile NixOS defaults disabled, we want
+    # to use the `none` type so evaluation can continue.
+    # Otherwise we want to error on an unset value if not set.
+    mobile.system.type = mkIf (!config.mobile.enable) (
+      lib.mkOptionDefault "none"
+    );
   };
 }

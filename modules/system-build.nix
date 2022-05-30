@@ -13,7 +13,7 @@ let
   '';
 in
 {
-  config = mkIf (!config.mobile.rootfs.shared.enabled) {
+  config = mkIf (config.mobile.enable && !config.mobile.rootfs.shared.enabled) {
     system.extraSystemBuilderCmds = ''
       echo ":: Adding Mobile NixOS information to the build..."
       (

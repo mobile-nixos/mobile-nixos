@@ -3,10 +3,14 @@ class Tasks::Modules < Task
   def initialize(*modules)
     add_dependency(:Files, MODULES_PATH)
     add_dependency(:Target, :Environment)
+    add_dependency(:Mount, "/proc")
+    # May be required for input or display modules
+    Targets[:Graphics].add_dependency(:Task, self)
     @modules = modules
   end
 
   def run()
+    System.write("/proc/sys/kernel/modprobe", System.which("modprobe"))
     @modules.each do |mod|
       begin
         System.run("modprobe", mod)

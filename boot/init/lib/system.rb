@@ -77,10 +77,13 @@ module System
 
   # Discovers the location of given program name.
   def self.which(program_name)
-    ENV["PATH"].split(":").each do |path|
+    (ENV["PATH"] or "").split(":").each do |path|
       full = File.join(path, program_name)
-      return full if File.stat(full).executable? && !File.directory?(full)
+      if File.exists?(full) && !File.directory?(full) && File.stat(full).executable? then
+        return full
+      end
     end
+    nil
   end
 
   def self.write(file, contents)
@@ -177,6 +180,13 @@ module System
     end
     args << source
     args << dest
+
+    # The kernel module for the filesystem may need to be probed.
+    begin
+      System.run("modprobe", type)
+    rescue System::CommandError
+      $logger.warn("Kernel filesystem module “#{type}” failed to load.")
+    end
 
     # We may have some mountpoints already mounted from, e.g. early logging in
     # /run/log... If we're not careful we will mount over the existing mount

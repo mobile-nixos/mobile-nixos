@@ -28,6 +28,9 @@ class Tasks::Splash < SingletonTask
 
   # Implementation details-y; ask for the splash applet to be exited.
   def quit(reason, sticky: nil)
+    return if @pid.nil?
+
+    count = 0
     # Ensures the progress is shown
     Progress.update({progress: 100, label: reason})
 
@@ -44,6 +47,12 @@ class Tasks::Splash < SingletonTask
 
       # Leave some breathing room to the CPU!
       sleep(0.1)
+      count += 1
+      if count > 60 # 10 seconds~ish
+        $logger.fatal("Splash applet would not quit by itself...")
+        kill
+        break
+      end
     end
 
     @pid = nil

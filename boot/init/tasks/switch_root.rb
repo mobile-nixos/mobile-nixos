@@ -6,6 +6,7 @@ class Tasks::SwitchRoot < SingletonTask
   SYSTEM_MOUNT_POINT = "/mnt"
 
   def initialize()
+    add_dependency(:Task, Tasks::Splash.instance)
     add_dependency(:Target, :SwitchRoot)
     @target = SYSTEM_MOUNT_POINT
   end
@@ -90,6 +91,13 @@ class Tasks::SwitchRoot < SingletonTask
     generation_parameter = System.cmdline().grep(/^mobile-nixos.generation=/).first
     unless generation_parameter.nil?
       return generation_parameter.split("=", 2).last
+    end
+
+    # Given as a command-line option, from the bootloader (replacement for NixOS's stage-1)
+    init_parameter = System.cmdline().grep(/^init=/).first
+    unless init_parameter.nil?
+      init_parameter = init_parameter.split("=", 2).last
+      return init_parameter.rpartition("/").first
     end
 
     # The default generation

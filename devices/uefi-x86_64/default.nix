@@ -17,27 +17,21 @@
   };
 
   boot.kernelParams = [
-    "vt.global_cursor_default=0"
+    "fbcon=vc:2-6"
+    "console=tty0"
   ];
 
   mobile.system.type = "uefi";
 
   mobile.boot.stage-1 = {
     kernel = {
-      package = let inherit (pkgs.linuxPackages_5_4) kernel; in
-        kernel.overrideAttrs({passthru ? {}, ...}: {
-          # Using `kernel.passthru` as overrideAttrs on kernel derivations
-          # does not work as expected.
-          # See https://github.com/NixOS/nixpkgs/issues/111504
-          passthru = kernel.passthru // {
-            file = "bzImage";
-          };
-        })
-      ;
-      modular = true;
+      # Rely on upstream NixOS modules by default for generic UEFI systems.
+      useNixOSKernel = lib.mkDefault true;
+
       # Sync with <nixpkgs/nixos/modules/installer/cd-dvd/installation-cd-base.nix>
       #  and with <nixpkgs/nixos/modules/system/boot/kernel.nix>
-      modules = [
+      # FIXME: enable only when building generic images (e.g. USB images)
+      additionalModules = [
         # Some SATA/PATA stuff.
         "ahci"
         "sata_nv"
@@ -119,5 +113,5 @@
     };
   };
 
-  mobile.quirks.supportsStage-0 = true;
+  mobile.quirks.supportsStage-0 = lib.mkDefault true;
 }

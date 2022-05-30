@@ -1,9 +1,9 @@
 # Then add our additional modules.
 # Keep this list `:sort`ed.
 [
-  ./_nixos-disintegration
   ./adb.nix
   ./boot-initrd.nix
+  ./bootloader.nix
   ./cross-workarounds.nix
   ./devices-metadata.nix
   ./documentation.nix
@@ -35,6 +35,7 @@
   ./kernel-config.nix
   ./lib.nix
   ./luks.nix
+  ./mobile.nix
   ./mobile-device.nix
   ./nixpkgs.nix
   ./outputs.nix

@@ -9,7 +9,7 @@ in
   options.mobile.boot.stage-1.bootlog = {
     enable = mkOption {
       type = types.bool;
-      default = true;
+      default = config.mobile.boot.stage-1.enable;
       description = ''
         Enables bootlogd logging multiplexer.
       '';

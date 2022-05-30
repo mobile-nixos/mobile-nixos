@@ -52,6 +52,19 @@ class Tasks::Mount < Task
     @named[:type]
   end
 
+  def refresh_lvm()
+    unless System.which("lvm").nil? then
+      begin
+        ENV["LVM_SUPPRESS_FD_WARNINGS"] = "1"
+        System.run("lvm", "vgchange", "--activate=y")
+        ENV["LVM_SUPPRESS_FD_WARNINGS"] = nil
+        System.run("udevadm", "trigger", "--action=add")
+      rescue System::CommandError => e
+        $logger.info(e.to_s)
+      end
+    end
+  end
+
   def name()
     "#{super}(#{source}, #{mount_point}, #{@named.inspect})"
   end
@@ -67,7 +80,15 @@ module Dependencies
       unless task
         $logger.warn("Missing Mount task for mount point #{@mount_point}")
       end
-      task && task.ran
+
+      # Already mounted?
+      # (Could be e.g. mounted beforehand or mounted by the kernel implicitly)
+      return true if Mounting.mountpoint?(@mount_point)
+
+      if task
+        task.refresh_lvm
+        task.ran
+      end
     end
 
     def depends_on?(other)
