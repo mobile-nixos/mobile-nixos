@@ -55,6 +55,11 @@ in
         # While not *universally available*, it's universally required to
         # be turned off.
         ANDROID_PARANOID_NETWORK = no;
+
+        # 1000 Hz is the preferred choice for desktop systems and other
+        # systems requiring fast interactive responses to events.
+        HZ = freeform "1000";
+        HZ_1000 = yes;
       })
       # Needed for systemd
       (helpers: with helpers; {
