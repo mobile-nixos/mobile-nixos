@@ -60,6 +60,9 @@ in
         # systems requiring fast interactive responses to events.
         HZ = freeform "1000";
         HZ_1000 = yes;
+
+        # Prefer restarting rather than hanging on panic
+        PANIC_TIMEOUT = freeform "1";
       })
       # Needed for systemd
       (helpers: with helpers; {
