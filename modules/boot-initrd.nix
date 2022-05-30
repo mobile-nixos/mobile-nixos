@@ -19,17 +19,6 @@ with lib;
         to fix the package for stage-1 use.
       '';
     };
-    stage-1.initFramebuffer = mkOption {
-      type = types.lines;
-      default = "";
-      description = ''
-        Commands ran particularly early for setting the framebuffer
-        and framebuffer devices correctly.
-
-        It is expected that after these commands the framebuffer
-        has been made available.
-      '';
-    };
     stage-1.contents = mkOption {
       type = types.listOf types.attrs;
       default = [];
