@@ -5,10 +5,6 @@
     ./sound.nix
   ];
 
-  nixpkgs.overlays = [
-    (import ./overlay)
-  ];
-
   mobile.device.name = "pine64-pinetab";
   mobile.device.identity = {
     name = "PineTab";
