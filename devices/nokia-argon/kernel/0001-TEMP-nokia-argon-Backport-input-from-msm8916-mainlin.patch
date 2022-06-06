@@ -1,0 +1,156 @@
+From 2f873f64b38d225e64220e34e425bbf10abd7443 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 10 Feb 2023 15:14:45 -0500
+Subject: [PATCH] [TEMP] nokia-argon: Backport input from msm8916-mainline
+
+This way once we upgrade the kernel to a newer release, the mapping is
+already known good and working.
+---
+ .../arm/boot/dts/qcom-msm8905-nokia-argon.dts | 88 +++++++++----------
+ 1 file changed, 43 insertions(+), 45 deletions(-)
+
+diff --git a/arch/arm/boot/dts/qcom-msm8905-nokia-argon.dts b/arch/arm/boot/dts/qcom-msm8905-nokia-argon.dts
+index f04a6189f1eb9..f2e77f7df80e6 100644
+--- a/arch/arm/boot/dts/qcom-msm8905-nokia-argon.dts
++++ b/arch/arm/boot/dts/qcom-msm8905-nokia-argon.dts
+@@ -1,6 +1,7 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ #include "qcom-msm8905.dtsi"
+ #include "qcom-pm8909.dtsi"
++#include <dt-bindings/input/input.h>
+ #include <dt-bindings/sound/qcom,q6afe.h>
+ #include <dt-bindings/sound/qcom,q6asm.h>
+ #include <dt-bindings/sound/qcom,q6voice.h>
+@@ -58,13 +59,12 @@ backlight: backlight {
+ 		default-brightness-level = <10>;
+ 	};
+ 
+-	gpio_keys {
++	gpio-keys {
+ 		compatible = "gpio-keys";
+-		pinctrl-names = "default";
+ 		pinctrl-0 = <&gpio_key_active &lid_switch_active>;
++		pinctrl-names = "default";
+ 
+-		keypad_up {
+-			label = "keypad_up";
++		key-up {
+ 			wakeup-source;
+ 			gpios = <&tlmm 90 GPIO_ACTIVE_LOW>;
+ 			linux,code = <KEY_UP>;
+@@ -72,8 +72,7 @@ keypad_up {
+ 			linux,can-disable;
+ 		};
+ 
+-		keypad_back {
+-			label = "keypad_back";
++		key-back {
+ 			wakeup-source;
+ 			gpios = <&tlmm 98 GPIO_ACTIVE_LOW>;
+ 			linux,code = <KEY_BACKSPACE>;
+@@ -81,64 +80,63 @@ keypad_back {
+ 			linux,can-disable;
+ 		};
+ 
+-		lid_close_switch {
+-			label = "lid_close_switch";
++		switch-lid-close {
+ 			wakeup-source;
+ 			gpios = <&tlmm 92 GPIO_ACTIVE_LOW>;
+ 			linux,input-type = <EV_SW>;
+ 			linux,code = <SW_LID>;
+ 		};
+ 
+-		lid_open_switch {
+-			label = "lid_open_switch";
++		switch-lid-open {
+ 			gpios = <&tlmm 36 GPIO_ACTIVE_LOW>;
+ 			linux,input-type = <EV_SW>;
+ 			linux,code = <SW_KEYPAD_SLIDE>;
+ 		};
+ 	};
+ 
+-	matrix_keypad: matrix_keypad@0 {
++	matrix_keypad: keypad {
+ 		compatible = "gpio-matrix-keypad";
+-		gpio-activelow;
+-		debounce-delay-ms = <10>;
++
+ 		col-scan-delay-ms = <7>;
+-		pinctrl-names = "default";
++		debounce-delay-ms = <10>;
++		gpio-activelow;
+ 		pinctrl-0 = <&matrix_keypad_row_default &matrix_keypad_col_default>;
++		pinctrl-names = "default";
+ 
+-		row-gpios = <&tlmm 97 0
+-			&tlmm 96 0
+-			&tlmm 95 0
+-			&tlmm 94 0>;
++		row-gpios = <&tlmm 97 GPIO_ACTIVE_LOW
++			&tlmm 96 GPIO_ACTIVE_LOW
++			&tlmm 95 GPIO_ACTIVE_LOW
++			&tlmm 94 GPIO_ACTIVE_LOW>;
+ 
+-		col-gpios = <&tlmm 52 0
+-			&tlmm 56 0
+-			&tlmm 7 0
+-			&tlmm 99 0
+-			&tlmm 6 0>;
++		col-gpios = <&tlmm 52 GPIO_ACTIVE_LOW
++			&tlmm 56 GPIO_ACTIVE_LOW
++			&tlmm 7 GPIO_ACTIVE_LOW
++			&tlmm 99 GPIO_ACTIVE_LOW
++			&tlmm 6 GPIO_ACTIVE_LOW>;
+ 
+ 		linux,keymap = <
+-			0x0000003D      /* (0,0) KEY_F3 */
+-			0x00010002      /* (1,0) KEY_1 */
+-			0x00020005      /* (2,0) KEY_4 */
+-			0x00030008      /* (3,0) KEY_7 */
+-			0x0004020A      /* (4,0) KEY_NUMERIC_STAR */
+-
+-			0x01000069      /* (0,1) KEY_LEFT */
+-			0x01010003      /* (1,1) KEY_2 */
+-			0x01020006      /* (2,1) KEY_5 */
+-			0x01030009      /* (3,1) KEY_8 */
+-			0x0104000B      /* (4,1) KEY_0 */
+-
+-			0x0200000F      /* (0,2) KEY_TAB */
+-			0x02010004      /* (1,2) KEY_3 */
+-			0x02020007      /* (2,2) KEY_6 */
+-			0x0203000A      /* (3,2) KEY_9 */
+-			0x0204020B      /* (4,2) KEY_NUMERIC_POUND */
+-
+-			0x0300001C      /* (0,3) KEY_ENTER */
+-			0x0301006A      /* (1,3) KEY_RIGHT */
+-			0x0302008B      /* (3,3) KEY_MENU */
+-			>;
++			MATRIX_KEY(0, 0, KEY_PICKUP_PHONE)
++			MATRIX_KEY(0, 1, KEY_1)
++			MATRIX_KEY(0, 2, KEY_4)
++			MATRIX_KEY(0, 3, KEY_7)
++			MATRIX_KEY(0, 4, KEY_NUMERIC_STAR)
++
++			MATRIX_KEY(1, 0, KEY_LEFT)
++			MATRIX_KEY(1, 1, KEY_2)
++			MATRIX_KEY(1, 2, KEY_5)
++			MATRIX_KEY(1, 3, KEY_8)
++			MATRIX_KEY(1, 4, KEY_0)
++
++			MATRIX_KEY(2, 0, BTN_LEFT)
++			MATRIX_KEY(2, 1, KEY_3)
++			MATRIX_KEY(2, 2, KEY_6)
++			MATRIX_KEY(2, 3, KEY_9)
++			MATRIX_KEY(2, 4, KEY_NUMERIC_POUND)
++
++			MATRIX_KEY(3, 0, KEY_ENTER)
++			MATRIX_KEY(3, 1, KEY_RIGHT)
++			MATRIX_KEY(3, 2, BTN_RIGHT)
++		>;
+ 	};
+ };
+ 
+-- 
+2.38.0
+
