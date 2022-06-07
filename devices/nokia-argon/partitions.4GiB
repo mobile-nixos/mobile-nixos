@@ -1,0 +1,51 @@
+GPT fdisk (gdisk) version 1.0.8
+
+Partition table scan:
+  MBR: protective
+  BSD: not present
+  APM: not present
+  GPT: present
+
+Found valid GPT with protective MBR; using GPT.
+Disk /dev/mmcblk0: 7634944 sectors, 3.6 GiB
+Sector size (logical/physical): 512/512 bytes
+Disk identifier (GUID): 98101B32-BBE2-4BF2-A06E-2BB33D000C20
+Partition table holds up to 32 entries
+Main partition table begins at sector 2 and ends at sector 9
+First usable sector is 34, last usable sector is 7634910
+Partitions will be aligned on 2-sector boundaries
+Total free space is 62412 sectors (30.5 MiB)
+
+Number  Start (sector)    End (sector)  Size       Code  Name
+   1              34            2081   1024.0 KiB  FFFF  traceability
+   2            2082            8225   3.0 MiB     FFFF  tunning
+   3            8226           14369   3.0 MiB     A027  modemst1
+   4           14370           20513   3.0 MiB     A028  modemst2
+   5           20514           20515   1024 bytes  A029  fsc
+   6           20516           20531   8.0 KiB     A02C  ssd
+   7           20532           21555   512.0 KiB   A012  sbl1
+   8           21556           22579   512.0 KiB   A012  sbl1bak
+   9           22580           24627   1024.0 KiB  A015  aboot
+  10           24628           26675   1024.0 KiB  A015  abootbak
+  11           26676           27699   512.0 KiB   A018  rpm
+  12           27700           28723   512.0 KiB   A018  rpmbak
+  13           28724           30259   768.0 KiB   A016  tz
+  14           30260           31795   768.0 KiB   A016  tzbak
+  15           31796           33843   1024.0 KiB  0700  pad
+  16           33844           35891   1024.0 KiB  A01F  misc
+  17           35892           56371   10.0 MiB    A036  splash
+  18           56372           57395   512.0 KiB   A02D  keystore
+  19           57396           58419   512.0 KiB   FFFF  config
+  20           58420           68659   5.0 MiB     FFFF  simlock
+  21          131072          262143   64.0 MiB    0700  modem
+  22          262144          264191   1024.0 KiB  A03A  devinfo
+  23          264192          264255   32.0 KiB    A01A  DDR
+  24          264256          270399   3.0 MiB     A02A  fsg
+  25          270400          270431   16.0 KiB    A01D  sec
+  26          270432          321535   25.0 MiB    A036  boot
+  27          321536          372735   25.0 MiB    A025  recovery
+  28          372736          438271   32.0 MiB    A026  persist
+  29          438272         2076671   800.0 MiB   A038  system
+  30         2076672         2486271   200.0 MiB   A039  cache
+  31         2486272         2490367   2.0 MiB     FFFF  oem
+  32         2490368         7634910   2.5 GiB     FFFF  userdata
