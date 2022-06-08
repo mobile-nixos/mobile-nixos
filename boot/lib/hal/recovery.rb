@@ -6,6 +6,8 @@ module Hal
       # Keys used for "mobile" use-cases
       :KEY_VOLUMEUP,
       :KEY_VOLUMEDOWN,
+      :KEY_UP,
+      :KEY_DOWN,
       # Keys used for "computer" use-cases
       :KEY_LEFTCTRL,
       :KEY_RIGHTCTRL,
