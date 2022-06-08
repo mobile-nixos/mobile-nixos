@@ -1,0 +1,44 @@
+= Nokia 8110 4G
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Boot modes
+
+Fastboot mode exists, but cannot be booted into unless a boot image fails.
+
+Erasing either `boot` or `recovery` allows booting into fastboot mode.
+
+Recovery can be entered by holding up before boot.
+
+EDL mode can be entered by holding both up and down (mashing other keys is
+fine) and powering-up the device. Using the USB connection to power-up the
+device is suggested. Finding the EDL programmer binary for this phone is left
+as an exercise to the reader.
+
+=== Factory images
+
+There are none from the vendor. The link:https://bananahackers.net/[Banana
+Hackers] group have images archived. It is unknown if they are pristine or not.
+It is recommended to make your own backups using EDL.
+
+=== First time setup
+
+This needs to be documented better.
+
+The gist of it is:
+
+1. "Brick" the boot and recovery partition using EDL
+2. Use fastboot to unlock (unclear if needed)
+3. Flash using fastboot
+
+It may be possible to rely on community recoveries for installing through
+flashable zips too, but this was untested.
+
+It would be possible to install through EDL, but is less ergonomic.
+
+=== Development tip
+
+Accessing Fastboot is inconvenient. Erasing the `boot` partition will boot
+to fastboot automatically. When working on kernel or stage-1 changes, it is
+advisable to erase the boot and recovery partition.
