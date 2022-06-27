@@ -409,6 +409,7 @@ stdenv.mkDerivation (inputArgs // {
   installTargets =
     if isCompressed != false then [ "zinstall" ] else [ "install" ]
     ++ installTargets
+    ++ optional isModular "modules_install"
   ;
 
   preInstall = optionalString enableCombiningBuildAndInstallQuirk ''
