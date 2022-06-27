@@ -50,8 +50,8 @@ let
 
   # https://github.com/thefloweringash/kevin-nix/issues/3
   make-kernel-its = fetchurl {
-    url = "https://raw.githubusercontent.com/thefloweringash/kevin-nix/e4156870bdb0a374b92c2291e5061d2c1a6c14b3/modules/make-kernel-its.sh";
-    sha256 = "05918hcmrgrj71hiq460gpzz8lngz2ccf617m9p4c82s43v4agmg";
+    url = "https://raw.githubusercontent.com/thefloweringash/kevin-nix/a14a3bad3be7757575040b31e4c8e1bb801a8ed3/modules/make-kernel-its.sh";
+    sha256 = "1c0zbk69lyd3n8a636njc6in174zccg3hpjmafhxvfmyf45vxjis";
   };
 
   # The image file containing the kernel and initrd.
