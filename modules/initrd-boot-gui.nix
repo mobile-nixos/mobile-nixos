@@ -1,6 +1,8 @@
 { config, lib, pkgs, ... }:
 
 let
+  inherit (lib) mkIf mkOption types;
+  cfg = config.mobile.boot.stage-1.gui;
   minimalX11Config = pkgs.runCommand "minimalX11Config" {
     allowedReferences = [ "out" ];
   } ''
@@ -18,27 +20,37 @@ let
   '';
 in
 {
-  mobile.boot.stage-1.contents = with pkgs; [
-    {
-      object = "${pkgs.mobile-nixos.stage-1.boot-error}/libexec/boot-error.mrb";
-      symlink = "/applets/boot-error.mrb";
-    }
-    {
-      object = "${pkgs.mobile-nixos.stage-1.boot-splash}/libexec/boot-splash.mrb";
-      symlink = "/applets/boot-splash.mrb";
-    }
-    {
-      object = "${pkgs.mobile-nixos.stage-1.boot-recovery-menu}/libexec/boot-recovery-menu.mrb";
-      symlink = "/applets/boot-selection.mrb";
-    }
-    {
-      object = "${minimalX11Config}";
-      symlink = "/etc/X11";
-    }
-  ];
+  options.mobile.boot.stage-1.gui = {
+    enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "enable splash and boot selection GUI";
+    };
+  };
 
-  mobile.boot.stage-1.environment = {
-    XKB_CONFIG_ROOT = "/etc/X11/xkb";
-    XLOCALEDIR = "/etc/X11/locale";
+  config = mkIf cfg.enable {
+    mobile.boot.stage-1.contents = with pkgs; [
+      {
+        object = "${pkgs.mobile-nixos.stage-1.boot-error}/libexec/boot-error.mrb";
+        symlink = "/applets/boot-error.mrb";
+      }
+      {
+        object = "${pkgs.mobile-nixos.stage-1.boot-splash}/libexec/boot-splash.mrb";
+        symlink = "/applets/boot-splash.mrb";
+      }
+      {
+        object = "${pkgs.mobile-nixos.stage-1.boot-recovery-menu}/libexec/boot-recovery-menu.mrb";
+        symlink = "/applets/boot-selection.mrb";
+      }
+      {
+        object = "${minimalX11Config}";
+        symlink = "/etc/X11";
+      }
+    ];
+
+    mobile.boot.stage-1.environment = {
+      XKB_CONFIG_ROOT = "/etc/X11/xkb";
+      XLOCALEDIR = "/etc/X11/locale";
+    };
   };
 }
