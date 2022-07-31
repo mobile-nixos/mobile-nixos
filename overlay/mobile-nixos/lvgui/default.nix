@@ -21,10 +21,12 @@
 , assetsPath ? "lvgui/assets"
 /** Path, local to $out, the executable will be written to */
 , executablePath ? "libexec/app.mrb"
+/** Compile with debug information */ 
+, enableDebugInformation ? false
 }:
 
 let
-  inherit (lib) concatMapStringsSep concatStringsSep;
+  inherit (lib) concatMapStringsSep concatStringsSep optionalString;
 
   # Libraries assumed to be required by *all* LVGUI apps.
   libs = (concatMapStringsSep " " (name: "${../../../boot/lib}/${name}") [
@@ -57,6 +59,7 @@ let
     mkdir -p $out/"$(dirname "${executablePath}")"
     (PS4=" $ "; set -x
     mrbc \
+      ${optionalString enableDebugInformation "-g"} \
       -o $out/"${executablePath}" \
       ${libs} \
       ${concatStringsSep " " rubyFiles}
