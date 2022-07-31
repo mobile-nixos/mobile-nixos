@@ -38,7 +38,7 @@ module LVGUI
       end
     end
 
-    def add_switch(label, description: nil, initial: false)
+    def add_switch(label, description: "", initial: false)
       LVGUI::SwitchLine.new(@container).tap do |switch|
         add_to_focus_group(switch.switch_control)
         if initial
