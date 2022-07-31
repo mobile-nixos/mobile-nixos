@@ -9,6 +9,10 @@ class Tasks::SwitchRoot < SingletonTask
     add_dependency(:Task, Tasks::Splash.instance)
     add_dependency(:Target, :SwitchRoot)
     @target = SYSTEM_MOUNT_POINT
+
+    # By default, with stage-0, we prefer using the generation kernel
+    # This may be overriden by the user recovery user interface
+    @use_generation_kernel = STAGE == 0
   end
 
   # Given a path name, without the leading SYSTEM_MOUNT_POINT, resolves
