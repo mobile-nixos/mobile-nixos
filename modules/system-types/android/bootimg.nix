@@ -23,8 +23,13 @@ pkgs.runCommandNoCC name {
   (
   PS4=" $ "
   set -x
+  kernel=${kernel}
+  ${optionalString (bootimg.fdt != null) ''
+    cat ${kernel} ${bootimg.fdt} > kernel-with-dtb
+    kernel=kernel-with-dtb
+  ''}
   mkbootimg \
-    --kernel  ${kernel} \
+    --kernel  $kernel \
     ${optionalString (bootimg.dt != null) "--dt ${bootimg.dt}"} \
     --ramdisk ${initrd} \
     --cmdline       "${cmdline}" \

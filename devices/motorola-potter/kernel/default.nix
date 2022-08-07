@@ -18,5 +18,6 @@ mobile-nixos.kernel-builder {
   };
 
   isModular = true;
-  isQcdt = true;
+  isQcdt = false;
+  needsAppendedFdt = "dtbs/qcom/sdm625-motorola-potter.dtb";
 }

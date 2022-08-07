@@ -143,7 +143,14 @@ in
         dt = lib.mkOption {
           type = types.nullOr types.path;
           default = null;
-          description = "Path to a flattened device tree to pass as --dt to mkbootimg";
+          description = "Path to a QCDT (flattened device tree collection) to pass as --dt to mkbootimg";
+          internal = true;
+        };
+
+        fdt = lib.mkOption {
+          type = types.nullOr types.path;
+          default = null;
+          description = "Path to a single flattened device tree to append to the kernel image";
           internal = true;
         };
 
@@ -215,6 +222,10 @@ in
 
     (lib.mkIf kernelPackage.isExynosDT {
       mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
+    })
+
+    (lib.mkIf (kernelPackage ? needsAppendedFdt) {
+      mobile.system.android.bootimg.fdt = "${kernelPackage}/${kernelPackage.needsAppendedFdt}";
     })
 
     {
