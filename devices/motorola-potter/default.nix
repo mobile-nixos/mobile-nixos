@@ -40,11 +40,16 @@
 
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
-  mobile.usb.mode = "android_usb";
-  # Google
-  mobile.usb.idVendor = "18D1";
-  # "Nexus 4"
-  mobile.usb.idProduct = "D001";
+  mobile.usb = {
+    mode = "gadgetfs";
+    idVendor = "18D1";  # Google
+    idProduct = "4EE7"; # something not "D001", to distinguish nixos from fastboot/lk2nd
+
+    gadgetfs.functions = {
+      rndis = "rndis.usb0";
+      adb = "ffs.adb";
+    };
+  };
 
   mobile.system.type = "android";
 
