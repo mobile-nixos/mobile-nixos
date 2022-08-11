@@ -17,6 +17,7 @@
 
   mobile.boot.stage-1 = {
     kernel.package = pkgs.callPackage ./kernel { };
+    kernel.modular = true;
   };
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
