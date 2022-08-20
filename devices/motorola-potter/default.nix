@@ -15,9 +15,22 @@
     };
   };
 
-  mobile.boot.stage-1 = {
-    kernel.package = pkgs.callPackage ./kernel { };
-    kernel.modular = true;
+  mobile.boot.stage-1.kernel = {
+    package = pkgs.callPackage ./kernel { };
+    modular = true;
+    modules = [
+      # These are modules because postmarketos builds them as
+      # modules.  Excepting that you only need one of the two
+      # panel modules (hardware-dependent) it might make more
+      # sense to build them monolithically. Unless you want to
+      # run your phone headlessly ...
+      "rmi_i2c"                 # touchscreen driver
+      "qcom-pon"                # power and volume down keys
+      "panel-boe-bs052fhm-a00-6c01"
+      "panel-tianma-tl052vdxp02"
+      "msm"                     # DRM module
+
+    ];
   };
   boot.initrd.kernelModules = [ "rmi_core" ]; # does this do anything?
   mobile.device.firmware = pkgs.callPackage ./firmware {};
