@@ -1,6 +1,14 @@
 { config, lib, pkgs, ... }:
 
-{
+
+let
+  qcom-video-firmware =
+    pkgs.runCommand "potter-firmware" {} ''
+      dir=$out/lib/firmware/qcom
+      mkdir -p $dir
+      cp  ${pkgs.linux-firmware}/lib/firmware/qcom/a530* $dir
+    '';
+in {
   mobile.device.name = "motorola-potter";
   mobile.device.identity = {
     name = "Moto G5 Plus";
@@ -14,6 +22,10 @@
       width = 1080; height = 1920;
     };
   };
+
+  mobile.boot.stage-1.firmware = [
+    qcom-video-firmware
+  ];
 
   mobile.boot.stage-1.kernel = {
     package = pkgs.callPackage ./kernel { };
@@ -29,10 +41,11 @@
       "panel-boe-bs052fhm-a00-6c01"
       "panel-tianma-tl052vdxp02"
       "msm"                     # DRM module
-
     ];
   };
-  boot.initrd.kernelModules = [ "rmi_core" ]; # does this do anything?
+
+  # in your configuration.nix hardware.firmware, in addition to this
+  # package you will probably need pkgs.linux-firmware, pkgs.wireless-regdb
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.device_name = "potter";
@@ -49,7 +62,6 @@
 
   # The boot partition on this phone is 16MB, so use `xz` compression
   # as smaller than gzip
-
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
   mobile.usb = {
@@ -88,7 +100,5 @@
       Type = "oneshot";
       RemainAfterExit = true;
     };
-  mobile.quirks.qualcomm = {
-    wcnss-wlan.enable = true;
   };
 }
