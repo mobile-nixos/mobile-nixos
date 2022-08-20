@@ -19,7 +19,7 @@
     kernel.package = pkgs.callPackage ./kernel { };
     kernel.modular = true;
   };
-
+  boot.initrd.kernelModules = [ "rmi_core" ]; # does this do anything?
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.device_name = "potter";
