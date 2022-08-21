@@ -59,6 +59,8 @@ in
 
     libusbgx = callPackage ./libusbgx {};
 
+    lk2ndMsm8953 = callPackage ./lk2nd/msm8953.nix {};
+
     # upstream this is called "gt", which is very Unix.
     gadget-tool = callPackage ./gt {};
 
