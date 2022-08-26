@@ -254,6 +254,8 @@ stdenv.mkDerivation (inputArgs // {
 
     echo ":: Patching tools/ shebangs"
     patchShebangs tools
+    echo ":: Patching scripts/ shebangs"
+    patchShebangs scripts
 
   '' + optionalString enableLinuxLogoReplacement ''
     echo ":: Replacing the logo"
