@@ -99,9 +99,13 @@ class Tasks::SwitchRoot < SingletonTask
 
     # Given as a command-line option, from the bootloader (replacement for NixOS's stage-1)
     init_parameter = System.cmdline().grep(/^init=/).first
-    unless init_parameter.nil?
-      init_parameter = init_parameter.split("=", 2).last
-      return init_parameter.rpartition("/").first
+    if init_parameter == "init=/init" then
+      $logger.info("Skipping '#{init_parameter}' cmdline parameter from quirky device...")
+    else
+      unless init_parameter.nil?
+        init_parameter = init_parameter.split("=", 2).last
+        return init_parameter.rpartition("/").first
+      end
     end
 
     # The default generation
