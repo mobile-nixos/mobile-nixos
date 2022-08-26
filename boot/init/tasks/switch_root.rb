@@ -103,6 +103,7 @@ class Tasks::SwitchRoot < SingletonTask
       $logger.info("Skipping '#{init_parameter}' cmdline parameter from quirky device...")
     else
       unless init_parameter.nil?
+        $logger.info("Using '#{init_parameter}' cmdline parameter to select generation...")
         init_parameter = init_parameter.split("=", 2).last
         return init_parameter.rpartition("/").first
       end
@@ -110,12 +111,14 @@ class Tasks::SwitchRoot < SingletonTask
 
     # The default generation
     if File.symlink?(File.join(@target, DEFAULT_SYSTEM_LINK))
+      $logger.info("Using '#{DEFAULT_SYSTEM_LINK}' default generation...")
       return DEFAULT_SYSTEM_LINK
     end
 
     # Otherwise, we need to re-hydrate a system!
     registration = File.join(@target, "nix-path-registration")
     if File.exist?(registration)
+      $logger.info("Getting NixOS generation from nix-path-registration...")
       path = File.read(registration)
         .split("\n")
         .grep(%r{^/nix/store/[a-z0-9]+-nixos-system-})
