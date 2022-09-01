@@ -58,7 +58,9 @@ in {
       offset_tags = "0x00000100";
       pagesize = "2048";
     };
+
   };
+  mobile.system.android.flashingMethod = "lk2nd";
 
   # The boot partition on this phone is 16MB, so use `xz` compression
   # as smaller than gzip

@@ -1,0 +1,73 @@
+== Building and installing
+
+There is one tested installation method for your _<%= info["fullName"] %>_.
+It relies on flashing one or more partitions on your device
+and creating a filesytem for the boot image.
+
+[WARNING]
+====
+*All installation methods can lead to data loss.*
+
+Flashing a partition *will erase everything on the partition*. Additionally,
+the common backups methods, e.g. TWRP, will *not* backup the `userdata`
+partition, which may be the installation target.
+
+Make backups.
+====
+
+=== Using Fastboot
+
+This will produce a folder with the partition images for
+your _<%= info["fullName"] %>_.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-fastboot-images
+
+Alternatively, you can build a specific partition image:
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.android-bootimg
+ $ nix-build --argstr device <%= info["identifier"] %> -A build.rootfs
+
+
+The device requires the
+"[lk2nd](https://github.com/msm8953-mainline/lk2nd)" secondary
+bootloader to be installed in the `boot` partition. This runs after
+your existing bootloader and does some hardware setup required to
+allow mainline kernels to run on your device - as well as providing a
+"fastboot" interface for devices that don't already have one.
+
+You can build lk2nd for your device as foilows:
+
+$ nix-build --argstr device <%= info["identifier"] %> -A pkgs.lk2ndMms8953
+
+To install it, reboot into the bootloader (`fastboot` mode), then run
+
+ $ fastboot flash boot result/lk2nd.img
+
+Now you can boot into lk2nd - press Volume Down while booting to enter
+Fastboot mode.  If your stock bootloader uses the same key
+combinations, you need to wait a bit before pressing the volume
+keys. Usually, waiting until the screen turns on and/or the device
+vibrates should be enough to make the stock bootloader ignore the
+keys.
+
+The suggested filesystem arrangement is to put the Mobile NixOS
+`system.img` into the `userdata` partition, and use the `system`
+partition for the stage-1 `boot.img` which on some devices is too
+large for the `boot` partition. Once running lk2nd you can do this
+as follows
+
+ $ fastboot flash userdata result/system.img
+ $ fastboot flash recovery result/recovery.img
+
+Now use the up/down keys and power key to select "Recovery mode", then
+connect to the device with adb
+
+ $ adb shell
+ ~ $ mke2fs  /dev/disk/by-partlabel/system 
+ ~ # mkdir /mnt2
+ ~ # mount /dev/disk/by-partlabel/system  /mnt2
+ ~ # exit
+
+ $ adb push result/boot.img /mnt2
+ $ adb reboot
+

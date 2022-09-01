@@ -1,6 +1,7 @@
 {
   stdenv
 , fetchFromGitHub
+, fetchpatch
 , dtc
 , gcc-arm-embedded
 , python3
@@ -25,6 +26,18 @@ in stdenv.mkDerivation {
     gcc-arm-embedded
     dtc
     python
+  ];
+
+  patches = [
+    (fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/msm8953-mainline/lk2nd/pull/35.patch";
+      hash = "sha256-6Iqn1K+l0Xek7afb4iTFewoF3SL4uiRBZubc8AE9OSU=";
+
+    })
+    (fetchpatch {
+      url = "https://patch-diff.githubusercontent.com/raw/msm8953-mainline/lk2nd/pull/36.patch";
+      hash = "sha256-hPyqQ5ykhE57gnEBqEOeP7oVigz/JjvTQjDZso2Z3Us=";
+    })
   ];
 
   postPatch = ''
