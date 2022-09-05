@@ -60,64 +60,7 @@
     rndis = "rndis.usb0";
   };
 
-  systemd.services = {
-    rmtfs = rec {
-      wantedBy = [ "multi-user.target" ];
-      requires = [ "qrtr-ns.service" ];
-      after = requires;
-      serviceConfig = {
-        ExecStart = "${pkgs.rmtfs}/bin/rmtfs -r -P -s";
-        Restart = "always";
-        RestartSec = "1";
-      };
-    };
-    qrtr-ns = rec {
-      serviceConfig = {
-        ExecStart = "${pkgs.qrtr}/bin/qrtr-ns -f 1";
-        Restart = "always";
-      };
-    };
-    tqftpserv = rec {
-      wantedBy = [ "multi-user.target" ];
-      requires = [ "qrtr-ns.service" ];
-      after = requires;
-      serviceConfig = {
-        ExecStart = "${pkgs.tqftpserv}/bin/tqftpserv";
-        Restart = "always";
-      };
-    };
-    pd-mapper = rec {
-      wantedBy = [ "multi-user.target" ];
-      requires = [ "qrtr-ns.service" ];
-      after = requires;
-      serviceConfig = {
-        ExecStart = "${pkgs.pd-mapper}/bin/pd-mapper";
-        Restart = "always";
-      };
-    };
-    msm-modem-uim-selection = {
-      enable = true;
-      before = [ "ModemManager.service" ];
-      wantedBy = [ "ModemManager.service" ];
-      path = with pkgs; [ libqmi gawk gnugrep ];
-      script = ''
-        QMICLI_MODEM="qmicli --silent -pd qrtr://0"
-        QMI_CARDS=$($QMICLI_MODEM --uim-get-card-status)
-        if ! printf "%s" "$QMI_CARDS" | grep -Fq "Primary GW:   session doesn't exist"
-        then
-            $QMICLI_MODEM --uim-change-provisioning-session='activate=no,session-type=primary-gw-provisioning' > /dev/null
-        fi
-        FIRST_PRESENT_SLOT=$(printf "%s" "$QMI_CARDS" | grep "Card state: 'present'" -m1 -B1 | head -n1 | cut -c7-7)
-        FIRST_PRESENT_AID=$(printf "%s" "$QMI_CARDS" | grep "usim (2)" -m1 -A3 | tail -n1 | awk '{print $1}')
-        $QMICLI_MODEM --uim-change-provisioning-session="slot=$FIRST_PRESENT_SLOT,activate=yes,session-type=primary-gw-provisioning,aid=$FIRST_PRESENT_AID" > /dev/null
-      '';
-      serviceConfig = {
-        Type = "oneshot";
-        RemainAfterExit = true;
-      };
-    };
-  };
-
+  mobile.quirks.qualcomm.sdm845-modem.enable = true;
 
   services.udev.extraRules = ''
     SUBSYSTEM=="input", KERNEL=="event*", ENV{ID_INPUT}=="1", SUBSYSTEMS=="input", ATTRS{name}=="pmi8998_haptics", TAG+="uaccess", ENV{FEEDBACKD_TYPE}="vibra"
