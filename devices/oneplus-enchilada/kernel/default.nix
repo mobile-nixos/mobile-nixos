@@ -1,24 +1,24 @@
-{
-  mobile-nixos
+{ mobile-nixos
+, fetchFromGitHub
 , fetchFromGitLab
-, fetchpatch
 , ...
 }:
 
 mobile-nixos.kernel-builder rec {
-  version = "5.16.0-rc5";
-  modDirVersion = "5.16.0-rc5";
+  version = "5.19.7";
   configfile = ./config.aarch64;
+
   src = fetchFromGitLab {
     owner = "sdm845-mainline";
     repo = "linux";
-    rev = "9ed86f14d0718d81a55708abe5355fd2a8a09b8d";
-    sha256 = "sha256-/eBwyhFmBQ0yvbUQ3gv5lNTW7OE0SrwZdy9wVz6lOSA=";
+    rev = "3c3bb6290821d2feb6adb017227dde0ce773bd16"; # sdm845/5.19-release
+    hash = "sha256-1kHco5IRDEFruiZuplug5AZbApUQPV780xFM8PYK02I=";
   };
 
   patches = [
   ];
 
+  # TODO: generic mainline build; append per-device...
   postInstall = ''
     echo ':: Copying kernel'
     (PS4=" $ "; set -x
