@@ -33,6 +33,7 @@ in
       # Basic universal options
       (helpers: with helpers; {
         # POSIX_ACL and XATTR are generally needed.
+        TMPFS = yes;
         TMPFS_POSIX_ACL = yes;
         TMPFS_XATTR = yes;
 
@@ -77,6 +78,7 @@ in
         SYSFS_DEPRECATED = no;
         UEVENT_HELPER = no;
         FW_LOADER_USER_HELPER = option no;
+        SCSI = yes;
         BLK_DEV_BSG = yes;
         DEVPTS_MULTIPLE_INSTANCES = whenOlder "4.7" yes;
       })
