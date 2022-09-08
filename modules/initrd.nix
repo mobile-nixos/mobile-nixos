@@ -209,7 +209,7 @@ let
   # ncdu -f result/initrd.ncdu
   initrd-meta = pkgs.runCommand "initrd-${device_name}-meta" {
     nativeBuildInputs = with pkgs.buildPackages; [
-      ncdu
+      ncdu_1
       cpio
       tree
     ];
