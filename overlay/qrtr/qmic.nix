@@ -2,7 +2,7 @@
 
 stdenv.mkDerivation {
   pname = "qmic";
-  version = "unstable-2021-10-04";
+  version = "unstable-2022-07-18";
 
   src = fetchFromGitHub {
     owner = "andersson";
