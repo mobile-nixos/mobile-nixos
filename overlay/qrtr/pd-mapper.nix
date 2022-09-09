@@ -2,15 +2,15 @@
 
 stdenv.mkDerivation {
   pname = "pd-mapper";
-  version = "unstable-2020-10-22";
+  version = "unstable-2022-02-08";
 
   buildInputs = [ qrtr ];
 
   src = fetchFromGitHub {
     owner = "andersson";
     repo = "pd-mapper";
-    rev = "d7fe25fa6eff2e62cf264544adee9e8ca830dc78";
-    hash = "sha256-jTtZN95YzqxhBr4SYCxbkrEnmy/Y/ox3MDKS8pelMlE=";
+    rev = "9d78fc0c6143c4d1b7198c57be72a6699ce764c4";
+    hash = "sha256-vQZZ3WtZGh5OEw0EmlmT/My/cY6VRruuicsFR0YCQOw=";
   };
 
   patches = [
