@@ -1,6 +1,10 @@
 { config, lib, pkgs, ... }:
 
 {
+  imports = [
+    ./sound.nix
+  ];
+
   mobile.device.name = "oneplus-enchilada";
   mobile.device.identity = {
     name = "OnePlus 6";
