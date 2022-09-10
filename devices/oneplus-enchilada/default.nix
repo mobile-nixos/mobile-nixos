@@ -22,13 +22,17 @@
   mobile.boot.stage-1 = {
     compression = "xz";
     kernel.package = pkgs.callPackage ./kernel { };
-    firmware = [
-      config.mobile.device.firmware
-    ];
   };
 
-
   mobile.device.firmware = pkgs.callPackage ./firmware {};
+  hardware.enableRedistributableFirmware = true;
+  hardware.firmware = lib.mkBefore [ config.mobile.device.firmware ];
+  mobile.boot.stage-1.firmware = [
+    # NOTE: putting the full firmware files here risks making the initramfs
+    # too big, which is known to break boot.
+    # Having the firmware files only in the built system is sufficient.
+    # config.mobile.device.firmware
+  ];
 
   mobile.system.android.device_name = "OnePlus6";
   mobile.system.android = {
@@ -54,9 +58,6 @@
   mobile.usb.idProduct = "D001";
 
   mobile.system.type = "android";
-
-  hardware.enableRedistributableFirmware = true;
-  hardware.firmware = lib.mkBefore [ config.mobile.device.firmware ];
 
 
   mobile.usb.gadgetfs.functions = {
