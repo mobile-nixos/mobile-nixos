@@ -58,13 +58,14 @@ class GUI::StatusIcons < LVGUI::Widget
 
         "#{symbol} #{@battery.percent}%"
       else
-        "\uf057"
+        ""
       end
     end
 
     def data_usb()
-      # XXX
-      "\uf287"
+      # TODO: USB icon if ever needed
+      #"\uf287"
+      ""
     end
 
     def data_wifi()
