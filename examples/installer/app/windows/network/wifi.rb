@@ -74,6 +74,7 @@ module GUI
         end
         @network_buttons << add_button(label.join(" ")) do
           NetworkWifiPassphraseWindow.instance.network = net
+          NetworkWifiPassphraseWindow.instance.interface = interface
           NetworkWifiPassphraseWindow.instance.present()
         end
       end
