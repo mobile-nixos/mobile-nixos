@@ -36,6 +36,7 @@ class LVGUI::TextArea < LVGUI::Widget
       when LVGL::EVENT::CLICKED
         LVGUI::Keyboard.instance.set_ta(self)
         LVGUI::Keyboard.instance.show()
+        @on_click.call() if @on_click
       when LVGL::EVENT::INSERT
         # Not exactly right, but right enough.
         char = LVGUI::Native.lv_event_get_data().ref_to_char()
@@ -45,9 +46,11 @@ class LVGUI::TextArea < LVGUI::Widget
           LVGUI::Keyboard.instance.set_ta(nil)
           LVGUI::Keyboard.instance.hide()
           # Create a new string
-          # get_text() gives us a Fiddle::Pointer (leaky abstraction!!!)
-          value = "#{get_text()}"
+          value = get_text()
           @on_submit.call(value) if @on_submit
+        else
+          value = [get_text(), char].join("")
+          @on_modified.call(value) if @on_modified
         end
       #else
       #  puts "Unhandled event for #{self}: #{LVGL::EVENT.from_value(event)}"
@@ -86,6 +89,12 @@ class LVGUI::TextArea < LVGUI::Widget
     end
   end
 
+  def on_click=(cb)
+    @on_click = cb
+  end
+  def on_modified=(cb)
+    @on_modified = cb
+  end
   def on_submit=(cb)
     @on_submit = cb
   end
