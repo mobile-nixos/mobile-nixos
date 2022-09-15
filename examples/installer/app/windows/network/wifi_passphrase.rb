@@ -3,6 +3,8 @@ module GUI
     include LVGUI::BaseUIElements
     include LVGUI::ButtonPalette
 
+    attr_accessor :interface
+
     # {
     #   :in_use=>false,
     #   :bssid=>"A0:00:00:00:00:D4",
@@ -22,19 +24,28 @@ module GUI
       @refreshing = false
 
       add_header("Wireless Setup")
-      @network_name_label = add_text("[...]")
+      @network_name_label = add_text("[...]") # Will be filled on #present
 
-      @security_text = add_text("[...]")
+      @security_text = add_text("[...]") # Will be filled on #present
       add_text("A passphrase is necessary to continue.")
 
       @passphrase_input = add_textarea().tap do |ta|
         ta.on_submit = ->(value) do
-          # XXX
-          p value
-          puts "(XXX exiting)"
-          exit(0)
+          @status_text.set_text("Connecting...")
+          # Push connection to next update cycle, so we get the message up.
+          LVGL::Hacks::LVTask.once(->() do
+            Hardware::Network.connect_wifi(interface: interface, network: network, passphrase: value) do |success|
+              if success then
+                @status_text.set_text("Connected successfully.")
+              else
+                @status_text.set_text("Failed to connect.")
+              end
+            end
+          end, prio: LVGL::TASK_PRIO::LOWEST)
         end
       end
+
+      @status_text = add_text("") # Will be filled on connect
 
       @back_button = LVGUI::BackButton.new(@toolbar, self).tap do |button|
         add_to_focus_group(button)
