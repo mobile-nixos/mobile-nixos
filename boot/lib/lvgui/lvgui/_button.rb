@@ -2,6 +2,19 @@ class LVGUI::Button < LVGUI::Widget
   module StyleMods
     extend self
 
+    # FIXME: actually reset instead of setting a style that looks like the normal button.
+    def none(button)
+      style = button.get_style(LVGL::BTN_STYLE::REL).dup
+      style.body_main_color = LVGUI::Colors::BLUE_LIGHT
+      style.body_grad_color = style.body_main_color
+      button.set_style(LVGL::BTN_STYLE::REL, style)
+
+      style = button.get_style(LVGL::BTN_STYLE::PR).dup
+      style.body_main_color = LVGL::LVColor.mix(LVGUI::Colors::BLUE_LIGHT, LVGUI::Colors::BLACK, 200)
+      style.body_grad_color = style.body_main_color
+      button.set_style(LVGL::BTN_STYLE::PR, style)
+    end
+
     def primary(button)
       style = button.get_style(LVGL::BTN_STYLE::REL).dup
       style.body_main_color = LVGUI::Colors::GREEN
