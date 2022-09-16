@@ -1,6 +1,20 @@
 module GUI
   class PhoneEnvironmentConfigurationWindow < BaseSystemConfigurationWindow
 
+    ENVIRONMENTS = [
+      # Keep them alphabetically sorted
+      [:phosh, "Phosh"],
+      [:plamo, "Plasma Mobile"],
+    ]
+
+    def configuration_data
+      {
+        environment: {
+          phone_environment: @environment_selection.selected,
+        },
+      }
+    end
+
     def setup_window()
       @title.set_text("Phone environment")
       add_text(%Q{
@@ -14,11 +28,7 @@ module GUI
         The options are presented in alphabetical order.
       }.gsub(/^\s+/, "").strip)
 
-      @environment_selection = add_select("Environment", [
-        # Keep them alphabetically sorted
-        [:phosh, "Phosh"],
-        [:plamo, "Plasma Mobile"],
-      ]) do |new_state|
+      @environment_selection = add_select("Environment", ENVIRONMENTS) do |new_state|
         validate_step
       end
     end

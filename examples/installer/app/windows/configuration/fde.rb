@@ -1,6 +1,15 @@
 module GUI
   class FDEConfigurationWindow < BaseSystemConfigurationWindow
 
+    def configuration_data
+      {
+        fde: {
+          enable: @enable_fde.get_state(),
+          passphrase: @passphrase_input.get_text(),
+        }
+      }
+    end
+
     def setup_window()
       @title.set_text("Full Disk Encryption")
       add_text(%Q{

@@ -1,6 +1,17 @@
 module GUI
   class BasicInfoConfigurationWindow < BaseSystemConfigurationWindow
 
+    def configuration_data
+      {
+        info: {
+          hostname: @hostname_input.get_text(),
+          fullname: @fullname_input.get_text(),
+          username: @username_input.get_text(),
+          password: @password_input.get_text(),
+        },
+      }
+    end
+
     def setup_window()
       @title.set_text("About you and your device")
       add_text(%Q{

@@ -9,6 +9,15 @@ module GUI
       [ :PhoneEnvironmentConfigurationWindow, "Phone environment" ],
     ]
 
+    def configuration_data()
+      STEPS.map do |pair|
+        step, name = pair
+        window = GUI.const_get(step).instance
+        window.configuration_data
+      end
+        .reduce(&:merge)
+    end
+
     def initialize()
       super()
 
