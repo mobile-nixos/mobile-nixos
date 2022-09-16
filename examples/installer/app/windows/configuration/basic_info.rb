@@ -4,7 +4,7 @@ module GUI
     def setup_window()
       @title.set_text("About you and your device")
       add_text(%Q{
-        Let's configure some basic facts.
+        Let's configure some basic facts about you and your device.
       }.gsub(/^\s+/, "").strip)
 
       add_text("Your name\nThis is used for the user description.")
@@ -113,7 +113,7 @@ module GUI
         self.continue_location = nil
 
         if is_valid?()
-          self.continue_location = MainWindow.instance # FIXME: next step
+          self.continue_location = PhoneEnvironmentConfigurationWindow.instance
         end
       end)
     end
