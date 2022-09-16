@@ -34,7 +34,7 @@ module GUI
       end
 
       @configuration_button = add_button("System Configuration") do
-        FDEConfigurationWindow.instance.present
+        SystemConfigurationStepsWindow.instance.present
       end
 
       @installation_button = add_button("Proceed to installation") do
