@@ -58,6 +58,7 @@ class LVGUI::Button < LVGUI::Widget
   end
 
   def initialize(parent)
+    @enabled = true
     super(LVGL::LVButton.new(parent))
     set_layout(LVGL::LAYOUT::COL_M)
     set_ink_in_time(200)
@@ -65,9 +66,23 @@ class LVGUI::Button < LVGUI::Widget
     set_ink_out_time(500)
     set_fit2(LVGL::FIT::FILL, LVGL::FIT::TIGHT)
     @label = LVGL::LVLabel.new(self)
+    set_opa_scale_enable(true)
   end
 
   def set_label(label)
     @label.set_text(label)
+  end
+
+  def enabled?()
+    @enabled
+  end
+
+  def set_enabled(state)
+    @enabled = state
+    if enabled?()
+      set_opa_scale(LVGL::OPA.scale(100))
+    else
+      set_opa_scale(LVGL::OPA.scale(20))
+    end
   end
 end
