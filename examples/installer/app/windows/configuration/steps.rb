@@ -6,6 +6,7 @@ module GUI
     STEPS = [
       [ :FDEConfigurationWindow, "Full Disk Encryption" ],
       [ :BasicInfoConfigurationWindow, "About you and your device" ],
+      [ :PhoneEnvironmentConfigurationWindow, "Phone environment" ],
     ]
 
     def initialize()
