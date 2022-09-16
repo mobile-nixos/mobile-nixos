@@ -53,9 +53,6 @@ module GUI
           @username_input.set_text(username)
         end
       end
-
-      # TODO: Back to list of steps?
-      self.back_location = MainWindow.instance
     end
 
     #

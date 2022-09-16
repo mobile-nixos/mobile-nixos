@@ -17,7 +17,7 @@ module GUI
           end
         end
       end
-      self.back_location = nil
+      self.back_location = SystemConfigurationStepsWindow.instance
       self.continue_location = nil
 
       setup_window()

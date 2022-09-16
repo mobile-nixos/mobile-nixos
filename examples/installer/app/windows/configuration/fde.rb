@@ -43,9 +43,6 @@ module GUI
       end
 
       toggle_passphrase(true)
-
-      # TODO: Back to list of steps?
-      self.back_location = MainWindow.instance
     end
 
     def toggle_passphrase(new_state)
