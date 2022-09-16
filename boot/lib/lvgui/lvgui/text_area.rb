@@ -11,23 +11,8 @@ class LVGUI::TextArea < LVGUI::Widget
     @hidden = false
     set_text("")
     set_placeholder_text("")
-    set_pwd_mode(true)
     set_one_line(true)
     set_opa_scale_enable(true)
-    get_style(LVGL::TA_STYLE::BG).dup.tap do |style|
-      set_style(LVGL::TA_STYLE::BG, style)
-      style.body_main_color = 0xFF000000
-      style.body_grad_color = 0xFF000000
-      style.body_radius = 5
-      style.body_border_color = 0xFFFFFFFF
-      style.body_border_width = 3
-      style.body_border_opa = 255
-      style.text_color = 0xFFFFFFFF
-    end
-    get_style(LVGL::TA_STYLE::PLACEHOLDER).dup.tap do |style|
-      set_style(LVGL::TA_STYLE::PLACEHOLDER, style)
-      style.text_color = 0xFFAAAAAA
-    end
     set_cursor_type(get_cursor_type() | LVGL::CURSOR::HIDDEN)
 
     self.event_handler = -> (event) do
