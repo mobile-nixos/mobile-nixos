@@ -3,20 +3,16 @@ module GUI
     include LVGUI::BaseUIElements
     include LVGUI::ButtonPalette
 
-    attr_accessor :configuration_done
-
     def network_online?()
       Hardware::Network.online?
     end
 
     def configuration_done?()
-      configuration_done
+      SystemConfigurationStepsWindow.instance.is_valid?
     end
 
     def initialize()
       super()
-
-      @configuration_done = false
 
       add_text(%Q{
         This installer is split in three steps.

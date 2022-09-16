@@ -23,7 +23,6 @@ module GUI
           end
         end
       end
-      self.back_location = MainWindow.instance
 
       @buttons = {}
 
@@ -38,6 +37,10 @@ module GUI
 
     def present()
       super()
+
+      # Don't cyclically refer ton MainWindow in `#initialize`
+      self.back_location = MainWindow.instance
+
       @container.refresh()
 
       # Contorted logic to:
@@ -62,6 +65,14 @@ module GUI
             LVGUI::Button::StyleMods.primary(button)
           end
         end
+      end
+    end
+
+    def is_valid?()
+      STEPS.all? do |pair|
+        step, name = pair
+        window = GUI.const_get(step).instance
+        window.is_valid?
       end
     end
 
