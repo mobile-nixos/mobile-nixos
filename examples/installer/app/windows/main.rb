@@ -41,6 +41,27 @@ module GUI
 
       LVGUI::HorizontalSeparator.new(@container)
 
+      if LVGL::Introspection.simulator?
+        add_button("Fake configuration!", style: :danger) do
+          FDEConfigurationWindow.instance.instance_exec do
+            @passphrase_input.set_text("a passphrase")
+            @passphrase_copy.set_text("a passphrase")
+          end
+          BasicInfoConfigurationWindow.instance.instance_exec do
+            @hostname_input.set_text("example-system")
+            @fullname_input.set_text("E. Xample")
+            @username_input.set_text("user")
+            @password_input.set_text("hunter2")
+            @password_copy.set_text("hunter2")
+          end
+          PhoneEnvironmentConfigurationWindow.instance.instance_exec do
+            @environment_selection.select(:phosh)
+          end
+
+          refresh_buttons()
+        end
+      end
+
       add_buttons([
         ["Quit",  ->() { QuitWindow.instance.present }],
       ])
