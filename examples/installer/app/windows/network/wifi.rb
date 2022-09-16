@@ -27,7 +27,6 @@ module GUI
       @refresh_button = add_button("#{LVGL::Symbols::REFRESH} Refresh") do
         refresh_access_points()
       end
-      @refresh_button.set_opa_scale_enable(true)
 
       @container.refresh()
     end
@@ -85,8 +84,7 @@ module GUI
     end
 
     def refresh_state()
-      # FIXME: custom button should have disable/enable function
-      @refresh_button.set_opa_scale(if @refreshing then 255/2 else 255 end)
+      @refresh_button.set_enabled(!@refreshing)
     end
   end
 end

@@ -26,7 +26,6 @@ module GUI
       @refresh_button = add_button("#{LVGL::Symbols::REFRESH} Refresh") do
         refresh_interfaces()
       end
-      @refresh_button.set_opa_scale_enable(true)
 
       # When coming from the toolbox, continue_location will be set to nil
       # When coming from the installer flow, continue_location will be set to the next page.
@@ -102,8 +101,7 @@ module GUI
     end
 
     def refresh_state()
-      # TODO: custom button should have disable/enable function
-      @refresh_button.set_opa_scale(if @refreshing then 255/2 else 255 end)
+      @refresh_button.set_enabled(!@refreshing)
     end
   end
 end
