@@ -56,7 +56,7 @@ class LVGUI::OptionSelection < LVGUI::Widget
     @chosen_option_label = LVGL::LVLabel.new(@label_container).tap do |label|
       style = label.get_style(LVGL::LABEL_STYLE::MAIN).dup()
       # It's a bit more subdued
-      style.text_color = 0xffaaaaaa
+      style.text_color = LVGUI::Colors::BLUE_DARK2
       label.set_style(LVGL::LABEL_STYLE::MAIN, style)
       label.set_long_mode(LVGL::LABEL_LONG::BREAK)
       label.set_click(false)
