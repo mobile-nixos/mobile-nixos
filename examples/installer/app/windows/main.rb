@@ -34,6 +34,7 @@ module GUI
       end
 
       @installation_button = add_button("Proceed to installation") do
+        InstallationReviewWindow.instance.present
       end
 
       refresh_buttons()
