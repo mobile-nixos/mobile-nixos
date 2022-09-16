@@ -14,6 +14,7 @@ mobile-nixos.mkLVGUIApp {
   enableDebugInformation = true;
   rubyFiles = [
     shellwords
+    "string.rb"
     "$(find ./lib -type f -name '*.rb' | sort)"
     "$(find ./gui -type f -name '*.rb' | sort)"
     "$(find ./windows -type f -name '*.rb' | sort)"
