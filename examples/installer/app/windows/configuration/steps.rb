@@ -54,7 +54,7 @@ module GUI
         LVGUI::Button::StyleMods.none(button)
 
         if window.is_valid? then
-          button.set_enabled(true)
+          button.set_enabled(!current_found)
         else
           unless current_found then
             current_found = true
