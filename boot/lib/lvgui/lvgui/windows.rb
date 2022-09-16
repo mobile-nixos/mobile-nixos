@@ -11,7 +11,9 @@ module LVGUI
         btn.event_handler = ->(event) do
           case event
           when LVGL::EVENT::CLICKED
-            yield
+            if btn.enabled?()
+              yield
+            end
           end
         end
         if style
