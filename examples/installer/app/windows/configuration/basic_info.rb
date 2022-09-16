@@ -12,6 +12,7 @@ module GUI
 
       add_text("User name\nThis is the login username.")
       @username_input = add_textarea()
+      @username_edited = false
 
       add_text("Password and confirmation")
       @password_input = add_textarea()
@@ -37,6 +38,19 @@ module GUI
         end
         ta.on_submit = ->(value) do
           validate_step()
+        end
+      end
+
+      @username_input.on_modified = ->(value) do
+        validate_step()
+        @username_edited = true
+      end
+
+      @fullname_input.on_modified = ->(value) do
+        validate_step()
+        unless @username_edited then
+          username = value.deburr.downcase.gsub(/ /, ".").gsub(/[^a-z0-9-.]/, "-")
+          @username_input.set_text(username)
         end
       end
 
