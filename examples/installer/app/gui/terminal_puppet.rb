@@ -139,4 +139,13 @@ class GUI::TerminalPuppet < LVGUI::Widget
       @puppet.kill_server()
     end
   end
+
+  def pane_dead?()
+    if @puppet
+      @puppet.pane_dead?
+    else
+      # Did not run yet, so not dead yet.
+      false
+    end
+  end
 end
