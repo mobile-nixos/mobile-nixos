@@ -25,7 +25,7 @@ module GUI
       }.gsub(/^ +/, "").strip)
 
       add_button("I understand, let's proceed", style: :enticing) do
-        puts("GOOO")
+        InstallationInstallationWindow.instance.present
       end
 
       add_button("Let's postpone for now...") do
