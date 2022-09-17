@@ -17,6 +17,10 @@ module Configuration
     GUI::SystemConfigurationStepsWindow.instance.configuration_data
   end
 
+  def save_json!(path)
+    File.write(path, configuration_data.to_json())
+  end
+
   def configuration_description
     data = configuration_data
     DESCRIPTION.map do |description|
