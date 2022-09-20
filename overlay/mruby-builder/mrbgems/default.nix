@@ -310,6 +310,17 @@ rec {
     meta.license = licenses.mit;
   };
 
+  mruby-secure-random = mkGem {
+    src = fetchFromGitHub {
+      repo = "mruby-secure-random";
+      owner = "monochromegane";
+      rev = "4971702e8cd299054b3220b4adb6bc3031ae2881";
+      sha256 = "sha256-fnMuTgGHM0CNado/ZzMFLfZ+Ah6ug5A0nQ2Kf9inPto=";
+    };
+
+    meta.license = licenses.mit;
+  };
+
   mruby-sha1 = mkGem {
     src = fetchFromGitHub {
       repo = "mruby-sha1";
