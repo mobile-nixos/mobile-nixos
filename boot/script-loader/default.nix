@@ -30,6 +30,7 @@ let
       mruby-open3
       mruby-process-clock_gettime
       mruby-regexp-pcre
+      mruby-secure-random
       mruby-singleton
       mruby-time-strftime
       mruby-zmq
