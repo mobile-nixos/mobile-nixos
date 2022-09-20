@@ -3,7 +3,8 @@ module GUI
     include LVGUI::BaseUIElements
     include LVGUI::ButtonPalette
 
-    INSTALLER_JSON = File.join(ENV["XDG_RUNTIME_DIR"], "installer.json")
+    INSTALLER_PREFIX = File.join(ENV["XDG_RUNTIME_DIR"], "mobile-installer")
+    INSTALLER_JSON = File.join(INSTALLER_PREFIX, "installer.json")
 
     def initialize()
       super()
@@ -11,7 +12,7 @@ module GUI
       @installer_terminal = GUI::TerminalPuppet.new(@container)
       @installer_terminal.terminal_height = 25
       # FIXME: custom installer script
-      @installer_terminal.command = ["less", INSTALLER_JSON].shelljoin()
+      @installer_terminal.command = ["less", File.join(INSTALLER_PREFIX, "configuration.nix")].shelljoin()
 
       @continue_button = add_button("Continue", style: :primary) do
         puts("TODO: go to a window explaining to the user that the installation was successful, and they should probably remove the installer media and then reboot button.")
@@ -33,7 +34,9 @@ module GUI
         update_terminal()
       end)
 
+      FileUtils.mkdir_p(INSTALLER_PREFIX)
       Configuration.save_json!(INSTALLER_JSON)
+      Configuration.save_configuration!(INSTALLER_PREFIX)
       @installer_terminal.run()
 
       super()
