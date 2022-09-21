@@ -60,6 +60,27 @@ networking.hostName = #{@configuration[:info][:hostname].to_json};
 EOF
   end
 
+  def defaults_fragment()
+<<EOF
+#
+# Opinionated defaults
+#
+
+# Use Network Manager
+networking.wireless.enable = false;
+networking.networkmanager.enable = true;
+
+# Use PulseAudio
+powerManagement.enable = true;
+
+# Enable Bluetooth
+powerManagement.enable = true;
+
+# Enable power management options
+powerManagement.enable = true;
+EOF
+  end
+
   def phone_environment_fragment()
     case @configuration[:environment][:phone_environment].to_sym
     when :phosh
@@ -113,6 +134,7 @@ EOF
     fragments = [
       imports_fragment,
       system_fragment,
+      defaults_fragment,
       phone_environment_fragment,
       user_fragment,
     ]
