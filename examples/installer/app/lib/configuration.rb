@@ -14,8 +14,9 @@ class Configuration::NixOSConfiguration
   end
 
   def cpu_count()
+    core_count = File.read("/proc/cpuinfo").split(/\n+/).grep(/^processor/).count
     # Why `/2`? Assume some big.LITTLE-ness, or even "low vs. high" cores.
-    `cat /proc/cpuinfo  | grep ^processor | wc -l`.chomp().to_i / 2
+    core_count / 2
   end
 
   def luks_name(part)
