@@ -1,0 +1,32 @@
+diff --git a/include/configs/mx6sllclarahd.h b/include/configs/mx6sllclarahd.h
+index 126600a874..55ec7d4285 100644
+--- a/include/configs/mx6sllclarahd.h
++++ b/include/configs/mx6sllclarahd.h
+@@ -27,6 +27,19 @@
+ #define CONFIG_SYS_I2C_SPEED		  100000
+ #endif
+ 
++#ifndef CONFIG_SPL_BUILD
++#define BOOT_TARGET_DEVICES(func) \
++  func(MMC, mmc, 0)
++
++#include <config_distro_bootcmd.h>
++#define CONFIG_EXTRA_ENV_SETTINGS \
++	"scriptaddr=0x80800000\0" \
++	"kernel_addr_r=0x80800000\0" \
++	"fdtfile=imx6sll-kobo-clarahd.dtb\0" \
++	"fdt_addr_r=0x83000000\0" \
++	"ramdisk_addr_r=0x85000000\0" \
++	BOOTENV
++#else
+ #define CONFIG_EXTRA_ENV_SETTINGS \
+ 	"epdc_waveform=epdc_splash.bin\0" \
+ 	"script=boot.scr\0" \
+@@ -78,6 +91,7 @@
+ 			   "fi; " \
+ 		   "fi; " \
+ 	   "else fastboot 0; fi"
++#endif
+ 
+ /* Physical Memory Map */
+ #define PHYS_SDRAM			MMDC0_ARB_BASE_ADDR

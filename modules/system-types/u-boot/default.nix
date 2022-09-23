@@ -15,9 +15,10 @@ let
   # Look-up table to translate from targetPlatform to U-Boot names.
   ubootPlatforms = {
     "aarch64-linux" = "arm64";
+    "armv7l-linux" = "arm";
   };
 
-  bootcmd = pkgs.writeText "${deviceName}-boot.cmd" ''
+  bootcmd = system: pkgs.writeText "${deviceName}-boot.cmd" ''
     echo ****************
     echo * Mobile NixOS *
     echo ****************
@@ -85,9 +86,10 @@ let
     setenv ramdisk_size ''${filesize}
 
     echo bootargs: ''${bootargs}
-    echo booti ''${kernel_addr_r} ''${ramdisk_addr_r}:''${ramdisk_size} ''${fdt_addr_r};
+    setenv bootImage ${if system == "armv7l-linux" then "bootz" else "booti"}
+    echo ''${bootImage} ''${kernel_addr_r} ''${ramdisk_addr_r}:''${ramdisk_size} ''${fdt_addr_r};
 
-    booti ''${kernel_addr_r} ''${ramdisk_addr_r}:''${ramdisk_size} ''${fdt_addr_r};
+    ''${bootImage} ''${kernel_addr_r} ''${ramdisk_addr_r}:''${ramdisk_size} ''${fdt_addr_r};
   '';
 
   bootscr = runCommandNoCC "${deviceName}-boot.scr" {
@@ -95,7 +97,7 @@ let
       buildPackages.ubootTools
     ];
   } ''
-    mkimage -C none -A ${ubootPlatforms.${pkgs.stdenv.targetPlatform.system}} -T script -d ${bootcmd} $out
+    mkimage -C none -A ${ubootPlatforms.${pkgs.stdenv.targetPlatform.system}} -T script -d ${bootcmd pkgs.stdenv.targetPlatform.system} $out
   '';
 
   # TODO: use generatedFilesystems
