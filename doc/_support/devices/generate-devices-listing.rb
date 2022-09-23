@@ -20,6 +20,21 @@ def yesno(bool)
   end
 end
 
+# Outputs a fragment of asciidoc for the build outputs.
+# `list` is a nested Hash of descriptions for the outputs.
+# `defaultOutputList` is a Hash of the same for, but containing only the "default" output.
+# `prefix:` is used internally for the nested attribute names.
+def buildOutputLines(list, defaultOutputList, prefix: [])
+  list.map do |k, v|
+    defaultOutput = defaultOutputList[k] if defaultOutputList
+    if v.is_a? Hash
+      buildOutputLines(v, defaultOutput, prefix: prefix + [k])
+    else
+      "* `#{(prefix + [k]).join(".")}`: #{v} #{if defaultOutput then "_(default output)_" end}"
+    end
+  end.flatten.join("\n")
+end
+
 NOTES_HEADER = "== Device-specific notes"
 
 COLUMNS = [
@@ -81,6 +96,30 @@ end
 
 # Then generate per-device pages
 $devicesInfo.values.each do |info|
+
+=begin
+{"defaultOutput"=>
+  {"android"=>
+    {"android-fastboot-images"=>
+      "Flashing scripts and images for use with fastboot or odin.\n"}},
+
+"outputDescriptions"=>
+  {"android"=>
+    {"android-bootimg"=>"`boot.img` type image for Android-based systems.\n",
+     "android-fastboot-images"=>
+      "Flashing scripts and images for use with fastboot or odin.\n",
+     "android-flashable-bootimg"=>
+      "`boot.img` in Android flashable zip format.\n",
+     "android-flashable-system"=>
+      "`system.img` in Android flashable zip format.\n",
+     "android-flashable-zip"=>
+      "Android flashable zip which will install `boot.img` and `system.img`.\n",
+     "android-recovery"=>
+      "`recovery.img` type image for Android-based systems.\n"},
+   "rootfs"=>"The rootfs image for the build.\n"},
+
+=end
+
   identifier = info["identifier"]
   puts ":: Generating devices/#{identifier}.adoc"
   File.open(File.join($out, "devices/#{identifier}.adoc"), "w") do |file|
@@ -116,7 +155,7 @@ $devicesInfo.values.each do |info|
     # Ensure the content is at least separated by an empty line.
     # Otherwise a trailing command could end-up being merged.
     file.puts("\n\n")
-    
+
     deviceNotesFile = File.join($devicesDir, identifier, "README.adoc")
     if File.exists?(deviceNotesFile)
       notes = File.read(deviceNotesFile).split("\n\n", 2).last.strip
@@ -133,5 +172,14 @@ $devicesInfo.values.each do |info|
     else
       file.puts("\n_(No device-specific notes available)_\n\n")
     end
+
+    # Keep enough space between sections
+    file.puts("\n\n")
+    file.puts <<~EOF
+    == Build outputs
+
+    #{buildOutputLines(info["outputDescriptions"], info["defaultOutput"])}
+
+    EOF
   end
 end

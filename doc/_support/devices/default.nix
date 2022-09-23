@@ -10,12 +10,15 @@ let
   # Release tools used to evaluate the devices metadata.
   mobileReleaseTools = (import ../../../lib/release-tools.nix { inherit pkgs; });
   inherit (mobileReleaseTools) all-devices;
-  inherit (mobileReleaseTools.withPkgs pkgs) evalFor;
+  inherit (mobileReleaseTools.withPkgs pkgs) evalWithConfiguration;
 
   devicesDir = ../../../devices;
   devicesInfo = symlinkJoin {
     name = "devices-metadata";
-    paths = (map (device: (evalFor device).config.mobile.outputs.device-metadata) all-devices);
+    # The `allowUnfree` here comes from consuming `mobile.outputs` options
+    # which can *include* an unfree derivation, but the derivation is never
+    # actually being built.
+    paths = (map (device: (evalWithConfiguration { nixpkgs.config.allowUnfree = true; } device).config.mobile.outputs.device-metadata) all-devices);
   };
 in
 
