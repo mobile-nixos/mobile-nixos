@@ -137,7 +137,7 @@ let
           --replace scsi_id ${extraUtils}/bin/scsi_id \
           --replace cdrom_id ${extraUtils}/bin/cdrom_id \
           --replace ${pkgs.coreutils}/bin/basename ${extraUtils}/bin/basename \
-          --replace ${pkgs.utillinux}/bin/blkid ${extraUtils}/bin/blkid \
+          --replace ${pkgs.util-linux}/bin/blkid ${extraUtils}/bin/blkid \
           --replace ${getBin pkgs.lvm2}/bin ${extraUtils}/bin \
           --replace ${pkgs.mdadm}/sbin ${extraUtils}/sbin \
           --replace ${pkgs.bash}/bin/sh ${extraUtils}/bin/sh \

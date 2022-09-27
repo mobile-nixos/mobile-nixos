@@ -39,7 +39,7 @@
 , cpio
 , elfutils
 , libelf
-, utillinux
+, util-linux
 
 , bison
 , flex
@@ -196,7 +196,7 @@ stdenv.mkDerivation (inputArgs // {
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.linux-kernel.target == "uImage") buildPackages.ubootTools
     ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
-    ++ optional (lib.versionAtLeast version "4.15") utillinux
+    ++ optional (lib.versionAtLeast version "4.15") util-linux
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optional  (lib.versionAtLeast version "5.2")  cpio

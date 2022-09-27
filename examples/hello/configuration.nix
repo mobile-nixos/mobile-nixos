@@ -11,7 +11,7 @@ let
       PATH = "${makeBinPath (with pkgs;[
         systemd     # journalctl
         glibc       # iconv
-        utillinux   # lsblk
+        util-linux  # lsblk
         input-utils # lsinput
       ])}:$PATH";
     };

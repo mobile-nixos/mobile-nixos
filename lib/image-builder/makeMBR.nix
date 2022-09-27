@@ -1,6 +1,6 @@
 { stdenvNoCC, lib
 , imageBuilder
-, utillinux
+, util-linux
 }:
 
 /*  */ let scope = { "diskImage.makeMBR" =
@@ -41,7 +41,7 @@ stdenvNoCC.mkDerivation rec {
   img = "${placeholder "out"}/${filename}";
 
   nativeBuildInputs = [
-    utillinux
+    util-linux
   ];
 
   buildCommand = let
