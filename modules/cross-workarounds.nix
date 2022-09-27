@@ -8,7 +8,7 @@ let
     config.nixpkgs.crossSystem != null &&
     config.nixpkgs.localSystem.system != null &&
     config.nixpkgs.crossSystem.system != config.nixpkgs.localSystem.system;
-  nullPackage = pkgs.runCommandNoCC "null" {} ''
+  nullPackage = pkgs.runCommand "null" {} ''
     mkdir -p $out
   '';
 in

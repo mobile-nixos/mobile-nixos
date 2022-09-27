@@ -1,10 +1,10 @@
 { lib
-, runCommandNoCC
+, runCommand
 , fetchgit
 }:
 
 # The minimum set of firmware files required for the device.
-runCommandNoCC "pine64-pinephone-firmware" {
+runCommand "pine64-pinephone-firmware" {
   src = fetchgit {
     url = "https://megous.com/git/linux-firmware";
     rev = "6e8e591e17e207644dfe747e51026967bb1edab5";

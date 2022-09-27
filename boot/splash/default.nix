@@ -1,7 +1,7 @@
-{ lib, runCommandNoCC, mobile-nixos }:
+{ lib, runCommand, mobile-nixos }:
 
 let
-  assets = runCommandNoCC "boot-splash-assets" {} ''
+  assets = runCommand "boot-splash-assets" {} ''
     mkdir -p $out
     cp ${../../artwork/logo/logo.white.svg} $out/logo.svg
   '';

@@ -1,6 +1,6 @@
-{ runCommandNoCC, runtimeShell, lib, dtc, ubootTools }:
+{ runCommand, runtimeShell, lib, dtc, ubootTools }:
 
-runCommandNoCC "fdt-forward" {} ''
+runCommand "fdt-forward" {} ''
   mkdir -p $out/bin
   echo "#!${runtimeShell}" > $out/bin/fdt-forward
   cat "${./fdt-forward.sh}" >> $out/bin/fdt-forward

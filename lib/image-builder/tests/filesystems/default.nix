@@ -29,7 +29,7 @@ let
       ln -s ${fs}/${fs.filename} $out/
     '') fileSystem;
 in
-  pkgs.runCommandNoCC "filesystems-test" {} ''
+  pkgs.runCommand "filesystems-test" {} ''
     mkdir -p $out/
     ${concatStringsSep "\n" cmds}
   ''

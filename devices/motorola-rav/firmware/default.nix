@@ -1,5 +1,5 @@
 { lib
-, runCommandNoCC
+, runCommand
 , fetchurl
 , fetchgit
 , unzip
@@ -15,7 +15,7 @@ let
     url = "https://archive.org/download/xt-2045-3-rav-retus-10-qpjs-30.131-61-8-subsidy-default-regulatory-default-cfc.xml/${factoryZip}";
     sha256 = "0fjrwpazd7p9nlrmbl616n86hsnv1a57piyxsifsnwb3hm90jqhr";
   };
-in runCommandNoCC "motorola-rav-firmware-${buildTag}" {
+in runCommand "motorola-rav-firmware-${buildTag}" {
   nativeBuildInputs = [ unzip e2fsprogs simg2img android-partition-tools ];
   meta.license = [
     # We make no claims that it can be redistributed.

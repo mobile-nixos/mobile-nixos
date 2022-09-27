@@ -12,7 +12,7 @@ let
   # rendering might not be as expected depending on what renders it.
   # The SVGs in that directory are used as an authoring format files, not files
   # to be used as they are. They need to be pre-rendered.
-  wallpapers = pkgs.runCommandNoCC "wallpapers" {} ''
+  wallpapers = pkgs.runCommand "wallpapers" {} ''
     mkdir -p $out/
     cp ${../../artwork/wallpapers}/*.png $out/
   '';
@@ -146,7 +146,7 @@ in
 
       environment.etc."xdg/xfce4" = {
         # TODO: DPI/size settings, so that a DPI can be derived from the device info.
-        source =  pkgs.runCommandNoCC "xfce4-defaults" {} ''
+        source =  pkgs.runCommand "xfce4-defaults" {} ''
           cp -r ${./xdg/xfce4} $out
           wallpaper="${wallpapers}/mobile-nixos-19.09.png"
           substituteInPlace $out/xfconf/xfce-perchannel-xml/xfce4-desktop.xml \
@@ -178,7 +178,7 @@ in
       in
       [
         awesome
-        (runCommandNoCC "awesome-actions" {} ''
+        (runCommand "awesome-actions" {} ''
           mkdir -vp $out/share/applications/
           (cd $out/share/applications/
           cat > awesome-close.desktop <<EOF
@@ -224,7 +224,7 @@ in
         '';
       };
       environment.etc."xdg/autostart/onboard-autostart.desktop" = {
-        source = pkgs.runCommandNoCC "onboard-autostart.desktop" {} ''
+        source = pkgs.runCommand "onboard-autostart.desktop" {} ''
           cat "${pkgs.onboard}/etc/xdg/autostart/onboard-autostart.desktop" > $out
           echo "X-XFCE-Autostart-Override=true" >> $out
           substituteInPlace $out \

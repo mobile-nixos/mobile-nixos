@@ -13,7 +13,7 @@ let
   inherit (lib) optionalString;
   inherit (pkgs) buildPackages;
 in
-pkgs.runCommandNoCC name {
+pkgs.runCommand name {
   nativeBuildInputs = with buildPackages; [
     mkbootimg
     dtbTool

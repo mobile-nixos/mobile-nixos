@@ -122,8 +122,8 @@ in
             object =
               let
                 nullModules = pkgs.callPackage (
-                  { runCommandNoCC, ... }:
-                  runCommandNoCC "null-modules" { } ''
+                  { runCommand, ... }:
+                  runCommand "null-modules" { } ''
                     mkdir -p $out/lib/modules
                   ''
                 ) {};
@@ -145,7 +145,7 @@ in
             stdenv = pkgs.stdenv;
             # callPackage so that override / overrideAttrs exist.
             kernel = pkgs.callPackage (
-              { runCommandNoCC, ... }: runCommandNoCC "null-kernel" {
+              { runCommand, ... }: runCommand "null-kernel" {
                 passthru = rec {
                   # minimum supported version~ish
                   # The exact version doesn't matter much, as long as it

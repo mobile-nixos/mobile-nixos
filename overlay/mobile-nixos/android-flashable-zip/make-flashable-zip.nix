@@ -1,4 +1,4 @@
-{ runCommandNoCC, writeText, zip, mobile-nixos }:
+{ runCommand, writeText, zip, mobile-nixos }:
 
 let
   inherit (mobile-nixos) android-flashable-zip-binaries;
@@ -9,7 +9,7 @@ in
 let
   update-script = writeText "update-script.rb" script;
 in
-runCommandNoCC name {
+runCommand name {
   nativeBuildInputs = [
     zip
   ];

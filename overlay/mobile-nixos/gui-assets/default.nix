@@ -1,4 +1,4 @@
-{ runCommandNoCC
+{ runCommand
 , overpass
 , roboto
 , font-awesome_4
@@ -8,7 +8,7 @@
 let
   artwork = ../../../artwork;
 in
-runCommandNoCC "gui-assets" {
+runCommand "gui-assets" {
   nativeBuildInputs = [
     nodePackages.svgo
   ];

@@ -1,7 +1,7 @@
 { pkgs
 , stdenv
 , glibcLocales
-, runCommandNoCC
+, runCommand
 , symlinkJoin
 , ruby
 }:
@@ -19,7 +19,7 @@ let
   };
 in
 
-runCommandNoCC "mobile-nixos-docs-devices" {
+runCommand "mobile-nixos-docs-devices" {
   nativeBuildInputs = [
     ruby
     glibcLocales

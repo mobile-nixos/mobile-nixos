@@ -5,7 +5,7 @@
 { pkgs, lib, ... }:
 
 let
-  emptyV4lRules = pkgs.runCommandNoCC "empty-v4l-rules" {} ''
+  emptyV4lRules = pkgs.runCommand "empty-v4l-rules" {} ''
     mkdir -p $out/lib/udev/rules.d
     touch $out/lib/udev/rules.d/60-persistent-v4l.rules
   '';

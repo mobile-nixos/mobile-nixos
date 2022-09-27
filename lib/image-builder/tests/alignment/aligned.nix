@@ -3,7 +3,7 @@
 
 let
   inherit (pkgs) imageBuilder;
-  makeNull = size: pkgs.runCommandNoCC "filesystems-test" {
+  makeNull = size: pkgs.runCommand "filesystems-test" {
     filename = "null.img";
     filesystemType = "FAT32"; # meh, good enough
   } ''

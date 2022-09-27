@@ -1,7 +1,7 @@
 { lib
 , stdenv
 , fetchurl
-, runCommandNoCC
+, runCommand
 , initrd
 , system
 , imageBuilder
@@ -55,7 +55,7 @@ let
   };
 
   # The image file containing the kernel and initrd.
-  kpart = runCommandNoCC "kpart-${device_name}" {
+  kpart = runCommand "kpart-${device_name}" {
     nativeBuildInputs = [
       dtc
       ubootTools
@@ -114,7 +114,7 @@ in
   # Takes the built image, and do some light editing using `cgpt`.
   # This uses some depthcharge-specific fields to make the image bootable.
   # FIXME : integrate into the makeGPT call with postBuild or something
-  disk-image = runCommandNoCC "depthcharge-${device_name}" { nativeBuildInputs = [ vboot_reference ]; } ''
+  disk-image = runCommand "depthcharge-${device_name}" { nativeBuildInputs = [ vboot_reference ]; } ''
     # Copy the generated image...
     # Note that while it's GPT, it's lacking some depthcharge magic attributes
     cp ${image}/${name}.img ./

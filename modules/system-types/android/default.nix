@@ -30,7 +30,7 @@ let
   # either of fastboot or the outputs.
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
-  android-fastboot-images = pkgs.runCommandNoCC "android-fastboot-images-${device.name}" {} ''
+  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {} ''
     mkdir -p $out
     cp -v ${rootfs}/${rootfs.filename} $out/system.img
     cp -v ${android-bootimg} $out/boot.img

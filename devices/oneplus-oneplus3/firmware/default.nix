@@ -1,5 +1,5 @@
 { lib
-, runCommandNoCC
+, runCommand
 , fetchFromGitHub
 , fetchurl
 , modem ? builtins.throw ''
@@ -27,7 +27,7 @@ let
     sha256 = "1pcq64r4ag6rcgkbq3j2b43xzia9ccwbdgkgslw6pfqq8bmvcwxy";
   };
 in
-runCommandNoCC "oneplus-oneplus3-firmware" {
+runCommand "oneplus-oneplus3-firmware" {
   inherit modem cfg;
   meta.license = [
     # We make no claims that it can be redistributed.
