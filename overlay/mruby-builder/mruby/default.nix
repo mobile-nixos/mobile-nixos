@@ -160,8 +160,8 @@ let
   # As 2.2 will require other invasive changes, this is worked around until 2.2 is released.
   # The default (without other inputs) mruby build does not use `pkg-config`,
   # but its `#search_package` implementation does.
-  pkgconfig-helper = buildPackages.writeShellScriptBin "pkg-config" ''
-    exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
+  pkg-config-helper = buildPackages.writeShellScriptBin "pkg-config" ''
+    exec ${buildPackages.pkg-config}/bin/${buildPackages.pkg-config.targetPrefix}pkg-config "$@"
   '';
   mruby = stdenv.mkDerivation rec {
     pname = "mruby";
@@ -188,7 +188,7 @@ let
         --replace '//#define MRB_INT64' '#define MRB_INT64'
     '';
 
-    nativeBuildInputs = [ pkgconfig-helper ruby bison pkgsBuildBuild.rake ] ++ gemNativeBuildInputs;
+    nativeBuildInputs = [ pkg-config-helper ruby bison pkgsBuildBuild.rake ] ++ gemNativeBuildInputs;
     buildInputs = gemBuildInputs;
 
     # Necessary so it uses `gcc` instead of `ld` for linking.

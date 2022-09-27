@@ -1,4 +1,4 @@
-{stdenv, fetchgit, libpng, libdrm, pkgconfig}:
+{stdenv, fetchgit, libpng, libdrm, pkg-config}:
 
 let
   version = "2016-01-11";
@@ -19,7 +19,7 @@ stdenv.mkDerivation {
   ];
 
   nativeBuildInputs = [
-    pkgconfig
+    pkg-config
   ];
   buildInputs = [
     libpng
