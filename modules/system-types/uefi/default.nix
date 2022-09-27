@@ -5,7 +5,7 @@ let
 
   inherit (lib) mkEnableOption mkIf mkOption types;
   inherit (pkgs.stdenv) hostPlatform;
-  inherit (pkgs) imageBuilder runCommandNoCC;
+  inherit (pkgs) imageBuilder runCommand;
   inherit (config.mobile.outputs) recovery stage-0;
   cfg = config.mobile.quirks.uefi;
   deviceName = config.mobile.device.name;
@@ -22,7 +22,7 @@ let
 
   kernelParamsFile = pkgs.writeText "${deviceName}-boot.cmd" config.boot.kernelParams;
 
-  efiKernel = pkgs.runCommandNoCC "${deviceName}-efiKernel" {
+  efiKernel = pkgs.runCommand "${deviceName}-efiKernel" {
     nativeBuildInputs = [
       pkgs.stdenv.cc.bintools.bintools_bin
     ];

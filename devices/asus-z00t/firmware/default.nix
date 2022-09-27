@@ -1,4 +1,4 @@
-{ lib, runCommandNoCC, fetchFromGitHub, fetchurl }:
+{ lib, runCommand, fetchFromGitHub, fetchurl }:
 
 let
   # This is a known good dump of the files as present on a running LineageOS system.
@@ -15,7 +15,7 @@ let
     sha256 = "16g5qgvxc3j2ra76hs4ff7h97i7wvk26kg0wbdb6l6qj0i7vml1h";
   };
 in
-runCommandNoCC "asus-z00t-firmware" {
+runCommand "asus-z00t-firmware" {
   inherit src cfg;
   meta.license = [
     # We make no claims that it can be redistributed.

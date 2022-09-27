@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  minimalX11Config = pkgs.runCommandNoCC "minimalX11Config" {
+  minimalX11Config = pkgs.runCommand "minimalX11Config" {
     allowedReferences = [ "out" ];
   } ''
     (PS4=" $ "; set -x

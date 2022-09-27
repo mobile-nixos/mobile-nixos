@@ -1,5 +1,5 @@
 { lib
-, runCommandNoCC
+, runCommand
 , fetchurl
 }:
 
@@ -39,7 +39,7 @@ let
   }).overrideAttrs(_: { inherit path; });
 in
 
-runCommandNoCC "samsung-a5y17lte-firmware" {
+runCommand "samsung-a5y17lte-firmware" {
   meta.license = [
     # We make no claims that it can be redistributed.
     lib.licenses.unfree

@@ -6,7 +6,7 @@ let
     busybox
     makeInitrd
     mkExtraUtils
-    runCommandNoCC
+    runCommand
     writeText
   ;
   inherit (lib)
@@ -115,7 +115,7 @@ let
 
   extraUdevRules = writeText "99-extra.rules" config.mobile.boot.stage-1.extraUdevRules;
 
-  udevRules = runCommandNoCC "udev-rules" {
+  udevRules = runCommand "udev-rules" {
     allowedReferences = [ extraUtils ];
     preferLocalBuild = true;
   } ''
@@ -137,7 +137,7 @@ let
           --replace scsi_id ${extraUtils}/bin/scsi_id \
           --replace cdrom_id ${extraUtils}/bin/cdrom_id \
           --replace ${pkgs.coreutils}/bin/basename ${extraUtils}/bin/basename \
-          --replace ${pkgs.utillinux}/bin/blkid ${extraUtils}/bin/blkid \
+          --replace ${pkgs.util-linux}/bin/blkid ${extraUtils}/bin/blkid \
           --replace ${getBin pkgs.lvm2}/bin ${extraUtils}/bin \
           --replace ${pkgs.mdadm}/sbin ${extraUtils}/sbin \
           --replace ${pkgs.bash}/bin/sh ${extraUtils}/bin/sh \
@@ -165,7 +165,7 @@ let
     ]
     ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
     ++ [{
-      package = runCommandNoCC "empty" {} "mkdir -p $out";
+      package = runCommand "empty" {} "mkdir -p $out";
       extraCommand =
       let
         inherit udev;
@@ -207,7 +207,7 @@ let
   };
 
   # ncdu -f result/initrd.ncdu
-  initrd-meta = pkgs.runCommandNoCC "initrd-${device_name}-meta" {
+  initrd-meta = pkgs.runCommand "initrd-${device_name}-meta" {
     nativeBuildInputs = with pkgs.buildPackages; [
       ncdu
       cpio
@@ -355,7 +355,7 @@ in
       boot.initrd.supportedFilesystems = lib.mkOverride 10 [];
 
       system.build.initialRamdiskSecretAppender =
-        pkgs.runCommandNoCC "noopRamdiskSecretAppender" {} "touch $out"
+        pkgs.runCommand "noopRamdiskSecretAppender" {} "touch $out"
       ;
 
       mobile.outputs = {
@@ -370,7 +370,7 @@ in
       # default NixOS outputs. Do not refer to this in Mobile NixOS.
       system.build.initialRamdisk =
         if config.mobile.rootfs.shared.enabled
-        then pkgs.runCommandNoCC "nullInitialRamdisk" {} "touch $out"
+        then pkgs.runCommand "nullInitialRamdisk" {} "touch $out"
         else initrd
       ;
 

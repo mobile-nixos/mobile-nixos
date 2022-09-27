@@ -1,5 +1,5 @@
 { lib
-, runCommandNoCC
+, runCommand
 , fetchFromGitHub
 , fetchurl
 , modem ? builtins.throw ''
@@ -35,7 +35,7 @@ let
     inherit sha256;
   };
 in
-runCommandNoCC "motorola-addison-firmware" {
+runCommand "motorola-addison-firmware" {
   inherit modem cfg dict nv;
   meta.license = [
     # We make no claims that it can be redistributed.

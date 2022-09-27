@@ -5,7 +5,7 @@ let
 
   deviceName = config.mobile.device.name;
 
-  dtbMapping = pkgs.runCommandNoCC "dtb-mapping.json" {} ''
+  dtbMapping = pkgs.runCommand "dtb-mapping.json" {} ''
     (
       PS4=" $ "; set -x
       ${pkgs.buildPackages.mobile-nixos.map-dtbs}/bin/map-dtbs $(find ${config.hardware.deviceTree.package} -name '*.dtb' | sort) > $out

@@ -4,7 +4,7 @@ let
   enabled = config.mobile.system.type == "u-boot";
 
   inherit (config.mobile.outputs) recovery stage-0;
-  inherit (pkgs) buildPackages imageBuilder runCommandNoCC;
+  inherit (pkgs) buildPackages imageBuilder runCommand;
   inherit (lib) mkIf mkOption types;
   cfg = config.mobile.quirks.u-boot;
   inherit (cfg) soc;
@@ -90,7 +90,7 @@ let
     booti ''${kernel_addr_r} ''${ramdisk_addr_r}:''${ramdisk_size} ''${fdt_addr_r};
   '';
 
-  bootscr = runCommandNoCC "${deviceName}-boot.scr" {
+  bootscr = runCommand "${deviceName}-boot.scr" {
     nativeBuildInputs = [
       buildPackages.ubootTools
     ];

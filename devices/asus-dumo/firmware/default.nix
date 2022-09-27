@@ -1,10 +1,10 @@
 { lib
-, runCommandNoCC
+, runCommand
 , firmwareLinuxNonfree
 }:
 
 # The minimum set of firmware files required for the device.
-runCommandNoCC "asus-dumo-firmware" {
+runCommand "asus-dumo-firmware" {
   src = firmwareLinuxNonfree;
 } ''
   for firmware in \

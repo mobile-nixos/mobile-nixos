@@ -9,7 +9,7 @@ let
   inherit (config.mobile.boot.stage-1) kernel;
 
   # A bit dirty, but actually works for what we want.
-  fdt-forward = pkgs.runCommandNoCC "fdt-forward-for-initrd" {} ''
+  fdt-forward = pkgs.runCommand "fdt-forward-for-initrd" {} ''
     mkdir -p $out/bin
     # /bin/sh is busybox in the initrd, assuredly.
     echo "#!/bin/sh" > $out/bin/fdt-forward

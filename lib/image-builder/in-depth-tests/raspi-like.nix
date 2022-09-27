@@ -32,7 +32,7 @@ let
     booti $kernel_addr_r
   '';
 
-  scr = pkgs.runCommandNoCC "uboot-script" {} ''
+  scr = pkgs.runCommand "uboot-script" {} ''
     mkdir -p $out
     ${ubootTools}/bin/mkimage \
       -A arm64 \

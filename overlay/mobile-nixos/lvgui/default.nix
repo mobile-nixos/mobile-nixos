@@ -1,4 +1,4 @@
-{ runCommandNoCC
+{ runCommand
 , lib
 , mruby
 , mobile-nixos
@@ -38,7 +38,7 @@ let
     "xdg.rb"
   ]);
 
-  app = runCommandNoCC name {
+  app = runCommand name {
     inherit src;
     nativeBuildInputs = [
       mruby

@@ -1,5 +1,5 @@
 { lib
-, runCommandNoCC
+, runCommand
 , fetchurl
 , fetchgit
 , unzip
@@ -13,7 +13,7 @@ let
     url = "https://dl.google.com/dl/android/aosp/marlin-${buildID}-factory-bef66533.zip";
     sha256 = "bef6653301371b66bd7fca968cf52013c0bf6862f0c7a70a275b0f0d45ab3888";
   };
-in runCommandNoCC "google-marlin-firmware" {
+in runCommand "google-marlin-firmware" {
   nativeBuildInputs = [ unzip e2fsprogs simg2img ];
   meta.license = [
     # We make no claims that it can be redistributed.

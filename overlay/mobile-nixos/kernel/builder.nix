@@ -39,14 +39,14 @@
 , cpio
 , elfutils
 , libelf
-, utillinux
+, util-linux
 
 , bison
 , flex
 
 # For menuconfig
 , ncurses
-, pkgconfig
+, pkg-config
 , runtimeShell
 
 # A structured Linux configuration option attrset.
@@ -164,8 +164,8 @@ let
   # Inspired from #91991
   # https://github.com/NixOS/nixpkgs/pull/91991
   # (required for menuconfig)
-  pkgconfig-helper = writeShellScriptBin "pkg-config" ''
-    exec ${buildPackages.pkgconfig}/bin/${buildPackages.pkgconfig.targetPrefix}pkg-config "$@"
+  pkg-config-helper = writeShellScriptBin "pkg-config" ''
+    exec ${buildPackages.pkg-config}/bin/${buildPackages.pkg-config.targetPrefix}pkg-config "$@"
   '';
 
   hasDTB = platform.linux-kernel ? DTB && platform.linux-kernel.DTB;
@@ -196,7 +196,7 @@ stdenv.mkDerivation (inputArgs // {
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
     ++ optional (platform.linux-kernel.target == "uImage") buildPackages.ubootTools
     ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
-    ++ optional (lib.versionAtLeast version "4.15") utillinux
+    ++ optional (lib.versionAtLeast version "4.15") util-linux
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optional  (lib.versionAtLeast version "5.2")  cpio
@@ -525,7 +525,7 @@ stdenv.mkDerivation (inputArgs // {
     menuconfig = kernelDerivation.overrideAttrs({nativeBuildInputs ? [] , ...}: {
       nativeBuildInputs = nativeBuildInputs ++ [
         ncurses
-        pkgconfig-helper
+        pkg-config-helper
       ];
       buildFlags = [ "nconfig" "V=1" ];
 
@@ -534,7 +534,7 @@ stdenv.mkDerivation (inputArgs // {
         (PS4=" $ "; set -x
 
         # Hot fixes pkg-config use.
-        export PKG_CONFIG_PATH="${buildPackages.ncurses.dev}/lib/pkgconfig"
+        export PKG_CONFIG_PATH="${buildPackages.ncurses.dev}/lib/pkg-config"
         if [ -e scripts/kconfig/nconf-cfg.sh ]; then
           sed -i"" \
             -e 's/$(pkg-config --libs $PKG)/-L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKG)/' \

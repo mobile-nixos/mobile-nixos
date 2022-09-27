@@ -61,12 +61,12 @@ let
     , libxkbcommon
     , meson
     , ninja
-    , pkgconfig
+    , pkg-config
     , yacc
     }:
 
     libxkbcommon.overrideAttrs({...}: {
-      nativeBuildInputs = [ meson ninja pkgconfig yacc ];
+      nativeBuildInputs = [ meson ninja pkg-config yacc ];
       buildInputs = [ ];
 
       mesonFlags = [

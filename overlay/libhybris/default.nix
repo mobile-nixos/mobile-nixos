@@ -3,7 +3,7 @@ stdenv
 , lib
 , fetchFromGitHub
 , autoreconfHook
-, pkgconfig
+, pkg-config
 
 , android-headers
 , file
@@ -53,6 +53,6 @@ stdenv.mkDerivation {
 
   nativeBuildInputs = [
     autoreconfHook
-    pkgconfig
+    pkg-config
   ];
 }

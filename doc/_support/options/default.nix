@@ -1,7 +1,7 @@
 { pkgs
 , glibcLocales
 , nixosOptionsDoc
-, runCommandNoCC
+, runCommand
 , ruby
 }:
 
@@ -33,7 +33,7 @@ let
   optionsJSON = (nixosOptionsDoc { options = dummyEval.options; }).optionsJSON;
 in
 
-runCommandNoCC "mobile-nixos-docs-options" {
+runCommand "mobile-nixos-docs-options" {
   nativeBuildInputs = [
     ruby
     glibcLocales

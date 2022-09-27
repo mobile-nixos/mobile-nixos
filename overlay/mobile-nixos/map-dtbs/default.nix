@@ -1,6 +1,6 @@
-{ runCommandNoCC, runtimeShell, lib, dtc }:
+{ runCommand, runtimeShell, lib, dtc }:
 
-runCommandNoCC "map-dtbs" {} ''
+runCommand "map-dtbs" {} ''
   mkdir -p $out/bin
   echo "#!${runtimeShell}" > $out/bin/map-dtbs
   cat "${./map-dtbs.sh}" >> $out/bin/map-dtbs

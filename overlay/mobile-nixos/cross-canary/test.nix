@@ -1,4 +1,4 @@
-{ stdenv, lib, runCommandNoCC, runtimeShell, busybox, hello, hello-mruby, pkgsBuildBuild, mruby, mrbgems, mobile-nixos }:
+{ stdenv, lib, runCommand, runtimeShell, busybox, hello, hello-mruby, pkgsBuildBuild, mruby, mrbgems, mobile-nixos }:
 
 let
   static = stdenv.hostPlatform.isStatic;
@@ -15,7 +15,7 @@ let
     if stdenv.buildPlatform == stdenv.hostPlatform then ""
     else "${pkgsBuildBuild.qemu}/bin/${emulators.${system}}"
   ;
-  mkTest = what: script: runCommandNoCC "cross-canary-${what}-${stdenv.system}" {} ''
+  mkTest = what: script: runCommand "cross-canary-${what}-${stdenv.system}" {} ''
     assert_static() {
       if ! ${file}/bin/file "$1" | grep -q 'statically linked'; then
         printf "Assertion failed: '%s' is not a static binary\n" "$1"
