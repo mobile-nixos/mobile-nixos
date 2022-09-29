@@ -96,6 +96,10 @@
       SPI_ROCKCHIP = yes;
       MTD = yes;
       MTD_SPI_NOR = yes;
+
+      # Keyboard
+      KEYBOARD_KB151 = yes;
+      IP5XXX_POWER = yes;
     })
   ];
 

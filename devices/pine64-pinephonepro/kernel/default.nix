@@ -28,6 +28,11 @@ mobile-nixos.kernel-builder {
       url = "https://gitlab.com/pine64-org/linux/-/merge_requests/34.patch";
       sha256 = "sha256-4l/CngXCz1h22ftdt8A52HO+ru31cUCnRc1mxXeNwtg=";
     })
+
+    # Modied for 5.17.9, from https://gitlab.com/pine64-org/linux/-/merge_requests/33
+    #
+    # Allows keyboard accessory to work
+    ./0001-keyboard.patch
   ];
 
   postInstall = ''
