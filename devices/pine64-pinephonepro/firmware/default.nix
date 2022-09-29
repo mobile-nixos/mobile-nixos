@@ -1,5 +1,5 @@
 { lib
-, runCommandNoCC
+, runCommand
 , firmwareLinuxNonfree
 , fetchgit
 , fetchFromGitLab
@@ -28,7 +28,7 @@ let
 in
 
 # The minimum set of firmware files required for the device.
-runCommandNoCC "pine64-pinephonepro-firmware" {
+runCommand "pine64-pinephonepro-firmware" {
   src = firmwareLinuxNonfree;
 } ''
   for firmware in \
