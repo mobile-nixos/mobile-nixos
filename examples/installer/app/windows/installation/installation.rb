@@ -20,7 +20,7 @@ module GUI
       end
       @continue_button.set_hidden(true)
 
-      @failure_text = add_text("Something went wrong when installing.\n\nThe system is in an uknown state.")
+      @failure_text = add_text("...")
       @failure_text.set_hidden(true)
       @failure_button = add_button("Quit", style: :danger) do
         QuitWindow.instance.present
@@ -50,13 +50,23 @@ module GUI
     def on_failure()
       @failure_text.set_hidden(false)
       @failure_button.set_hidden(false)
+
+      @failure_text.set_text([
+        "Something went wrong when installing.",
+        "The system is in an uknown state.",
+        "\nReturn value: #{@installer_terminal.pane_dead_status}",
+      ].join("\n"))
     end
 
     def update_terminal()
       begin
         if @installer_terminal.pane_dead?
           cleanup()
-          on_failure()
+          if @installer_terminal.pane_dead_status == 0 then
+            on_success()
+          else
+            on_failure()
+          end
         else
           @installer_terminal.update_terminal
         end
