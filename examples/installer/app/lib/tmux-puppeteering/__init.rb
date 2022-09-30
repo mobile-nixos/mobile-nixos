@@ -44,8 +44,12 @@ class TmuxPuppeteer
   end
 
   # Provides the content of the pane
-  def capture_pane(*args)
-    _tmux(*%w[capture-pane -p], *args)
+  def capture_pane(*args, strip_dead: true)
+    text = _tmux(*%w[capture-pane -p], *args)
+    if pane_dead? then
+      text.sub!(%r{\nPane is dead \(.*\)$}, "")
+    end
+    text
   end
 
   # This transmits any non-defined functions directly to tmux.
