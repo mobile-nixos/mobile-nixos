@@ -72,10 +72,13 @@ networking.wireless.enable = false;
 networking.networkmanager.enable = true;
 
 # Use PulseAudio
-powerManagement.enable = true;
+hardware.pulseaudio.enable = true;
 
 # Enable Bluetooth
-powerManagement.enable = true;
+hardware.bluetooth.enable = true;
+
+# Bluetooth audio
+hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
 # Enable power management options
 powerManagement.enable = true;
@@ -135,7 +138,7 @@ EOF
 
 users.users.#{username.to_json} = {
   isNormalUser = true;
-  description = #{@configuration[:info][:description].to_json};
+  description = #{@configuration[:info][:fullname].to_json};
   hashedPassword = #{hashed_password.to_json};
   extraGroups = [
     "dialout"
@@ -173,7 +176,7 @@ fileSystems = {
   "/" = {
     device = "/dev/disk/by-uuid/#{@configuration[:filesystems][:rootfs][:uuid]}";
     fsType = "ext4";
-  }
+  };
 };
 EOF
     ]
@@ -232,9 +235,9 @@ module Configuration
     @rootfs_uuid ||= SecureRandom.uuid
   end
 
-  def label_for(part)
+  def label_for(part, prefix_length: 999)
     [
-      raw_config[:info][:hostname].upcase.gsub(/[-_.]/, "_"),
+      raw_config[:info][:hostname].upcase.gsub(/[-_.]/, "_")[0..(prefix_length-1)],
       part.upcase,
     ].join("_")
   end
@@ -254,7 +257,8 @@ module Configuration
         uuid: luks_uuid,
       },
       rootfs: {
-        label: label_for("rootfs"),
+        # ext4 labels are 16 chars; 11 + "_ROOT"
+        label: label_for("root", prefix_length: 11),
         uuid: rootfs_uuid,
       },
     }
