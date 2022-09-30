@@ -96,7 +96,7 @@ module Helpers
       sfdisk_script(path, "label: gpt")
     end
 
-    def self.add_partition(path, size: nil, type:, partlabel: nil, uuid: nil)
+    def self.add_partition(path, size: nil, type:, partlabel: nil, uuid: nil, bootable: false)
       script = []
       if size
         # Unit is in sectors of 512 bytes
@@ -106,6 +106,11 @@ module Helpers
       script << ["type", type].join("=")
       script << ["name", partlabel].join("=") if partlabel
       script << ["uuid", uuid].join("=") if uuid
+
+      attributes = []
+      attributes << "LegacyBIOSBootable" if bootable
+
+      script << ["attrs", attributes.join(",").inspect].join("=") unless attributes.empty?
 
       sfdisk_script(path, script.join(", "), "--append")
     end
@@ -138,7 +143,7 @@ puts "Working on '#{disk_param}' → '#{disk}'"
 Helpers::wipefs(disk)
 Helpers::GPT.format!(disk)
 # Boot partition, "Linux reserved", will be flashed with boot image for now
-Helpers::GPT.add_partition(disk, size: 256 * 1024 * 1024, partlabel: "boot", type: "8DA63339-0007-60C0-C436-083AC8230908")
+Helpers::GPT.add_partition(disk, size: 256 * 1024 * 1024, partlabel: "boot", type: "8DA63339-0007-60C0-C436-083AC8230908", bootable: true)
 # Reserved for future use as a BCB, if ever implemented (e.g. ask bootloader app or recovery app to do something)
 Helpers::GPT.add_partition(disk, size:  1 * 1024 * 1024, partlabel: "misc",    type: "EF32A33B-A409-486C-9141-9FFB711F6266")
 # Reserved for future use to "persist" data, if ever deemed useful (e.g. timezone, "last known RTC time" and such)
