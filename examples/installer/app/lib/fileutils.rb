@@ -1,4 +1,8 @@
 class FileUtils
+  def self.cp_r(src, dest)
+    system("cp", "-r", src, dest)
+  end
+
   def self.mkdir_p(*dirs)
     dirs.each do |dir|
       # Create all paths in the given hierarchy
