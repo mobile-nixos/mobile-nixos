@@ -151,4 +151,13 @@ class GUI::TerminalPuppet < LVGUI::Widget
       false
     end
   end
+
+  def pane_dead_status()
+    if @puppet
+      @puppet.pane_dead_status
+    else
+      # Did not run yet, so not dead yet.
+      nil
+    end
+  end
 end
