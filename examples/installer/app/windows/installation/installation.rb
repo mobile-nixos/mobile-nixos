@@ -12,8 +12,6 @@ module GUI
 
       @installer_terminal = GUI::TerminalPuppet.new(@container)
       @installer_terminal.terminal_height = 25
-      # FIXME: custom installer script
-      @installer_terminal.command = ["less", File.join(CONFIGURATION_PREFIX, "configuration.nix")].shelljoin()
 
       @continue_button = add_button("Continue", style: :primary) do
         puts("TODO: go to a window explaining to the user that the installation was successful, and they should probably remove the installer media and then reboot button.")
@@ -38,6 +36,24 @@ module GUI
       FileUtils.mkdir_p(INSTALLER_PREFIX)
       Configuration.save_json!(INSTALLER_JSON)
       Configuration.save_configuration!(CONFIGURATION_PREFIX)
+
+      # FIXME: call the actual installer...
+      temp_script = [
+        #["set", "-x"],
+        ["echo", ":: Fake installing"],
+        ["sleep", "2"],
+        ["echo", ":: Configuration:"],
+        ["awk", '{print $0; system("sleep .02");}', File.join(CONFIGURATION_PREFIX, "configuration.nix")],
+        ["echo", "Finalizing..."],
+        ["sleep", "2"],
+
+        #["echo", "Finished!"],
+
+        ["echo", "FAILURE!"],
+        ["exit", "42"],
+      ].map(&:shelljoin).join("\n")
+
+      @installer_terminal.command = ["sh", "-c", temp_script].shelljoin()
       @installer_terminal.run()
 
       super()
