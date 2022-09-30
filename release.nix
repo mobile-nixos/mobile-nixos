@@ -180,6 +180,7 @@ rec {
     phosh = {
       x86_64-linux.rootfs  = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; }).outputs.rootfs;
       aarch64-linux.rootfs = (evalExample { example = ./examples/phosh; system = "aarch64-linux"; }).outputs.rootfs;
+      cross-x86-aarch64.rootfs = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
     };
   };
 
