@@ -134,33 +134,13 @@ let
     )
   );
 
-  examples-demo =
-    let
-      aarch64-eval = import ./examples/demo {
-        device = specialConfig {
-          name = "aarch64-linux";
-          buildingForSystem = "aarch64-linux";
-          system = "aarch64-linux";
-          config = {
-            mobile._internal.compressLargeArtifacts = inNixOSHydra;
-            # Do not build kernel and initrd into the system.
-            mobile.rootfs.shared.enabled = true;
-          };
-        };
-      };
-    in
-    {
-      aarch64-linux.rootfs = aarch64-eval.outputs.rootfs;
-    };
-
-    doc = import ./doc {
-      pkgs = pkgs';
-    };
+  doc = import ./doc {
+    pkgs = pkgs';
+  };
 in
 rec {
   inherit device;
   inherit kernel;
-  inherit examples-demo;
   inherit doc;
 
   # Overlays build native, and cross, according to shouldEvalOn
@@ -201,7 +181,6 @@ rec {
       ++ lib.optionals (hasSystem "aarch64-linux") [
         device.asus-z00t.aarch64-linux               # Android
         device.asus-dumo.aarch64-linux               # Depthcharge
-        examples-demo.aarch64-linux.rootfs
 
         # Flashable zip binaries are universal for a platform.
         overlay.aarch64-linux.aarch64-linux.mobile-nixos.android-flashable-zip-binaries
