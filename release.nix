@@ -134,6 +134,30 @@ let
     )
   );
 
+  evalExample =
+    { example
+    , system
+    , targetSystem ? system
+    }:
+    import example {
+      device = specialConfig {
+        name =
+          if system == targetSystem
+          then system
+          else "${targetSystem}-built-on-${system}"
+        ;
+        inherit system;
+        buildingForSystem = targetSystem;
+        config = {
+          # Ensures outputs are digestible by Hydra
+          mobile._internal.compressLargeArtifacts = inNixOSHydra;
+          # Build a generic rootfs
+          mobile.rootfs.shared.enabled = true;
+        };
+      };
+    }
+  ;
+
   doc = import ./doc {
     pkgs = pkgs';
   };
@@ -142,6 +166,22 @@ rec {
   inherit device;
   inherit kernel;
   inherit doc;
+
+  # Some example systems to build.
+  # They track breaking changes, and ensures dependencies are built.
+  # They may or may not work as-they-are on devices. YMMV.
+  examples = {
+    hello = {
+      x86_64-linux.rootfs  = (evalExample { example = ./examples/hello; system = "x86_64-linux"; }).outputs.rootfs;
+      aarch64-linux.rootfs = (evalExample { example = ./examples/hello; system = "aarch64-linux"; }).outputs.rootfs;
+      cross-x86-aarch64.rootfs = (evalExample { example = ./examples/hello; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
+      cross-x86-armv7l.rootfs  = (evalExample { example = ./examples/hello; system = "x86_64-linux"; targetSystem = "armv7l-linux";  }).outputs.rootfs;
+    };
+    phosh = {
+      x86_64-linux.rootfs  = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; }).outputs.rootfs;
+      aarch64-linux.rootfs = (evalExample { example = ./examples/phosh; system = "aarch64-linux"; }).outputs.rootfs;
+    };
+  };
 
   # Overlays build native, and cross, according to shouldEvalOn
   overlay = lib.genAttrs systems (system:
@@ -171,9 +211,15 @@ rec {
       cross-canaries.aarch64-linux.constituents
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.uefi-x86_64.x86_64-linux              # UEFI system
+
         # Cross builds
         device.asus-z00t.x86_64-linux                # Android
         device.asus-dumo.x86_64-linux                # Depthcharge
+
+        # Example systems
+        examples.hello.x86_64-linux.rootfs
+        examples.hello.cross-x86-aarch64.rootfs
+        examples.phosh.x86_64-linux.rootfs
 
         # Flashable zip binaries are universal for a platform.
         overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.android-flashable-zip-binaries
@@ -181,6 +227,10 @@ rec {
       ++ lib.optionals (hasSystem "aarch64-linux") [
         device.asus-z00t.aarch64-linux               # Android
         device.asus-dumo.aarch64-linux               # Depthcharge
+
+        # Example systems
+        examples.hello.aarch64-linux.rootfs
+        examples.phosh.aarch64-linux.rootfs
 
         # Flashable zip binaries are universal for a platform.
         overlay.aarch64-linux.aarch64-linux.mobile-nixos.android-flashable-zip-binaries
@@ -203,6 +253,7 @@ rec {
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.asus-flo.x86_64-linux
         overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
+        examples.hello.cross-x86-armv7l.rootfs
       ]
       ++ lib.optionals (hasSystem "aarch64-linux") [
       ]
