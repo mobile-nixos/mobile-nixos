@@ -124,7 +124,10 @@ class GUI::TerminalPuppet < LVGUI::Widget
   def update_terminal()
     if @puppet
       @puppet.resize_window("-x#{terminal_width}", "-y#{terminal_height}")
-      @text.set_text(@puppet.capture_pane().strip())
+      text = @puppet.capture_pane().strip()
+      # Pad lines, or else the terminal will not be at its full height.
+      text += "\n" * (@terminal_height - text.lines.count)
+      @text.set_text(text)
 
       x, y, shown = @puppet.cursor_position
       @cursor.set_x(@cell_width * (x) + @text.get_x())
