@@ -4,6 +4,9 @@ class TmuxPuppeteer
   UID = Process.uid
   XDG_RUNTIME_DIR = ENV["XDG_RUNTIME_DIR"] or "/run/user/#{UID}"
 
+  class CommandError < StandardError
+  end
+
   def _bg(*cmd)
     STDERR.puts(" $ #{cmd.shelljoin}") if VERBOSE
     `#{cmd.shelljoin} &`
@@ -13,9 +16,9 @@ class TmuxPuppeteer
     STDERR.puts(" $ #{cmd.shelljoin}") if VERBOSE
     ret = `#{cmd.shelljoin}`
     unless $?.success?
-      STDERR.puts("Command failed...")
+      STDERR.puts("Command failed in TmuxPuppeteer...")
       STDERR.puts("-> $ #{cmd.shelljoin}")
-      exit $?.exitstatus
+      raise CommandError
     end
     ret
   end
@@ -82,10 +85,25 @@ class TmuxPuppeteer
 
   # All tmux variables, in a nice easy to use Hash.
   def all_variables()
-    display_message("-ap")
-      .strip()
-      .split(/\n/)
-      .map { |s| s.split("=", 2) }
-      .to_h
+    # NOTE: we have to save variables eagerly, as the next
+    #       call to this function after all panes quit will fail.
+    #
+    #       The first call after all panes quit will be fine, it's the
+    #       following one that causes issues:
+    #
+    #       ```
+    #       no server running on /run/user/1000/tmux-puppeteering.sock
+    #       ```
+    #
+    #       So we're serving stale data, but valid since it won't change.
+    begin
+      @tmux_variables = display_message("-ap")
+        .strip()
+        .split(/\n/)
+        .map { |s| s.split("=", 2) }
+        .to_h
+    rescue CommandError
+      @tmux_variables
+    end
   end
 end
