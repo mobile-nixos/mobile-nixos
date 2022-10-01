@@ -4,5 +4,6 @@
     ./qualcomm
     ./framebuffer.nix
     ./wifi.nix
+    ./audio.nix
   ];
 }
