@@ -1,8 +1,9 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkIf mkOption types;
+  inherit (lib) mkIf mkMerge mkOption types;
   cfg = config.mobile.boot.stage-1.gui;
+  inherit (config.boot.initrd) luks;
   minimalX11Config = pkgs.runCommand "minimalX11Config" {
     allowedReferences = [ "out" ];
   } ''
@@ -28,29 +29,42 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
-    mobile.boot.stage-1.contents = with pkgs; [
-      {
-        object = "${pkgs.mobile-nixos.stage-1.boot-error}/libexec/boot-error.mrb";
-        symlink = "/applets/boot-error.mrb";
-      }
-      {
-        object = "${pkgs.mobile-nixos.stage-1.boot-splash}/libexec/boot-splash.mrb";
-        symlink = "/applets/boot-splash.mrb";
-      }
-      {
-        object = "${pkgs.mobile-nixos.stage-1.boot-recovery-menu}/libexec/boot-recovery-menu.mrb";
-        symlink = "/applets/boot-selection.mrb";
-      }
-      {
-        object = "${minimalX11Config}";
-        symlink = "/etc/X11";
-      }
-    ];
+  config = mkIf (config.mobile.boot.stage-1.enable) (mkMerge [
+    {
+      assertions = [
+        {
+          # When the Mobile NixOS stage-1 is in use, valid configurations are either:
+          #   - GUI enabled (luks or not, don't care).
+          #   - No LUKS.
+          assertion = cfg.enable || (luks.devices == {} && !luks.forceLuksSupportInInitrd);
+          message = "With the Mobile NixOS stage-1, the boot GUI needs to be enabled to use LUKS.";
+        }
+      ];
+    }
+    (mkIf cfg.enable {
+      mobile.boot.stage-1.contents = with pkgs; [
+        {
+          object = "${pkgs.mobile-nixos.stage-1.boot-error}/libexec/boot-error.mrb";
+          symlink = "/applets/boot-error.mrb";
+        }
+        {
+          object = "${pkgs.mobile-nixos.stage-1.boot-splash}/libexec/boot-splash.mrb";
+          symlink = "/applets/boot-splash.mrb";
+        }
+        {
+          object = "${pkgs.mobile-nixos.stage-1.boot-recovery-menu}/libexec/boot-recovery-menu.mrb";
+          symlink = "/applets/boot-selection.mrb";
+        }
+        {
+          object = "${minimalX11Config}";
+          symlink = "/etc/X11";
+        }
+      ];
 
-    mobile.boot.stage-1.environment = {
-      XKB_CONFIG_ROOT = "/etc/X11/xkb";
-      XLOCALEDIR = "/etc/X11/locale";
-    };
-  };
+      mobile.boot.stage-1.environment = {
+        XKB_CONFIG_ROOT = "/etc/X11/xkb";
+        XLOCALEDIR = "/etc/X11/locale";
+      };
+    })
+  ]);
 }
