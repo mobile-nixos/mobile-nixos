@@ -71,7 +71,7 @@ $ nix-build [...]
 
 You probably will want to toggle options and such things when fiddling with
 Mobile NixOS, at first. The repository is structured in a way to allow you to
-add options to an untracked `local.nix` file. The default `nix-build`
+add options to an untracked `local.nix` file at the root of the project. The default `nix-build`
 invocations will respect the content of that file as your configuration.
 
 A sample `local.nix`.
@@ -80,8 +80,7 @@ A sample `local.nix`.
 { lib, ... }:
 
 {
-  # Disables splash screens during boot
-  mobile.boot.stage-1.splash.enable = false;
+  # See https://mobile.nixos.org/options/index.html
 }
 ```
 
