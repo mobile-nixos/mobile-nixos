@@ -8,6 +8,7 @@ module GUI
       add_main_text(%Q{Your device booted to\nstage-2 of a NixOS system successfully!\n\nSelect from the following options})
 
       add_buttons([
+        ["Device information", ->() { DeviceInformationWindow.instance.present }],
         ["Display validation", ->() { DisplayValidationWindow.instance.present }],
         ["Input devices information", ->() { InputsWindow.instance.present }],
         ["Disks information", ->() { DisksWindow.instance.present }],
