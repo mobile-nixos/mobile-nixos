@@ -549,7 +549,15 @@ stdenv.mkDerivation (inputArgs // {
 
         # Stops `make ...config` from starting the application.
         cp scripts/kconfig/Makefile scripts/kconfig/Makefile.old
-        sed -i"" -e 's/$< .*$(Kconfig)/echo "no-op"/' scripts/kconfig/Makefile
+
+        # In linux commit f91e46b1a722 (~ 5.12) the makefile rules for
+        # {menu,n,g,x,}config were unified using a make definition,
+        # which involved doubling the dollar sign from $< top $$<.
+        # Doing two sed runs should accommodate both the older and
+        # newer variants harmlessly
+
+        sed -i"" -e 's/$$< .*$(Kconfig)/echo "no-op"/' \
+                 -e 's/$< .*$(Kconfig)/echo "no-op"/' scripts/kconfig/Makefile
 
         # Build the ...config application.
         make $makeFlags "''${makeFlagsArray[@]}" $buildFlags
