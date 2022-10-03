@@ -121,6 +121,10 @@ in
 # The usual mkDerivation option
 , enableParallelBuilding ? true
 
+# Tries to patch `multiple definition of `yylloc';` errors from older vendor kernels.
+# Only disable if the patch does not apply.
+, enableDefaultYYLOCPatch ? true
+
 # Usual stdenv arguments we are also setting.
 # Use the ones given by the user for composition.
 , nativeBuildInputs ? []
@@ -214,6 +218,7 @@ stdenv.mkDerivation (inputArgs // {
     map (p: p.patch) kernelPatches
     # Required for deterministic builds along with some postPatch magic.
     ++ optional (lib.versionAtLeast version "4.13") (nixosKernelPath + "/randstruct-provide-seed.patch")
+    ++ optional (enableDefaultYYLOCPatch && lib.versionOlder version "4.0") ./gcc10-extern_YYLOC_global_declaration.patch
     ++ patches
   ;
 
