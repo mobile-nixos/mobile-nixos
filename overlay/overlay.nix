@@ -56,6 +56,7 @@ in
     make_ext4fs = callPackage ./make_ext4fs {};
     hardshutdown = callPackage ./hardshutdown {};
     bootlogd = callPackage ./bootlogd {};
+    libusbgx = callPackage ./libusbgx {};
 
     #
     # Hacks
