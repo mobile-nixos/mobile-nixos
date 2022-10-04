@@ -49,5 +49,6 @@
   ./system-build.nix
   ./system-target.nix
   ./system-types.nix
+  ./usb-gadget.nix
   ./zram.nix
 ]
