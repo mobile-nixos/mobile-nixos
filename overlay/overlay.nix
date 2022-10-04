@@ -57,6 +57,7 @@ in
     hardshutdown = callPackage ./hardshutdown {};
     bootlogd = callPackage ./bootlogd {};
     libusbgx = callPackage ./libusbgx {};
+    gadget-tool = callPackage ./gt {}; # upstream this is called "gt", which is very Unix.
 
     #
     # Hacks
