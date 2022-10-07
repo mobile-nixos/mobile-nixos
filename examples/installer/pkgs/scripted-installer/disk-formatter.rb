@@ -18,16 +18,6 @@ module Helpers
       run("mount", source, target)
     end
   end
-
-  def part(disk, number)
-    if disk.match(%r{^/dev/mmcblk}) then
-      [disk, "p", number].join()
-    elsif disk.match(%r{^/dev/sd[a-z]}) then
-      [disk, number].join()
-    else
-      raise "Partition numbering scheme for this disk type (for '#{disk}') not implemented."
-    end
-  end
 end
 
 # }}}
@@ -153,17 +143,17 @@ Helpers::GPT.add_partition(disk, size: 15 * 1024 * 1024, partlabel: "pstore",  t
 # Rootfs partition, will be formatted and mounted as needed
 Helpers::GPT.add_partition(disk, partlabel: "rootfs",  type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4")
 
-Helpers::wipefs(Helpers.part(disk, 1))
-Helpers::wipefs(Helpers.part(disk, 2))
-Helpers::wipefs(Helpers.part(disk, 3))
-Helpers::wipefs(Helpers.part(disk, 4))
-Helpers::wipefs(Helpers.part(disk, 5))
+Helpers::wipefs(Helpers::Part.part(disk, 1))
+Helpers::wipefs(Helpers::Part.part(disk, 2))
+Helpers::wipefs(Helpers::Part.part(disk, 3))
+Helpers::wipefs(Helpers::Part.part(disk, 4))
+Helpers::wipefs(Helpers::Part.part(disk, 5))
 
 #
 # Rootfs formatting
 #
 
-rootfs_partition = Helpers.part(disk, 4)
+rootfs_partition = Helpers::Part.part(disk, 4)
 
 if configuration["fde"]["enable"] then
   Helpers::LUKS.format(
