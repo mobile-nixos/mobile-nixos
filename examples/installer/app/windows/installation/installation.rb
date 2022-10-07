@@ -27,6 +27,15 @@ module GUI
     end
 
     def present()
+      launch_installation()
+      super()
+    end
+
+    def launch_installation()
+      # Don't re-launch installatoin
+      return if @installation_launched
+      @installation_launched = true
+
       update_terminal()
       # Register a task to update regularly.
       @task = LVGL::Hacks::LVTask.create_task(200, LVGL::TASK_PRIO::MID, ->() do
@@ -55,8 +64,6 @@ module GUI
 
       @installer_terminal.command = ["sh", "-c", temp_script].shelljoin()
       @installer_terminal.run()
-
-      super()
     end
 
     def on_success()
