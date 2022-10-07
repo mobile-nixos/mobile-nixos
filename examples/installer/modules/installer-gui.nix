@@ -11,7 +11,7 @@ let
       PATH = "${makeBinPath (with pkgs;[
         networkmanager
         tmux
-        #systemd     # journalctl
+        mobile-installer-script
       ])}:$PATH";
     };
   };
