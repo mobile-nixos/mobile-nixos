@@ -12,6 +12,7 @@ let
         networkmanager
         tmux
         mobile-installer-script
+        systemd # for poweroff
       ])}:$PATH";
     };
   };
@@ -37,12 +38,22 @@ in
       {
         description = "GUI for the installer for Mobile NixOS";
         wantedBy = [ "multi-user.target" ];
+
+        # Let's make sure our networking interfaces are up...
+        # Also settle since there's no input device hotplug.
+        wants = [ "network-online.target" "systemd-udev-settle.service" ];
+        after = [ "network-online.target" "systemd-udev-settle.service" ];
+
         serviceConfig = {
           Restart = "always";
           SyslogIdentifier = "installer-gui";
           ExecStart = ''
             ${installer-gui}/bin/installer-gui
           '';
+        };
+        environment = {
+          inherit (config.environment.sessionVariables) NIX_PATH;
+          XDG_RUNTIME_DIR = "%t/installer-gui";
         };
       }
   ;
