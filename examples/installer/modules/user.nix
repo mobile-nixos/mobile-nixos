@@ -3,7 +3,12 @@
 {
   users.users.nixos = {
     isNormalUser = true;
-    extraGroups = [ "wheel" "networkmanager" "video" ];
+    extraGroups = [
+      "input"
+      "networkmanager"
+      "video"
+      "wheel"
+    ];
   };
 
   security.sudo = {
