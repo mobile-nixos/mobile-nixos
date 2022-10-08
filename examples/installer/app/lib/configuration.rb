@@ -1,4 +1,110 @@
 module Configuration
+  module Device
+    extend self
+
+    def device_uefi()
+      arch = `uname -m`.strip
+      ["uefi", arch].join("-")
+    end
+
+    # TODO: move device-specific detection into some form of generic data file.
+    def identifier()
+      is_uefi = File.exists?("/sys/firmware/efi")
+
+      # First let's short circuit for the simulator.
+      # We need a good enough device name.
+      if LVGL::Introspection.simulator?
+        # Safe~ish assumption for the simulator.
+        return device_uefi
+      end
+
+      # Then let's try with the device tree compatible.
+      if File.exists?("/proc/device-tree/compatible") then
+        # Let's take the most precise compatible name.
+        compatible = File.read("/proc/device-tree/compatible").split("\0").first
+
+        case compatible
+        when /^pine64,pinephone/
+          return "pine64-pinephone"
+        when /^pine64,pinetab/
+          return "pine64-pinetab"
+        when /^google,scarlet/
+          # TODO: detect the actual scarlet model...
+          return "asus-dumo"
+        end
+      end
+
+      # Uh, no device tree? no problem!
+      # Let's try and detect the device with its DMI info
+      if File.exists?("/sys/class/dmi/id/product_name")
+        product_name = File.read("/sys/class/dmi/id/product_name")
+        # Bogus example of an UEFI system detection
+        #case product_name
+        #when "Jupiter"
+        #  return "valve-jupiter"
+        #end
+      end
+
+      # Oh, still nothing specific? Let's hope it's just generic UEFI!
+      if is_uefi
+        return device_uefi
+      end
+
+      # This shouldn't really happen. We won't produce builds without some way
+      # to detect the device identifier.
+      "... unknown device ..."
+    end
+
+    # TODO: move with the device detection into generic data-driven config.
+    def target_disk()
+      if LVGL::Introspection.simulator?
+        path = "./installer-bogus-disk.img"
+        system("fallocate", "-l", "1G", path)
+        return File.realpath(path)
+      end
+
+      path =
+        case identifier
+        when "pine64-pinephone", "pine64-pinetab"
+          # Allwinner A64 eMMC
+          File.join("/dev/disk/by-path", "platform-1c11000.mmc")
+        when "asus-dumo"
+          # RK3399 eMMC
+          File.join("/dev/disk/by-path", "platform-fe330000.mmc")
+        end
+
+      raise "Unknown target disk" unless path
+
+      File.realpath(path)
+    end
+
+    def boot_partition()
+      if LVGL::Introspection.simulator?
+        path = "./installer-bogus-boot-partition.img"
+        system("touch", path)
+        return File.realpath(path)
+      end
+
+      # The assumption for now is the boot partition is always the first one.
+      # This assumption may not be true in the future.
+      # Maybe we'll need to handle the "partitioning plan" here instead of in the formatting script.
+      Part.part(target_disk, 1)
+    end
+  end
+
+  module Part
+    extend self
+
+    def part(disk, number)
+      if disk.match(%r{^/dev/mmcblk}) then
+        [disk, "p", number].join()
+      elsif disk.match(%r{^/dev/sd[a-z]}) then
+        [disk, number].join()
+      else
+        raise "Partition numbering scheme for this disk type (for '#{disk}') not implemented."
+      end
+    end
+  end
 end
 
 # Configuration file for NixOS
@@ -27,11 +133,6 @@ class Configuration::NixOSConfiguration
     ].join("-")
   end
 
-  def device()
-    # XXX this should come from the 
-    "TODO"
-  end
-
   def username()
     @configuration[:info][:username]
   end
@@ -47,10 +148,13 @@ class Configuration::NixOSConfiguration
   end
 
   def imports_fragment()
+    imports = [
+      "(import <mobile-nixos/lib/configuration.nix> { device = #{Configuration::Device.identifier.to_json}; })",
+      "./hardware-configuration.nix",
+    ].join("\n").indent
 <<EOF
 imports = [
-  (import <mobile-nixos/lib/configuration.nix> { device = #{device.to_json}; })
-  ./hardware-configuration.nix
+#{imports}
 ];
 EOF
   end
