@@ -14,7 +14,7 @@ module GUI
       @installer_terminal.terminal_height = 25
 
       @continue_button = add_button("Continue", style: :primary) do
-        puts("TODO: go to a window explaining to the user that the installation was successful, and they should probably remove the installer media and then reboot button.")
+        InstallationSuccessWindow.instance.present
       end
       @continue_button.set_hidden(true)
 
