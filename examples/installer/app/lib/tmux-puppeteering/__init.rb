@@ -37,6 +37,12 @@ class TmuxPuppeteer
 
   def initialize(cmd, width: 80, height: 25, socket_name: "tmux-puppeteering.sock")
     @socket_name = socket_name
+
+    # The sleep here is to prevent the tmux puppeteering closing too soon
+    # in case previous commands failed lightning fast... (command not found)
+    # remain-on-exit isn't working correctly otherwise :/
+    cmd = "#{cmd}; ret=$?; sleep 0.2; exit $ret"
+
     _tmux(*%W[
        new-session -A -x #{width} -y #{height} -d #{cmd} ;
        set-option remain-on-exit on
