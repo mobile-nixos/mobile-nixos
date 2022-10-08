@@ -45,24 +45,30 @@ module GUI
       FileUtils.mkdir_p(INSTALLER_PREFIX)
       Configuration.save_json!(INSTALLER_JSON)
       Configuration.save_configuration!(CONFIGURATION_PREFIX)
+      MOUNT_POINT =
+        if LVGL::Introspection.simulator?
+          path = File.join(Dir.pwd, "installer-bogus-root")
+          FileUtils.mkdir_p(path)
+          path
+        else
+          "/mnt"
+        end
 
-      # FIXME: call the actual installer...
-      temp_script = [
-        #["set", "-x"],
-        ["echo", ":: Fake installing"],
-        ["sleep", "2"],
-        ["echo", ":: Configuration:"],
-        ["awk", '{print $0; system("sleep .02");}', File.join(CONFIGURATION_PREFIX, "configuration.nix")],
-        ["echo", "Finalizing..."],
-        ["sleep", "2"],
+      installation_sequence = [
+        ["set", "-e"],
 
-        #["echo", "Finished!"],
+        ["echo", "\n=> Partitioning and formatting..."],
+        ["disk-formatter", Configuration::Device.target_disk, INSTALLER_JSON],
 
-        ["echo", "FAILURE!"],
-        ["exit", "42"],
-      ].map(&:shelljoin).join("\n")
+        ["echo", "\n=> Installing..."],
+        ["automated-installer", MOUNT_POINT, Configuration::Device.boot_partition],
 
-      @installer_terminal.command = ["sh", "-c", temp_script].shelljoin()
+        ["echo", "\n=> Completed!"],
+      ]
+
+      installation_sequence = installation_sequence.map(&:shelljoin).join("\n")
+
+      @installer_terminal.command = ["sh", "-c", installation_sequence].shelljoin()
       @installer_terminal.run()
     end
 
