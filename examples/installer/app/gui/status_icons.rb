@@ -78,8 +78,7 @@ class GUI::StatusIcons < LVGUI::Widget
 
     def data_wired()
       # XXX connected?
-      if wired = Hardware::Network.wired
-        wired = wired.first
+      if wired = Hardware::Network.wired.first
         #"\uf6ff"
         if wired[:state] == "connected"
           "[wired/on]"
