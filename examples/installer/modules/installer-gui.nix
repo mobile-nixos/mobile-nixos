@@ -68,4 +68,8 @@ in
   services.logind.extraConfig = ''
     HandlePowerKey=ignore
   '';
+
+  boot.kernelParams = lib.mkBefore [
+    "fbcon=vc:2-6"
+  ];
 }
