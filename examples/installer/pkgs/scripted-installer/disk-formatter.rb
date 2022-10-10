@@ -3,6 +3,8 @@ unless RUBY_ENGINE == "mruby"
 require "shellwords"
 end
 
+MOUNT_POINT = "/mnt"
+
 # {{{
 
 module Helpers
@@ -102,7 +104,13 @@ module Helpers
 
       script << ["attrs", attributes.join(",").inspect].join("=") unless attributes.empty?
 
-      sfdisk_script(path, script.join(", "), "--append")
+      sfdisk_script(
+          path,
+          script.join(", "),
+          "--append",
+          "--wipe", "always",
+          "--wipe-partitions", "always",
+        )
     end
   end
 end
@@ -143,17 +151,23 @@ Helpers::GPT.add_partition(disk, size: 15 * 1024 * 1024, partlabel: "pstore",  t
 # Rootfs partition, will be formatted and mounted as needed
 Helpers::GPT.add_partition(disk, partlabel: "rootfs",  type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4")
 
-Helpers::wipefs(Helpers::Part.part(disk, 1))
-Helpers::wipefs(Helpers::Part.part(disk, 2))
-Helpers::wipefs(Helpers::Part.part(disk, 3))
-Helpers::wipefs(Helpers::Part.part(disk, 4))
-Helpers::wipefs(Helpers::Part.part(disk, 5))
+puts "Waiting for target partitions to show up..."
+
+# Wait up to a minute
+(1..600).each do |i|
+  print "."
+  # Assumes they're all present if the last is present
+  break if File.exists?(Helpers::Part.part(disk, 5))
+  sleep(0.1)
+end
+# two dots such that if it's instant we get a proper length ellipsis!
+print ".. present!\n"
 
 #
 # Rootfs formatting
 #
 
-rootfs_partition = Helpers::Part.part(disk, 4)
+rootfs_partition = Helpers::Part.part(disk, 5)
 
 if configuration["fde"]["enable"] then
   Helpers::LUKS.format(
@@ -179,4 +193,5 @@ Helpers::Ext4.format(
   uuid: configuration["filesystems"]["rootfs"]["uuid"],
   label: configuration["filesystems"]["rootfs"]["label"]
 )
-Helpers::Ext4.mount(rootfs_partition, "/mnt")
+Dir.mkdir(MOUNT_POINT) unless Dir.exist?(MOUNT_POINT)
+Helpers::Ext4.mount(rootfs_partition, MOUNT_POINT)
