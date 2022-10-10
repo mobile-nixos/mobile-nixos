@@ -9,10 +9,16 @@ let
     applet = "${app}/libexec/app.mrb";
     env = {
       PATH = "${makeBinPath (with pkgs;[
-        networkmanager
-        tmux
-        mobile-installer-script
-        systemd # for poweroff
+        bashInteractive # The shell
+        tmux            # Terminal puppeteering
+        networkmanager  # Network management (nmcli)
+        systemd         # For poweroff
+        nix             # To do Nix builds
+        mobile-installer-script # To do the install
+        util-linux      # wipefs, sfdisk
+        cryptsetup      # LUKS
+        e2fsprogs       # mkfs.ext4
+        mkpasswd        # for the user's password
       ])}:$PATH";
     };
   };
