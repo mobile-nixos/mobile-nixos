@@ -38,9 +38,11 @@ def nix_build(*args, command: "nix-build", store: MOUNT_POINT, verbose: nil)
 
   # This is dumb...
   # Since cpature2 can't stream the output, let's run this first...
-  system(*cmd) if verbose
+  if verbose
+    run(*cmd)
+  end
   # Then only copy the result
-  path, _ = capture2(*cmd)
+  path, _ = capture2(*cmd, verbose: !verbose)
 
   # We know we want to consume paths or JSON values here.
   # Stripping eagerly is safe.
@@ -75,10 +77,14 @@ FileUtils.cp_r(GENERATED_NIXOS_DIR, File.join(MOUNT_POINT, "/etc/nixos"))
 
 step_marker "Building config"
 
-system_type = JSON.parse(nix_build("--eval", "--json", "<nixpkgs/nixos>", "-A", "config.mobile.system.type", command: "nix-instantiate"))
+puts "Identifying device type:"
+system_type = JSON.parse(nix_build("--eval", "--json", "<nixpkgs/nixos>", "-A", "config.mobile.system.type", command: "nix-instantiate", verbose: true))
+puts ""
 
+puts "Building the NixOS system..."
 toplevel = nix_build("<nixpkgs/nixos>", "-A", "config.system.build.toplevel")
 
+puts "Building the boot image..."
 case system_type
 when "u-boot"
   boot_image = nix_build("<nixpkgs/nixos>", "-A", "config.mobile.outputs.u-boot.boot-partition")

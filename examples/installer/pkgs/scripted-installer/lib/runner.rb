@@ -31,9 +31,9 @@ module Runner
     end
   end
 
-  def capture2(*args)
+  def capture2(*args, verbose: true)
     pretty_command = prettify_command(*args)
-    puts(" $ #{pretty_command}")
+    puts(" $ #{pretty_command}") if verbose
     Open3.capture2(*args)
   end
 end
