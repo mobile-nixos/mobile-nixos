@@ -5,6 +5,8 @@
     htop
     vim
     tmux
+    cryptsetup
+    e2fsprogs
   ];
 
   # Override stage-0 support for the installer.
