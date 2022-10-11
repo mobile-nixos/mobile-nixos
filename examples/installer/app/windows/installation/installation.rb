@@ -69,6 +69,7 @@ module GUI
       installation_sequence = installation_sequence.map(&:shelljoin).join("\n")
 
       @installer_terminal.command = ["sh", "-c", installation_sequence].shelljoin()
+      @installer_terminal.logging_identifier = "installer"
       @installer_terminal.run()
     end
 
