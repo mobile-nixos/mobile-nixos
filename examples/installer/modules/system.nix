@@ -30,4 +30,7 @@
 
   networking.networkmanager.enable = true;
   networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
+
+  # Help alleviate OOM issues.
+  zramSwap.enable = true;
 }
