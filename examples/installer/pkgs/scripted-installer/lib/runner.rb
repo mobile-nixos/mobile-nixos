@@ -17,9 +17,9 @@ module Runner
   # @param args [Array<String>] Command and parameters
   # @raise [Exception] on exit status 127, commonly used for command not found.
   # @raise [Exception] on any other exit status.
-  def run(*args)
+  def run(*args, verbose: true)
     pretty_command = prettify_command(*args)
-    puts(" $ #{pretty_command}")
+    puts(" $ #{pretty_command}") if verbose
     unless system(*args)
       raise Exception.new("Could not execute `#{pretty_command}`, status nil") if $?.nil?
       status = $?.exitstatus

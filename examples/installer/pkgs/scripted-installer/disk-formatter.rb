@@ -45,10 +45,11 @@ module Helpers
       cmd << path
       cmd.concat(["--uuid", uuid.shellescape])
       cmd.concat(["--key-file", "-"])
+      puts " $ #{prettify_command(*cmd)}"
       # FIXME: use proper input redirection, this leaks the passphrase in process list
       # (Which is fine enough with this implementation given it's on an ephemeral installation system)
       cmd = ["echo", "-n", passphrase.shellescape, "|"].concat(cmd)
-      run(cmd.join(" "))
+      run(cmd.join(" "), verbose: false)
     end
 
     def self.mount(*args)
@@ -61,10 +62,11 @@ module Helpers
       cmd << path
       cmd << mapper
       cmd.concat(["--key-file", "-"])
+      puts " $ #{prettify_command(*cmd)}"
       # FIXME: use proper input redirection, this leaks the passphrase in process list
       # (Which is fine enough with this implementation given it's on an ephemeral installation system)
       cmd = ["echo", "-n", passphrase.shellescape, "|"].concat(cmd)
-      run(cmd.join(" "))
+      run(cmd.join(" "), verbose: false)
     end
   end
 
