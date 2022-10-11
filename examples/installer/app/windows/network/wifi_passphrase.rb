@@ -36,6 +36,7 @@ module GUI
           LVGL::Hacks::LVTask.once(->() do
             Hardware::Network.connect_wifi(interface: interface, network: network, passphrase: value) do |success|
               if success then
+                @continue_button.set_enabled(true)
                 @status_text.set_text("Connected successfully.")
               else
                 @status_text.set_text("Failed to connect.")
@@ -46,6 +47,10 @@ module GUI
       end
 
       @status_text = add_text("") # Will be filled on connect
+
+      @continue_button = add_button("Continue", style: :primary) do
+        MainWindow.instance.present()
+      end
 
       @back_button = LVGUI::BackButton.new(@toolbar, self).tap do |button|
         add_to_focus_group(button)
@@ -67,6 +72,8 @@ module GUI
 
     def refresh_network_information()
       return if @refreshing
+
+      @continue_button.set_enabled(false)
 
       @network_name_label.set_text(
         "Network: '#{network[:ssid]}'"
