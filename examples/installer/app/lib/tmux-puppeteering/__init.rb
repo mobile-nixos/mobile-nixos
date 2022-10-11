@@ -35,7 +35,8 @@ class TmuxPuppeteer
     end
   end
 
-  def initialize(cmd, width: 80, height: 25, socket_name: "tmux-puppeteering.sock")
+  def initialize(cmd, width: 80, height: 25, socket_name: "tmux-puppeteering.sock", logging_identifier: nil)
+    @logging_identifier = logging_identifier
     @socket_name = socket_name
 
     # The sleep here is to prevent the tmux puppeteering closing too soon
@@ -43,10 +44,15 @@ class TmuxPuppeteer
     # remain-on-exit isn't working correctly otherwise :/
     cmd = "#{cmd}; ret=$?; sleep 0.2; exit $ret"
 
-    _tmux(*%W[
-       new-session -A -x #{width} -y #{height} -d #{cmd} ;
-       set-option remain-on-exit on
-    ], runner: :_bg)
+    invocation = %W[
+       new-session -A -x #{width} -y #{height} -d #{cmd}
+       ; set-option remain-on-exit on
+    ]
+    invocation.concat(%W[
+       ; pipe-pane #{["systemd-cat", "--identifier=#{logging_identifier}"].shelljoin}
+    ])
+
+    _tmux(*invocation, runner: :_bg)
   end
 
   # Provides the content of the pane
