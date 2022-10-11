@@ -62,11 +62,7 @@ puts "= Mobile NixOS installer — automated installer ="
 puts "================================================"
 
 GENERATED_DIR = File.join(ENV["XDG_RUNTIME_DIR"], "mobile-installer")
-INSTALLER_JSON = File.join(GENERATED_DIR, "installer.json")
 GENERATED_NIXOS_DIR = File.join(GENERATED_DIR, "nixos")
-
-configuration = JSON.parse(File.read(INSTALLER_JSON))
-
 
 step_marker "Copying configuration..."
 
