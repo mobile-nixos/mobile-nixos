@@ -7,12 +7,14 @@ class GUI::TerminalPuppet < LVGUI::Widget
   attr_reader :terminal_height
   attr_accessor :command
   attr_reader :puppet
+  attr_accessor :logging_identifier
 
   CELL_CHAR = "#"
 
   def initialize(parent)
     super(LVGL::LVContainer.new(parent))
 
+    @logging_identifier = nil
     @terminal_height = 30
     @terminal_width = 1
     @command = nil
@@ -107,7 +109,8 @@ class GUI::TerminalPuppet < LVGUI::Widget
     @puppet = TmuxPuppeteer.new(
       @command,
       width: terminal_width,
-      height: terminal_height
+      height: terminal_height,
+      logging_identifier: @logging_identifier,
     )
   end
 
