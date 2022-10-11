@@ -16,6 +16,7 @@
 
   environment.systemPackages = with pkgs; [
     chatty              # IM and SMS
+    epiphany            # Web browser
     kgx                 # Terminal
     megapixels          # Camera
   ];
