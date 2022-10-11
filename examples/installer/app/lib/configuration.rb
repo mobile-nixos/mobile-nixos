@@ -151,7 +151,16 @@ class Configuration::NixOSConfiguration
     imports = [
       "(import <mobile-nixos/lib/configuration.nix> { device = #{Configuration::Device.identifier.to_json}; })",
       "./hardware-configuration.nix",
-    ].join("\n").indent
+    ]
+
+    case @configuration[:environment][:phone_environment].to_sym
+    when :phosh
+      imports << "<mobile-nixos/examples/phosh/phosh.nix>"
+    when :plamo
+      imports << "<mobile-nixos/examples/plasma-mobile/plasma-mobile.nix>"
+    end
+
+    imports = imports.join("\n").indent
 <<EOF
 imports = [
 #{imports}
@@ -190,45 +199,26 @@ EOF
   end
 
   def phone_environment_fragment()
+    # We are importing the `examples/#{environment}/#{environment}.nix`
+    # file already. This ensures the demo systems don't deviate from
+    # the opinionated configuration.
+    #
+    # Only add system-specific config for the environment here.
+    # e.g. things that are configured in the installer like the
+    # login name for the user.
     case @configuration[:environment][:phone_environment].to_sym
     when :phosh
 <<EOF
-#
-# Phosh configuration
-#
-
+# Auto-login for phosh
 services.xserver.desktopManager.phosh = {
-  enable = true;
   user = #{username.to_json};
-  group = "users";
 };
-
-programs.calls.enable = true;
-hardware.sensor.iio.enable = true;
 EOF
     when :plamo
 <<EOF
-#
-# Plasma Mobile configuration
-#
-
-services.xserver = {
-  enable = true;
-  desktopManager.plasma5.mobile.enable = true;
-  displayManager.defaultSession = "plasma-mobile";
-  displayManager.autoLogin = {
-    enable = true;
-    user = #{username.to_json};
-  };
-  displayManager.lightdm = {
-    enable = true;
-    # Workaround for autologin only working at first launch.
-    # A logout or session crashing will show the login screen otherwise.
-    extraSeatDefaults = ''
-      session-cleanup-script=${pkgs.procps}/bin/pkill -P1 -fx ${pkgs.lightdm}/sbin/lightdm
-    '';
-  };
-  libinput.enable = true;
+# Auto-login for Plasma Mobile
+services.xserver.displayManager.autoLogin = {
+  user = #{username.to_json};
 };
 EOF
     end
