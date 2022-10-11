@@ -7,6 +7,7 @@
     tmux
     cryptsetup
     e2fsprogs
+    mobile-installer-script
   ];
 
   # Override stage-0 support for the installer.
