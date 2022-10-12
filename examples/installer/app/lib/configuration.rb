@@ -24,6 +24,8 @@ module Configuration
         compatible = File.read("/proc/device-tree/compatible").split("\0").first
 
         case compatible
+        when /^pine64,pinephone-pro/
+          return "pine64-pinephonepro"
         when /^pine64,pinephone/
           return "pine64-pinephone"
         when /^pine64,pinetab/
@@ -68,7 +70,7 @@ module Configuration
         when "pine64-pinephone", "pine64-pinetab"
           # Allwinner A64 eMMC
           File.join("/dev/disk/by-path", "platform-1c11000.mmc")
-        when "asus-dumo"
+        when "asus-dumo", "pine64-pinephonepro"
           # RK3399 eMMC
           File.join("/dev/disk/by-path", "platform-fe330000.mmc")
         end
