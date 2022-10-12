@@ -92,8 +92,17 @@ makeFilesystem (args // {
   '';
 
   copyPhase = ''
+
+    echo "Computing inode count..."
+    inodes=$(find . ! -type d -print0 | du --files0-from=- --inodes | cut -f1 | sum-lines)
+    echo "    Min inodes: $inodes" 1>&2
+    inodes=$(( inodes * 2 ))
+    echo "    Inodes reserved: $inodes" 1>&2
+    echo ""
+
     faketime -f "1970-01-01 00:00:00" \
       make_ext4fs \
+      -i $inodes \
       -b $blockSize \
       -L $partName \
       -l $size \
