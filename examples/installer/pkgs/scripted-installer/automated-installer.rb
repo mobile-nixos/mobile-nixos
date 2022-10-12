@@ -12,45 +12,6 @@ end
 MOUNT_POINT = File.realpath(ARGV.shift)
 BOOT_PARTITION = File.realpath(ARGV.shift)
 
-# {{{
-
-# Launches a `nix-build` (or other).
-# Default to using the store target mount point.
-def nix_build(*args, command: "nix-build", store: MOUNT_POINT, verbose: nil)
-  if verbose == nil then
-    verbose = command != "nix-instantiate"
-  end
-  nix_path = [
-    "nixos-config=#{MOUNT_POINT}/etc/nixos/configuration.nix",
-    ENV["NIX_PATH"],
-  ].join(":")
-
-  common_args = [
-    # Use the running system's store as extra substituter.
-    "--extra-substituters", "auto?trusted=1"
-  ]
-
-  if store then
-    common_args.concat(["--store", store])
-  end
-
-  cmd = ["env", "NIX_PATH=#{nix_path}", command, *common_args, *args]
-
-  # This is dumb...
-  # Since cpature2 can't stream the output, let's run this first...
-  if verbose
-    run(*cmd)
-  end
-  # Then only copy the result
-  path, _ = capture2(*cmd, verbose: !verbose)
-
-  # We know we want to consume paths or JSON values here.
-  # Stripping eagerly is safe.
-  path.strip
-end
-
-# }}}
-
 def step_marker(text)
   puts ""
   puts ":: #{text}"
@@ -74,19 +35,19 @@ FileUtils.cp_r(GENERATED_NIXOS_DIR, File.join(MOUNT_POINT, "/etc/nixos"))
 step_marker "Building config"
 
 puts "Identifying device type:"
-system_type = JSON.parse(nix_build("--eval", "--json", "<nixpkgs/nixos>", "-A", "config.mobile.system.type", command: "nix-instantiate", verbose: true))
+system_type = Nix.instantiate("<nixpkgs/nixos>", attr: "config.mobile.system.type")
 puts ""
 
 puts "Building the NixOS system..."
-toplevel = nix_build("<nixpkgs/nixos>", "-A", "config.system.build.toplevel")
+toplevel = Nix.build("<nixpkgs/nixos>", attr: "config.system.build.toplevel")
 
 puts "Building the boot image..."
 case system_type
 when "u-boot"
-  boot_image = nix_build("<nixpkgs/nixos>", "-A", "config.mobile.outputs.u-boot.boot-partition")
+  boot_image = Nix.build("<nixpkgs/nixos>", attr: "config.mobile.outputs.u-boot.boot-partition")
   boot_image = Dir.glob(File.join(MOUNT_POINT, boot_image, "*.img")).first
 when "uefi"
-  boot_image = nix_build("<nixpkgs/nixos>", "-A", "config.mobile.outputs.uefi.boot-partition")
+  boot_image = Nix.build("<nixpkgs/nixos>", attr: "config.mobile.outputs.uefi.boot-partition")
   boot_image = Dir.glob(File.join(MOUNT_POINT, boot_image, "*.img")).first
 else
   raise "Cannot install for system type #{system_type}"
@@ -115,11 +76,7 @@ run(
 )
 
 puts "Marking profile active..."
-nix_build(
-  "--profile", File.join(MOUNT_POINT, "/nix/var/nix/profiles/system"),
-  "--set", toplevel,
-  command: "nix-env"
-)
+Nix.set_profile(profile: File.join(MOUNT_POINT, "/nix/var/nix/profiles/system"), set: toplevel)
 
 step_marker("Installation complete!")
 # Be pedantic here with the exit code as it's how we semantically tell the GUI
