@@ -7,6 +7,9 @@ class Tasks::AutoResize < Task
     @type = type
     add_dependency(:Devices, @device)
     add_dependency(:Mount, "/sys")
+    # For better user experience.
+    # Otherwise the device may look like it's hanging.
+    add_dependency(:Target, :Graphics)
   end
 
   # Computes whether a filesystem needs to be expanded.
