@@ -20,6 +20,16 @@ in
             When enabled, fbcon consoles are disabled.
           '';
         };
+        splash = mkOption {
+          type = types.bool;
+          default = true;
+          description = ''
+            When enabled, plymouth is configured with nice defaults.
+
+            Note that this requires an update to the kernel command-line
+            parameters, thus the boot image may need to be reflashed.
+          '';
+        };
       };
     };
   };
@@ -30,6 +40,10 @@ in
         "fbcon=vc:2-6"
         "console=tty0"
       ];
+    })
+    (mkIf config.mobile.beautification.splash {
+      boot.plymouth.enable = mkDefault true;
+      boot.plymouth.theme = mkDefault "spinner";
     })
   ];
 }
