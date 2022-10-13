@@ -2,6 +2,7 @@
 # Keep this list `:sort`ed.
 [
   ./adb.nix
+  ./beautification.nix
   ./boot-initrd.nix
   ./bootloader.nix
   ./cross-workarounds.nix
