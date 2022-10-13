@@ -4,6 +4,11 @@
 { config, lib, pkgs, ... }:
 
 {
+  mobile.beautification = {
+    silentBoot = lib.mkDefault true;
+    splash = lib.mkDefault true;
+  };
+
   services.xserver = {
     enable = true;
 
