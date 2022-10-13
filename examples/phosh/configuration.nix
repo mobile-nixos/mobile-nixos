@@ -7,6 +7,10 @@ let
   defaultUserName = "alice";
 in
 {
+  imports = [
+    ./phosh.nix
+  ];
+
   config = {
     users.users."${defaultUserName}" = {
       isNormalUser = true;
@@ -21,19 +25,7 @@ in
     };
     
     services.xserver.desktopManager.phosh = {
-      enable = true;
       user = defaultUserName;
-      group = "users";
     };
-
-    programs.calls.enable = true;
-    hardware.sensor.iio.enable = true;
-
-    environment.systemPackages = [
-      pkgs.chatty
-      pkgs.kgx
-      pkgs.megapixels
-    ];
-
   };
 }
