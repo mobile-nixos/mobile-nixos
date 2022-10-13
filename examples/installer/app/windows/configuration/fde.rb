@@ -59,6 +59,9 @@ module GUI
           @enable_fde.set_description("The rootfs will be encrypted")
         else
           @enable_fde.set_description("The rootfs will not be encrypted")
+          # Reset passphrase values
+          @passphrase_input.set_text("")
+          @passphrase_copy.set_text("")
         end
 
         [
