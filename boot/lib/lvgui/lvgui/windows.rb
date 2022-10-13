@@ -11,7 +11,9 @@ module LVGUI
         btn.event_handler = ->(event) do
           case event
           when LVGL::EVENT::CLICKED
-            yield
+            if btn.enabled?()
+              yield
+            end
           end
         end
         if style
@@ -30,6 +32,17 @@ module LVGUI
 
   module BaseUIElements
     def add_main_text(text, alignment: LVGL::LABEL_ALIGN::CENTER)
+      add_text(text, alignment: alignment)
+    end
+
+    def add_header(text)
+      LVGUI::HeaderLabel.new(@container).tap do |label|
+        label.text = text
+        label.set_width(@container.get_width_fit)
+      end
+    end
+
+    def add_text(text, alignment: LVGL::LABEL_ALIGN::LEFT)
       LVGL::LVLabel.new(@container).tap do |label|
         label.set_long_mode(LVGL::LABEL_LONG::BREAK)
         label.set_text(text)
@@ -70,6 +83,21 @@ module LVGUI
             yield(select.selected())
           end
         end
+      end
+    end
+
+    def add_textarea()
+      add_keyboard
+      LVGUI::TextArea.new(@container).tap do |ta|
+        add_to_focus_group(ta)
+        ta.set_width(@container.get_width_fit)
+      end
+    end
+
+    def add_keyboard()
+      unless @keyboard
+        @keyboard = LVGUI::Keyboard.instance()
+        refresh_keyboard()
       end
     end
   end

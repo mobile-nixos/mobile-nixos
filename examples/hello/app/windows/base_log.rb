@@ -22,6 +22,9 @@ module GUI
       @container.clean
       text.split("\n").each do |line|
         LVGL::LVLabel.new(@container).tap do |label|
+          style = label.get_style(LVGL::LABEL_STYLE::MAIN).dup()
+          label.set_style(LVGL::LABEL_STYLE::MAIN, style)
+          style.text_font = LVGUI::Fonts.monospace()
           label.set_long_mode(LVGL::LABEL_LONG::BREAK)
           label.set_align(LVGL::LABEL_ALIGN::LEFT)
           label.set_width(@container.get_width_fit)

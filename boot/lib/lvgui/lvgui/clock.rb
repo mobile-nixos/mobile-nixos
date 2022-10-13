@@ -22,4 +22,9 @@ class LVGUI::Clock < LVGUI::Widget
       :sec,
     ].map{|fn| now.send(fn).to_s.rjust(2, "0") }.join(":"))
   end
+
+  def del()
+    LVGL::Hacks::LVTask.delete_task(@task)
+    super()
+  end
 end

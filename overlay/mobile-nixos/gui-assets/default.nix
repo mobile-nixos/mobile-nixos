@@ -1,7 +1,8 @@
 { runCommand
 , overpass
 , roboto
-, font-awesome_4
+, fira-mono
+, font-awesome_5
 , nodePackages
 }:
 
@@ -25,7 +26,8 @@ cp -t $out/fonts \
   ${roboto}/share/fonts/truetype/Roboto-Regular.ttf \
   ${overpass}/share/fonts/opentype/overpass-bold.otf \
   ${overpass}/share/fonts/opentype/overpass-extrabold.otf \
-  ${font-awesome_4}/share/fonts/opentype/FontAwesome.otf
+  ${fira-mono}/share/fonts/opentype/FiraMono-Regular.otf
+cp ${font-awesome_5}/share/fonts/opentype/"Font Awesome 5 Free-Solid-900.otf" $out/fonts/FontAwesome.otf
 
 (
   cd $out/fonts

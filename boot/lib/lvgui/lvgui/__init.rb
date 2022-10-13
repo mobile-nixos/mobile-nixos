@@ -68,12 +68,20 @@ module LVGUI
       25
     end
 
+    def monospace_size()
+      20
+    end
+
     def primary(size = primary_size)
       LVGL::Hacks.get_font("fonts/Roboto-Regular.ttf", size)
     end
 
     def secondary(size = secondary_size)
       LVGL::Hacks.get_font("fonts/overpass-bold.otf", size)
+    end
+
+    def monospace(size = monospace_size)
+      LVGL::Hacks.get_font("fonts/FiraMono-Regular.otf", size)
     end
   end
 

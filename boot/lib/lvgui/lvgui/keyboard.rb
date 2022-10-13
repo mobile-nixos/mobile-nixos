@@ -4,6 +4,8 @@
 class LVGUI::Keyboard < LVGUI::Widget
   include Singleton
 
+  attr_accessor :container
+
   private
 
   def initialize()
@@ -31,15 +33,39 @@ class LVGUI::Keyboard < LVGUI::Widget
     _set_position()
   end
 
+  def get_visible_height()
+    if @shown
+      # FIXME: "animated height" to collapse container accordingly
+      get_height()
+    else
+      0
+    end
+  end
+
   def show()
+    raise "Parent not set" unless get_parent()
+    @shown = true
     _animate_y(get_parent.get_height() - get_height())
+    if @container
+      @container.refresh()
+      LVGL::Hacks::LVTask.once(->() do
+        @container.focus(
+          self.get_ta(),
+          LVGL::ANIM::ON
+        )
+      end, prio: LVGL::TASK_PRIO::LOWEST)
+    end
   end
 
   def hide()
+    raise "Parent not set" unless get_parent()
+    @shown = false
     _animate_y(get_parent.get_height)
+    @container.refresh() if @container
   end
 
   def _set_position()
+    raise "Parent not set" unless get_parent()
     if @shown
       _animate_y(get_parent.get_height() - get_height())
     else
