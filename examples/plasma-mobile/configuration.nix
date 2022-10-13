@@ -43,23 +43,13 @@ in
       };
     }
 
-    {
-      powerManagement.enable = true;
-      hardware.pulseaudio.enable = true;
-    }
-
     # Networking, modem and misc.
     {
-      networking.wireless.enable = false;
-      networking.networkmanager.enable = true;
-
       # Ensures any rndis config from stage-1 is not clobbered by NetworkManager
       networking.networkmanager.unmanaged = [ "rndis0" "usb0" ];
 
       # Setup USB gadget networking in initrd...
       mobile.boot.stage-1.networking.enable = lib.mkDefault true;
-
-      hardware.bluetooth.enable = true;
     }
 
     # SSH
