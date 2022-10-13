@@ -47,4 +47,5 @@
   ./system-build.nix
   ./system-target.nix
   ./system-types.nix
+  ./zram.nix
 ]
