@@ -69,7 +69,6 @@ class GUI::StatusIcons < LVGUI::Widget
     end
 
     def data_wifi()
-      # XXX connected?
       if wifi = Hardware::Network.current_wifi.first
         percent = wifi[:signal]
         "\uf1eb#{percent}%"
@@ -77,13 +76,15 @@ class GUI::StatusIcons < LVGUI::Widget
     end
 
     def data_wired()
-      # XXX connected?
       if wired = Hardware::Network.wired.first
-        #"\uf6ff"
         if wired[:state] == "connected"
-          "[wired/on]"
+          "\uf6ff"
         else
-          "[wired/off]"
+          # A wide-stanced slash.
+          # TODO: make widgets independent labels, and make this specific
+          #       widget two layered labels, and have the slash on top of
+          #       the ethernet icon when interface is not connected.
+          "\uf715"
         end
       end
     end
