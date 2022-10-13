@@ -22,7 +22,7 @@ in
         };
         splash = mkOption {
           type = types.bool;
-          default = true;
+          default = false;
           description = ''
             When enabled, plymouth is configured with nice defaults.
 

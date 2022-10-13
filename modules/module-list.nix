@@ -40,6 +40,7 @@
   ./mobile-device.nix
   ./nixpkgs.nix
   ./outputs.nix
+  ./plymouth.nix
   ./quirks
   ./recovery.nix
   ./rootfs.nix
