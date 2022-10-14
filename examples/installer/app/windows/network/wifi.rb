@@ -61,11 +61,7 @@ module GUI
       networks.each do |net|
         next if net[:ssid] == ""
         label = []
-        if net[:in_use]
-          label << "\uf192"
-        else
-          label << "\uf10c"
-        end
+        label << "\uf1eb" if net[:in_use]
         label << net[:ssid]
         label << "(#{net[:signal]}%)"
         if net[:security] != ""
