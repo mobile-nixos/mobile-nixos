@@ -149,7 +149,7 @@ let
   };
 
   disk-image = imageBuilder.diskImage.makeGPT {
-    name = "mobile-nixos";
+    name = config.mobile.configurationName;
     diskID = "01234567";
 
     partitions = [
