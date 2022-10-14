@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   environment.systemPackages = with pkgs; [
@@ -13,6 +13,8 @@
   # Override stage-0 support for the installer.
   # It's not needed.
   mobile.quirks.supportsStage-0 = lib.mkForce false;
+
+  mobile.configurationName = "mobile-nixos_${config.mobile.device.name}_installer";
 
   # Force a lower brightness.
   # At some point the UI should allow configuring this.
