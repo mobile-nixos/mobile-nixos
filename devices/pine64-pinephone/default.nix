@@ -65,4 +65,8 @@
       ["/soc/mmc@1c10000/wifi@1" "local-mac-address"]
     ];
   };
+
+  mobile.documentation.hydraOutputs = [
+    ["installer.@device@" "Installer image"]
+  ];
 }
