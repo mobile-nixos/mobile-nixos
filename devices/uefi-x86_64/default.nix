@@ -16,11 +16,6 @@
     ram = 1024 * 2;
   };
 
-  boot.kernelParams = [
-    "fbcon=vc:2-6"
-    "console=tty0"
-  ];
-
   mobile.system.type = "uefi";
 
   mobile.boot.stage-1 = {

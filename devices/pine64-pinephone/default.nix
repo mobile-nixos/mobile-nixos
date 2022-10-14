@@ -28,13 +28,11 @@
     kernel.package = pkgs.callPackage ./kernel { };
   };
 
-  boot.kernelParams = [
+  boot.kernelParams = lib.mkAfter [
+    # TODO: useSerial option
     # Serial console on ttyS0, using the serial headphone adapter.
     "console=ttyS0,115200"
-    "vt.global_cursor_default=0"
     "earlycon=uart,mmio32,0x01c28000"
-    "panic=10"
-    "consoleblank=0"
   ];
 
   mobile.system.type = "u-boot";

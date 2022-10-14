@@ -4,9 +4,14 @@
 # NOTE: this file and any it imports **have** to be safe to import from
 #       an end-user's config.
 #
-{ config, pkgs, options, ... }:
+{ config, lib, pkgs, options, ... }:
 
 {
+  mobile.beautification = {
+    silentBoot = lib.mkDefault true;
+    splash = lib.mkDefault true;
+  };
+
   services.xserver.desktopManager.phosh = {
     enable = true;
     group = "users";
