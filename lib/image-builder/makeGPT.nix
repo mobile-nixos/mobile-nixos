@@ -26,6 +26,7 @@ in
   , partitions
   , diskID
   , headerHole ? 0 # in bytes
+  , postProcess ? null
 }:
 
 let
@@ -50,6 +51,10 @@ stdenvNoCC.mkDerivation rec {
   name = "disk-image-${_name}";
   filename = "${_name}.img";
   img = "${placeholder "out"}/${filename}";
+
+  inherit
+    postProcess
+  ;
 
   nativeBuildInputs = [
     vboot_reference
@@ -174,6 +179,11 @@ stdenvNoCC.mkDerivation rec {
     echo "Information about the image:"
     ls -lh $img
     cgpt show $img
+
+    if [ -n "$postProcess" ]; then
+      echo "-> Running post-processing"
+      runHook postProcess
+    fi
   '';
 }
 
