@@ -19,6 +19,8 @@ class GUI::TerminalPuppet < LVGUI::Widget
     @terminal_width = 1
     @command = nil
 
+    @padding = LVGUI.pixel_scale(12)
+
     # Setup the container
     set_layout(LVGL::LAYOUT::COL_M)
     set_fit2(LVGL::FIT::FILL, LVGL::FIT::TIGHT)
@@ -29,13 +31,11 @@ class GUI::TerminalPuppet < LVGUI::Widget
       style.body_border_color = 0xFFFFFFFF
       style.body_border_width = LVGUI.pixel_scale(2)
 
-      padding = LVGUI.pixel_scale(12)
-      style.body_padding_top = padding
-      style.body_padding_left = padding
-      style.body_padding_right = padding
-      style.body_padding_bottom = padding
+      style.body_padding_top = @padding
+      style.body_padding_left = @padding
+      style.body_padding_right = @padding
+      style.body_padding_bottom = @padding
       style.body_opa = LVGL::OPA::HALF
-      #style.body_padding_inner = 0
     end
     
     # Add the cursor *under* the text (for now)
@@ -67,7 +67,7 @@ class GUI::TerminalPuppet < LVGUI::Widget
 
     @text.set_long_mode(LVGL::LABEL_LONG::BREAK)
     @text.set_align(LVGL::LABEL_ALIGN::LEFT)
-    @text.set_width(parent.get_width_fit())
+    @text.set_width(parent.get_width_fit() - @padding*2)
 
     @text.set_text("")
 
