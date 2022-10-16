@@ -33,6 +33,10 @@ mobile-nixos.kernel-builder {
     #
     # Allows keyboard accessory to work
     ./0001-keyboard.patch
+
+    # Allows wireplumber to work for pipewire audio (crashes in libcamera without this).
+    # Doesn't allow the camera to actually work.
+    ./0001-camera.patch
   ];
 
   postInstall = ''
