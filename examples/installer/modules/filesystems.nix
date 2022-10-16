@@ -1,4 +1,4 @@
-{ lib, ... }:
+{ lib, pkgs, ... }:
 
 let
   inherit (lib) mkDefault mkForce;
@@ -13,22 +13,33 @@ in
     };
   };
 
-  fileSystems =
-    let
-      tmpfsConf = {
-        device = "tmpfs";
-        fsType = "tmpfs";
-        neededForBoot = true;
-      };
-    in
-    {
-      "/" = mkDefault {
-        autoResize = mkForce false;
-      };
-      # Nothing is saved, except for the nix store being rehydrated.
-      "/tmp"     = tmpfsConf;
-      "/var/log" = tmpfsConf;
-      "/home"    = tmpfsConf;
-    }
-  ;
+  fileSystems = {
+    "/" = mkDefault {
+      # Handled within stage-2
+      # Do not disable autoResize, it'll take more time, but this does `e2fsck`
+      # which is required for the other resize2fs invocation to work properly in stage-2 :/
+      # autoResize = mkForce false;
+    };
+  };
+
+  # It's acceptable here to lose some boot time to resizing the partition all the time.
+  # Logic is the same as SD card enlargement.
+  boot.postBootCommands = ''
+    (
+      set -euo pipefail
+      PS4=" $ "
+      set -x
+
+      # Figure out device names for the boot device and root filesystem.
+      rootPart=$(${pkgs.util-linux}/bin/findmnt -n -o SOURCE /)
+      bootDevice=$(lsblk -npo PKNAME $rootPart)
+      partNum=$(lsblk -npo MAJ:MIN $rootPart | ${pkgs.gawk}/bin/awk -F: '{print $2}')
+
+      # Resize the root partition and the filesystem to fit the disk
+      echo ",+," | sfdisk -N$partNum --no-reread $bootDevice
+      ${pkgs.parted}/bin/partprobe
+      ${pkgs.e2fsprogs}/bin/resize2fs $rootPart
+    )
+  '';
+
 }
