@@ -60,6 +60,9 @@ module GUI
 
           refresh_buttons()
         end
+        add_button("Terminal Test Window") do
+          TerminalTestWindow.instance.present()
+        end
       end
 
       add_buttons([
