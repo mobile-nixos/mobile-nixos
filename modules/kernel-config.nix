@@ -32,9 +32,14 @@ in
     mobile.kernel.structuredConfig = [
       # Basic universal options
       (helpers: with helpers; {
+        LOCALVERSION = lib.mkDefault (freeform ''""'');
         # POSIX_ACL and XATTR are generally needed.
+        TMPFS = yes;
         TMPFS_POSIX_ACL = yes;
         TMPFS_XATTR = yes;
+
+        RD_GZIP = yes;
+        RD_XZ = yes;
 
         # Executive decision that EXT4 is required.
         EXT4_FS = yes;
@@ -72,8 +77,9 @@ in
         CRYPTO_HMAC = yes;
         CRYPTO_SHA256 = yes;
         SYSFS_DEPRECATED = no;
-        UEVENT_HELPER_PATH = freeform ''""'';
+        UEVENT_HELPER = no;
         FW_LOADER_USER_HELPER = option no;
+        SCSI = yes;
         BLK_DEV_BSG = yes;
         DEVPTS_MULTIPLE_INSTANCES = whenOlder "4.7" yes;
       })

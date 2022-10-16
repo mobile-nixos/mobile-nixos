@@ -36,6 +36,8 @@
 , dtbTool-exynos
 , ufdt-apply-overlay
 
+, lz4
+
 , cpio
 , elfutils
 , libelf
@@ -205,6 +207,7 @@ stdenv.mkDerivation (inputArgs // {
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optional  (lib.versionAtLeast version "5.2")  cpio
     ++ optional  (lib.versionAtLeast version "5.8")  elfutils
+    ++ optional  (isCompressed == "lz4") lz4
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.
     ++ [ dtc ]
@@ -217,7 +220,8 @@ stdenv.mkDerivation (inputArgs // {
   patches =
     map (p: p.patch) kernelPatches
     # Required for deterministic builds along with some postPatch magic.
-    ++ optional (lib.versionAtLeast version "4.13") (nixosKernelPath + "/randstruct-provide-seed.patch")
+    ++ optional ((lib.versionAtLeast version "4.13" && lib.versionOlder version "5.19")) (nixosKernelPath + "/randstruct-provide-seed.patch")
+    ++ optional ((lib.versionAtLeast version "5.19")) (nixosKernelPath + "/randstruct-provide-seed-5.19.patch")
     ++ optional (enableDefaultYYLOCPatch && lib.versionOlder version "4.0") ./gcc10-extern_YYLOC_global_declaration.patch
     ++ patches
   ;
@@ -253,6 +257,8 @@ stdenv.mkDerivation (inputArgs // {
 
     echo ":: Patching tools/ shebangs"
     patchShebangs tools
+    echo ":: Patching scripts/ shebangs"
+    patchShebangs scripts
 
   '' + optionalString enableLinuxLogoReplacement ''
     echo ":: Replacing the logo"
@@ -412,7 +418,10 @@ stdenv.mkDerivation (inputArgs // {
   buildPhase = if enableCombiningBuildAndInstallQuirk then ":" else null;
 
   installTargets =
-    (if isCompressed != false then [ "zinstall" ] else [ "install" ])
+    # zinstall only deals with `Image.gz`
+    # install will install the uncompressed kernel only...
+    # Though it's not an issue as we copy it ourselves anyway.
+    (if isCompressed == "gz" then [ "zinstall" ] else [ "install" ])
     ++ installTargets
     ++ optional isModular "modules_install"
   ;

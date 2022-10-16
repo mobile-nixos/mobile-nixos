@@ -13,7 +13,9 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: bin/kernel-normalize-config <device_name>"
+  puts "Usage: bin/kernel-normalize-config [--file=config.path] <device_name>"
+  puts ""
+  puts " --file=path/to/kernel/config.file -- detected automatically if not present."
 end
 
 # Poor approximation to arguments parsing.
@@ -25,15 +27,35 @@ if other_args.empty?
   exit 1
 end
 
+# Somewhat embarassing parameter parsing
+params = params.map do |param|
+  k, v = param.split("=", 2)
+  v = true unless v
+  k = k.sub(/^--/, "")
+  [k, v]
+end.to_h
+
 DEVICE = other_args.shift
 
-FILE =
+@file =
   # Is the device a path?
   if DEVICE.match(%r{/})
     Dir.glob(File.join(DEVICE, "kernel", "config.*")).sort.first
   else
     Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel", "config.*")).sort.first
   end
+
+if params["file"]
+  @file = params.delete("file")
+end
+
+unless @file and File.exists?(@file)
+  $stderr.puts "Kernel config file not found."
+  $stderr.puts "Please provide path to the config file with `--file=...`."
+  $stderr.puts
+  usage
+  exit 1
+end
 
 unless params.empty?
   $stderr.puts "Unknown parameters #{params.join(", ")}."
@@ -47,7 +69,7 @@ unless other_args.empty?
   exit 1
 end
 
-unless FILE
+unless @file
   $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
   usage
   exit 1
@@ -70,7 +92,7 @@ Dir.chdir(ROOT) do
   ].shelljoin}`.strip
 
   # We "cat" into the file to ensure we don't copy the store path access rights.
-  File.write(FILE, File.read(result))
+  File.write(@file, File.read(result))
 end
 
 # vim: ft=ruby
