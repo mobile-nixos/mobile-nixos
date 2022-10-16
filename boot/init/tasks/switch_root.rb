@@ -233,6 +233,7 @@ class Tasks::SwitchRoot < SingletonTask
       %Q{/ { mobile-nixos,stage-0,uptime = #{`uptime`.to_json}; };},
     ].join("\n")
 
+    FileUtils.mkdir_p("/run/boot/")
     File.write("/run/boot/fdt.dts", dts)
     System.run("fdt-forward --to-dtb < /run/boot/fdt.dts > /run/boot/fdt.dtb")
 
