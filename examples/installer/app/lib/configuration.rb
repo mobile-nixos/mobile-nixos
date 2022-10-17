@@ -197,6 +197,9 @@ hardware.pulseaudio.package = pkgs.pulseaudioFull;
 
 # Enable power management options
 powerManagement.enable = true;
+
+# It's recommended to keep enabled on these constrained devices
+zramSwap.enable = true;
 EOF
   end
 
