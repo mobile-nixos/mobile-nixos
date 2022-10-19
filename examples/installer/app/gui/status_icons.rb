@@ -18,9 +18,6 @@ class GUI::StatusIcons < LVGUI::Widget
       return @cached_data if @last_refresh > Time.now()
       @last_refresh = Time.now() + DATA_UPDATE_DELAY
 
-      puts "Refreshing widgets data"
-
-      # XXX return structured data rather than string
       @cached_data = [
         :usb,
         :wired,
@@ -91,7 +88,7 @@ class GUI::StatusIcons < LVGUI::Widget
   end
 
   def initialize(parent)
-    # XXX don't directly use label
+    # TODO don't directly use label
     # Instead use a container in which we add multiple discrete widgets...
     # Those widgets can *then* be more complex like use SVG and such.
     super(LVGL::LVLabel.new(parent))
@@ -108,7 +105,6 @@ class GUI::StatusIcons < LVGUI::Widget
   end
 
   def update_text()
-    # XXX
     txt = Data.instance.get_data.values.compact.join("  ")
     set_text(txt)
   end
