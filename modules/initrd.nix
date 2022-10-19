@@ -355,7 +355,7 @@ in
       boot.initrd.supportedFilesystems = lib.mkOverride 10 [];
 
       system.build.initialRamdiskSecretAppender =
-        pkgs.runCommand "noopRamdiskSecretAppender" {} "touch $out"
+        pkgs.writeScriptBin "append-initrd-secrets" "#!${pkgs.coreutils}/bin/true"
       ;
 
       mobile.outputs = {
