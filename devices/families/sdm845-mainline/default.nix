@@ -20,9 +20,17 @@
   # Note: on devices it's highly likely no firmware is required during stage-1.
   # DRM *should* work fine without firmware.
   # Modems and such will pick them back up in stage-2.
-  # Putting the firmwares in stage-1 *may* cause trouble with the image
-  # becoming too big.
-  mobile.boot.stage-1.firmware = [];
+  # Even though, we're eagerly adding firmware files that fit.
+  # This is a workaround for non-modular kernels wanting to load the adsp firmware during stage-1.
+  mobile.boot.stage-1.firmware = [
+    (pkgs.runCommand "initrd-firmware" {} ''
+      cp -vrf ${config.mobile.device.firmware} $out
+      chmod -R +w $out
+      # Big file, fills and breaks stage-1
+      rm -v $out/lib/firmware/qcom/sdm845/*/modem.mbn
+    '')
+  ];
+
 
   mobile.system.type = "android";
   mobile.system.android = {
