@@ -182,6 +182,11 @@ rec {
       aarch64-linux.rootfs = (evalExample { example = ./examples/phosh; system = "aarch64-linux"; }).outputs.rootfs;
       cross-x86-aarch64.rootfs = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
     };
+    plasma-mobile = {
+      x86_64-linux.rootfs  = (evalExample { example = ./examples/plasma-mobile; system = "x86_64-linux"; }).outputs.rootfs;
+      aarch64-linux.rootfs = (evalExample { example = ./examples/plasma-mobile; system = "aarch64-linux"; }).outputs.rootfs;
+      cross-x86-aarch64.rootfs = (evalExample { example = ./examples/plasma-mobile; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
+    };
   };
 
   # Overlays build native, and cross, according to shouldEvalOn
@@ -221,6 +226,7 @@ rec {
         examples.hello.x86_64-linux.rootfs
         examples.hello.cross-x86-aarch64.rootfs
         examples.phosh.x86_64-linux.rootfs
+        examples.plasma-mobile.x86_64-linux.rootfs
 
         # Flashable zip binaries are universal for a platform.
         overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.android-flashable-zip-binaries
@@ -232,6 +238,7 @@ rec {
         # Example systems
         examples.hello.aarch64-linux.rootfs
         examples.phosh.aarch64-linux.rootfs
+        examples.plasma-mobile.aarch64-linux.rootfs
 
         # Flashable zip binaries are universal for a platform.
         overlay.aarch64-linux.aarch64-linux.mobile-nixos.android-flashable-zip-binaries

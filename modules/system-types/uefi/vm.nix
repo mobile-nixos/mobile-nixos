@@ -78,6 +78,11 @@ in
               ${pkgs.qemu}/bin/qemu-system-${pkgs.stdenv.targetPlatform.qemuArch} "''${ARGS[@]}" "''${@}"
             '';
           };
+
+      mobile.generatedFilesystems.rootfs = lib.mkDefault {
+        # Give some headroom in the VM, as it won't be actually resized.
+        extraPadding = lib.mkForce (pkgs.imageBuilder.size.MiB 512);
+      };
     })
     (mkIf (!config.mobile.quirks.uefi.enableVM) {
       mobile.outputs.uefi.vm = (config.lib.mobile-nixos.composeConfig {

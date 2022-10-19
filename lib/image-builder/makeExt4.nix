@@ -100,7 +100,7 @@ makeFilesystem (args // {
     echo "    Inodes reserved: $inodes" 1>&2
     echo ""
 
-    faketime -f "1970-01-01 00:00:00" \
+    faketime -f "1970-01-01 00:00:01" \
       make_ext4fs \
       -i $inodes \
       -b $blockSize \
