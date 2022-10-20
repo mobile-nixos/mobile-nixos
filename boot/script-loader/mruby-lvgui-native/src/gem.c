@@ -11330,19 +11330,23 @@ mrb_mruby_lvgui_native_lv_task_create(mrb_state *mrb, mrb_value self)
   lv_task_cb_t param_task_xcb;
   
   // Parameter handling for native parameter `uint32_t period`
+  mrb_int param_period_int;
   uint32_t param_period;
   
   // Parameter handling for native parameter `lv_task_prio_t prio`
+  mrb_int param_prio_int;
   lv_task_prio_t param_prio;
   
   mrb_get_args(
     mrb,
     "oiio",
     &param_task_xcb_instance,
-    &param_period,
-    &param_prio,
+    &param_period_int,
+    &param_prio_int,
     &task_proc
   );
+  param_period = (uint32_t)param_period_int;
+  param_prio = (lv_task_prio_t)param_prio_int;
   
   param_task_xcb = mrb_mruby_lvgui_native_unwrap_pointer(
     mrb,
