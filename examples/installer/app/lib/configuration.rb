@@ -121,6 +121,10 @@ class Configuration::NixOSConfiguration
     instance
   end
 
+  def state_version()
+    File.read("/etc/os-release").split("\n").grep(/^VERSION_ID=/).first.split("=").last.gsub('"', "")
+  end
+
   def cpu_count()
     core_count = File.read("/proc/cpuinfo").split(/\n+/).grep(/^processor/).count
     # Why `/2`? Assume some big.LITTLE-ness, or even "low vs. high" cores.
@@ -250,6 +254,18 @@ users.users.#{username.to_json} = {
 EOF
   end
 
+  def tail_fragment()
+<<EOF
+# This value determines the NixOS release from which the default
+# settings for stateful data, like file locations and database versions
+# on your system were taken. It‘s perfectly fine and recommended to leave
+# this value at the release version of the first install of this system.
+# Before changing this value read the documentation for this option
+# (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+system.stateVersion = "#{state_version}"; # Did you read the comment?
+EOF
+  end
+
   def configuration_nix()
     fragments = [
       imports_fragment,
@@ -257,6 +273,7 @@ EOF
       defaults_fragment,
       phone_environment_fragment,
       user_fragment,
+      tail_fragment,
     ]
 
 <<EOF
