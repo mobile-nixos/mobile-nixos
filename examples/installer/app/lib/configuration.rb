@@ -317,7 +317,7 @@ EOF
 {
 #{filesystems_fragment.indent}
 
-  nix.maxJobs = lib.mkDefault #{cpu_count.to_json};
+  nix.settings.max-jobs = lib.mkDefault #{cpu_count.to_json};
 }
 EOF
   end
