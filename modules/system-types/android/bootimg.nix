@@ -7,6 +7,7 @@
 , initrd
 , cmdline
 , bootimg
+, appendDTB
 }:
 
 let
@@ -18,13 +19,23 @@ pkgs.runCommand name {
     mkbootimg
     dtbTool
   ];
+  inherit kernel;
 } ''
-  echo Using kernel: ${kernel}
-  (
   PS4=" $ "
+  echo Using kernel: $kernel
+  ${optionalString (appendDTB != null) ''
+  kernel=$PWD/kernel-with-dtbs
+  (
+    cd $(dirname ${kernel})
+    set -x
+    cat ${kernel} ${lib.escapeShellArgs appendDTB} > $kernel
+  )
+  echo Using appended dtb kernel now...
+  ''}
+  (
   set -x
   mkbootimg \
-    --kernel  ${kernel} \
+    --kernel  $kernel \
     ${optionalString (bootimg.dt != null) "--dt ${bootimg.dt}"} \
     --ramdisk ${initrd} \
     --cmdline       "${cmdline}" \
