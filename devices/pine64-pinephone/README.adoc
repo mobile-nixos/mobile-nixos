@@ -45,7 +45,27 @@ patterns involving red.
 
 '''
 
-== Advanced topics
+=== Updating the boot image
+
+The default suggested setup does not currently require updating the boot
+partition.
+
+include::_support/device-notes/boot-image.inc[]
+
+==== Flashing the boot image
+
+The resulting image can be flashed (dd) to the appropriate partition. With the
+partition layout as made by the guided installer, this will be the fourth
+partition on the main storage.
+
+
+== Development notes
+
+[NOTE]
+====
+*The following sections only apply for development.*
+====
+
 
 === Building a full disk image
 
