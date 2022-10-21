@@ -15,16 +15,30 @@ module GUI
       add_main_text(%Q{\nThe description label here will mirror the switch's value.\n})
 
       add_textarea().tap do |ta|
-        on_click = ->() do        
+        on_click = ->() do
           puts "clicked"
-        end                          
-        ta.on_submit = ->(value) do  
+        end
+        ta.on_submit = ->(value) do
           puts "submitted #{value.inspect}"
           puts " -> get_text: #{ta.get_text().inspect}"
-        end                          
+        end
         ta.on_modified = ->(value) do
           puts "modified #{value.inspect}"
-        end                          
+        end
+      end
+
+      add_textarea().tap do |ta|
+        ta.set_pwd_mode(true)
+        on_click = ->() do
+          puts "clicked"
+        end
+        ta.on_submit = ->(value) do
+          puts "submitted #{value.inspect}"
+          puts " -> get_text: #{ta.get_text().inspect}"
+        end
+        ta.on_modified = ->(value) do
+          puts "modified #{value.inspect}"
+        end
       end
 
       # Add a toggle switch

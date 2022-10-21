@@ -19,6 +19,8 @@ mrbgems.mkGem {
   # needlessly cause a rebuild, but good enough in reality.
   src = ./.;
 
+  debug = true;
+
   gemBuildInputs = [
     lvgui
   ] ++ lvgui.buildInputs;

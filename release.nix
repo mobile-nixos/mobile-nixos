@@ -158,6 +158,21 @@ let
     }
   ;
 
+  evalInstaller =
+    { device
+    , localSystem
+    }:
+    let
+      eval = evalWithConfiguration {
+        imports = [
+          ./examples/installer/configuration.nix
+        ];
+        nixpkgs.localSystem = knownSystems.${localSystem};
+      } device;
+    in
+      eval // { inherit (eval.config.mobile) outputs; }
+  ;
+
   doc = import ./doc {
     pkgs = pkgs';
   };
@@ -189,6 +204,10 @@ rec {
     };
   };
 
+  installer = {
+    pine64-pinephone = (evalInstaller { device = "pine64-pinephone"; localSystem = "aarch64-linux"; }).outputs.default;
+  };
+
   # Overlays build native, and cross, according to shouldEvalOn
   overlay = lib.genAttrs systems (system:
     (evalForSystem system)
@@ -209,6 +228,12 @@ rec {
       };
     }
   );
+
+  cross-compiled = {
+    installer = {
+      pine64-pinephone = (evalInstaller { device = "pine64-pinephone"; localSystem = "x86_64-linux"; }).outputs.default;
+    };
+  };
 
   tested = let
     hasSystem = name: lib.lists.any (el: el == name) systems;
@@ -239,6 +264,8 @@ rec {
         examples.hello.aarch64-linux.rootfs
         examples.phosh.aarch64-linux.rootfs
         examples.plasma-mobile.aarch64-linux.rootfs
+
+        installer.pine64-pinephone
 
         # Flashable zip binaries are universal for a platform.
         overlay.aarch64-linux.aarch64-linux.mobile-nixos.android-flashable-zip-binaries

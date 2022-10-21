@@ -119,6 +119,7 @@ class LVGUI::OptionSelection < LVGUI::Widget
       @selected = nil
       set_chosen_option_label("")
     end
+    @overlay.set_dirty()
   end
 
   # Force a selection for the given value
@@ -232,6 +233,8 @@ class LVGUI::OptionSelection::OptionButton < LVGUI::OptionSelection::FlatishButt
       end
     end
   end
+
+  attr_accessor :value
 
   def initialize(parent)
     super(parent)
@@ -356,6 +359,8 @@ class LVGUI::OptionSelection::Overlay < LVGUI::Widget
     # Dummy object used as a "null" focus
     @dummy = LVGUI::Dummy.new(linked_select)
 
+    @is_dirty = true
+
     # Fill the parent with this background overlay
     set_width(parent.get_width_fit())
     set_height(parent.get_height())
@@ -422,9 +427,19 @@ class LVGUI::OptionSelection::Overlay < LVGUI::Widget
     }
   end
 
+  def dirty?()
+    @is_dirty
+  end
+
+  def set_dirty()
+    @is_dirty = true
+  end
+
   def open()
-    # Refresh the title
-    set_title(@linked_select.get_label())
+    if dirty?
+      # Refresh the title
+      set_title(@linked_select.get_label())
+    end
 
     # Create a new focus group on the "stack"
     LVGUI.focus_group.push()
@@ -440,39 +455,47 @@ class LVGUI::OptionSelection::Overlay < LVGUI::Widget
     # Start with the dummy item (default selected)
     LVGUI.focus_group.add_obj(@dummy)
 
-    # Remove children
-    @options.clean()
-
-    selected = @linked_select.selected
-    
-    # Then make fresh children, ensuring labels are updated, and the selected
-    # state is updated too.
-    @linked_select.options.each do |pair|
-      sym, label = pair
-      LVGUI::OptionSelection::OptionButton.new(@options).tap do |option|
-        option.selected = (selected == sym)
-        option.set_label(label)
-        option.event_handler = ->(event) do
-          case event
-          when LVGL::EVENT::RELEASED
-            if @on_select_handler
-              @on_select_handler.call(sym)
+    if dirty?
+      # Remove children
+      @options.clean()
+      @buttons = []
+      
+      # Then make fresh children, ensuring labels are updated, and the selected
+      # state is updated too.
+      @linked_select.options.each do |pair|
+        sym, label = pair
+        @buttons << LVGUI::OptionSelection::OptionButton.new(@options).tap do |button|
+          button.value = sym
+          button.set_label(label)
+          button.event_handler = ->(event) do
+            case event
+            when LVGL::EVENT::RELEASED
+              if @on_select_handler
+                @on_select_handler.call(sym)
+              end
+              self.close()
             end
-            self.close()
           end
         end
-        # Don't forget to add to the focus group
-        LVGUI.focus_group.add_obj(option)
       end
+
+      # Refresh the metrics of the scrollable area
+      @options.refresh()
     end
 
-    # Refresh the metrics of the scrollable area
-    @options.refresh()
+    selected = @linked_select.selected
+
+    @buttons.each do |button|
+      # Don't forget to add to the focus group
+      LVGUI.focus_group.add_obj(button)
+      button.selected = (selected == button.value)
+    end
 
     # Add the cancel button too, otherwise we're in for a bad time.
     LVGUI.focus_group.add_obj(@cancel)
 
     set_hidden(false)
+    @is_dirty = false
   end
 
   def close()

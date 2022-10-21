@@ -99,7 +99,6 @@ in
     pname = "lvgui";
     version = "2022-10-13";
 
-    #src = builtins.fetchGit /Users/samuel/Projects/mobile-nixos/projects/lvgui;
     src = fetchFromGitHub {
       repo = "lvgui";
       owner = "mobile-nixos";

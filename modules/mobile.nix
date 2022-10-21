@@ -17,6 +17,16 @@ in
           NixOS in your NixOS configuration should be a no-op.
         '';
       };
+      configurationName = mkOption {
+        internal = true;
+        default = "mobile-nixos";
+        description = ''
+          Used for some identifiers like the image name.
+
+          This is used in example systems to change the name of the produced
+          images.
+        '';
+      };
     };
   };
 }

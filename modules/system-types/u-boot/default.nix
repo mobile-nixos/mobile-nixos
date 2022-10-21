@@ -149,7 +149,7 @@ let
   };
 
   disk-image = imageBuilder.diskImage.makeGPT {
-    name = "mobile-nixos";
+    name = config.mobile.configurationName;
     diskID = "01234567";
 
     partitions = [
@@ -158,6 +158,15 @@ let
       boot-partition
       config.mobile.outputs.generatedFilesystems.rootfs
     ];
+
+    postProcess = ''
+      (PS4=" $ "; set -x
+      mkdir $out/nix-support
+      cat <<EOF > $out/nix-support/hydra-build-products
+      file disk-image $out/$filename
+      EOF
+      )
+    '';
   };
 in
 {

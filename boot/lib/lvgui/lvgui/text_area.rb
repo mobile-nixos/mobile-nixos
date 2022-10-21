@@ -30,12 +30,15 @@ class LVGUI::TextArea < LVGUI::Widget
         if char == "\n"
           LVGUI::Keyboard.instance.set_ta(nil)
           LVGUI::Keyboard.instance.hide()
-          # Create a new string
-          value = get_text()
-          @on_submit.call(value) if @on_submit
+          # Ensures the field is updated, then call the callback
+          LVGL::Hacks::LVTask.once ->() do
+            @on_submit.call(get_text()) if @on_submit
+          end
         else
-          value = [get_text(), char].join("")
-          @on_modified.call(value) if @on_modified
+          # Ensures the field is updated, then call the callback
+          LVGL::Hacks::LVTask.once ->() do
+            @on_modified.call(get_text()) if @on_modified
+          end
         end
       #else
       #  puts "Unhandled event for #{self}: #{LVGL::EVENT.from_value(event)}"
