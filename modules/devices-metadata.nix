@@ -29,6 +29,7 @@ in
       inherit (identity) name manufacturer;
       inherit (mobile) hardware;
       inherit (mobile) documentation;
+      inherit (mobile.device) supportLevel;
       quirks = {
         inherit (mobile.quirks) supportsStage-0;
       };

@@ -1,6 +1,45 @@
 require "erb"
 require "json"
 
+NOTES_HEADER = "== Device-specific notes"
+
+COLUMNS = [
+  { key: "identifier",   name: "Identifier" },
+  { key: "manufacturer", name: "Manufacturer" },
+  { key: "name",         name: "Name" },
+  { key: "hardware.soc", name: "SoC" },
+]
+
+SUPPORT_LEVELS = {
+  "supported" => {
+    title: "Supported",
+    description: "These devices are supported. They use mainline Linux.",
+  },
+  "best-effort" => {
+    title: "Best effort",
+    description: "These devices are almost supported, but may not be a priority, or require more work.",
+  },
+  "vendor" => {
+    title: "Using vendor tooling",
+    description: "These devices are best-effort with kernel and different dependencies coming from vendor forks.",
+  },
+  "unsupported" => {
+    title: "Unsupported",
+    description: "These devices are not abandoned, but not supported. Lower your expectations.",
+  },
+  "abandoned" => {
+    title: "Abandoned",
+    description: "These devices are still in the repository, but are unmaintained, and abandoned.",
+  },
+}
+SUPPORT_LEVEL_ORDER = [
+  "supported",
+  "best-effort",
+  "vendor",
+  "unsupported",
+  "abandoned",
+]
+
 def githubURL(device)
   "https://github.com/NixOS/mobile-nixos/tree/master/devices/#{device}"
 end
@@ -20,14 +59,45 @@ def yesno(bool)
   end
 end
 
-NOTES_HEADER = "== Device-specific notes"
-
-COLUMNS = [
-  { key: "identifier",   name: "Identifier" },
-  { key: "manufacturer", name: "Manufacturer" },
-  { key: "name",         name: "Name" },
-  { key: "hardware.soc", name: "SoC" },
-]
+def devices_table(devices_info)
+  [
+    "[.with-links%autowidth]",
+    "|===",
+    COLUMNS.map {|col| "| #{col[:name]}" }.join(""),
+    devices_info.keys.sort.map do |identifier|
+      data = devices_info[identifier]
+      COLUMNS.map do |col|
+        value = data.dig(*(col[:key].split(".")))
+        if col[:key] == "identifier"
+          "|<<#{identifier}.adoc#,`#{value}`>>"
+        else
+          "|<<#{identifier}.adoc#,#{value}>>"
+        end
+      end
+    end.join("\n"),
+    "|===",
+  ].join("\n")
+end
+def devices_sections(devices_info)
+  grouped_devices = $devicesInfo.group_by { |_, device| device["supportLevel"] }.transform_values(&:to_h)
+  missing_descriptions = grouped_devices.keys.reject {|level| SUPPORT_LEVEL_ORDER.include?(level) }
+  if missing_descriptions.length > 0 then
+    $stderr.puts "Missing description for support levels: #{missing_descriptions.inspect}"
+    exit 1
+  end
+  SUPPORT_LEVEL_ORDER.map do |support_level|
+    if devices = grouped_devices[support_level] then
+      level = SUPPORT_LEVELS[support_level]
+      [
+        "== #{level[:title]}",
+        "\n#{level[:description]}\n",
+        devices_table(devices),
+      ].join("\n")
+    else
+      nil
+    end
+  end.compact.join("\n")
+end
 
 $out = ENV["out"]
 $devicesInfo = Dir.glob(File.join(ENV["devicesInfo"], "*")).sort.map do |filename|
@@ -48,30 +118,9 @@ File.open(File.join($out, "devices/index.adoc"), "w") do |file|
   The following table lists all devices Mobile NixOS available out of the
   box on the master branch.
 
-  The inclusion in this list does not guarantee the device can boot Mobile
-  NixOS, but only that it did at one point in the past. Though, efforts are
-  made to ensure all of these still work.
+  Different devices have varying degree of support.
 
-  [.with-links%autowidth]
-  |===
-  #{COLUMNS.map {|col| "| #{col[:name]}" }.join("")}
-
-  EOF
-
-  $devicesInfo.keys.sort.each do |identifier|
-    data = $devicesInfo[identifier]
-    COLUMNS.each do |col|
-      value = data.dig(*(col[:key].split(".")))
-      if col[:key] == "identifier"
-        file.puts("|<<#{identifier}.adoc#,`#{value}`>>")
-      else
-        file.puts("|<<#{identifier}.adoc#,#{value}>>")
-      end
-    end
-  end
-
-  file.puts <<~EOF
-  |===
+  #{devices_sections($devicesInfo)}
 
   Remember to look at the link:https://github.com/NixOS/mobile-nixos/pulls?q=is%3Aopen+is%3Apr+label%3A%22type%3A+port%22[port label]
   on the Mobile NixOS pull requests tracker, for upcoming devices.

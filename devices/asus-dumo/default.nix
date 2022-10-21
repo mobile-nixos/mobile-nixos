@@ -6,6 +6,7 @@
     name = "Chromebook Tablet CT100PA";
     manufacturer = "Asus";
   };
+  mobile.device.supportLevel = "best-effort";
 
   mobile.hardware = {
     soc = "rockchip-op1";
