@@ -15,6 +15,7 @@
     name = "PinePhone";
     manufacturer = "Pine64";
   };
+  mobile.device.supportLevel = "supported";
 
   mobile.hardware = {
     soc = "allwinner-a64";
