@@ -130,8 +130,13 @@ module Hardware::Network
         interface = data[:interface]
         networks = wifi_list(interface: interface, rescan: "no")
         network = networks.filter{|network| network[:in_use]}.first
-        network.merge(data)
+        if network
+          network.merge(data)
+        else
+          nil
+        end
       end
+      .compact
       .sort do |a, b|
         a["GENERAL.CONNECTION"] <=> b["GENERAL.CONNECTION"]
       end
