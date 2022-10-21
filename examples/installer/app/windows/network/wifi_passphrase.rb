@@ -30,23 +30,23 @@ module GUI
       add_text("A passphrase is necessary to continue.")
 
       @passphrase_input = add_textarea().tap do |ta|
+        ta.set_pwd_mode(true)
         ta.on_submit = ->(value) do
-          @status_text.set_text("Connecting...")
-          # Push connection to next update cycle, so we get the message up.
-          LVGL::Hacks::LVTask.once(->() do
-            Hardware::Network.connect_wifi(interface: interface, network: network, passphrase: value) do |success|
-              if success then
-                @continue_button.set_enabled(true)
-                @status_text.set_text("Connected successfully.")
-              else
-                @status_text.set_text("Failed to connect.")
-              end
-            end
-          end, prio: LVGL::TASK_PRIO::LOWEST)
+          attempt_connection()
+        end
+        ta.on_modified = ->(value) do
+          @connect_button.set_enabled(value.length >= 8)
         end
       end
 
+      @connect_button = add_button("Connect") do
+        @keyboard.hide()
+        attempt_connection()
+      end
+
       @status_text = add_text("") # Will be filled on connect
+
+      LVGUI::HorizontalSeparator.new(@container)
 
       @continue_button = add_button("Continue", style: :primary) do
         MainWindow.instance.present()
@@ -70,8 +70,29 @@ module GUI
       refresh_network_information()
     end
 
+    def attempt_connection()
+      @status_text.set_text("Connecting...")
+      # Push connection to next update cycle, so we get the message up.
+      LVGL::Hacks::LVTask.once(->() do
+        passphrase = @passphrase_input.get_text()
+        Hardware::Network.connect_wifi(interface: interface, network: network, passphrase: passphrase) do |success|
+          if success then
+            @connect_button.set_enabled(false)
+            @continue_button.set_enabled(true)
+            @status_text.set_text("Connected successfully.")
+          else
+            @status_text.set_text("Failed to connect.")
+          end
+        end
+      end, prio: LVGL::TASK_PRIO::LOWEST)
+    end
+
     def refresh_network_information()
       return if @refreshing
+
+      @passphrase_input.set_text("")
+
+      @connect_button.set_enabled(false)
 
       @continue_button.set_enabled(false)
 
