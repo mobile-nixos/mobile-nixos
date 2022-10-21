@@ -6,6 +6,7 @@
    name = "UEFI build (x86_64)";
    manufacturer = "Generic";
   };
+  mobile.device.supportLevel = "supported";
 
   mobile.hardware = {
     soc = "generic-x86_64";
