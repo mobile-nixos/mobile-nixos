@@ -35,6 +35,14 @@ with lib;
         firmware bundles will be unredistributable.
       '';
     };
+
+    supportLevel = mkOption {
+      type = types.enum [ "supported" "best-effort" "vendor" "unsupported" "abandoned" ];
+      default = "unsupported";
+      description = ''
+        Support level for the device.
+      '';
+    };
   };
 
   config = mkIf (!config.mobile.enable) {
