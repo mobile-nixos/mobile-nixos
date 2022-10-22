@@ -6,6 +6,8 @@
     name = "OnePlus 6T";
     manufacturer = "OnePlus";
   };
+  # If anyone wants to step to the plate and support it, please do.
+  mobile.device.supportLevel = "best-effort";
 
   mobile.hardware = {
     soc = "qualcomm-sdm845";
