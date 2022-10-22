@@ -209,11 +209,11 @@ in
       mobile.documentation.systemTypeFargment = ./. + "/device-notes.${flashingMethod}.adoc.erb";
     })
 
-    (lib.mkIf kernelPackage.isQcdt {
+    (lib.mkIf (kernelPackage != null && kernelPackage.isQcdt) {
       mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
     })
 
-    (lib.mkIf kernelPackage.isExynosDT {
+    (lib.mkIf (kernelPackage != null && kernelPackage.isExynosDT) {
       mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
     })
 
