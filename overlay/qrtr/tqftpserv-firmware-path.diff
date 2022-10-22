@@ -7,7 +7,7 @@ index e95dee5..f3f0811 100644
  #define READWRITE_PATH	"/readwrite/"
  
 -#define FIRMWARE_BASE	"/lib/firmware/"
-+#define FIRMWARE_BASE	"/run/current-system/firmware/"
++#define FIRMWARE_BASE	"/run/current-system/sw/share/uncompressed-firmware/"
  
  /**
   * translate_readonly() - open "file" residing with remoteproc firmware
