@@ -10,6 +10,7 @@
     name = "OnePlus 6";
     manufacturer = "OnePlus";
   };
+  mobile.device.supportLevel = "supported";
 
   mobile.hardware = {
     soc = "qualcomm-sdm845";
