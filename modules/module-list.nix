@@ -3,6 +3,7 @@
 [
   ./adb.nix
   ./beautification.nix
+  ./boot-control.nix
   ./boot-initrd.nix
   ./bootloader.nix
   ./cross-workarounds.nix
