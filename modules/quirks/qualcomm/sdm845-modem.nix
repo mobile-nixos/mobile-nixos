@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, options, ... }:
 
 let
   cfg = config.mobile.quirks.qualcomm;
@@ -15,6 +15,43 @@ in
     };
   };
   config = mkIf (cfg.sdm845-modem.enable) {
+    # Makes platform-specific firmware files available in an uncompressed form at:
+    # /run/current-system/sw/share/uncompressed-firmware/qcom/sdm845/
+    # This is used by userspace components unaware of the possible xz compression.
+    # See also: tqftpserv and pd-mapper patches.
+    environment.pathsToLink = [ "share/uncompressed-firmware" ];
+    # This package added to the environment will select a few firmware path to keep uncompressed.
+    environment.systemPackages = [
+      (pkgs.callPackage (
+        { lib
+        , runCommand
+        , buildEnv
+        , firmwareFilesList
+        }:
+
+        runCommand "sdm845-uncompressed-firmware-share" {
+          firmwareFiles = buildEnv {
+            name = "sdm845-uncompressed-firmware";
+            paths = firmwareFilesList;
+            pathsToLink = [
+              "/lib/firmware/qcom/sdm845"
+            ];
+          };
+        } ''
+          PS4=" $ "
+          (
+          set -x
+          mkdir -p $out/share/
+          ln -s $firmwareFiles/lib/firmware/ $out/share/uncompressed-firmware
+          )
+        ''
+      ) {
+        # We have to borrow the pre `apply`'d list, thus `options...definitions`.
+        # This is because the firmware is compressed in `apply` on `hardware.firmware`.
+        firmwareFilesList = lib.flatten options.hardware.firmware.definitions;
+      })
+    ];
+
     systemd.services = {
       rmtfs = {
         wantedBy = [ "multi-user.target" ];
