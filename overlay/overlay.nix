@@ -137,6 +137,8 @@ in
 
       autoport = callPackage ./mobile-nixos/autoport {};
 
+      boot-control = callPackage ./mobile-nixos/boot-control {};
+
       boot-recovery-menu-simulator = self.mobile-nixos.stage-1.boot-recovery-menu.simulator;
       boot-splash-simulator = self.mobile-nixos.stage-1.boot-splash.simulator;
 
