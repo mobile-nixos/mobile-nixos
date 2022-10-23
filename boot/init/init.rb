@@ -47,6 +47,10 @@ System.failure(
 )
 
 rescue => e
+  msg = [
+    e.inspect,
+    e.backtrace.map{|line| "  #{line}"}.join("\n"),
+  ].join("\n----------\n")
   # Then fail
-  System.failure("INIT_EXCEPTION", "Uncaught Exception", e.inspect, color: "765300", status: 99)
+  System.failure("INIT_EXCEPTION", "Uncaught Exception", msg, color: "765300", status: 99)
 end

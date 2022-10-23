@@ -51,7 +51,7 @@ stdenv.mkDerivation {
 
     # This is the "script" that will be loaded.
     mrbc \
-      ${lib.optionalString mruby.debug "-g"} \
+      -g \
       -o init.mrb \
       ${libs} \
       $(find lib -type f | sort) \
