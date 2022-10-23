@@ -94,6 +94,7 @@ in
     {
       mobile = mkIf cfg.qualcomm-sdm845.enable {
         system.system = "aarch64-linux";
+        boot.boot-control.enable = mkDefault true;
       };
     }
     {

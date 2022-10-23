@@ -31,6 +31,7 @@ in
     mkbootimg = callPackage ./mkbootimg { };
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
+    qc-image-unpacker = callPackage ./qc-image-unpacker { };
     ufdt-apply-overlay = callPackage ./ufdt-apply-overlay {};
 
     # Extra "libs"
@@ -58,6 +59,12 @@ in
     bootlogd = callPackage ./bootlogd {};
     libusbgx = callPackage ./libusbgx {};
     gadget-tool = callPackage ./gt {}; # upstream this is called "gt", which is very Unix.
+
+    qrtr = callPackage ./qrtr/qrtr.nix { };
+    qmic = callPackage ./qrtr/qmic.nix { };
+    tqftpserv = callPackage ./qrtr/tqftpserv.nix { };
+    pd-mapper = callPackage ./qrtr/pd-mapper.nix { };
+    rmtfs = callPackage ./qrtr/rmtfs.nix { };
 
     #
     # Hacks
@@ -129,6 +136,8 @@ in
       android-flashable-zip-binaries = self.pkgsStatic.callPackage ./mobile-nixos/android-flashable-zip-binaries {};
 
       autoport = callPackage ./mobile-nixos/autoport {};
+
+      boot-control = callPackage ./mobile-nixos/boot-control {};
 
       boot-recovery-menu-simulator = self.mobile-nixos.stage-1.boot-recovery-menu.simulator;
       boot-splash-simulator = self.mobile-nixos.stage-1.boot-splash.simulator;

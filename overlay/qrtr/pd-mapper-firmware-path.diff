@@ -1,0 +1,14 @@
+diff --git a/pd-mapper.c b/pd-mapper.c
+index f5d45ee..a1f1179 100644
+--- a/pd-mapper.c
++++ b/pd-mapper.c
+@@ -193,7 +193,7 @@ static int pd_load_map(const char *file)
+ 	return 0;
+ }
+
+-#define FIRMWARE_BASE	"/lib/firmware/"
++#define FIRMWARE_BASE	"/run/current-system/sw/share/uncompressed-firmware/"
+
+ static int pd_enumerate_jsons(struct assoc *json_set)
+ {
+

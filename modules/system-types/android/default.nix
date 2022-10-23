@@ -19,6 +19,7 @@ let
     inherit (config.mobile.outputs) initrd;
     name = "mobile-nixos_${device.name}_${bootimg.name}";
     kernel = "${kernelPackage}/${kernelPackage.file}";
+    inherit (config.mobile.system.android) appendDTB;
   };
 
   android-recovery = recovery.mobile.outputs.android.android-bootimg;
@@ -156,6 +157,12 @@ in
           "pagesize"
         ] mkBootimgOption;
       };
+
+      appendDTB = lib.mkOption {
+        type = with types; nullOr (listOf (oneOf [path str]));
+        default = null;
+        description = "List of dtb files to append to the kernel, when device uses appended DTB.";
+      };
     };
     mobile = {
       outputs = {
@@ -207,13 +214,23 @@ in
       ];
 
       mobile.documentation.systemTypeFargment = ./. + "/device-notes.${flashingMethod}.adoc.erb";
+
+      assertions = [
+        {
+          assertion = config.mobile.system.android.appendDTB == null || config.mobile.system.android.bootimg.dt == null;
+          message = ''
+            Device configuration erroneous: `mobile.android.appendDTB` and legacy `bootimg.dt` enabled.
+              Tip: enabling `isQcdt` or `isExynosDT` on your kernel is not needed qhen using `appendDTB`.
+          '';
+        }
+      ];
     })
 
-    (lib.mkIf kernelPackage.isQcdt {
+    (lib.mkIf (kernelPackage != null && kernelPackage.isQcdt) {
       mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
     })
 
-    (lib.mkIf kernelPackage.isExynosDT {
+    (lib.mkIf (kernelPackage != null && kernelPackage.isExynosDT) {
       mobile.system.android.bootimg.dt = "${kernelPackage}/dt.img";
     })
 
