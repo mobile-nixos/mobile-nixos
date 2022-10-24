@@ -119,15 +119,70 @@ in
         NF_TABLES_BRIDGE            = mkMerge [ (whenBetween "4.19" "5.3" yes) (whenAtLeast "5.3" module) ];
 
         # Further dependencies in older kernels
-        IP_NF_IPTABLES              = yes;
-        IP6_NF_IPTABLES             = yes;
-        NETFILTER_XTABLES           = yes;
-        IP_NF_RAW                   = yes;
-        IP6_NF_RAW                  = yes;
-        NETFILTER_XT_TARGET_CT      = yes; # required for NF_CONNTRACK_ZONES
+        IP_NF_IPTABLES              = module;
+        IP6_NF_IPTABLES             = module;
+        NETFILTER_XTABLES           = module;
+        IP_NF_RAW                   = module;
+        IP6_NF_RAW                  = module;
+        NETFILTER_XT_TARGET_CT      = module; # required for NF_CONNTRACK_ZONES
 
-        # Reportedly needed for the firewall
-        NETFILTER_XT_MATCH_PKTTYPE  = yes;
+        BRIDGE                      = module; # required for BRIDGE_NETFILTER
+        BRIDGE_NETFILTER            = module; # required for NETFILTER_XT_MATCH_PHYSDEV
+        XFRM_USER                   = module; # required for NETFILTER_XT_MATCH_POLICY
+
+        # All Netfilter XT match types
+        NETFILTER_XT_MATCH_ADDRTYPE = module;
+        NETFILTER_XT_MATCH_CLUSTER = module;
+        NETFILTER_XT_MATCH_COMMENT = module;
+        NETFILTER_XT_MATCH_CONNBYTES = module;
+        NETFILTER_XT_MATCH_CONNLABEL = module;
+        NETFILTER_XT_MATCH_CONNLIMIT = module;
+        NETFILTER_XT_MATCH_CONNMARK = module;
+        NETFILTER_XT_MATCH_CONNTRACK = module;
+        NETFILTER_XT_MATCH_CPU = module;
+        NETFILTER_XT_MATCH_DCCP = module;
+        NETFILTER_XT_MATCH_DEVGROUP = module;
+        NETFILTER_XT_MATCH_DSCP = module;
+        NETFILTER_XT_MATCH_ECN = module;
+        NETFILTER_XT_MATCH_ESP = module;
+        NETFILTER_XT_MATCH_HASHLIMIT = module;
+        NETFILTER_XT_MATCH_HELPER = module;
+        NETFILTER_XT_MATCH_HL = module;
+        NETFILTER_XT_MATCH_IPRANGE = module;
+        NETFILTER_XT_MATCH_LENGTH = module;
+        NETFILTER_XT_MATCH_LIMIT = module;
+        NETFILTER_XT_MATCH_MAC = module;
+        NETFILTER_XT_MATCH_MARK = module;
+        NETFILTER_XT_MATCH_MULTIPORT = module;
+        NETFILTER_XT_MATCH_NFACCT = module;
+        NETFILTER_XT_MATCH_OSF = module;
+        NETFILTER_XT_MATCH_OWNER = module;
+        NETFILTER_XT_MATCH_PHYSDEV = module;
+        NETFILTER_XT_MATCH_PKTTYPE = module;
+        NETFILTER_XT_MATCH_POLICY = module;
+        NETFILTER_XT_MATCH_QUOTA = module;
+        NETFILTER_XT_MATCH_RATEEST = module;
+        NETFILTER_XT_MATCH_REALM = module;
+        NETFILTER_XT_MATCH_RECENT = module;
+        NETFILTER_XT_MATCH_SCTP = module;
+        NETFILTER_XT_MATCH_SOCKET = module;
+        NETFILTER_XT_MATCH_STATE = module;
+        NETFILTER_XT_MATCH_STATISTIC = module;
+        NETFILTER_XT_MATCH_STRING = module;
+        NETFILTER_XT_MATCH_TCPMSS = module;
+        NETFILTER_XT_MATCH_TIME = module;
+        NETFILTER_XT_MATCH_U32 = module;
+
+        NETFILTER_XT_MATCH_BPF = whenAtLeast "3.9" module;
+        NETFILTER_XT_MATCH_CGROUP = whenAtLeast "3.14" module;
+        NETFILTER_XT_MATCH_IPCOMP = whenAtLeast "3.14" module;
+        NETFILTER_XT_MATCH_L2TP = whenAtLeast "3.14" module;
+
+        # Documenting options we're leaving off by default
+
+        # > IP Virtual Server support will let you build a high-performance virtual server based on cluster of two or more real servers
+        # Let's not enable it.
+        # NETFILTER_XT_MATCH_IPVS = ...;
       })
     ];
 
