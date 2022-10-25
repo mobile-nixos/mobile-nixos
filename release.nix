@@ -187,20 +187,20 @@ rec {
   # They may or may not work as-they-are on devices. YMMV.
   examples = {
     hello = {
-      x86_64-linux.rootfs  = (evalExample { example = ./examples/hello; system = "x86_64-linux"; }).outputs.rootfs;
-      aarch64-linux.rootfs = (evalExample { example = ./examples/hello; system = "aarch64-linux"; }).outputs.rootfs;
-      cross-x86-aarch64.rootfs = (evalExample { example = ./examples/hello; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
-      cross-x86-armv7l.rootfs  = (evalExample { example = ./examples/hello; system = "x86_64-linux"; targetSystem = "armv7l-linux";  }).outputs.rootfs;
+      x86_64-linux.toplevel  = (evalExample { example = ./examples/hello; system = "x86_64-linux"; }).outputs.toplevel;
+      aarch64-linux.toplevel = (evalExample { example = ./examples/hello; system = "aarch64-linux"; }).outputs.toplevel;
+      cross-x86-aarch64.toplevel = (evalExample { example = ./examples/hello; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.toplevel;
+      cross-x86-armv7l.toplevel  = (evalExample { example = ./examples/hello; system = "x86_64-linux"; targetSystem = "armv7l-linux";  }).outputs.toplevel;
     };
     phosh = {
-      x86_64-linux.rootfs  = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; }).outputs.rootfs;
-      aarch64-linux.rootfs = (evalExample { example = ./examples/phosh; system = "aarch64-linux"; }).outputs.rootfs;
-      cross-x86-aarch64.rootfs = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
+      x86_64-linux.toplevel  = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; }).outputs.toplevel;
+      aarch64-linux.toplevel = (evalExample { example = ./examples/phosh; system = "aarch64-linux"; }).outputs.toplevel;
+      cross-x86-aarch64.toplevel = (evalExample { example = ./examples/phosh; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.toplevel;
     };
     plasma-mobile = {
-      x86_64-linux.rootfs  = (evalExample { example = ./examples/plasma-mobile; system = "x86_64-linux"; }).outputs.rootfs;
-      aarch64-linux.rootfs = (evalExample { example = ./examples/plasma-mobile; system = "aarch64-linux"; }).outputs.rootfs;
-      cross-x86-aarch64.rootfs = (evalExample { example = ./examples/plasma-mobile; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.rootfs;
+      x86_64-linux.toplevel  = (evalExample { example = ./examples/plasma-mobile; system = "x86_64-linux"; }).outputs.toplevel;
+      aarch64-linux.toplevel = (evalExample { example = ./examples/plasma-mobile; system = "aarch64-linux"; }).outputs.toplevel;
+      cross-x86-aarch64.toplevel = (evalExample { example = ./examples/plasma-mobile; system = "x86_64-linux"; targetSystem = "aarch64-linux"; }).outputs.toplevel;
     };
   };
 
@@ -248,10 +248,10 @@ rec {
         device.asus-dumo.x86_64-linux                # Depthcharge
 
         # Example systems
-        examples.hello.x86_64-linux.rootfs
-        examples.hello.cross-x86-aarch64.rootfs
-        examples.phosh.x86_64-linux.rootfs
-        examples.plasma-mobile.x86_64-linux.rootfs
+        examples.hello.x86_64-linux.toplevel
+        examples.hello.cross-x86-aarch64.toplevel
+        examples.phosh.x86_64-linux.toplevel
+        examples.plasma-mobile.x86_64-linux.toplevel
 
         # Flashable zip binaries are universal for a platform.
         overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.android-flashable-zip-binaries
@@ -261,9 +261,9 @@ rec {
         device.asus-dumo.aarch64-linux               # Depthcharge
 
         # Example systems
-        examples.hello.aarch64-linux.rootfs
-        examples.phosh.aarch64-linux.rootfs
-        examples.plasma-mobile.aarch64-linux.rootfs
+        examples.hello.aarch64-linux.toplevel
+        examples.phosh.aarch64-linux.toplevel
+        examples.plasma-mobile.aarch64-linux.toplevel
 
         installer.pine64-pinephone
 
@@ -288,7 +288,7 @@ rec {
       ++ lib.optionals (hasSystem "x86_64-linux") [
         device.asus-flo.x86_64-linux
         overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
-        examples.hello.cross-x86-armv7l.rootfs
+        examples.hello.cross-x86-armv7l.toplevel
       ]
       ++ lib.optionals (hasSystem "aarch64-linux") [
       ]
