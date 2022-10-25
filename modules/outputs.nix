@@ -18,6 +18,13 @@ in
           # Mark internal so that the documentation does not expose a bogus description.
           internal = true;
         };
+        toplevel = mkOption {
+          description = ''
+            First-class attribute to refer to `config.system.build.toplevel`.
+          '';
+          internal = true;
+          default = config.system.build.toplevel;
+        };
       };
     };
   };
