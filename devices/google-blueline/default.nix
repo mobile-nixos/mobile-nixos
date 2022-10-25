@@ -18,6 +18,9 @@
     };
   };
 
+  # Uses a custom kernel for now; not yet in proper sdm845-mainline.
+  mobile.boot.stage-1.kernel.package = lib.mkForce (pkgs.callPackage ./kernel { });
+
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android = {
