@@ -195,6 +195,7 @@ class UI
 
     @ask_identifier = identifier
     @ta.set_placeholder_text(placeholder)
+    @ta.set_text("")
     @ta.show()
     @keyboard.set_ta(@ta)
     @keyboard.show()
@@ -204,7 +205,7 @@ class UI
     offset_page(delta) if delta < 0
 
     @ta.on_submit = ->(value) do
-      @ta.set_text("")
+      @ta.hide()
       offset_page(0)
       cb.call(value)
     end
