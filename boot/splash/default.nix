@@ -9,6 +9,7 @@ in
 mobile-nixos.mkLVGUIApp {
   name = "boot-splash.mrb";
   executablePath = "libexec/boot-splash.mrb";
+  enableDebugInformation = true;
   src = lib.cleanSource ./.;
   rubyFiles = [
     "ui.rb"
