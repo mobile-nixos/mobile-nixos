@@ -15,15 +15,15 @@ control of the mode, using role switch.
  1 file changed, 2 insertions(+)
 
 diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-index 520d998bae9a..9bf92a40ef71 100644
+index 6ce01c2bbabc..611efb32abf6 100644
 --- a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
 +++ b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
-@@ -1330,6 +1330,8 @@ &usbdrd3_0 {
+@@ -1520,6 +1520,8 @@ &usbdrd3_0 {
  &usbdrd_dwc3_0 {
  	dr_mode = "otg";
  	extcon = <&typec_extcon_bridge>;
 +	usb-role-switch;
 +	role-switch-default-mode = "host";
+ 	snps,usb3-phy-reset-quirk;
  	status = "okay";
  };
- 

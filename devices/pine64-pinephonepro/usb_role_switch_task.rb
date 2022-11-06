@@ -7,8 +7,10 @@ class Tasks::UsbRoleSwitchTask < SingletonTask
   # Toggle the role switch, it has been observed (by others online) that it
   # *may* help in some situations, compared to just setting it to "device".
   def run()
-    System.write("/sys/class/usb_role/fe800000.usb-role-switch/role", "host")
-    sleep(0.1)
-    System.write("/sys/class/usb_role/fe800000.usb-role-switch/role", "device")
+    if File.exist?("/sys/class/usb_role/fe800000.usb-role-switch/role")
+      System.write("/sys/class/usb_role/fe800000.usb-role-switch/role", "host")
+      sleep(0.1)
+      System.write("/sys/class/usb_role/fe800000.usb-role-switch/role", "device")
+    end
   end
 end
