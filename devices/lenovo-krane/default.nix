@@ -25,5 +25,12 @@
     dtbs = "${config.mobile.boot.stage-1.kernel.package}/dtbs/mediatek";
   };
 
+  boot.kernelParams = [
+    # Serial console on ttyS0, using a suzyqable or equivalent.
+    # TODO: option to enable serial console.
+    #"console=ttyS0,115200n8"
+    #"earlyprintk=ttyS0,115200n8"
+  ];
+
   mobile.system.type = "depthcharge";
 }
