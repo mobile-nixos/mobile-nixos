@@ -30,6 +30,8 @@ module Configuration
           return "pine64-pinephone"
         when /^pine64,pinetab/
           return "pine64-pinetab"
+        when /^google,krane/
+          return "lenovo-krane"
         when /^google,scarlet/
           # TODO: detect the actual scarlet model...
           return "asus-dumo"
@@ -73,6 +75,9 @@ module Configuration
         when "asus-dumo", "pine64-pinephonepro"
           # RK3399 eMMC
           File.join("/dev/disk/by-path", "platform-fe330000.mmc")
+        when "lenovo-krane"
+          # MT8183 eMMC
+          File.join("/dev/disk/by-path", "platform-11230000.mmc")
         end
 
       raise "Unknown target disk" unless path
