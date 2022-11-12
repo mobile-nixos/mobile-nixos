@@ -4,6 +4,7 @@ require "shellwords"
 end
 
 MOUNT_POINT = "/mnt"
+$depthcharge = false
 
 # {{{
 
@@ -104,6 +105,23 @@ module Helpers
       attributes = []
       attributes << "LegacyBIOSBootable" if bootable
 
+      if bootable and $depthcharge
+        # Marks depthcharge partition as prioritized, successful, with 5 tries left
+        # https://chromium.googlesource.com/chromiumos/docs/+/HEAD/disk_format.md#Selecting-the-kernel
+        bits = []
+        # Priority
+        bits.concat([49, 51]) # 1010 -> 10
+
+        # Tries left
+        bits.concat([52, 54]) # 0101 -> 5
+
+        # TODO: don't pre-set the success bit, have boot-control handle this.
+        # Successful
+        bits.concat([56])
+
+        attributes << bits.join(",")
+      end
+
       script << ["attrs", attributes.join(",").inspect].join("=") unless attributes.empty?
 
       sfdisk_script(
@@ -140,10 +158,24 @@ puts "Working on '#{disk_param}' → '#{disk}'"
 # Disk layout
 #
 
+# Partition count, to track the location of the last one, the rootfs.
+partition_count = 5
+
 Helpers::wipefs(disk)
 Helpers::GPT.format!(disk)
-# Boot partition, "Linux reserved", will be flashed with boot image for now
-Helpers::GPT.add_partition(disk, size: 256 * 1024 * 1024, partlabel: "boot", type: "8DA63339-0007-60C0-C436-083AC8230908", bootable: true)
+
+# A/B support on depthcharge
+if $depthcharge then
+  # We're adding one more partition for A/B
+  partition_count += 1
+  Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_a", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: true)
+  Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_b", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: false)
+else
+  # This assume U-Boot, without UEFI.
+  # Boot partition, "Linux reserved", will be flashed with boot image for now
+  Helpers::GPT.add_partition(disk, size: 256 * 1024 * 1024, partlabel: "boot", type: "8DA63339-0007-60C0-C436-083AC8230908", bootable: true)
+end
+
 # Reserved for future use as a BCB, if ever implemented (e.g. ask bootloader app or recovery app to do something)
 Helpers::GPT.add_partition(disk, size:  1 * 1024 * 1024, partlabel: "misc",    type: "EF32A33B-A409-486C-9141-9FFB711F6266")
 # Reserved for future use to "persist" data, if ever deemed useful (e.g. timezone, "last known RTC time" and such)
@@ -159,7 +191,7 @@ puts "Waiting for target partitions to show up..."
 (1..600).each do |i|
   print "."
   # Assumes they're all present if the last is present
-  break if File.exists?(Helpers::Part.part(disk, 5))
+  break if File.exists?(Helpers::Part.part(disk, partition_count))
   sleep(0.1)
 end
 # two dots such that if it's instant we get a proper length ellipsis!
@@ -169,7 +201,8 @@ print ".. present!\n"
 # Rootfs formatting
 #
 
-rootfs_partition = Helpers::Part.part(disk, 5)
+# The rootfs is the last partition
+rootfs_partition = Helpers::Part.part(disk, partition_count)
 
 if configuration["fde"]["enable"] then
   Helpers::LUKS.format(
