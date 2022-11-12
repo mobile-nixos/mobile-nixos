@@ -40,6 +40,11 @@
     #"earlyprintk=ttyS0,115200n8"
   ];
 
+  systemd.services."serial-getty@ttyS0" = {
+    enable = true;
+    wantedBy = [ "multi-user.target" ];
+  };
+
   mobile.system.type = "depthcharge";
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
