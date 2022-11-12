@@ -30,6 +30,6 @@ mobile-nixos.kernel-builder {
     })
   ];
 
-  isModular = false;
+  isModular = true;
   isCompressed = false;
 }
