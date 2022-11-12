@@ -33,4 +33,9 @@
   ];
 
   mobile.system.type = "depthcharge";
+
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.boot.stage-1.firmware = [
+    config.mobile.device.firmware
+  ];
 }
