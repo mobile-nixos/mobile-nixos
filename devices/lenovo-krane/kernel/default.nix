@@ -23,6 +23,11 @@ mobile-nixos.kernel-builder {
   };
 
   patches = [
+    # arm64: dts: mediatek: kukui: Configure scp firmware filename
+    (fetchpatch {
+      url = "https://github.com/samueldr/linux/commit/7b624a52f799ab01f36989146de43b0ef51f33fd.patch";
+      sha256 = "sha256-gop3rD/vroudrTAbf2hWhBqrTAzRXlWEo22bB1ID0QA=";
+    })
   ];
 
   isModular = false;
