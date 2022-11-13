@@ -9,6 +9,7 @@ runCommand "lenovo-krane-firmware" {
 } ''
   for firmware in \
     ath10k/QCA6174/hw3.0 \
+    mediatek/mt8183/scp.img \
     qca/nvm_00440302.bin \
     qca/nvm_00440302_eu.bin \
     qca/nvm_00440302_i2s_eu.bin \
