@@ -1,6 +1,10 @@
 { config, lib, pkgs, ... }:
 
 {
+  imports = [
+    ./sound.nix
+  ];
+
   mobile.device.name = "lenovo-krane";
   mobile.device.identity = {
     name = "Chromebook Duet";
