@@ -19,6 +19,14 @@
 
   mobile.boot.stage-1 = {
     kernel.package = pkgs.callPackage ./kernel {};
+    kernel.modular = true;
+    kernel.additionalModules = [
+      # Breaks udev if builtin or loaded before udev runs.
+      # Using `additionalModules` means udev will load them as needed.
+      "sbs-battery"
+      "sbs-charger"
+      "sbs-manager"
+    ];
   };
 
   mobile.system.depthcharge.kpart = {
