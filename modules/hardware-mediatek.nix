@@ -21,6 +21,11 @@ in
       default = false;
       description = "enable when SOC is Mediatek MT8127";
     };
+    hardware.socs.mediatek-mt8183.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is Mediatek MT8183";
+    };
   };
 
   config = mkMerge [
@@ -39,6 +44,11 @@ in
       mobile = mkIf cfg.mediatek-mt8127.enable {
         system.system = "armv7l-linux";
         quirks.fb-refresher.enable = true;
+      };
+    }
+    {
+      mobile = mkIf cfg.mediatek-mt8183.enable {
+        system.system = "aarch64-linux";
       };
     }
   ];
