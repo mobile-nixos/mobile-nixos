@@ -4,7 +4,10 @@ require "shellwords"
 end
 
 MOUNT_POINT = "/mnt"
-$depthcharge = false
+
+puts "Identifying device type:"
+$system_type = Nix.instantiate("<nixpkgs/nixos>", attr: "config.mobile.system.type")
+puts ""
 
 # {{{
 
@@ -105,7 +108,7 @@ module Helpers
       attributes = []
       attributes << "LegacyBIOSBootable" if bootable
 
-      if bootable and $depthcharge
+      if bootable and $system_type == "depthcharge"
         # Marks depthcharge partition as prioritized, successful, with 5 tries left
         # https://chromium.googlesource.com/chromiumos/docs/+/HEAD/disk_format.md#Selecting-the-kernel
         bits = []
@@ -165,7 +168,7 @@ Helpers::wipefs(disk)
 Helpers::GPT.format!(disk)
 
 # A/B support on depthcharge
-if $depthcharge then
+if system_type == "depthcharge" then
   # We're adding one more partition for A/B
   partition_count += 1
   Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_a", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: true)
