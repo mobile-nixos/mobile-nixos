@@ -139,9 +139,29 @@ module Helpers
 end
 # }}}
 
-if ARGV.length != 2 then
+# Split `-*` and other arguments
+# This does not handle pairs, and is by design for simplicity at this stage.
+# We only have boolean-style parametsr.
+begin
+  params, ARGV_POSITIONAL = ARGV.partition{|arg|arg.match(/^-/)}
+  ARGV_PARAMETERS = params.map{|arg| [arg, true]}.to_h
+end
+
+if ARGV_POSITIONAL.length != 2 then
 $stderr.puts <<EOF
-Usage: #{$0} <disk> <configuration.json>
+Usage: #{$0} [--skip-partitioning|--skip-formatting] <disk> <configuration.json>
+  --skip-partitioning  The target system will not be partitioned
+  --skip-formatting    The target system partitions will not be formatted
+                       NOTE: skipping formatting must request to skip partitioning.
+EOF
+  exit 1
+end
+
+# Request to skip formatting, but do partitioning are invalid.
+if ARGV_PARAMETERS["--skip-formatting"] && !ARGV_PARAMETERS["--skip-partitioning"] then
+$stderr.puts <<EOF
+ABORTING: Use --skip-partitioning with --skip-formatting
+          It is invalid to do partitioning but no formatting.
 EOF
   exit 1
 end
@@ -151,9 +171,13 @@ puts "= Mobile NixOS installer — disk formatter ="
 puts "==========================================="
 puts
 
-disk_param = ARGV.shift
+disk_param = ARGV_POSITIONAL.shift
 disk = File.realpath(disk_param)
-configuration = JSON.parse(File.read(ARGV.shift))
+configuration = JSON.parse(File.read(ARGV_POSITIONAL.shift))
+# Will partition if the argument is not given
+do_partitioning = !ARGV_PARAMETERS["--skip-partitioning"]
+# Will format if the partition is neither arguments are given
+do_formatting = !ARGV_PARAMETERS["--skip-formatting"] || do_partitioning
 
 puts "Working on '#{disk_param}' → '#{disk}'"
 
@@ -163,30 +187,36 @@ puts "Working on '#{disk_param}' → '#{disk}'"
 
 # Partition count, to track the location of the last one, the rootfs.
 partition_count = 5
+partition_count += 1 if system_type == "depthcharge"
 
-Helpers::wipefs(disk)
-Helpers::GPT.format!(disk)
+if do_partitioning then
+  puts ""
+  puts "Partitionning..."
+  puts ""
 
-# A/B support on depthcharge
-if system_type == "depthcharge" then
-  # We're adding one more partition for A/B
-  partition_count += 1
-  Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_a", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: true)
-  Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_b", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: false)
-else
-  # This assume U-Boot, without UEFI.
-  # Boot partition, "Linux reserved", will be flashed with boot image for now
-  Helpers::GPT.add_partition(disk, size: 256 * 1024 * 1024, partlabel: "boot", type: "8DA63339-0007-60C0-C436-083AC8230908", bootable: true)
+  Helpers::wipefs(disk)
+  Helpers::GPT.format!(disk)
+
+  # A/B support on depthcharge
+  if system_type == "depthcharge" then
+    # We're adding one more partition for A/B
+    Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_a", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: true)
+    Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_b", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: false)
+  else
+    # This assume U-Boot, without UEFI.
+    # Boot partition, "Linux reserved", will be flashed with boot image for now
+    Helpers::GPT.add_partition(disk, size: 256 * 1024 * 1024, partlabel: "boot", type: "8DA63339-0007-60C0-C436-083AC8230908", bootable: true)
+  end
+
+  # Reserved for future use as a BCB, if ever implemented (e.g. ask bootloader app or recovery app to do something)
+  Helpers::GPT.add_partition(disk, size:  1 * 1024 * 1024, partlabel: "misc",    type: "EF32A33B-A409-486C-9141-9FFB711F6266")
+  # Reserved for future use to "persist" data, if ever deemed useful (e.g. timezone, "last known RTC time" and such)
+  Helpers::GPT.add_partition(disk, size: 16 * 1024 * 1024, partlabel: "persist", type: "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1")
+  # Reserved for `pstore-blk`
+  Helpers::GPT.add_partition(disk, size: 15 * 1024 * 1024, partlabel: "pstore",  type: "989411FC-DFDF-40DE-9C6C-977218B794E7", uuid: "989411FC-DFDF-40DE-9C6C-977218B794E7")
+  # Rootfs partition, will be formatted and mounted as needed
+  Helpers::GPT.add_partition(disk, partlabel: "rootfs",  type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4")
 end
-
-# Reserved for future use as a BCB, if ever implemented (e.g. ask bootloader app or recovery app to do something)
-Helpers::GPT.add_partition(disk, size:  1 * 1024 * 1024, partlabel: "misc",    type: "EF32A33B-A409-486C-9141-9FFB711F6266")
-# Reserved for future use to "persist" data, if ever deemed useful (e.g. timezone, "last known RTC time" and such)
-Helpers::GPT.add_partition(disk, size: 16 * 1024 * 1024, partlabel: "persist", type: "EBC597D0-2053-4B15-8B64-E0AAC75F4DB1")
-# Reserved for `pstore-blk`
-Helpers::GPT.add_partition(disk, size: 15 * 1024 * 1024, partlabel: "pstore",  type: "989411FC-DFDF-40DE-9C6C-977218B794E7", uuid: "989411FC-DFDF-40DE-9C6C-977218B794E7")
-# Rootfs partition, will be formatted and mounted as needed
-Helpers::GPT.add_partition(disk, partlabel: "rootfs",  type: "0FC63DAF-8483-4772-8E79-3D69D8477DE4")
 
 puts "Waiting for target partitions to show up..."
 
@@ -200,20 +230,30 @@ end
 # two dots such that if it's instant we get a proper length ellipsis!
 print ".. present!\n"
 
+# The rootfs is the last partition
+rootfs_partition = Helpers::Part.part(disk, partition_count)
+mapper_name = "installer-rootfs"
+
 #
 # Rootfs formatting
 #
 
-# The rootfs is the last partition
-rootfs_partition = Helpers::Part.part(disk, partition_count)
-
 if configuration["fde"]["enable"] then
-  Helpers::LUKS.format(
-    rootfs_partition,
-    uuid: configuration["filesystems"]["luks"]["uuid"],
-    passphrase: configuration["fde"]["passphrase"]
-  )
-  mapper_name = "installer-rootfs"
+  if do_formatting then
+    puts ""
+    puts "Making new LUKS volume..."
+    puts ""
+    Helpers::LUKS.format(
+      rootfs_partition,
+      uuid: configuration["filesystems"]["luks"]["uuid"],
+      passphrase: configuration["fde"]["passphrase"]
+    )
+  end
+
+  puts ""
+  puts "Opening LUKS volume..."
+  puts ""
+
   # We don't need to care about the mapper name here; we are not
   # using the NixOS config generator.
   Helpers::LUKS.open(
@@ -226,10 +266,17 @@ if configuration["fde"]["enable"] then
   rootfs_partition = mapper_name
 end
 
-Helpers::Ext4.format(
-  rootfs_partition,
-  uuid: configuration["filesystems"]["rootfs"]["uuid"],
-  label: configuration["filesystems"]["rootfs"]["label"]
-)
+if do_formatting
+  puts ""
+  puts "Formatting rootfs..."
+  puts ""
+
+  Helpers::Ext4.format(
+    rootfs_partition,
+    uuid: configuration["filesystems"]["rootfs"]["uuid"],
+    label: configuration["filesystems"]["rootfs"]["label"]
+  )
+end
+
 Dir.mkdir(MOUNT_POINT) unless Dir.exist?(MOUNT_POINT)
 Helpers::Ext4.mount(rootfs_partition, MOUNT_POINT)
