@@ -7,10 +7,13 @@ module Configuration
       ["uefi", arch].join("-")
     end
 
+    def is_uefi()
+      @is_uefi ||= File.exists?("/sys/firmware/efi")
+      @is_uefi
+    end
+
     # TODO: move device-specific detection into some form of generic data file.
     def identifier()
-      is_uefi = File.exists?("/sys/firmware/efi")
-
       # First let's short circuit for the simulator.
       # We need a good enough device name.
       if LVGL::Introspection.simulator?
@@ -57,6 +60,21 @@ module Configuration
       # This shouldn't really happen. We won't produce builds without some way
       # to detect the device identifier.
       "... unknown device ..."
+    end
+
+    # TODO: move with the device detection into generic data-driven config.
+    def system_type()
+      case identifier
+      when "pine64-pinephone", "pine64-pinetab", "pine64-pinephonepro"
+        return "u-boot"
+      when "lenovo-krane", "asus-dumo"
+        return "depthcharge"
+      end
+
+      # Safe~ish default
+      return "uefi" if is_uefi
+
+      raise "Aborting: Unknown system type...."
     end
 
     # TODO: move with the device detection into generic data-driven config.
@@ -392,6 +410,8 @@ module Configuration
   def configuration_data
     raw_config.merge(
       {
+        system_type: Configuration::Device.system_type,
+        identifier: Configuration::Device.identifier,
         filesystems: filesystems_data,
       }
     )
