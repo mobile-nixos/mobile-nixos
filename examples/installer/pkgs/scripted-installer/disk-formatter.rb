@@ -5,10 +5,6 @@ end
 
 MOUNT_POINT = "/mnt"
 
-puts "Identifying device type:"
-$system_type = Nix.instantiate("<nixpkgs/nixos>", attr: "config.mobile.system.type")
-puts ""
-
 # {{{
 
 module Helpers
@@ -179,6 +175,10 @@ do_partitioning = !ARGV_PARAMETERS["--skip-partitioning"]
 # Will format if the partition is neither arguments are given
 do_formatting = !ARGV_PARAMETERS["--skip-formatting"] || do_partitioning
 
+puts "Identifying device type:"
+$system_type = configuration["system_type"]
+puts ""
+
 puts "Working on '#{disk_param}' → '#{disk}'"
 
 #
@@ -187,7 +187,7 @@ puts "Working on '#{disk_param}' → '#{disk}'"
 
 # Partition count, to track the location of the last one, the rootfs.
 partition_count = 5
-partition_count += 1 if system_type == "depthcharge"
+partition_count += 1 if $system_type == "depthcharge"
 
 if do_partitioning then
   puts ""
@@ -198,7 +198,7 @@ if do_partitioning then
   Helpers::GPT.format!(disk)
 
   # A/B support on depthcharge
-  if system_type == "depthcharge" then
+  if $system_type == "depthcharge" then
     # We're adding one more partition for A/B
     Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_a", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: true)
     Helpers::GPT.add_partition(disk, size: 128 * 1024 * 1024, partlabel: "boot_b", type: "FE3A2A5D-4F32-41A7-B725-ACCC3285A309", bootable: false)
