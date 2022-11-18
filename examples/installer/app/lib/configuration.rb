@@ -7,10 +7,13 @@ module Configuration
       ["uefi", arch].join("-")
     end
 
+    def is_uefi()
+      @is_uefi ||= File.exists?("/sys/firmware/efi")
+      @is_uefi
+    end
+
     # TODO: move device-specific detection into some form of generic data file.
     def identifier()
-      is_uefi = File.exists?("/sys/firmware/efi")
-
       # First let's short circuit for the simulator.
       # We need a good enough device name.
       if LVGL::Introspection.simulator?
@@ -30,6 +33,8 @@ module Configuration
           return "pine64-pinephone"
         when /^pine64,pinetab/
           return "pine64-pinetab"
+        when /^google,krane/
+          return "lenovo-krane"
         when /^google,scarlet/
           # TODO: detect the actual scarlet model...
           return "asus-dumo"
@@ -58,6 +63,21 @@ module Configuration
     end
 
     # TODO: move with the device detection into generic data-driven config.
+    def system_type()
+      case identifier
+      when "pine64-pinephone", "pine64-pinetab", "pine64-pinephonepro"
+        return "u-boot"
+      when "lenovo-krane", "asus-dumo"
+        return "depthcharge"
+      end
+
+      # Safe~ish default
+      return "uefi" if is_uefi
+
+      raise "Aborting: Unknown system type...."
+    end
+
+    # TODO: move with the device detection into generic data-driven config.
     def target_disk()
       if LVGL::Introspection.simulator?
         path = "./installer-bogus-disk.img"
@@ -73,6 +93,9 @@ module Configuration
         when "asus-dumo", "pine64-pinephonepro"
           # RK3399 eMMC
           File.join("/dev/disk/by-path", "platform-fe330000.mmc")
+        when "lenovo-krane"
+          # MT8183 eMMC
+          File.join("/dev/disk/by-path", "platform-11230000.mmc")
         end
 
       raise "Unknown target disk" unless path
@@ -387,6 +410,8 @@ module Configuration
   def configuration_data
     raw_config.merge(
       {
+        system_type: Configuration::Device.system_type,
+        identifier: Configuration::Device.identifier,
         filesystems: filesystems_data,
       }
     )

@@ -70,6 +70,9 @@ case system_type
 when "u-boot"
   boot_image = Nix.build("<nixpkgs/nixos>", attr: "config.mobile.outputs.u-boot.boot-partition")
   boot_image = Dir.glob(File.join(MOUNT_POINT, boot_image, "*.img")).first
+when "depthcharge"
+  boot_image = Nix.build("<nixpkgs/nixos>", attr: "config.mobile.outputs.depthcharge.kpart")
+  boot_image = Dir.glob(File.join(MOUNT_POINT, boot_image, "kpart")).first
 when "uefi"
   boot_image = Nix.build("<nixpkgs/nixos>", attr: "config.mobile.outputs.uefi.boot-partition")
   boot_image = Dir.glob(File.join(MOUNT_POINT, boot_image, "*.img")).first
