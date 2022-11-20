@@ -1,0 +1,90 @@
+= Pine64 PinePhone Pro
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Platform Firmware
+
+The only *supported* platform firmware configuration is to link:https://tow-boot.org/devices/pine64-pinephonePro.html[install Tow-Boot to SPI].
+
+=== Installer
+
+The installer can be downloaded and flashed to an SD card.
+
+```
+ $ dd if=mobile-nixos_pine64-pinephonepro_installer.img of=/dev/sdX bs=8M oflag=sync,direct status=progress
+```
+
+When using Tow-Boot, hold _volume down_ during boot to boot from the SD card.
+
+Follow the on-screen instructions to configure a basic system.
+
+== Usage notes
+
+=== LED
+
+In the default setup, the LED has been configured to show status information.
+Its colour or pattern can be used to infer the status.
+
+During boot:
+
+ * Green when the kernel initializes the LED driver
+
+At any time after Linux booted:
+
+ * The red LED will flash on panic
+
+As it does not reset the other LED colours, it may flash green/yellow rather
+than off/red. If applications customize the LED status, it may flash in other
+patterns involving red.
+
+
+'''
+
+=== Updating the boot image
+
+The default suggested setup does not currently require updating the boot
+partition.
+
+include::_support/device-notes/boot-image.inc[]
+
+==== Flashing the boot image
+
+The resulting image can be flashed (dd) to the appropriate partition. With the
+partition layout as made by the guided installer, this will be the fourth
+partition on the main storage.
+
+== Development notes
+
+[NOTE]
+====
+*The following sections only apply for development.*
+====
+
+
+=== Building a full disk image
+
+This platform uses the `u-boot` system-type. This means that a full disk image
+can be produced, and this full disk image flashed _outright_ to the block
+device. That block device can be the internal eMMC or the SD card.
+
+When using Tow-Boot, hold _volume down_ during boot to boot from the SD card.
+
+```
+ $ nix-build --argstr device pine64-pinephonepro -A build.disk-image
+ $ dd if=result of=/dev/mmcblkX bs=8M oflag=sync,direct status=progress
+```
+
+=== Building the boot partition
+
+Building the full disk image may require a native AArch64 system.
+
+The boot partition can be built, and then flashed on top of an existing Mobile
+NixOS boot partition.
+
+This image will not be compatible with the boot partition created by the installer.
+
+```
+ $ nix-build --argstr device pine64-pinephonepro -A build.boot-partition
+ $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXpY bs=8M oflag=sync,direct status=progress
+```
