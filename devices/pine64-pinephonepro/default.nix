@@ -41,6 +41,9 @@
   mobile.boot.stage-1.firmware = [
     config.mobile.device.firmware
   ];
+  hardware.firmware = [
+    config.mobile.device.firmware
+  ];
 
   mobile.usb.mode = "gadgetfs";
 
