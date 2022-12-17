@@ -14,6 +14,4 @@ in runCommand "xiaomi-sdm845-firmware" { inherit baseFw; } ''
   mkdir -p $out/lib/firmware
   cp -r $baseFw/lib/firmware/* $out/lib/firmware/
   chmod +w -R $out
-  # rm -rf $out/lib/firmware/postmarketos
-  # cp -r $baseFw/lib/firmware/postmarketos/* $out/lib/firmware
 ''
