@@ -12,9 +12,18 @@ let
   ;
   anyCompatible = any id [
     cfg.sdm845-modem.enable
+    cfg.sc7180-modem.enable
+  ];
 in
 {
   options.mobile = {
+    quirks.qualcomm.sc7180-modem.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Enable this on a mainline-based SC7180 device for modem/Wi-Fi support
+      '';
+    };
     quirks.qualcomm.sdm845-modem.enable = mkOption {
       type = types.bool;
       default = false;
@@ -46,6 +55,7 @@ in
               "/lib/firmware/rmtfs"
             ]
               ++ optional cfg.sdm845-modem.enable "/lib/firmware/qcom/sdm845"
+              ++ optional cfg.sc7180-modem.enable "/lib/firmware/qcom/sc7180-trogdor"
             ;
           };
         } ''
