@@ -2,7 +2,16 @@
 
 let
   cfg = config.mobile.quirks.qualcomm;
-  inherit (lib) mkIf mkOption types;
+  inherit (lib)
+    any
+    id
+    mkIf
+    mkOption
+    optional
+    types
+  ;
+  anyCompatible = any id [
+    cfg.sdm845-modem.enable
 in
 {
   options.mobile = {
@@ -14,7 +23,7 @@ in
       '';
     };
   };
-  config = mkIf (cfg.sdm845-modem.enable) {
+  config = mkIf (anyCompatible) {
     # Makes platform-specific firmware files available in an uncompressed form at:
     # /run/current-system/sw/share/uncompressed-firmware/qcom/sdm845/
     # This is used by userspace components unaware of the possible xz compression.
@@ -29,13 +38,15 @@ in
         , firmwareFilesList
         }:
 
-        runCommand "sdm845-uncompressed-firmware-share" {
+        runCommand "qcom-modem-uncompressed-firmware-share" {
           firmwareFiles = buildEnv {
-            name = "sdm845-uncompressed-firmware";
+            name = "qcom-modem-uncompressed-firmware";
             paths = firmwareFilesList;
             pathsToLink = [
-              "/lib/firmware/qcom/sdm845"
-            ];
+              "/lib/firmware/rmtfs"
+            ]
+              ++ optional cfg.sdm845-modem.enable "/lib/firmware/qcom/sdm845"
+            ;
           };
         } ''
           PS4=" $ "
