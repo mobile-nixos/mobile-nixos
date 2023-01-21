@@ -21,6 +21,12 @@ let
   rmtfsReadsPartition = any id [
     cfg.sdm845-modem.enable
   ];
+
+  # TODO: figure out what PD mapper exactly is...
+  # is it USB PD or something modem related?
+  withPDMapper = any id [
+    cfg.sdm845-modem.enable
+  ];
 in
 {
   options.mobile = {
@@ -107,7 +113,7 @@ in
           Restart = "always";
         };
       };
-      pd-mapper = {
+      pd-mapper = mkIf withPDMapper {
         wantedBy = [ "multi-user.target" ];
         requires = [ "qrtr-ns.service" ];
         after = [ "qrtr-ns.service" ];
