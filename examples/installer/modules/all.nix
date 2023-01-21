@@ -1,6 +1,7 @@
 {
   imports = [
     ./adb.nix
+    ./boot-closure.nix
     ./filesystems.nix
     ./installer-gui.nix
     ./installer-script.nix
