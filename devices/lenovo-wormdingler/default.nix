@@ -65,4 +65,8 @@
   hardware.firmware = lib.mkBefore [ config.mobile.device.firmware ];
 
   mobile.quirks.qualcomm.sc7180-modem.enable = true;
+
+  nixpkgs.overlays = [(final: super: {
+    lenovo-wormdingler-unredistributable-firmware = final.callPackage ./firmware/non-redistributable.nix {};
+  })];
 }
