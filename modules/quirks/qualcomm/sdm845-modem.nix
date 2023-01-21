@@ -14,6 +14,13 @@ let
     cfg.sdm845-modem.enable
     cfg.sc7180-modem.enable
   ];
+
+  # Systems for which we read the partition directly.
+  # TODO: This is likely the wrong abstraction.
+  # Once we have more accrued knowledge, add a discrete option.
+  rmtfsReadsPartition = any id [
+    cfg.sdm845-modem.enable
+  ];
 in
 {
   options.mobile = {
@@ -79,7 +86,8 @@ in
         requires = [ "qrtr-ns.service" ];
         after = [ "qrtr-ns.service" ];
         serviceConfig = {
-          ExecStart = "${pkgs.rmtfs}/bin/rmtfs -r -P -s";
+          # https://github.com/andersson/rmtfs/blob/7a5ae7e0a57be3e09e0256b51b9075ee6b860322/rmtfs.c#L507-L541
+          ExecStart = "${pkgs.rmtfs}/bin/rmtfs -s -r ${if rmtfsReadsPartition then "-P" else "-o /run/current-system/sw/share/uncompressed-firmware/rmtfs"}";
           Restart = "always";
           RestartSec = "1";
         };
