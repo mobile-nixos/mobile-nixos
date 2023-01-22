@@ -17,7 +17,7 @@ in
   };
 
   config = lib.mkIf cfg.alsa-ucm-meld {
-    environment.pathsToLink = [ "share/alsa/ucm2" ];
+    environment.pathsToLink = [ "/share/alsa/ucm2" ];
     environment.systemPackages = [ pkgs.alsa-ucm-conf ];
 
     environment.variables.ALSA_CONFIG_UCM2 =
