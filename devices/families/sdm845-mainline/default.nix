@@ -15,7 +15,6 @@
   };
 
   hardware.enableRedistributableFirmware = true;
-  hardware.firmware = lib.mkBefore [ config.mobile.device.firmware ];
 
   # Note: on devices it's highly likely no firmware is required during stage-1.
   # DRM *should* work fine without firmware.
