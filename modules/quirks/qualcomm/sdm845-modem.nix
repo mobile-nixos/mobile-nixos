@@ -2,10 +2,41 @@
 
 let
   cfg = config.mobile.quirks.qualcomm;
-  inherit (lib) mkIf mkOption types;
+  inherit (lib)
+    any
+    id
+    mkIf
+    mkOption
+    optional
+    types
+  ;
+  anyCompatible = any id [
+    cfg.sdm845-modem.enable
+    cfg.sc7180-modem.enable
+  ];
+
+  # Systems for which we read the partition directly.
+  # TODO: This is likely the wrong abstraction.
+  # Once we have more accrued knowledge, add a discrete option.
+  rmtfsReadsPartition = any id [
+    cfg.sdm845-modem.enable
+  ];
+
+  # TODO: figure out what PD mapper exactly is...
+  # is it USB PD or something modem related?
+  withPDMapper = any id [
+    cfg.sdm845-modem.enable
+  ];
 in
 {
   options.mobile = {
+    quirks.qualcomm.sc7180-modem.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = ''
+        Enable this on a mainline-based SC7180 device for modem/Wi-Fi support
+      '';
+    };
     quirks.qualcomm.sdm845-modem.enable = mkOption {
       type = types.bool;
       default = false;
@@ -14,7 +45,7 @@ in
       '';
     };
   };
-  config = mkIf (cfg.sdm845-modem.enable) {
+  config = mkIf (anyCompatible) {
     # Makes platform-specific firmware files available in an uncompressed form at:
     # /run/current-system/sw/share/uncompressed-firmware/qcom/sdm845/
     # This is used by userspace components unaware of the possible xz compression.
@@ -29,13 +60,16 @@ in
         , firmwareFilesList
         }:
 
-        runCommand "sdm845-uncompressed-firmware-share" {
+        runCommand "qcom-modem-uncompressed-firmware-share" {
           firmwareFiles = buildEnv {
-            name = "sdm845-uncompressed-firmware";
+            name = "qcom-modem-uncompressed-firmware";
             paths = firmwareFilesList;
             pathsToLink = [
-              "/lib/firmware/qcom/sdm845"
-            ];
+              "/lib/firmware/rmtfs"
+            ]
+              ++ optional cfg.sdm845-modem.enable "/lib/firmware/qcom/sdm845"
+              ++ optional cfg.sc7180-modem.enable "/lib/firmware/qcom/sc7180-trogdor"
+            ;
           };
         } ''
           PS4=" $ "
@@ -58,7 +92,8 @@ in
         requires = [ "qrtr-ns.service" ];
         after = [ "qrtr-ns.service" ];
         serviceConfig = {
-          ExecStart = "${pkgs.rmtfs}/bin/rmtfs -r -P -s";
+          # https://github.com/andersson/rmtfs/blob/7a5ae7e0a57be3e09e0256b51b9075ee6b860322/rmtfs.c#L507-L541
+          ExecStart = "${pkgs.rmtfs}/bin/rmtfs -s -r ${if rmtfsReadsPartition then "-P" else "-o /run/current-system/sw/share/uncompressed-firmware/rmtfs"}";
           Restart = "always";
           RestartSec = "1";
         };
@@ -78,7 +113,7 @@ in
           Restart = "always";
         };
       };
-      pd-mapper = {
+      pd-mapper = mkIf withPDMapper {
         wantedBy = [ "multi-user.target" ];
         requires = [ "qrtr-ns.service" ];
         after = [ "qrtr-ns.service" ];

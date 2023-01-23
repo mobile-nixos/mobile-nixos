@@ -37,6 +37,11 @@ in
       default = false;
       description = "enable when SOC is msm8998";
     };
+    hardware.socs.qualcomm-sc7180.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is 7c (SC7180)";
+    };
     hardware.socs.qualcomm-sdm660.enable = mkOption {
       type = types.bool;
       default = false;
@@ -83,6 +88,11 @@ in
       mobile = mkIf cfg.qualcomm-msm8998.enable {
         system.system = "aarch64-linux";
         quirks.fb-refresher.enable = true;
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-sc7180.enable {
+        system.system = "aarch64-linux";
       };
     }
     {
