@@ -1,7 +1,13 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
+let
+  inherit (lib)
+    mkIf
+    mkOption
+    mkOptionDefault
+    types
+  ;
+in
 {
   options.mobile.device = {
     name = mkOption {
