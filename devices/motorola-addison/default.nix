@@ -20,6 +20,8 @@
   };
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
+  # Firmware is not enabled by default since it requires manually providing unredistributable files.
+  mobile.device.enableFirmware = false;
 
   mobile.system.android.device_name = "addison";
   mobile.system.android.bootimg = {

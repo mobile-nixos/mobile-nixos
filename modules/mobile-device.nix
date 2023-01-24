@@ -1,7 +1,15 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
+let
+  inherit (lib)
+    mkBefore
+    mkIf
+    mkMerge
+    mkOption
+    mkOptionDefault
+    types
+  ;
+in
 {
   options.mobile.device = {
     name = mkOption {
@@ -36,6 +44,18 @@ with lib;
       '';
     };
 
+    enableFirmware = mkOption {
+      type = types.bool;
+      description = ''
+        Enable automatically adding the firmware to the system configuration.
+
+        This may be disabled by some devices that require manual operations
+        for the firmware.
+      '';
+      internal = true;
+      default = true;
+    };
+
     supportLevel = mkOption {
       type = types.enum [ "supported" "best-effort" "vendor" "unsupported" "abandoned" ];
       default = "unsupported";
@@ -45,9 +65,16 @@ with lib;
     };
   };
 
-  config = mkIf (!config.mobile.enable) {
-    mobile.device.name = mkOptionDefault "generic";
-    mobile.device.identity.name = mkOptionDefault "generic";
-    mobile.device.identity.manufacturer = mkOptionDefault "generic";
-  };
+  config = mkMerge [
+    (mkIf (!config.mobile.enable) {
+      mobile.device.name = mkOptionDefault "generic";
+      mobile.device.identity.name = mkOptionDefault "generic";
+      mobile.device.identity.manufacturer = mkOptionDefault "generic";
+    })
+    (mkIf (config.mobile.enable) {
+      hardware.firmware = mkIf config.mobile.device.enableFirmware (mkBefore [
+        config.mobile.device.firmware
+      ]);
+    })
+  ];
 }
