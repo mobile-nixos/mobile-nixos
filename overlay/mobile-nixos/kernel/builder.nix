@@ -553,11 +553,15 @@ stdenv.mkDerivation (inputArgs // {
         (PS4=" $ "; set -x
 
         # Hot fixes pkg-config use.
-        export PKG_CONFIG_PATH="${buildPackages.ncurses.dev}/lib/pkg-config"
         if [ -e scripts/kconfig/nconf-cfg.sh ]; then
-          sed -i"" \
-            -e 's/$(pkg-config --libs $PKG)/-L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKG)/' \
-            scripts/kconfig/nconf-cfg.sh
+          # Replace the script with a hardcoded equivalent result.
+          # The script echoes values that are sourced (.) in a Makefile.
+          cat ${writeShellScript "nconf-cfg.sh" ''
+            export PKG_CONFIG_PATH="${buildPackages.ncurses6.dev}/lib/pkgconfig"
+            PKGS="ncursesw menuw panelw"
+            echo cflags=\"$(pkg-config --cflags $PKGS)\"
+            echo libs=\"-L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKGS)\"
+          ''} > scripts/kconfig/nconf-cfg.sh
         fi
 
         cat >> scripts/kconfig/Makefile <<EOF
