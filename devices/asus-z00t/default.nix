@@ -23,6 +23,7 @@
   };
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.device.enableFirmware = false;
 
   mobile.system.android.device_name = "Z00T";
   mobile.system.android.bootimg = {
