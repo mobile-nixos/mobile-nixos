@@ -6,6 +6,7 @@
 # The minimum redistributable set of firmware files required for the device.
 runCommand "lenovo-wormdingler-firmware" {
   src = firmwareLinuxNonfree;
+  meta.license = firmwareLinuxNonfree.meta.license;
 } ''
   for firmware in \
     ath10k/WCN3990/hw1.0 \
