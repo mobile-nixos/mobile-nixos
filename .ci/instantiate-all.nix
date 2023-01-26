@@ -68,7 +68,10 @@ let
     # We could try and do something smart to unwrap two levels of attrsets
     # automatically, but by stating we want those paths we are ensuring that
     # they are still present in the attrsets.
-    (dig "examples-demo.aarch64-linux") //
+    (dig "examples.hello") //
+    (dig "examples.phosh") //
+    (dig "examples.plasma-mobile") //
+    (dig "installer") //
     (dig "overlay.aarch64-linux.aarch64-linux") //
     (dig "overlay.x86_64-linux.aarch64-linux-cross") //
     (dig "overlay.x86_64-linux.armv7l-linux-cross") //
