@@ -10,7 +10,11 @@ let
     rev = "3ec855b2247291c79652b319dfe93f7747363c86";
     sha256 = "sha256-7CaXWOpao+vuFA7xknzbLml2hxTlmuzFCEM99aLD2uk=";
   };
-in runCommand "oneplus-sdm845-firmware" { inherit baseFw; } ''
+in runCommand "oneplus-sdm845-firmware" {
+  inherit baseFw;
+  # We make no claims that it can be redistributed.
+  meta.license = lib.licenses.unfree;
+} ''
   mkdir -p $out/lib/firmware
   cp -r $baseFw/lib/firmware/* $out/lib/firmware/
   chmod +w -R $out
