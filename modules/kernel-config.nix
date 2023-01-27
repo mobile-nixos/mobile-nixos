@@ -99,24 +99,51 @@ in
         NF_CONNTRACK_EVENTS         = yes;
         NF_CONNTRACK_TIMEOUT        = yes;
         NF_CONNTRACK_TIMESTAMP      = yes;
+        NF_CONNTRACK_BRIDGE         = whenAtLeast "5.3" yes;
         NF_CT_NETLINK               = yes;
+        NF_DUP_NETDEV               = whenAtLeast "4.5" yes;
         NETFILTER_NETLINK_LOG       = yes;
         NETFILTER_NETLINK_QUEUE     = yes;
         NETFILTER_NETLINK_GLUE_CT   = whenAtLeast "4.4" yes;
         NF_TABLES                   = whenAtLeast "3.13" yes;
         NF_TABLES_INET              = mkMerge [ (whenBetween "3.14" "4.17" module) (whenAtLeast "4.17" yes) ];
         NF_TABLES_NETDEV            = mkMerge [ (whenBetween "4.2" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NF_TPROXY_IPV4              = whenAtLeast "4.18" yes;
+        NF_TPROXY_IPV6              = whenAtLeast "4.18" yes;
         NFT_REJECT                  = whenAtLeast "3.14" yes;
         NFT_REJECT_IPV4             = whenAtLeast "3.14" yes;
         NFT_REJECT_IPV6             = whenAtLeast "3.14" yes;
         NFT_REJECT_NETDEV           = whenAtLeast "5.11" module;
+        NFT_BRIDGE_META             = whenAtLeast "3.16" yes;
+        NFT_BRIDGE_REJECT           = whenAtLeast "3.17" yes;
+        NFT_COMPAT                  = whenAtLeast "3.13" yes;
+        NFT_CONNLIMIT               = whenAtLeast "4.18" yes;
+        NFT_CT                      = whenAtLeast "3.13" yes;
+        NFT_DUP_NETDEV              = whenAtLeast "4.5" yes;
+        NFT_FWD_NETDEV              = whenAtLeast "4.5" yes;
+        NFT_HASH                    = whenAtLeast "4.9" yes;
+        NFT_LIMIT                   = whenAtLeast "3.13" yes;
+        NFT_LOG                     = whenAtLeast "3.13" yes;
+        NFT_MASQ                    = whenAtLeast "3.18" yes;
+        NFT_NAT                     = whenAtLeast "3.13" yes;
+        NFT_NUMGEN                  = whenAtLeast "4.9" yes;
+        NFT_META                    = whenBetween "3.13" "4.17" yes;
+        NFT_OBJREF                  = whenAtLeast "4.10" yes;
+        NFT_OSF                     = whenAtLeast "4.19" yes;
+        NFT_QUOTA                   = whenAtLeast "4.9" yes;
+        NFT_REDIR                   = whenAtLeast "3.19" yes;
+        NFT_SOCKET                  = whenAtLeast "4.18" yes;
+        NFT_SYNPROXY                = whenAtLeast "5.3" yes;
+        NFT_TPROXY                  = whenAtLeast "4.19" yes;
+        NFT_TUNNEL                  = whenAtLeast "4.19" yes;
+
         # IP: Netfilter Configuration
         NF_TABLES_IPV4              = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
         NF_TABLES_ARP               = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
         # IPv6: Netfilter Configuration
         NF_TABLES_IPV6              = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
         # Bridge Netfilter Configuration
-        NF_TABLES_BRIDGE            = mkMerge [ (whenBetween "4.19" "5.3" yes) (whenAtLeast "5.3" module) ];
+        NF_TABLES_BRIDGE            = mkMerge [ (whenBetween "3.13" "5.3" yes) (whenAtLeast "5.3" module) ];
 
         # Further dependencies in older kernels
         IP_NF_IPTABLES              = module;
