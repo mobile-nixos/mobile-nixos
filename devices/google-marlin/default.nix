@@ -20,6 +20,7 @@
   };
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.device.enableFirmware = false;
 
   mobile.system.android.device_name = "marlin";
   mobile.system.android = {

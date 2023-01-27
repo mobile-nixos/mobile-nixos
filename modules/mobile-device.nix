@@ -1,6 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
+  cfg = config.mobile.device;
   inherit (lib)
     mkBefore
     mkIf
@@ -29,18 +30,15 @@ in
     };
 
     firmware = mkOption {
-      type = types.package;
+      type = types.nullOr types.package;
+      default = null;
       description = ''
-        Informal option that the end-user can use to get their device's firmware package
+        Informal option that the end-user can use to get their device's firmware package.
 
-        The device configuration may provide this option so the user can simply
-        use `hardware.firmware = [ config.mobile.device.firmware ];`.
+        The firmware will be added to `hardware.firmware` automatically for most devices.
 
-        Note that not all devices provide a firmware bundle, in this case the
-        user should not add the previous example to their configuration.
-
-        This is not added automatically to the system firmwares as most device
-        firmware bundles will be unredistributable.
+        This is not added automatically to the system firmwares for some devices
+        as some bundles will be unredistributable.
       '';
     };
 
@@ -72,8 +70,8 @@ in
       mobile.device.identity.manufacturer = mkOptionDefault "generic";
     })
     (mkIf (config.mobile.enable) {
-      hardware.firmware = mkIf config.mobile.device.enableFirmware (mkBefore [
-        config.mobile.device.firmware
+      hardware.firmware = mkIf (cfg.firmware != null && cfg.enableFirmware) (mkBefore [
+        cfg.firmware
       ]);
     })
   ];

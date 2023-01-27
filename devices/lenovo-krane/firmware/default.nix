@@ -6,6 +6,7 @@
 # The minimum set of firmware files required for the device.
 runCommand "lenovo-krane-firmware" {
   src = firmwareLinuxNonfree;
+  meta.license = firmwareLinuxNonfree.meta.license;
 } ''
   for firmware in \
     ath10k/QCA6174/hw3.0 \

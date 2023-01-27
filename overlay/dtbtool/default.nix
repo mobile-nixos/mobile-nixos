@@ -1,9 +1,8 @@
-{
-  stdenv
-  , fetchurl
-  , python2
-  , python2Packages
-  , buildPackages
+{ stdenv
+, fetchurl
+, python3
+, python3Packages
+, buildPackages
 }:
 
 let
@@ -23,11 +22,11 @@ stdenv.mkDerivation {
   ];
 
   buildInputs = [
-    python2
+    python3
   ];
 
   nativeBuildInputs = [
-    python2Packages.wrapPython
+    python3Packages.wrapPython
     dtc
   ];
 

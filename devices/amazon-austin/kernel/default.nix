@@ -1,7 +1,5 @@
-{
-  mobile-nixos
+{ mobile-nixos
 , fetchFromGitHub
-, python2
 , buildPackages
 , ...
 }:

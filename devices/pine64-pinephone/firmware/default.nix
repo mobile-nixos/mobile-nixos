@@ -10,7 +10,7 @@ runCommand "pine64-pinephone-firmware" {
     rev = "6e8e591e17e207644dfe747e51026967bb1edab5";
     hash = "sha256-TaGwT0XvbxrfqEzUAdg18Yxr32oS+RffN+yzSXebtac=";
   };
-  meta.license = lib.licenses.unfreeRedistributable;
+  meta.license = lib.licenses.unfreeRedistributableFirmware;
 } ''
   mkdir -p "$out/lib/firmware"
   cp -vrf "$src/rtl_bt" $out/lib/firmware/
