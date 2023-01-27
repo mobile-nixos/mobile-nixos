@@ -20,6 +20,7 @@
   };
 
   mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.device.enableFirmware = false;
 
   mobile.system.android.device_name = "a5y17lte";
   mobile.system.android = {
