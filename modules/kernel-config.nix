@@ -83,13 +83,141 @@ in
         BLK_DEV_BSG = yes;
         DEVPTS_MULTIPLE_INSTANCES = whenOlder "4.7" yes;
       })
+      # Needed for firewall
+      (helpers: with helpers; let
+        inherit (lib) mkMerge;
+        # TODO drop when we fix modular kernels
+        module = yes;
+      in {
+        # Needed for nftables
+        # Networking Options
+        NETFILTER                   = yes;
+        NETFILTER_ADVANCED          = yes;
+        # Core Netfilter Configuration
+        NF_CONNTRACK                = yes;
+        NF_CONNTRACK_ZONES          = yes;
+        NF_CONNTRACK_EVENTS         = yes;
+        NF_CONNTRACK_TIMEOUT        = yes;
+        NF_CONNTRACK_TIMESTAMP      = yes;
+        NF_CONNTRACK_BRIDGE         = whenAtLeast "5.3" yes;
+        NF_CT_NETLINK               = yes;
+        NF_DUP_NETDEV               = whenAtLeast "4.5" yes;
+        NETFILTER_NETLINK_LOG       = yes;
+        NETFILTER_NETLINK_QUEUE     = yes;
+        NETFILTER_NETLINK_GLUE_CT   = whenAtLeast "4.4" yes;
+        NF_TABLES                   = whenAtLeast "3.13" yes;
+        NF_TABLES_INET              = mkMerge [ (whenBetween "3.14" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NF_TABLES_NETDEV            = mkMerge [ (whenBetween "4.2" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NF_TPROXY_IPV4              = whenAtLeast "4.18" yes;
+        NF_TPROXY_IPV6              = whenAtLeast "4.18" yes;
+        NFT_REJECT                  = whenAtLeast "3.14" yes;
+        NFT_REJECT_IPV4             = whenAtLeast "3.14" yes;
+        NFT_REJECT_IPV6             = whenAtLeast "3.14" yes;
+        NFT_REJECT_NETDEV           = whenAtLeast "5.11" module;
+        NFT_BRIDGE_META             = whenAtLeast "3.16" yes;
+        NFT_BRIDGE_REJECT           = whenAtLeast "3.17" yes;
+        NFT_COMPAT                  = whenAtLeast "3.13" yes;
+        NFT_CONNLIMIT               = whenAtLeast "4.18" yes;
+        NFT_CT                      = whenAtLeast "3.13" yes;
+        NFT_DUP_NETDEV              = whenAtLeast "4.5" yes;
+        NFT_FWD_NETDEV              = whenAtLeast "4.5" yes;
+        NFT_HASH                    = whenAtLeast "4.9" yes;
+        NFT_LIMIT                   = whenAtLeast "3.13" yes;
+        NFT_LOG                     = whenAtLeast "3.13" yes;
+        NFT_MASQ                    = whenAtLeast "3.18" yes;
+        NFT_NAT                     = whenAtLeast "3.13" yes;
+        NFT_NUMGEN                  = whenAtLeast "4.9" yes;
+        NFT_META                    = whenBetween "3.13" "4.17" yes;
+        NFT_OBJREF                  = whenAtLeast "4.10" yes;
+        NFT_OSF                     = whenAtLeast "4.19" yes;
+        NFT_QUOTA                   = whenAtLeast "4.9" yes;
+        NFT_REDIR                   = whenAtLeast "3.19" yes;
+        NFT_SOCKET                  = whenAtLeast "4.18" yes;
+        NFT_SYNPROXY                = whenAtLeast "5.3" yes;
+        NFT_TPROXY                  = whenAtLeast "4.19" yes;
+        NFT_TUNNEL                  = whenAtLeast "4.19" yes;
+
+        # IP: Netfilter Configuration
+        NF_TABLES_IPV4              = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NF_TABLES_ARP               = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
+        # IPv6: Netfilter Configuration
+        NF_TABLES_IPV6              = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
+        # Bridge Netfilter Configuration
+        NF_TABLES_BRIDGE            = mkMerge [ (whenBetween "3.13" "5.3" yes) (whenAtLeast "5.3" module) ];
+
+        # Further dependencies in older kernels
+        IP_NF_IPTABLES              = module;
+        IP6_NF_IPTABLES             = module;
+        NETFILTER_XTABLES           = module;
+        IP_NF_RAW                   = module;
+        IP6_NF_RAW                  = module;
+        NETFILTER_XT_TARGET_CT      = module; # required for NF_CONNTRACK_ZONES
+
+        BRIDGE                      = module; # required for BRIDGE_NETFILTER
+        BRIDGE_NETFILTER            = module; # required for NETFILTER_XT_MATCH_PHYSDEV
+        XFRM_USER                   = module; # required for NETFILTER_XT_MATCH_POLICY
+
+        # All Netfilter XT match types
+        NETFILTER_XT_MATCH_ADDRTYPE = module;
+        NETFILTER_XT_MATCH_CLUSTER = module;
+        NETFILTER_XT_MATCH_COMMENT = module;
+        NETFILTER_XT_MATCH_CONNBYTES = module;
+        NETFILTER_XT_MATCH_CONNLABEL = module;
+        NETFILTER_XT_MATCH_CONNLIMIT = module;
+        NETFILTER_XT_MATCH_CONNMARK = module;
+        NETFILTER_XT_MATCH_CONNTRACK = module;
+        NETFILTER_XT_MATCH_CPU = module;
+        NETFILTER_XT_MATCH_DCCP = module;
+        NETFILTER_XT_MATCH_DEVGROUP = module;
+        NETFILTER_XT_MATCH_DSCP = module;
+        NETFILTER_XT_MATCH_ECN = module;
+        NETFILTER_XT_MATCH_ESP = module;
+        NETFILTER_XT_MATCH_HASHLIMIT = module;
+        NETFILTER_XT_MATCH_HELPER = module;
+        NETFILTER_XT_MATCH_HL = module;
+        NETFILTER_XT_MATCH_IPRANGE = module;
+        NETFILTER_XT_MATCH_LENGTH = module;
+        NETFILTER_XT_MATCH_LIMIT = module;
+        NETFILTER_XT_MATCH_MAC = module;
+        NETFILTER_XT_MATCH_MARK = module;
+        NETFILTER_XT_MATCH_MULTIPORT = module;
+        NETFILTER_XT_MATCH_NFACCT = module;
+        NETFILTER_XT_MATCH_OSF = module;
+        NETFILTER_XT_MATCH_OWNER = module;
+        NETFILTER_XT_MATCH_PHYSDEV = module;
+        NETFILTER_XT_MATCH_PKTTYPE = module;
+        NETFILTER_XT_MATCH_POLICY = module;
+        NETFILTER_XT_MATCH_QUOTA = module;
+        NETFILTER_XT_MATCH_RATEEST = module;
+        NETFILTER_XT_MATCH_REALM = module;
+        NETFILTER_XT_MATCH_RECENT = module;
+        NETFILTER_XT_MATCH_SCTP = module;
+        NETFILTER_XT_MATCH_SOCKET = module;
+        NETFILTER_XT_MATCH_STATE = module;
+        NETFILTER_XT_MATCH_STATISTIC = module;
+        NETFILTER_XT_MATCH_STRING = module;
+        NETFILTER_XT_MATCH_TCPMSS = module;
+        NETFILTER_XT_MATCH_TIME = module;
+        NETFILTER_XT_MATCH_U32 = module;
+
+        NETFILTER_XT_MATCH_BPF = whenAtLeast "3.9" module;
+        NETFILTER_XT_MATCH_CGROUP = whenAtLeast "3.14" module;
+        NETFILTER_XT_MATCH_IPCOMP = whenAtLeast "3.14" module;
+        NETFILTER_XT_MATCH_L2TP = whenAtLeast "3.14" module;
+
+        # Documenting options we're leaving off by default
+
+        # > IP Virtual Server support will let you build a high-performance virtual server based on cluster of two or more real servers
+        # Let's not enable it.
+        # NETFILTER_XT_MATCH_IPVS = ...;
+      })
     ];
 
     nixpkgs.overlays = [(final: super: {
       systemBuild-structuredConfig = version:
         let
           helpers = lib.kernel // (lib.kernel.whenHelpers version);
-          structuredConfig = 
+          structuredConfig =
             lib.mkMerge
               (map (fn: fn helpers) config.mobile.kernel.structuredConfig)
           ;
