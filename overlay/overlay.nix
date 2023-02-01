@@ -162,5 +162,5 @@ in
       cross-canary-test-static = self.pkgsStatic.callPackage ./mobile-nixos/cross-canary/test.nix {};
     };
 
-    imageBuilder = callPackage ../lib/image-builder {};
+    image-builder = callPackage ./image-builder {};
  }
