@@ -145,11 +145,37 @@ in
       '';
     };
 
+    location = mkOption {
+      type = types.str;
+      default = "";
+      description = lib.mdDoc ''
+        Location of the image in the `$out` path.
+
+        The default value means that `$img == $out`, which means that the
+        image is bare at the out path.
+
+        Other values should start with the directory separator (`/`), and
+        refer to the desired name.
+
+        The `$img` variable in the build script refers to `$out$location`.
+      '';
+    };
+
     output = mkOption {
       type = types.package;
       internal = true;
       description = lib.mdDoc ''
         The build output for the filesystem image.
+      '';
+    };
+
+    imagePath = mkOption {
+      type = types.path;
+      default = "${config.output}${config.location}";
+      defaultText = lib.literalExpression "\"\${config.output}\${config.location}\"";
+      readOnly = true;
+      description = lib.mdDoc ''
+        Output path for the image file.
       '';
     };
 

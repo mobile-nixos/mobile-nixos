@@ -11,6 +11,7 @@ stdenvNoCC.mkDerivation (config.buildPhases // {
     minimumSize
     blockSize
     sectorSize
+    location
     additionalCommands
   ;
 
@@ -21,13 +22,18 @@ stdenvNoCC.mkDerivation (config.buildPhases // {
 
   phases = config.buildPhasesOrder;
 
-  img = placeholder "out";
-
   outputs = [ "out" "metadata" ];
 
   buildCommand = ''
     PS4=" $ "
     set -u
+
+    # Referring to `$out` is forbidden, use `$img`.
+    # This is because the image path may or may not be at the root.
+    img="$out$location"
+    out_path="$out"
+    unset out
+    mkdir -p "$(dirname "$img")"
 
     header() {
       printf "\n:: %s\n\n" "$1"
