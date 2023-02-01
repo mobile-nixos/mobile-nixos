@@ -180,7 +180,7 @@ in
     };
 
     additionalCommands = mkOption {
-      type = types.str;
+      type = types.lines;
       default = "";
       description = lib.mdDoc ''
         Additional commands to run during the filesystem image build.
