@@ -52,7 +52,7 @@ in
   mobile.generatedFilesystems = {
     rootfs = lib.mkDefault {
       label = lib.mkForce "MOBILE_HELLO";
-      id    = lib.mkForce "12345678-1324-1234-0000-D00D00000001";
+      ext4.partitionID = lib.mkForce "12345678-1324-1234-0000-D00D00000001";
     };
   };
 
