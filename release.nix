@@ -82,7 +82,7 @@ let
 
       # lib-like attributes...
       # How should we handle these?
-      imageBuilder = null;
+      image-builder = null;
       mobile-nixos = (onlyDerivationsAndAttrsets overlay.mobile-nixos) // {
         # The cross canaries attrsets will be used as constituents.
         # Filter out `override` and `overrideAttrs` early.
