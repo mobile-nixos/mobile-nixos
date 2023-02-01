@@ -223,8 +223,7 @@ in
         cd "$NIX_BUILD_TOP"
       '';
 
-      "additionalCommandsPhase" = ''
-      '';
+      "additionalCommandsPhase" = config.additionalCommands;
     };
 
     builderFunctions = ''
