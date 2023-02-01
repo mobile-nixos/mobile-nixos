@@ -11,6 +11,7 @@
   ./devices-metadata.nix
   ./documentation.nix
   ./hardware-eink.nix
+  ./generated-disk-images.nix
   ./generated-filesystems.nix
   ./hardware-allwinner.nix
   ./hardware-exynos.nix
