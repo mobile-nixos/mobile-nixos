@@ -11,6 +11,7 @@ stdenvNoCC.mkDerivation (config.buildPhases // {
     minimumSize
     blockSize
     sectorSize
+    additionalCommands
   ;
 
   nativeBuildInputs = config.nativeBuildInputs ++ [

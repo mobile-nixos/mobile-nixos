@@ -152,6 +152,14 @@ in
         The build output for the filesystem image.
       '';
     };
+
+    additionalCommands = mkOption {
+      type = types.str;
+      default = "";
+      description = lib.mdDoc ''
+        Additional commands to run during the filesystem image build.
+      '';
+    };
   };
 
   config = {
