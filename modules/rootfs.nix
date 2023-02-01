@@ -38,9 +38,9 @@ in
     boot.growPartition = lib.mkDefault true;
 
     mobile.generatedFilesystems.rootfs = lib.mkDefault {
-      type = "ext4";
+      filesystem = "ext4";
       label = "NIXOS_SYSTEM";
-      id = "44444444-4444-4444-8888-888888888888";
+      ext4.partitionID = "44444444-4444-4444-8888-888888888888";
 
       populateCommands =
       let
@@ -58,29 +58,31 @@ in
       '';
 
       # Give some headroom for initial mounting.
-      extraPadding = pkgs.imageBuilder.size.MiB 20;
+      extraPadding = pkgs.image-builder.helpers.size.MiB 20;
+
+      location = "/rootfs.img${optionalString compressLargeArtifacts ".zst"}";
 
       # FIXME: See #117, move compression into the image builder.
       # Zstd can take a long time to complete successfully at high compression
       # levels. Increasing the compression level could lead to timeouts.
-      postProcess = optionalString compressLargeArtifacts ''
+      additionalCommands = optionalString compressLargeArtifacts ''
+        echo ":: Compressing rootfs image"
         (PS4=" $ "; set -x
-        PATH="$PATH:${buildPackages.zstd}/bin"
-        cd $out
-        ls -lh
-        time zstd -10 --rm "$filename"
-        ls -lh
+        cd $out_path
+        # Hacky, but the img path here already has .zst appended.
+        # Let's rename it (we assume rootfs.img) and do the compression here.
+        mv "$img" "rootfs.img"
+        time ${buildPackages.zstd}/bin/zstd -10 --rm "rootfs.img"
         )
       '' + ''
+        echo ":: Adding hydra-build-products"
         (PS4=" $ "; set -x
-        mkdir $out/nix-support
-        cat <<EOF > $out/nix-support/hydra-build-products
-        file rootfs${optionalString compressLargeArtifacts "-zstd"} $out/$filename${optionalString compressLargeArtifacts ".zst"}
+        mkdir -p $out_path/nix-support
+        cat <<EOF > $out_path/nix-support/hydra-build-products
+        file rootfs${optionalString compressLargeArtifacts "-zstd"} $img
         EOF
         )
       '';
-
-      zstd = compressLargeArtifacts;
     };
 
     boot.postBootCommands = mkIf (config.mobile.rootfs.rehydrateStore) ''
