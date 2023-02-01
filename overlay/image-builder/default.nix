@@ -7,4 +7,6 @@
   evaluateDiskImage = { config ? {}, modules ? [] }: import ./disk-image/eval-config.nix {
     inherit pkgs config modules;
   };
+
+  helpers = (import ./helpers.nix { inherit lib; }).config.helpers;
 }
