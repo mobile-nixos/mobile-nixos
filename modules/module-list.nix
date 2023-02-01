@@ -9,6 +9,7 @@
   ./bootloader.nix
   ./cross-workarounds.nix
   ./devices-metadata.nix
+  ./disk-image.nix
   ./documentation.nix
   ./hardware-eink.nix
   ./generated-disk-images.nix
