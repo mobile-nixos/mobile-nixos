@@ -24,13 +24,12 @@ stdenvNoCC.mkDerivation rec {
     name
     alignment
     sectorSize
+    location
     additionalCommands
   ;
   inherit (config.mbr)
     diskID
   ;
-
-  img = placeholder "out";
 
   nativeBuildInputs = [
     utillinux
@@ -91,6 +90,13 @@ stdenvNoCC.mkDerivation rec {
     '';
   in ''
     set -u
+
+    # Referring to `$out` is forbidden, use `$img`.
+    # This is because the image path may or may not be at the root.
+    img="$out$location"
+    out_path="$out"
+    unset out
+    mkdir -p "$(dirname "$img")"
 
     # LBA0 contains the MBR.
     mbrSize=$((1*512))

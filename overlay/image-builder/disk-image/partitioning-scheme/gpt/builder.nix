@@ -28,14 +28,13 @@ stdenvNoCC.mkDerivation rec {
     name
     alignment
     sectorSize
+    location
     additionalCommands
   ;
   inherit (config.gpt)
     diskID
     partitionEntriesCount
   ;
-
-  img = placeholder "out";
 
   nativeBuildInputs = [
     gptfdisk
@@ -97,6 +96,13 @@ stdenvNoCC.mkDerivation rec {
     '';
   in ''
     set -u
+
+    # Referring to `$out` is forbidden, use `$img`.
+    # This is because the image path may or may not be at the root.
+    img="$out$location"
+    out_path="$out"
+    unset out
+    mkdir -p "$(dirname "$img")"
 
     # LBA0 and LBA1 contains the PMBR and GPT.
     #
