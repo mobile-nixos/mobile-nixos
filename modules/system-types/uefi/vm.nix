@@ -7,7 +7,7 @@ let
   inherit (lib) mkAfter mkIf mkMerge mkOption types;
   inherit (config.mobile) device hardware;
   inherit (config.mobile.boot) stage-1;
-  inherit (config.mobile.outputs.uefi) disk-image;
+  inherit (config.mobile.generatedDiskImages) disk-image;
 
   ram  = toString hardware.ram;
   xres = toString hardware.screen.width;
@@ -61,7 +61,7 @@ in
                 -bios   "${pkgs.OVMF.fd}/FV/OVMF.fd"
                 -m      "${ram}M"
                 -serial "mon:stdio"
-                -drive  "file=${disk-image}/${disk-image.filename},format=raw,snapshot=on"
+                -drive  "file=${disk-image.imagePath},format=raw,snapshot=on"
 
                 -device "VGA,edid=on,xres=${xres},yres=${yres}"
                 -device "usb-ehci"
@@ -81,7 +81,7 @@ in
 
       mobile.generatedFilesystems.rootfs = lib.mkDefault {
         # Give some headroom in the VM, as it won't be actually resized.
-        extraPadding = lib.mkForce (pkgs.imageBuilder.size.MiB 512);
+        extraPadding = lib.mkForce (pkgs.image-builder.helpers.size.MiB 512);
       };
     })
     (mkIf (!config.mobile.quirks.uefi.enableVM) {
