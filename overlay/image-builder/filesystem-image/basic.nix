@@ -238,6 +238,19 @@ in
         (
           cd "$files"
           ${config.populateCommands}
+
+          # This also activates dotglob automatically.
+          # Using this means hidden files will be added too.
+          GLOBIGNORE=".:.."
+
+          if (( $(find -maxdepth 1 | wc -l) == 1 )); then
+            (set -x; ls -l)
+
+            echo ""
+            echo "ERROR: populatePhase produced no files."
+            echo "       tip: using mkForce or mkDefault at different places may unexpected overwrite values."
+            exit 2
+          fi
         )
       '';
 
