@@ -54,6 +54,11 @@
 
   mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.boot.stage-1.firmware = [
+    config.mobile.device.firmware
+  ];
+
   mobile.kernel.structuredConfig = [
     (helpers: with helpers; {
       # With the vendor kernel, setting to =n fails the build
