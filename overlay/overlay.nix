@@ -59,6 +59,7 @@ in
     bootlogd = callPackage ./bootlogd {};
     libusbgx = callPackage ./libusbgx {};
     gadget-tool = callPackage ./gt {}; # upstream this is called "gt", which is very Unix.
+    panel-mipi-dbi = callPackage ./panel-mipi-dbi {};
 
     qrtr = callPackage ./qrtr/qrtr.nix { };
     qmic = callPackage ./qrtr/qmic.nix { };
