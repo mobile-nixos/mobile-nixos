@@ -14,6 +14,7 @@ module LVGUI::HAL
         bms
         BAT0
         *-battery
+        *-bms-*
       }.map { |name| Dir.glob(File.join(NODE_BASE, name)).first }
         .compact
         .first
