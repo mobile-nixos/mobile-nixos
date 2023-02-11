@@ -178,7 +178,11 @@ class UI
     # The keyboard is not added to the page; the page holds the elements that
     # may move to ensure they're not covered by the keyboard.
     @keyboard.set_parent(@screen)
-    @keyboard.set_height(@screen.get_width * 0.55)
+    # Keyboard can't be more than half of the screen height...
+    # ... otherwise the UI is pushed too far up.
+    @keyboard.set_height(
+      (@screen.get_width() * 0.55).clamp(0, @screen.get_height()*0.5)
+    )
   end
 
   def set_progress(amount)
