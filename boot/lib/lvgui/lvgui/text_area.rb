@@ -28,10 +28,10 @@ class LVGUI::TextArea < LVGUI::Widget
         # Assume there is only one input.
         # Also assume Enter sends; that it is a single line.
         if char == "\n"
-          LVGUI::Keyboard.instance.set_ta(nil)
-          LVGUI::Keyboard.instance.hide()
           # Ensures the field is updated, then call the callback
           LVGL::Hacks::LVTask.once ->() do
+            LVGUI::Keyboard.instance.set_ta(nil)
+            LVGUI::Keyboard.instance.hide()
             @on_submit.call(get_text()) if @on_submit
           end
         else
