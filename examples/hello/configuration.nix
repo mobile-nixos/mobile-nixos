@@ -72,6 +72,10 @@ in
     log.level = "DEBUG";
   };
 
+  boot.kernelParams = lib.mkBefore [
+    "fbcon=vc:2-6"
+  ];
+
   # Ensure hello-gui isn't trampled over by the TTY
   systemd.services."getty@tty1" = {
     enable = false;
