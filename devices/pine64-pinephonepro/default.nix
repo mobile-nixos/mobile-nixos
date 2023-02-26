@@ -14,12 +14,7 @@
 
     "quiet"
     "vt.global_cursor_default=0"
-
-    # Needed for kexec
-    "irqchip.gicv3_nolpi=1"
   ];
-
-  mobile.quirks.supportsStage-0 = true;
 
   mobile.boot.stage-1 = {
     kernel.package = pkgs.callPackage ./kernel { };
