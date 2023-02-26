@@ -12,9 +12,6 @@
     #"console=ttyS2,115200"
     #"earlycon=uart8250,mmio32,0xff1a0000"
     #"earlyprintk"
-
-    "quiet"
-    "vt.global_cursor_default=0"
   ];
 
   mobile.boot.stage-1 = {
