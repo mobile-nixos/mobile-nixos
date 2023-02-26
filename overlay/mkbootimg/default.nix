@@ -25,7 +25,5 @@ stdenv.mkDerivation rec {
     chmod +x $out/bin/*
   '';
 
-  NIX_CFLAGS_COMPILE = [
-    "-Wno-error=address-of-packed-member"
-  ];
+  env.NIX_CFLAGS_COMPILE = "-Wno-error=address-of-packed-member";
 }
