@@ -110,7 +110,4 @@
       INPUT_GPIO_VIBRA = yes;
     })
   ];
-
-  mobile.boot.stage-1.shell.console = "ttyS2";
-  mobile.boot.stage-1.shell.shellOnFail = true;
 }
