@@ -110,4 +110,8 @@
       INPUT_GPIO_VIBRA = yes;
     })
   ];
+
+  mobile.documentation.hydraOutputs = [
+    ["installer.@device@" "Installer image"]
+  ];
 }
