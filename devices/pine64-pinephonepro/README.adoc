@@ -43,8 +43,7 @@ patterns involving red.
 
 === Updating the boot image
 
-The default suggested setup does not currently require updating the boot
-partition.
+Currently the boot partition must be updated manually.
 
 include::_support/device-notes/boot-image.inc[]
 
