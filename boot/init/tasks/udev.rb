@@ -37,6 +37,7 @@ class Tasks::UDev < SingletonTask
     false
   end
 
-  # TODO: teardown
-  #         udevadm control --exit
+  def teardown()
+    udevadm("control", "--exit")
+  end
 end
