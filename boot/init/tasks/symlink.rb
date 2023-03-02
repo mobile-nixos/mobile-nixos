@@ -9,7 +9,7 @@ class Tasks::Symlink < Task
   end
 
   def run()
-    File.symlink(@source, @target)
+    System.symlink(@source, @target)
   end
 
   def name()
