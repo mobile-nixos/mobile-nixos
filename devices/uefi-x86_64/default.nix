@@ -19,6 +19,9 @@
 
   mobile.system.type = "uefi";
 
+  # It is safe enough to assume that for UEFI systems we want to wait for e.g. USB devices.
+  mobile.boot.stage-1.gui.waitForDevices.enable = lib.mkDefault true;
+
   mobile.boot.stage-1 = {
     kernel = {
       # Rely on upstream NixOS modules by default for generic UEFI systems.
