@@ -23,10 +23,31 @@ class Tasks::Luks < Task
     @registry
   end
 
-  def initialize(source, mapper)
+  def initialize(source, mapper, info)
     @source = source
     @mapper = mapper
 
+    # Current known and used keys
+    #    "device", # First param, source
+    #    "allowDiscards",
+    #    "bypassWorkqueues",
+    #
+    # Current known and unused (by design) keys
+    #    "fallbackToPassword", # Nothing else than password
+    #
+    # Currently known unsupported keys (contributions welcome)
+    #    "crypttabExtraOpts",
+    #    "fido2",
+    #    "header",
+    #    "gpgCard",
+    #    "keyFile",
+    #    "keyFileOffset",
+    #    "keyFileSize",
+    #    "postOpenCommands",
+    #    "preLVM",
+    #    "preOpenCommands",
+    #    "yubikey",
+    @info = info
     add_dependency(:Task, Tasks::UDev.instance)
     add_dependency(:Devices, source)
     add_dependency(:Mount, "/run")
