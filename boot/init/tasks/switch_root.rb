@@ -332,6 +332,8 @@ class Tasks::SwitchRoot < SingletonTask
       raise "Failed to kexec into #{selected_generation}"
     end
 
+    Tasks::UDev.instance.teardown()
+
     [
       "/proc",
       "/sys",
