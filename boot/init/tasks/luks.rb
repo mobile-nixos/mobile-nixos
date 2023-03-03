@@ -54,6 +54,13 @@ class Tasks::Luks < Task
         "--allow-discards",
       ]
     end
+    if @info["bypassWorkqueues"] then
+      @cryptsetup_args.concat [
+        "--perf-no_read_workqueue",
+        "--perf-no_write_workqueue",
+      ]
+    end
+
     add_dependency(:Task, Tasks::UDev.instance)
     add_dependency(:Devices, source)
     add_dependency(:Mount, "/run")
