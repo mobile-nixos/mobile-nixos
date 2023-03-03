@@ -48,6 +48,7 @@ class Tasks::Luks < Task
     #    "preOpenCommands",
     #    "yubikey",
     @info = info
+    @cryptsetup_args = []
     add_dependency(:Task, Tasks::UDev.instance)
     add_dependency(:Devices, source)
     add_dependency(:Mount, "/run")
@@ -69,8 +70,14 @@ class Tasks::Luks < Task
 
       begin
         Progress.exec_with_message("Checking...") do
+          args = [
+            "luksOpen",
+            source,
+            mapper,
+            *@cryptsetup_args,
+          ]
           # TODO: implement with process redirection rather than shelling out
-          System.run("echo #{passphrase.shellescape} | exec cryptsetup luksOpen #{source.shellescape} #{mapper.shellescape}")
+          System.run("echo #{passphrase.shellescape} | exec cryptsetup #{args.shelljoin}")
         end
         Progress.update({label: nil})
 
