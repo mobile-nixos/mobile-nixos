@@ -49,6 +49,11 @@ class Tasks::Luks < Task
     #    "yubikey",
     @info = info
     @cryptsetup_args = []
+    if @info["allowDiscards"]
+      @cryptsetup_args.concat [
+        "--allow-discards",
+      ]
+    end
     add_dependency(:Task, Tasks::UDev.instance)
     add_dependency(:Devices, source)
     add_dependency(:Mount, "/run")
