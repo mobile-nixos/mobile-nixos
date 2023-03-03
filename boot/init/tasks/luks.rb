@@ -23,9 +23,43 @@ class Tasks::Luks < Task
     @registry
   end
 
-  def initialize(source, mapper)
+  def initialize(source, mapper, info)
     @source = source
     @mapper = mapper
+
+    # Current known and used keys
+    #    "device", # First param, source
+    #    "allowDiscards",
+    #    "bypassWorkqueues",
+    #
+    # Current known and unused (by design) keys
+    #    "fallbackToPassword", # Nothing else than password
+    #
+    # Currently known unsupported keys (contributions welcome)
+    #    "crypttabExtraOpts",
+    #    "fido2",
+    #    "header",
+    #    "gpgCard",
+    #    "keyFile",
+    #    "keyFileOffset",
+    #    "keyFileSize",
+    #    "postOpenCommands",
+    #    "preLVM",
+    #    "preOpenCommands",
+    #    "yubikey",
+    @info = info
+    @cryptsetup_args = []
+    if @info["allowDiscards"]
+      @cryptsetup_args.concat [
+        "--allow-discards",
+      ]
+    end
+    if @info["bypassWorkqueues"] then
+      @cryptsetup_args.concat [
+        "--perf-no_read_workqueue",
+        "--perf-no_write_workqueue",
+      ]
+    end
 
     add_dependency(:Task, Tasks::UDev.instance)
     add_dependency(:Devices, source)
@@ -48,8 +82,14 @@ class Tasks::Luks < Task
 
       begin
         Progress.exec_with_message("Checking...") do
+          args = [
+            "luksOpen",
+            source,
+            mapper,
+            *@cryptsetup_args,
+          ]
           # TODO: implement with process redirection rather than shelling out
-          System.run("echo #{passphrase.shellescape} | exec cryptsetup luksOpen #{source.shellescape} #{mapper.shellescape}")
+          System.run("echo #{passphrase.shellescape} | exec cryptsetup #{args.shelljoin}")
         end
         Progress.update({label: nil})
 
