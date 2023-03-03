@@ -24,8 +24,4 @@ stdenv.mkDerivation rec {
     cp -v unpackbootimg $out/bin/
     chmod +x $out/bin/*
   '';
-
-  NIX_CFLAGS_COMPILE = [
-    "-Wno-error=address-of-packed-member"
-  ];
 }

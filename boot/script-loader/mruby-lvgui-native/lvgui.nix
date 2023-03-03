@@ -9,8 +9,6 @@
 , withSimulator ? false
 }:
 
-let stdenv = pkgs.stdenvAdapters.keepDebugInfo pkgs.stdenv; in
-
 let
   inherit (lib) optional optionals optionalString;
   simulatorDeps = [
@@ -126,10 +124,6 @@ in
     ]
     ++ optionals withSimulator simulatorDeps
     ;
-
-    NIX_CFLAGS_COMPILE = [
-      "-DX_DISPLAY_MISSING"
-    ];
 
     makeFlags = [
       "PREFIX=${placeholder "out"}"
