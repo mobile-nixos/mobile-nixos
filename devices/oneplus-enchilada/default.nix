@@ -22,4 +22,6 @@
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.device_name = "OnePlus6";
+
+  mobile.quirks.qualcomm.q6voiced.enable = true;
 }
