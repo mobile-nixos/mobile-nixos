@@ -2,7 +2,7 @@
 
 You don't need to write code to help contributing with Mobile NixOS.
 
-As Mobile NixOS is a superset on top of NixOS, you should read the link:https://github.com/NixOS/nixpkgs/blob/master/.github/CONTRIBUTING.md[
+As Mobile NixOS is a superset on top of NixOS, you should read the link:https://github.com/NixOS/nixpkgs/blob/master/CONTRIBUTING.md[
 contributing guidelines] of the NixOS project. Many of the points apply just
 the same with Mobile NixOS.
 
