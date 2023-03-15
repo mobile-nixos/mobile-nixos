@@ -265,10 +265,10 @@ in
         type = with types; listOf (either package path);
         default = [];
         internal = true;
-        description = "
+        description = lib.mdDoc ''
           Add tasks to the boot/init program.
           The build system for boot/init will `find -iname '*.rb'` the given paths.
-        ";
+        '';
       };
       mobile.boot.stage-1.bootConfig = mkOption {
         type = JSONValue;

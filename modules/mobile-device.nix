@@ -15,17 +15,17 @@ in
   options.mobile.device = {
     name = mkOption {
       type = types.str;
-      description = "The device's codename. Must match the device folder.";
+      description = lib.mdDoc "The device's codename. Must match the device folder.";
     };
 
     identity = {
       name = mkOption {
         type = types.str;
-        description = "The device's name as advertised by the manufacturer.";
+        description = lib.mdDoc "The device's name as advertised by the manufacturer.";
       };
       manufacturer = mkOption {
         type = types.str;
-        description = "The device's manufacturer name.";
+        description = lib.mdDoc "The device's manufacturer name.";
       };
     };
 

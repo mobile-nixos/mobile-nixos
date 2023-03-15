@@ -25,7 +25,9 @@ in
     enable = mkOption {
       type = types.bool;
       default = true;
-      description = "enable splash and boot selection GUI";
+      description = lib.mdDoc ''
+        enable splash and boot selection GUI
+      '';
     };
     waitForDevices = {
       enable = mkOption {
