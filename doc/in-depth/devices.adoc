@@ -31,7 +31,7 @@ When talking about a _system_, they are commonly referred as _$system-based_.
 For example, `asus-z00t` is an *android-based* system. Its `system.type` is
 `android`.
 
-Examples of sytems:
+Examples of systems:
 
 * android-based (most devices shipping with Android)
 * depthcharge-based (most devices shipping with ChromeOS)
