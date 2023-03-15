@@ -9,7 +9,7 @@ in
     enable = mkOption {
       type = types.bool;
       default = false;
-      description = ''
+      description = lib.mdDoc ''
         Enables a shell before switching root.
 
         This shell (as currently configured) will not allow switching root.
@@ -18,7 +18,7 @@ in
     console = mkOption {
       type = types.str;
       default = "console";
-      description = ''
+      description = lib.mdDoc ''
         Selects the /dev/___ device to use.
 
         Use `ttyS0` for serial, `tty1` for first VT or keep the default to `console`
@@ -29,7 +29,7 @@ in
     shellOnFail = mkOption {
       type = types.bool;
       default = false;
-      description = ''
+      description = lib.mdDoc ''
         Enables a shell on failures.
       '';
     };

@@ -19,7 +19,7 @@ in
         "armv7l-linux"
         "x86_64-linux"
       ];
-      description = ''
+      description = lib.mdDoc ''
         Defines the kind of target architecture system the device is.
 
         This will automagically setup cross-compilation where possible.

@@ -9,7 +9,7 @@ in
     soc = mkOption {
       # This is used to enable a specific SOC on a device, while giving it a name.
       type = types.str;
-      description = ''
+      description = lib.mdDoc ''
         Give the SOC name for the device.
       '';
     };

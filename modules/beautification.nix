@@ -16,14 +16,14 @@ in
         silentBoot = mkOption {
           type = types.bool;
           default = false;
-          description = ''
+          description = lib.mdDoc ''
             When enabled, fbcon consoles are disabled.
           '';
         };
         splash = mkOption {
           type = types.bool;
           default = false;
-          description = ''
+          description = lib.mdDoc ''
             When enabled, plymouth is configured with nice defaults.
 
             Note that this requires an update to the kernel command-line

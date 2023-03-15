@@ -16,7 +16,7 @@ in
         enableDefaultConfiguration = mkOption {
           type = types.bool;
           default = config.mobile.enable;
-          description = ''
+          description = lib.mdDoc ''
             Whether some of the rootfs configuration is managed by Mobile NixOS or not.
           '';
         };

@@ -9,7 +9,7 @@ in
     disableMacAddressRandomization = mkOption {
       type = types.bool;
       default = false;
-      description = ''
+      description = lib.mdDoc ''
         Disables MAC address randomization.
 
         This may be required by some hardware or drivers, or combination.

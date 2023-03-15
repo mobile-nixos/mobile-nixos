@@ -169,21 +169,21 @@ in
         android = {
           android-bootimg = lib.mkOption {
             type = types.package;
-            description = ''
+            description = lib.mdDoc ''
               `boot.img` type image for Android-based systems.
             '';
             visible = false;
           };
           android-recovery = lib.mkOption {
             type = types.package;
-            description = ''
+            description = lib.mdDoc ''
               `recovery.img` type image for Android-based systems.
             '';
             visible = false;
           };
           android-fastboot-images = lib.mkOption {
             type = types.package;
-            description = ''
+            description = lib.mdDoc ''
               Flashing scripts and images for use with fastboot or odin.
             '';
             visible = false;

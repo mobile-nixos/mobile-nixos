@@ -99,7 +99,7 @@ in
       initialGapSize = mkOption {
         type = types.int;
         default = 0;
-        description = ''
+        description = lib.mdDoc ''
           Size (in bytes) to keep reserved in front of the first partition.
         '';
       };
@@ -109,21 +109,21 @@ in
       uefi = {
         boot-partition = mkOption {
           type = types.package;
-          description = ''
+          description = lib.mdDoc ''
             Boot partition for the system.
           '';
           visible = false;
         };
         disk-image = lib.mkOption {
           type = types.package;
-          description = ''
+          description = lib.mdDoc ''
             Full Mobile NixOS disk image for a UEFI-based system.
           '';
           visible = false;
         };
         efiKernel = mkOption {
           type = types.package;
-          description = ''
+          description = lib.mdDoc ''
             EFI executable with the kernel, cmdline and initramfs built-in.
           '';
           visible = false;
