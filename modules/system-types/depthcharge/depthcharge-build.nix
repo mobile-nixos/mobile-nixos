@@ -1,5 +1,6 @@
 { lib
 , stdenv
+, buildPackages
 , fetchurl
 , runCommand
 , initrd
@@ -86,8 +87,8 @@ let
       --bootloader bootloader.bin \
       --vmlinuz vmlinux.uimg \
       --arch ${arch} \
-      --keyblock ${vboot_reference}/share/vboot/devkeys/kernel.keyblock \
-      --signprivate ${vboot_reference}/share/vboot/devkeys/kernel_data_key.vbprivk \
+      --keyblock ${buildPackages.vboot_reference}/share/vboot/devkeys/kernel.keyblock \
+      --signprivate ${buildPackages.vboot_reference}/share/vboot/devkeys/kernel_data_key.vbprivk \
       --config ${kpart_config} \
       --pack $out/kpart
   '';
