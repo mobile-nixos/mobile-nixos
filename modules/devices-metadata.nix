@@ -13,7 +13,7 @@ in
     mobile.outputs.device-metadata = mkOption {
       type = types.package;
       internal = true;
-      description = ''
+      description = lib.mdDoc ''
         The device-metadata output is used internally by the documentation
         generation to generate the per-device pages.
 

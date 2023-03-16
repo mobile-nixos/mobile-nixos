@@ -10,12 +10,12 @@ in
     hardware.socs.allwinner-a64.enable = mkOption {
       type = types.bool;
       default = false;
-      description = "enable when SOC is Allwinner A64";
+      description = lib.mdDoc "enable when SOC is Allwinner A64";
     };
     hardware.socs.allwinner-r18.enable = mkOption {
       type = types.bool;
       default = false;
-      description = "enable when SOC is Allwinner-R18";
+      description = lib.mdDoc "enable when SOC is Allwinner-R18";
     };
   };
 

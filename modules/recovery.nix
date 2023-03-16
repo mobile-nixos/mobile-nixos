@@ -15,7 +15,7 @@ in
       outputs = {
         recovery = mkOption {
           internal = true;
-          description = ''
+          description = lib.mdDoc ''
             The configuration, re-evaluated with assumptions for recovery use.
           '';
         };

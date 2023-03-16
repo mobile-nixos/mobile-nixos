@@ -16,26 +16,26 @@ let
       options = {
         type = lib.mkOption {
           type = types.enum [ "ext4" "btrfs" ];
-          description = ''
+          description = lib.mdDoc ''
             Type of the generated filesystem.
           '';
         };
         label = lib.mkOption {
           type = types.str;
-          description = ''
+          description = lib.mdDoc ''
             The label used by the generated rootfs, when generating a rootfs, and
             the filesystem label a Mobile NixOS system will look for by default.
           '';
         };
         id = lib.mkOption {
           type = types.str;
-          description = ''
+          description = lib.mdDoc ''
             The UUID used by the generated rootfs, when generating a rootfs.
           '';
         };
         populateCommands = lib.mkOption {
           type = types.lines;
-          description = ''
+          description = lib.mdDoc ''
             Commands used to fill the filesystem.
 
             `$PWD` is the root of the filesystem.
@@ -44,21 +44,21 @@ let
         postProcess = lib.mkOption {
           type = types.lines;
           internal = true;
-          description = ''
+          description = lib.mdDoc ''
             Commands used to manipulate the filesystem after it has been
             created.
           '';
         };
         extraPadding = lib.mkOption {
           type = types.int;
-          description = ''
+          description = lib.mdDoc ''
             Extra padding to add to the filesystem image.
           '';
         };
         zstd = lib.mkOption {
           internal = true;
           type = types.bool;
-          description = ''
+          description = lib.mdDoc ''
             Whether to compress this artifact; used to work around size
             limitations in CI situations.
           '';
@@ -67,7 +67,7 @@ let
           internal = true;
           type = types.nullOr types.package;
           default = null;
-          description = ''
+          description = lib.mdDoc ''
             Use an output directly rather than creating it from the options.
           '';
         };
@@ -81,21 +81,21 @@ in
   options = {
     mobile.generatedFilesystems = lib.mkOption {
       type = types.attrsOf (types.submodule filesystemSubmodule);
-      description = ''
+      description = lib.mdDoc ''
         Filesystem definitions that will be created at build.
       '';
     };
     mobile.outputs.generatedFilesystems = lib.mkOption {
       type = with types; attrsOf package;
       internal = true;
-      description = ''
+      description = lib.mdDoc ''
         All generated filesystems from the build.
       '';
     };
     mobile.outputs.rootfs = lib.mkOption {
       type = types.package;
       visible = false;
-      description = ''
+      description = lib.mdDoc ''
         The rootfs image for the build.
       '';
     };

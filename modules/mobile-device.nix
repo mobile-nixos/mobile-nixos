@@ -15,24 +15,24 @@ in
   options.mobile.device = {
     name = mkOption {
       type = types.str;
-      description = "The device's codename. Must match the device folder.";
+      description = lib.mdDoc "The device's codename. Must match the device folder.";
     };
 
     identity = {
       name = mkOption {
         type = types.str;
-        description = "The device's name as advertised by the manufacturer.";
+        description = lib.mdDoc "The device's name as advertised by the manufacturer.";
       };
       manufacturer = mkOption {
         type = types.str;
-        description = "The device's manufacturer name.";
+        description = lib.mdDoc "The device's manufacturer name.";
       };
     };
 
     firmware = mkOption {
       type = types.nullOr types.package;
       default = null;
-      description = ''
+      description = lib.mdDoc ''
         Informal option that the end-user can use to get their device's firmware package.
 
         The firmware will be added to `hardware.firmware` automatically for most devices.
@@ -44,7 +44,7 @@ in
 
     enableFirmware = mkOption {
       type = types.bool;
-      description = ''
+      description = lib.mdDoc ''
         Enable automatically adding the firmware to the system configuration.
 
         This may be disabled by some devices that require manual operations
@@ -57,7 +57,7 @@ in
     supportLevel = mkOption {
       type = types.enum [ "supported" "best-effort" "vendor" "unsupported" "abandoned" ];
       default = "unsupported";
-      description = ''
+      description = lib.mdDoc ''
         Support level for the device.
       '';
     };

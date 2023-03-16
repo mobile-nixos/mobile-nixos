@@ -25,7 +25,7 @@ in
     mobile.quirks.supportsStage-0 = mkOption {
       type = types.bool;
       default = false;
-      description = ''
+      description = lib.mdDoc ''
         Set to true when a device, and its kernel, can use kexec.
 
         This will enable booting into the generation's kernel.
@@ -36,7 +36,7 @@ in
       nodes = mkOption {
         type = types.listOf types.str;
         default = [];
-        description = ''
+        description = lib.mdDoc ''
           FDT nodes to forward to the kexec'd system.
         '';
       };
@@ -46,7 +46,7 @@ in
         example = [
           ["/soc/mmc@1c10000/wifi@1" "local-mac-address"]
         ];
-        description = ''
+        description = lib.mdDoc ''
           Pair of [node prop] to forward to the kexec'd system.
 
           Only the prop described on the exact node will be forwarded.
@@ -58,7 +58,7 @@ in
       outputs = {
         stage-0 = mkOption {
           internal = true;
-          description = ''
+          description = lib.mdDoc ''
             The configuration, re-evaluated with assumptions for stage-0 use.
           '';
         };

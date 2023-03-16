@@ -25,13 +25,15 @@ in
     enable = mkOption {
       type = types.bool;
       default = true;
-      description = "enable splash and boot selection GUI";
+      description = lib.mdDoc ''
+        enable splash and boot selection GUI
+      '';
     };
     waitForDevices = {
       enable = mkOption {
         type = types.bool;
         default = false;
-        description = ''
+        description = lib.mdDoc ''
           Whether to wait a bit for input devices before starting the user interface.
 
           This is only necessary on "slow" busses where devices may arrive a tad later than expected.
@@ -42,7 +44,7 @@ in
       delay = mkOption {
         type = types.int;
         default = 2;
-        description = ''
+        description = lib.mdDoc ''
           Minimum delay spent waiting for input devices to settle.
 
           The boot GUI will wait until this many seconds elapsed without changes before starting.

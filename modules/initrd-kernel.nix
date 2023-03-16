@@ -32,7 +32,7 @@ in
       type = types.bool;
       default = !config.mobile.enable;
       defaultText = literalExpression "!config.mobile.enable";
-      description = ''
+      description = lib.mdDoc ''
         Whether Mobile NixOS relies on upstream NixOS settings for kernel config.
 
         Enable this when using the NixOS machinery for kernels.
@@ -41,7 +41,7 @@ in
     modular = mkOption {
       type = types.bool;
       default = false;
-      description = ''
+      description = lib.mdDoc ''
         Whether the kernel is built with modules or not.
         This will enable modules closure generation and listing modules
         to bundle and load.
@@ -51,7 +51,7 @@ in
       type = types.listOf types.str;
       default = [
       ];
-      description = ''
+      description = lib.mdDoc ''
         Module names to add to the closure.
         They will be modprobed.
       '';
@@ -60,7 +60,7 @@ in
       type = types.listOf types.str;
       default = [
       ];
-      description = ''
+      description = lib.mdDoc ''
         Module names to add to the closure.
         They will not be modprobed.
       '';
@@ -68,7 +68,7 @@ in
     allowMissingModules = mkOption {
       type = types.bool;
       default = true;
-      description = ''
+      description = lib.mdDoc ''
         Chooses whether the modules closure build fails if a module is missing.
       '';
     };
@@ -77,7 +77,7 @@ in
     package = mkOption {
       type = types.nullOr types.package;
       default = null;
-      description = ''
+      description = lib.mdDoc ''
         Kernel to be used by the system-type to boot into the Mobile NixOS
         stage-1.
 

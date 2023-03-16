@@ -14,7 +14,7 @@ in
     enable = mkOption {
       type = types.bool;
       default = true;
-      description = ''
+      description = lib.mdDoc ''
         Enables USB features.
         For now, only Android-based devices are supported.
       '';
@@ -22,7 +22,7 @@ in
     features = mkOption {
       type = types.listOf types.str;
       default = [];
-      description = ''
+      description = lib.mdDoc ''
         `android_usb` features to enable.
       '';
     };
@@ -30,26 +30,26 @@ in
   options.mobile.usb = {
     idVendor = mkOption {
       type = types.str;
-      description = ''
+      description = lib.mdDoc ''
         USB vendor ID for the USB gadget.
       '';
     };
     idProduct = mkOption {
       type = types.str;
-      description = ''
+      description = lib.mdDoc ''
         USB product ID for the USB gadget.
       '';
     };
     mode = mkOption {
       type = types.nullOr (types.enum [ "android_usb" "gadgetfs" ]);
       default = null;
-      description = ''
+      description = lib.mdDoc ''
         The USB gadget implementation the device uses.
       '';
     };
     gadgetfs.functions = mkOption {
       type = types.attrs;
-      description = ''
+      description = lib.mdDoc ''
         Mapping of logical gadgetfs functions to their implementation names.
       '';
     };
