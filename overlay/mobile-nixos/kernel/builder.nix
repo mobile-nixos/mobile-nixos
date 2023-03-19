@@ -347,28 +347,41 @@ stdenv.mkDerivation (inputArgs // {
     make $makeFlags "''${makeFlagsArray[@]}" oldconfig
     if [ -n "$forceNormalizedConfig" ]; then
       if [ -e $buildRoot/.config.old ]; then
-        # First we strip options that save the exact compiler version.
+        # First we strip options that save the exact compiler version,
+        # and toolchain information.
         # This is first because it will break with cross-compilation.
         # It also will break on minor version bumps.
-        # We do not strip options related to compiler features, since
-        # compiler features changing is something we want to track, I think.
         (
         cd $buildRoot
         for f in .config{,.old}; do
           sed \
             ${concatMapStringsSep " \\\n" (token: "-e '/${token}/d;'") [
               # Keep this sorted
+              "CONFIG_ARCH_SUPPORTS_.*"
               "CONFIG_ARCH_USES_HIGH_VMA_FLAGS"
               "CONFIG_ARM64_AS_HAS_MTE"
+              "CONFIG_ARM64_BTI_KERNEL"
               "CONFIG_ARM64_MTE"
               "CONFIG_ARM64_PTR_AUTH"
               "CONFIG_AS_HAS_CFI_NEGATE_RA_STATE"
               "CONFIG_AS_VERSION"
+              "CONFIG_CC_HAS_.*"
+              "CONFIG_CC_HAVE_.*"
+              "CONFIG_CC_NO_ARRAY_BOUNDS"
               "CONFIG_CC_VERSION_TEXT"
               "CONFIG_CLANG_VERSION"
               "CONFIG_DEBUG_INFO_SPLIT"
+              "CONFIG_GCC_PLUGINS"
+              "CONFIG_GCC_PLUGIN_.*"
               "CONFIG_GCC_VERSION"
+              "CONFIG_HAVE_.*"
+              "CONFIG_INIT_STACK_ALL_PATTERN"
+              "CONFIG_INIT_STACK_ALL_ZERO"
+              "CONFIG_KCOV"
+              "CONFIG_KCSAN"
               "CONFIG_LD_VERSION"
+              "CONFIG_SHADOW_CALL_STACK"
+              "CONFIG_ZERO_CALL_USED_REGS"
             ]} \
             $f > .tmp$f
         done
