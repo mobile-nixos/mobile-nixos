@@ -158,7 +158,7 @@ module System
   #   @param dest [String] Destination path to mount to
   #   @param type [String] Type of the mount (+-t+).
   #   @param options [Array<String>] Mount options (+-o+).
-  def self.mount(source, dest = nil, type: nil, options: nil)
+  def self.mount(source, dest = nil, type: nil, options: [])
     # Fill-in the "reversed" optional parameters.
     unless dest
       dest = source
@@ -174,10 +174,14 @@ module System
       args << "-t"
       args << type
     end
-    if options
+
+    # Filter options that busybox mount can't handle.
+    options = options.select { |option| !option.match(/^x-/) }
+    unless options.empty?
       args << "-o"
       args << options.join(",")
     end
+
     args << source
     args << dest
 
