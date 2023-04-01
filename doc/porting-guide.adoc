@@ -11,6 +11,10 @@ In a nutshell, the basic steps are:
 
 == Kernel configuration
 
+The `bin/` folder containing the following scripts is located at the root of the
+mobile-nixos git repository and uses a `#!/usr/bin/env nix-shell` shebang in
+order to run with their dependencies.
+
 The kernel can be configured using the following command, where `$DEVICE` is
 the device name.
 
