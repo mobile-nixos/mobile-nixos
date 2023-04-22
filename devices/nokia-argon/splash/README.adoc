@@ -1,0 +1,3 @@
+= Custom splash
+
+The result of `nix-build` can be flashed to the `splash` partition.

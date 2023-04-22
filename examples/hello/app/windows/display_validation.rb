@@ -7,9 +7,13 @@ module GUI
     def initialize()
       super()
 
+      word("Red",   0xFF0000)
+      word("Green", 0x00FF00)
+      word("Blue",  0x0000FF)
+
       LVGL::LVLabel.new(@container).tap do |label|
 text = <<EOF
-Defaults drivers on some devices, mainly Qualcomm devices, may have an unexpected ordering for pixels in-driver.
+Default drivers on some devices, mainly Qualcomm devices, may have an unexpected ordering for pixels in-driver.
 
 Those drivers will implement the basic minimum and RGB order support is not implemented.
 
@@ -23,11 +27,6 @@ EOF
         label.set_align(LVGL::LABEL_ALIGN::CENTER)
         label.set_width(@container.get_width_fit)
       end
-
-      word("Red",   0xFF0000)
-      word("Green", 0x00FF00)
-      word("Blue",  0x0000FF)
-
 
       LVGL::LVLabel.new(@container).tap do |label|
 text = <<EOF

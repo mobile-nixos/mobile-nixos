@@ -44,6 +44,7 @@ in
   environment.systemPackages = with pkgs; [
     hello-gui
     input-utils
+    gptfdisk
   ];
 
   # Make the system rootfs different enough that mixing stage-1 and stage-2
@@ -70,6 +71,10 @@ in
     # configuration.
     log.level = "DEBUG";
   };
+
+  boot.kernelParams = lib.mkBefore [
+    "fbcon=vc:2-6"
+  ];
 
   # Ensure hello-gui isn't trampled over by the TTY
   systemd.services."getty@tty1" = {

@@ -33,10 +33,10 @@ module GUI
     def cpu_name()
       name =
         if File.exists?("/sys/devices/soc0") then
-          [
-            File.read("/sys/devices/soc0/family").strip,
-            File.read("/sys/devices/soc0/machine").strip,
-          ].compact.join(" ")
+          atoms = []
+          atoms << File.read("/sys/devices/soc0/family").strip if File.exists?("/sys/devices/soc0/family")
+          atoms << File.read("/sys/devices/soc0/machine").strip if File.exists?("/sys/devices/soc0/machine")
+          atoms.compact.join(" ")
         else
           info = JSON.parse(`lscpu --json`)["lscpu"].map{|data| [data["field"], data["data"]]}.to_h
           # We're stripping some of the model name to improve readability

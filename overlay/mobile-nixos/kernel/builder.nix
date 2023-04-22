@@ -439,7 +439,7 @@ stdenv.mkDerivation (inputArgs // {
     # zinstall only deals with `Image.gz`
     # install will install the uncompressed kernel only...
     # Though it's not an issue as we copy it ourselves anyway.
-    (if isCompressed == "gz" then [ "zinstall" ] else [ "install" ])
+    (if (isCompressed == "gz" || kernelTarget == "zImage") then [ "zinstall" ] else [ "install" ])
     ++ installTargets
     ++ optional isModular "modules_install"
   ;
