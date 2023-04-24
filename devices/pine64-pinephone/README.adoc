@@ -94,6 +94,17 @@ NixOS boot partition.
  $ dd if=result/mobile-nixos-boot.img of=/dev/mmcblkXpY bs=8M oflag=sync,direct status=progress
 ```
 
+Enabling native AArch64 compilation can be achieved by setting in
+`/etc/nixos/configuration.nix`:
+
+```
+{
+  boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+}
+```
+
+and adding `--argstr system aarch64-linux` to the build command.
+
 === Building U-Boot
 
 Mobile NixOS is not managing platform firmware builds anymore.
