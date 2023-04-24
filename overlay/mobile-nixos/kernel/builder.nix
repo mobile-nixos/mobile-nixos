@@ -60,6 +60,11 @@
 # It is expected this will have been added to the Nixpkgs overlay by the
 # system build.
 , systemBuild-structuredConfig ? {}
+
+# Only the logo file has to be overridable; the enable/disable flags are part
+# of the builder signature such that if enabling the logo replacement causes
+# issues, it can be disabled for a particular kernel.
+, linuxLogo224PPMFile ? ./logo_linux_clut224.ppm
 }:
 
 let
@@ -108,7 +113,6 @@ in
 
 # Linux logo replacement
 , enableLinuxLogoReplacement ? true
-, linuxLogo224PPMFile ? ./logo_linux_clut224.ppm
 
 # Mainly to mask issues with newer compilers
 , enableRemovingWerror ? false
