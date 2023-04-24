@@ -154,7 +154,10 @@ in
             perl # Needed by netpbm
           ];
         } ''
-          convert ${cfg.logo.logo} converted.ppm
+          convert \
+            ${cfg.logo.logo} \
+            -resize ${toString config.mobile.hardware.screen.width}x${toString config.mobile.hardware.screen.height} \
+            -trim converted.ppm
           ppmquant 224 converted.ppm > quantized.ppm
           pnmnoraw quantized.ppm > $out
         '';
