@@ -84,6 +84,33 @@ in
         This is not using a kernelPackages attrset, but a kernel derivation directly.
       '';
     };
+    # These options are not intended for end-user use, which is why they must
+    # all be marked internal.
+    # The only reason is to prevent needless rebuilds by end-users.
+    # Users that are curious enough are allowed to change that value.
+    logo = {
+      linuxLogo224PPMFile = mkOption {
+        type = types.package;
+        internal = true;
+        description = lib.mdDoc ''
+          Final logo file consumed by the Mobile NixOS kernel-builder infra.
+        '';
+      };
+      logo = mkOption {
+        type = with types; either package path;
+        internal = true;
+        description = lib.mdDoc ''
+          Input file for the logo.
+
+          It will be scaled according to the device-specific configuration.
+
+          For better results, the logo should have as much blank space as
+          needed to scale as expected. See the default logo for an example.
+
+          The final logo will be cropped automatically.
+        '';
+      };
+    };
   };
 
   config = mkMerge [
@@ -111,6 +138,27 @@ in
           "crc32c"
         ];
       });
+    }
+    # Logo configuration
+    {
+      nixpkgs.overlays = [(final: super: {
+        # This is how it's passed down to the kernel builder infra...
+        inherit (cfg.logo) linuxLogo224PPMFile;
+      })];
+      mobile.boot.stage-1.kernel.logo = {
+        logo = mkDefault ../artwork/boot-logo.svg;
+        linuxLogo224PPMFile = pkgs.runCommand "logo_linux_clut224.ppm" {
+          nativeBuildInputs = with pkgs; [
+            imagemagick
+            netpbm
+            perl # Needed by netpbm
+          ];
+        } ''
+          convert ${cfg.logo.logo} converted.ppm
+          ppmquant 224 converted.ppm > quantized.ppm
+          pnmnoraw quantized.ppm > $out
+        '';
+      };
     }
     {
       mobile.boot.stage-1 = (mkIf (!cfg.modular) {
