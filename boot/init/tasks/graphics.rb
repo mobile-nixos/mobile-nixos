@@ -21,12 +21,12 @@ class Tasks::Graphics < SingletonTask
 end
 
 # Handles the "legacy fbdev" style of framebuffers.
+# (Does nothing, only handles dependencies)
 class Tasks::Graphics::FBDev < SingletonTask
   def initialize()
     add_dependency(
       :Files,
-      "/sys/class/graphics/fb0/mode",
-      "/sys/class/graphics/fb0/modes",
+      "/sys/class/graphics/fb0",
     )
     # This is only incidental to the fact that /dev/fb0 wouldn't exist for
     # users of the "Graphics" dependency.
@@ -34,9 +34,7 @@ class Tasks::Graphics::FBDev < SingletonTask
   end
 
   def run()
-    mode = File.read("/sys/class/graphics/fb0/modes")
-    log("Setting framebuffer mode to: #{mode}")
-    System.write("/sys/class/graphics/fb0/mode", mode)
+    # no-op
   end
 
   def ux_priority()
