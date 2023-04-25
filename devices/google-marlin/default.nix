@@ -39,10 +39,8 @@
 
   mobile.system.vendor.partition = "/dev/disk/by-partlabel/vendor_a";
 
-  boot.kernelParams = [
-    # For use with the "Nexus-style" UART cable, add the following kernel parameter.
-    # "console=ttyHSL0,115200,n8"
-  ];
+  # For use with the "Nexus-style" UART cable, add the following kernel parameter.
+  mobile.boot.serialConsole = "ttyHSL0,115200n8";
 
   mobile.usb.mode = "android_usb";
   # Google
