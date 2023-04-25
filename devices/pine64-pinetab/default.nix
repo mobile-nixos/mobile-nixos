@@ -24,13 +24,13 @@
   };
 
   boot.kernelParams = [
-    # Serial console on ttyS0, using the serial headphone adapter.
-    "console=ttyS0,115200"
-    "vt.global_cursor_default=0"
     "earlycon=uart,mmio32,0x01c28000"
     "panic=10"
     "consoleblank=0"
   ];
+
+  # Serial console on ttyS0, using the serial headphone adapter.
+  mobile.boot.serialConsole = "ttyS0,115200";
 
   mobile.system.type = "u-boot";
 
