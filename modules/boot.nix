@@ -4,6 +4,7 @@ let
   cfg = config.mobile.boot;
   inherit (lib)
     mkBefore
+    mkIf
     mkOption
     mkOptionDefault
     optional
@@ -48,19 +49,55 @@ in
         The kernel's own messages will not be printed on those consoles.
       '';
     };
+    serialConsole = mkOption {
+      type = with types; nullOr str;
+      default = null;
+      example = "ttyS0";
+      description = lib.mdDoc ''
+        The console name for the serial console. Additional parameters allowed.
+
+        It will be used as an additional console by default. It can also be
+        set as the default console with `mobile.boot.enableDefaultSerial`.
+      '';
+    };
+    enableSerial = mkOption {
+      type = types.bool;
+      default = true;
+      description = lib.mdDoc ''
+        Whether or not to enable the serial console as an additional console.
+      '';
+    };
+    enableDefaultSerial = mkOption {
+      type = types.bool;
+      default = false;
+      description = lib.mdDoc ''
+        Whether or not to enable the serial console as an additional console.
+      '';
+    };
   };
   config = {
+    assertions = [
+      {
+        assertion = cfg.enableDefaultSerial && cfg.enableDefaultSerial -> (cfg.serialConsole != null);
+        message = ''
+          The option `mobile.boot.serialConsole` must be defined to use `mobile.boot.enableDefaultSerial`.
+        '';
+      }
+    ];
     mobile.boot.defaultConsole = mkOptionDefault (
       # We add the default default console only when the whole of Mobile NixOS is enabled.
       if config.mobile.enable then "tty1" else null
     );
+    mobile.boot.additionalConsoles = mkIf (cfg.serialConsole != null) [
+      cfg.serialConsole
+    ];
     boot.kernelParams = mkBefore (
-      map
-      (console: "console=${console}")
-      (
+      (map (console: "console=${console}") (
         cfg.additionalConsoles
         ++ (optional (cfg.defaultConsole != null) cfg.defaultConsole)
-      )
+        ++ (optional (cfg.enableDefaultSerial) cfg.serialConsole)
+      ))
+      ++ (optional cfg.enableDefaultSerial "earlyprintk=${cfg.serialConsole}")
     );
   };
 }
