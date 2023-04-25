@@ -40,9 +40,9 @@ in
   };
   config = mkMerge [
     (mkIf config.mobile.quirks.uefi.enableVM {
-      boot.kernelParams = mkAfter [
-        "console=ttyS0"
-      ];
+      # With the VM build, it's waaay more convenient to have the serial output in the terminal.
+      mobile.boot.enableDefaultSerial = true;
+      mobile.boot.serialConsole = "ttyS0";
 
       mobile.boot.stage-1.kernel.modules = [
             # Networking
