@@ -37,12 +37,8 @@
     dtbs = "${config.mobile.boot.stage-1.kernel.package}/dtbs/qcom";
   };
 
-  boot.kernelParams = [
-    # Serial console on ttyMSM0, using a suzyqable or equivalent.
-    # TODO: option to enable serial console.
-    #"console=ttyMSM0,115200n8"
-    #"earlyprintk=ttyMSM0,115200n8"
-  ];
+  # Serial console on ttyMSM0, using a suzyqable or equivalent.
+  mobile.boot.serialConsole = "ttyMSM0,115200n8";
 
   systemd.services."serial-getty@ttyMSM0" = {
     enable = true;
