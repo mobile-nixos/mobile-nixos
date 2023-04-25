@@ -25,11 +25,7 @@
   };
 
   # Serial console on ttyS2, using a suzyqable or equivalent.
-  boot.kernelParams = [
-    "console=ttyS2,115200n8"
-    "earlyprintk=ttyS2,115200n8"
-    "vt.global_cursor_default=0"
-  ];
+  mobile.boot.serialConsole = "ttyS2,115200n8";
 
   mobile.system.type = "depthcharge";
 
