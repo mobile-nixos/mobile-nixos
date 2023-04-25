@@ -66,7 +66,7 @@ in
       ];
     }
     (mkIf cfg.enable {
-      mobile.boot.stage-1.contents = with pkgs; [
+      mobile.boot.stage-1.contents = [
         {
           object = "${pkgs.mobile-nixos.stage-1.boot-error}/libexec/boot-error.mrb";
           symlink = "/applets/boot-error.mrb";

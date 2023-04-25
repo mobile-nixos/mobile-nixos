@@ -1,8 +1,10 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
 let
+  inherit (lib)
+    mkOption
+    types
+  ;
   device_name = config.mobile.device.name;
   cfg = config.mobile.boot.stage-1.fbterm;
   fontsConf = pkgs.writeText "fonts.conf" ''
@@ -80,8 +82,8 @@ in
         end
       '')
     ];
-    extraUtils = with pkgs; [
-      { package = fbterm; }
+    extraUtils = [
+      { package = pkgs.fbterm; }
     ];
     contents = [
       { object = fontsConf; symlink = "/etc/fonts/fonts.conf"; }

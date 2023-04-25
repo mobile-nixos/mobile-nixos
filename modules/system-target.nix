@@ -1,7 +1,10 @@
 { config, lib, pkgs, ... }:
 
-with lib;
 let
+  inherit (lib)
+    mkOption
+    types
+  ;
   cfg = config.mobile.system;
   inherit (config.nixpkgs) localSystem;
 

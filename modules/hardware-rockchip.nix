@@ -1,8 +1,12 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
+{ config, lib, ... }:
 
 let
+  inherit (lib)
+    mkIf
+    mkMerge
+    mkOption
+    types
+  ;
   cfg = config.mobile.hardware.socs;
 in
 {

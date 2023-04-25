@@ -1,7 +1,11 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
+let
+  inherit (lib)
+    mkOption
+    types
+  ;
+in
 {
   options.mobile.boot = {
     stage-1.extraUtils = mkOption {

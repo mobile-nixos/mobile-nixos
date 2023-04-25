@@ -26,7 +26,7 @@ in
         enable = true;
         wantedBy = [ "multi-user.target" ];
         description = "Mark boot as successful";
-        path = with pkgs; [ mobile-nixos.boot-control ];
+        path = [ pkgs.mobile-nixos.boot-control ];
         script = ''
           boot-control --mark-successful
         '';

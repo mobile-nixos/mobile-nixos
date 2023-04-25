@@ -1,8 +1,10 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
+{ config, lib, ... }:
 
 let
+  inherit (lib)
+    mkOption
+    types
+  ;
   cfg = config.mobile.boot.stage-1.networking;
   IP = cfg.IP;
   hostIP = cfg.hostIP;

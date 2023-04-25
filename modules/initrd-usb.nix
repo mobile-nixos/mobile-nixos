@@ -1,8 +1,14 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
+{ config, lib, ... }:
 
 let
+  inherit (lib)
+    forEach
+    mkIf
+    mkOption
+    optional
+    optionals
+    types
+  ;
   inherit (config.mobile.usb) gadgetfs;
   cfg = config.mobile.boot.stage-1;
   device_name = device_config.name;
@@ -55,7 +61,7 @@ in
     };
   };
 
-  config = lib.mkIf (config.mobile.usb.mode != null && cfg.usb.enable) {
+  config = mkIf (config.mobile.usb.mode != null && cfg.usb.enable) {
     boot.specialFileSystems = {
       # This is required for gadgetfs configuration.
       "/sys/kernel/config" = {
@@ -66,7 +72,7 @@ in
       };
     };
 
-    mobile.boot.stage-1 = lib.mkIf (cfg.usb.enable && (config.mobile.usb.mode != null)) {
+    mobile.boot.stage-1 = mkIf (cfg.usb.enable && (config.mobile.usb.mode != null)) {
       kernel.modules = [
         "configfs"
         "libcomposite"
