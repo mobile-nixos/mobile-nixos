@@ -84,9 +84,9 @@ class UI
 
   def add_screen()
     @screen = LVGL::LVContainer.new()
-    @screen.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
-      @screen.set_style(LVGL::CONT_STYLE::MAIN, style)
-
+    # NOTE: we don't need to `#dup` the screen's style, it's unique.
+    # (`#dup`ing it also crashes with the mono theme :/)
+    @screen.get_style(LVGL::CONT_STYLE::MAIN).tap do |style|
       # Background for the splash, assumed black.
       style.body_main_color = BG_COLOR
       style.body_grad_color = BG_COLOR
