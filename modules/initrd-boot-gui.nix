@@ -57,6 +57,18 @@ in
         '';
       };
     };
+    logo = mkOption {
+      type = with types; either package path;
+      internal = true;
+      default = ../artwork/logo/logo.white.svg;
+      description = lib.mdDoc ''
+        Logo shown during stage-1 init.
+
+        Option marked internal since there are some particular quirks in changing the logo.
+
+        It may not work as expected.
+      '';
+    };
   };
 
   config = mkIf (config.mobile.boot.stage-1.enable) (mkMerge [
@@ -88,6 +100,10 @@ in
         {
           object = "${minimalX11Config}";
           symlink = "/etc/X11";
+        }
+        {
+          object = cfg.logo;
+          symlink = "/etc/logo.svg";
         }
       ];
 
