@@ -47,6 +47,12 @@ module LVGL::Hacks
     )
   end
 
+  def self.theme_mono()
+    LVGUI::Native.lv_theme_set_current(
+      LVGUI::Native.lv_theme_mono_init(0, nil)
+    )
+  end
+
   def self.theme_nixos(font = nil, button_font = nil)
     LVGUI::Native.lv_theme_set_current(
       LVGUI::Native.lv_theme_nixos_init(font, button_font)
