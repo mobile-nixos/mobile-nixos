@@ -37,6 +37,27 @@ class LVGUI::ProgressBar < LVGUI::Widget
     refresh_sizes
   end
 
+  def background_color=(color)
+    get_style(LVGL::CONT_STYLE::MAIN).tap do |style|
+      style.body_main_color = color
+      style.body_grad_color = color
+    end
+    @background.get_style().tap do |style|
+      style.body_main_color = color
+      style.body_grad_color = color
+    end
+  end
+
+  def foreground_color=(color)
+    @background.get_style().tap do |style|
+      style.body_border_color = color
+    end
+    @progress.get_style().tap do |style|
+      style.body_main_color = color
+      style.body_grad_color = color
+    end
+  end
+
   def refresh_sizes()
     width = get_width()
     [@background].each do |component|
