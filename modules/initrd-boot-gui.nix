@@ -1,7 +1,13 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkIf mkMerge mkOption types;
+  inherit (lib)
+    mkDefault
+    mkIf
+    mkMerge
+    mkOption
+    types
+  ;
   cfg = config.mobile.boot.stage-1.gui;
   inherit (config.boot.initrd) luks;
   minimalX11Config = pkgs.runCommand "minimalX11Config" {
@@ -89,11 +95,20 @@ in
         XKB_CONFIG_ROOT = "/etc/X11/xkb";
         XLOCALEDIR = "/etc/X11/locale";
       };
-      mobile.boot.stage-1.bootConfig = mkIf (cfg.waitForDevices.enable) {
-        quirks = {
-          wait_for_devices_delay = cfg.waitForDevices.delay;
-        };
-      };
+      mobile.boot.stage-1.bootConfig = mkMerge [
+        (mkIf (cfg.waitForDevices.enable) {
+          quirks = {
+            wait_for_devices_delay = cfg.waitForDevices.delay;
+          };
+        })
+        {
+          splash = {
+            theme = mkDefault "night";
+            background = mkDefault "0xFF000000";
+            foreground = mkDefault "0xFFFFFFFF";
+          };
+        }
+      ];
     })
   ]);
 }
