@@ -12,6 +12,7 @@ mobile-nixos.mkLVGUIApp {
   enableDebugInformation = true;
   src = lib.cleanSource ./.;
   rubyFiles = [
+    "configuration.rb"
     "ui.rb"
     "main.rb"
   ];
