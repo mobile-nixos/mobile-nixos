@@ -5070,6 +5070,68 @@ mrb_mruby_lvgui_native_lv_theme_get_current(mrb_state *mrb, mrb_value self)
 ////////
 
 ////////
+// Bindings for: `lv_theme_t * lv_theme_mono_init(uint16_t unnamed_parameter_0, lv_font_t * unnamed_parameter_1)`
+
+static mrb_value
+mrb_mruby_lvgui_native_lv_theme_mono_init(mrb_state *mrb, mrb_value self)
+{
+    lv_theme_t * ret;
+  
+    //
+    // Parameters handling
+    //
+    
+    // Parameter handling for native parameter `uint16_t unnamed_parameter_0`
+    mrb_int param_unnamed_parameter_0_int;
+    uint16_t param_unnamed_parameter_0;
+    // Parameter handling for native parameter `lv_font_t * unnamed_parameter_1`
+    mrb_value param_unnamed_parameter_1_instance;
+    lv_font_t * param_unnamed_parameter_1;
+    
+    mrb_get_args(
+      mrb,
+      "io",
+      &param_unnamed_parameter_0_int,
+      &param_unnamed_parameter_1_instance
+    );
+    param_unnamed_parameter_0 = (uint16_t)param_unnamed_parameter_0_int;
+    param_unnamed_parameter_1 = mrb_mruby_lvgui_native_unwrap_pointer(
+      mrb,
+      param_unnamed_parameter_1_instance
+    );
+  
+    // Calling native function
+    ret = lv_theme_mono_init(param_unnamed_parameter_0, param_unnamed_parameter_1);
+  
+    // Converts return value back to a valid mruby value
+    return mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) ret);
+}
+
+//
+////////
+
+////////
+// Bindings for: `lv_theme_t * lv_theme_get_mono()`
+
+static mrb_value
+mrb_mruby_lvgui_native_lv_theme_get_mono(mrb_state *mrb, mrb_value self)
+{
+    lv_theme_t * ret;
+  
+  
+  
+  
+    // Calling native function
+    ret = lv_theme_get_mono();
+  
+    // Converts return value back to a valid mruby value
+    return mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) ret);
+}
+
+//
+////////
+
+////////
 // Bindings for: `lv_theme_t * lv_theme_night_init(uint16_t unnamed_parameter_0, lv_font_t * unnamed_parameter_1)`
 
 static mrb_value
@@ -13651,6 +13713,38 @@ mrb_mruby_lvgui_native_gem_init(mrb_state* mrb)
     mLVGUI__Native__References,
     mrb_symbol_value(mrb_intern_lit(mrb, "lv_theme_get_current")),
     mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) lv_theme_get_current)
+  );
+
+  // ```lv_theme_t * lv_theme_mono_init(uint16_t unnamed_parameter_0, lv_font_t * unnamed_parameter_1);```
+  mrb_define_module_function(
+    mrb,
+    mLVGUI__Native,
+    "lv_theme_mono_init",
+    mrb_mruby_lvgui_native_lv_theme_mono_init,
+    MRB_ARGS_REQ(2)
+  );
+  
+  mrb_hash_set(
+    mrb,
+    mLVGUI__Native__References,
+    mrb_symbol_value(mrb_intern_lit(mrb, "lv_theme_mono_init")),
+    mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) lv_theme_mono_init)
+  );
+
+  // ```lv_theme_t * lv_theme_get_mono();```
+  mrb_define_module_function(
+    mrb,
+    mLVGUI__Native,
+    "lv_theme_get_mono",
+    mrb_mruby_lvgui_native_lv_theme_get_mono,
+    MRB_ARGS_REQ(0)
+  );
+  
+  mrb_hash_set(
+    mrb,
+    mLVGUI__Native__References,
+    mrb_symbol_value(mrb_intern_lit(mrb, "lv_theme_get_mono")),
+    mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) lv_theme_get_mono)
   );
 
   // ```lv_theme_t * lv_theme_night_init(uint16_t unnamed_parameter_0, lv_font_t * unnamed_parameter_1);```
