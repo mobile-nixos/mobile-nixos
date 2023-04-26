@@ -17,13 +17,15 @@ class UI
   BG_COLOR = Configuration["splash"] && Configuration["splash"]["background"]
   BG_COLOR = BG_COLOR.to_i(16) if BG_COLOR.is_a?(String)
   BG_COLOR ||= 0xFF000000
+  THEME = Configuration["splash"] && Configuration["splash"]["theme"]
+  THEME ||= "night"
 
   attr_reader :screen
   attr_reader :progress_bar
   attr_reader :ask_identifier
 
   # As this is not using BaseWindow, LVGUI::init isn't handled for us.
-  LVGUI.init(theme: :night, assets_path: "boot-splash/assets")
+  LVGUI.init(theme: THEME.to_sym, assets_path: "boot-splash/assets")
 
   def initialize()
     add_screen
