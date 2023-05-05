@@ -11,12 +11,21 @@ module Kernel
 end
 
 class UI
+  FG_COLOR = Configuration["splash"] && Configuration["splash"]["foreground"]
+  FG_COLOR = FG_COLOR.to_i(16) if FG_COLOR.is_a?(String)
+  FG_COLOR ||= 0xFFFFFFFF
+  BG_COLOR = Configuration["splash"] && Configuration["splash"]["background"]
+  BG_COLOR = BG_COLOR.to_i(16) if BG_COLOR.is_a?(String)
+  BG_COLOR ||= 0xFF000000
+  THEME = Configuration["splash"] && Configuration["splash"]["theme"]
+  THEME ||= "night"
+
   attr_reader :screen
   attr_reader :progress_bar
   attr_reader :ask_identifier
 
   # As this is not using BaseWindow, LVGUI::init isn't handled for us.
-  LVGUI.init(theme: :night, assets_path: "boot-splash/assets")
+  LVGUI.init(theme: THEME.to_sym, assets_path: "boot-splash/assets")
 
   def initialize()
     add_screen
@@ -38,7 +47,7 @@ class UI
     @label = LVGL::LVLabel.new(@page)
     @label.get_style(LVGL::LABEL_STYLE::MAIN).dup.tap do |style|
       @label.set_style(LVGL::LABEL_STYLE::MAIN, style)
-      style.text_color = 0xFFFFFFFF
+      style.text_color = FG_COLOR
     end
     @label.set_long_mode(LVGL::LABEL_LONG::BREAK)
     @label.set_align(LVGL::LABEL_ALIGN::CENTER)
@@ -71,16 +80,18 @@ class UI
     @progress_bar.set_height(3 * @unit)
     @progress_bar.set_width(@page.get_width * 0.7)
     @progress_bar.set_pos(*center(@progress_bar))
+    @progress_bar.foreground_color = FG_COLOR
+    @progress_bar.background_color = BG_COLOR
   end
 
   def add_screen()
     @screen = LVGL::LVContainer.new()
-    @screen.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
-      @screen.set_style(LVGL::CONT_STYLE::MAIN, style)
-
+    # NOTE: we don't need to `#dup` the screen's style, it's unique.
+    # (`#dup`ing it also crashes with the mono theme :/)
+    @screen.get_style(LVGL::CONT_STYLE::MAIN).tap do |style|
       # Background for the splash, assumed black.
-      style.body_main_color = 0xFF000000
-      style.body_grad_color = 0xFF000000
+      style.body_main_color = BG_COLOR
+      style.body_grad_color = BG_COLOR
     end
   end
 
@@ -90,8 +101,8 @@ class UI
     @page.set_height(@screen.get_height)
     @page.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
       @page.set_style(LVGL::CONT_STYLE::MAIN, style)
-      style.body_main_color = 0xFF000000
-      style.body_grad_color = 0xFF000000
+      style.body_main_color = BG_COLOR
+      style.body_grad_color = BG_COLOR
       style.body_border_width = 0
     end
   end
@@ -102,15 +113,15 @@ class UI
     @recovery_container.set_width(@page.get_width)
     @recovery_container.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
       @recovery_container.set_style(LVGL::CONT_STYLE::MAIN, style)
-      style.body_main_color = 0xFF000000
-      style.body_grad_color = 0xFF000000
+      style.body_main_color = BG_COLOR
+      style.body_grad_color = BG_COLOR
       style.body_border_width = 0
     end
 
     recovery_label = LVGL::LVLabel.new(@recovery_container)
     recovery_label.get_style(LVGL::LABEL_STYLE::MAIN).dup.tap do |style|
       recovery_label.set_style(LVGL::LABEL_STYLE::MAIN, style)
-      style.text_color = 0xFFFFFFFF
+      style.text_color = FG_COLOR
     end
     recovery_label.set_long_mode(LVGL::LABEL_LONG::BREAK)
     recovery_label.set_align(LVGL::LABEL_ALIGN::CENTER)
@@ -137,9 +148,9 @@ class UI
     @cover.get_style().dup.tap do |style|
       @cover.set_style(style)
 
-      # Background for the splash, assumed black.
-      style.body_main_color = 0xFF000000
-      style.body_grad_color = 0xFF000000
+      # Background for the splash
+      style.body_main_color = BG_COLOR
+      style.body_grad_color = BG_COLOR
       # Some themes will add a border to LVObject.
       style.body_border_width = 0
     end
@@ -155,17 +166,17 @@ class UI
       set_pwd_mode(true)
       get_style(LVGL::TA_STYLE::BG).dup.tap do |style|
         set_style(LVGL::TA_STYLE::BG, style)
-        style.body_main_color = 0xFF000000
-        style.body_grad_color = 0xFF000000
+        style.body_main_color = BG_COLOR
+        style.body_grad_color = BG_COLOR
         style.body_radius = 5
-        style.body_border_color = 0xFFFFFFFF
+        style.body_border_color = FG_COLOR
         style.body_border_width = 3
         style.body_border_opa = 255
-        style.text_color = 0xFFFFFFFF
+        style.text_color = FG_COLOR
       end
       get_style(LVGL::TA_STYLE::PLACEHOLDER).dup.tap do |style|
         set_style(LVGL::TA_STYLE::PLACEHOLDER, style)
-        style.text_color = 0xFFAAAAAA
+        style.text_color = LVGL::LVColor.mix(FG_COLOR, BG_COLOR, 100)
       end
     end
 

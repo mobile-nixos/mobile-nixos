@@ -1,7 +1,13 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkIf mkMerge mkOption types;
+  inherit (lib)
+    mkDefault
+    mkIf
+    mkMerge
+    mkOption
+    types
+  ;
   cfg = config.mobile.boot.stage-1.gui;
   inherit (config.boot.initrd) luks;
   minimalX11Config = pkgs.runCommand "minimalX11Config" {
@@ -51,6 +57,18 @@ in
         '';
       };
     };
+    logo = mkOption {
+      type = with types; either package path;
+      internal = true;
+      default = ../artwork/logo/logo.white.svg;
+      description = lib.mdDoc ''
+        Logo shown during stage-1 init.
+
+        Option marked internal since there are some particular quirks in changing the logo.
+
+        It may not work as expected.
+      '';
+    };
   };
 
   config = mkIf (config.mobile.boot.stage-1.enable) (mkMerge [
@@ -83,17 +101,30 @@ in
           object = "${minimalX11Config}";
           symlink = "/etc/X11";
         }
+        {
+          object = cfg.logo;
+          symlink = "/etc/logo.svg";
+        }
       ];
 
       mobile.boot.stage-1.environment = {
         XKB_CONFIG_ROOT = "/etc/X11/xkb";
         XLOCALEDIR = "/etc/X11/locale";
       };
-      mobile.boot.stage-1.bootConfig = mkIf (cfg.waitForDevices.enable) {
-        quirks = {
-          wait_for_devices_delay = cfg.waitForDevices.delay;
-        };
-      };
+      mobile.boot.stage-1.bootConfig = mkMerge [
+        (mkIf (cfg.waitForDevices.enable) {
+          quirks = {
+            wait_for_devices_delay = cfg.waitForDevices.delay;
+          };
+        })
+        {
+          splash = {
+            theme = mkDefault "night";
+            background = mkDefault "0xFF000000";
+            foreground = mkDefault "0xFFFFFFFF";
+          };
+        }
+      ];
     })
   ]);
 }

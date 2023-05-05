@@ -3,7 +3,7 @@
 let
   assets = runCommand "boot-splash-assets" {} ''
     mkdir -p $out
-    cp ${../../artwork/logo/logo.white.svg} $out/logo.svg
+    ln -s /etc/logo.svg $out/logo.svg
   '';
 in
 mobile-nixos.mkLVGUIApp {
@@ -12,6 +12,7 @@ mobile-nixos.mkLVGUIApp {
   enableDebugInformation = true;
   src = lib.cleanSource ./.;
   rubyFiles = [
+    "configuration.rb"
     "ui.rb"
     "main.rb"
   ];
