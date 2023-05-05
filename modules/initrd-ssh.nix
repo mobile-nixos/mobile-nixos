@@ -1,8 +1,10 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
 let
+  inherit (lib)
+    mkOption
+    types
+  ;
   device_name = config.mobile.device.name;
   cfg = config.mobile.boot.stage-1.ssh;
   banner = pkgs.writeText "${device_name}-banner" ''
@@ -56,8 +58,8 @@ in
     contents = [
       { object = banner; symlink = "/etc/banner"; }
     ];
-    extraUtils = with pkgs; [
-      { package = dropbear; extraCommand = "cp -fpv ${glibc.out}/lib/libnss_files.so.* $out/lib"; }
+    extraUtils = [
+      { package = pkgs.dropbear; extraCommand = "cp -fpv ${pkgs.glibc.out}/lib/libnss_files.so.* $out/lib"; }
     ];
   };
 }

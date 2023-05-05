@@ -1,7 +1,11 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
-with lib;
-
+let
+  inherit (lib)
+    mkOption
+    types
+  ;
+in
 {
   options.mobile.hardware.ram = mkOption {
     type = types.int;

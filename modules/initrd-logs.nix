@@ -88,8 +88,8 @@ in
           end
         '')
       ];
-      extraUtils = with pkgs; [
-        { package = bootlogd; }
+      extraUtils = [
+        { package = pkgs.bootlogd; }
       ];
     })
   ];

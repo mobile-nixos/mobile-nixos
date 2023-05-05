@@ -1,8 +1,12 @@
 { config, lib, pkgs, ... }:
 
-with lib;
-
 let
+  inherit (lib)
+    mkIf
+    mkMerge
+    mkOption
+    types
+  ;
   cfg = config.mobile.quirks;
 in
 {
@@ -35,8 +39,8 @@ in
       mobile.boot = mkMerge [
         (mkIf cfg.fb-refresher.stage-1.enable {
           stage-1 = {
-            extraUtils = with pkgs; [
-              msm-fb-refresher
+            extraUtils = [
+              pkgs.msm-fb-refresher
             ];
             tasks = [ ./msm-fb-refresher-task.rb ];
           };

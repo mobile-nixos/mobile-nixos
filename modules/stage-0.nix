@@ -70,9 +70,9 @@ in
     mobile.outputs.stage-0 = (config.lib.mobile-nixos.composeConfig {
       config = { config, ... }: {
         mobile.boot.stage-1.stage = if supportsStage-0 then 0 else 1;
-        mobile.boot.stage-1.extraUtils = with pkgs; [
+        mobile.boot.stage-1.extraUtils = [
           { package = pkgs.kexectools; }
-          { package = fdt-forward; }
+          { package = pkgs.fdt-forward; }
         ];
         mobile.boot.stage-1.bootConfig.stage-0 = {
           forward = {

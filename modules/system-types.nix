@@ -1,8 +1,13 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
+{ config, lib, ... }:
 
 let
+  inherit (lib)
+    filter
+    mkIf
+    mkOption
+    types
+  ;
+  
   failed = map (x: x.message) (filter (x: !x.assertion) config.assertions);
 
   system_type = config.mobile.system.type;
