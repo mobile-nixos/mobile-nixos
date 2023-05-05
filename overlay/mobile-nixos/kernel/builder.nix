@@ -17,6 +17,7 @@
 { stdenv
 , lib
 , path
+, fetchpatch
 , buildPackages
 
 , writeTextFile
@@ -60,6 +61,11 @@
 # It is expected this will have been added to the Nixpkgs overlay by the
 # system build.
 , systemBuild-structuredConfig ? {}
+
+# Only the logo file has to be overridable; the enable/disable flags are part
+# of the builder signature such that if enabling the logo replacement causes
+# issues, it can be disabled for a particular kernel.
+, linuxLogo224PPMFile ? ./logo_linux_clut224.ppm
 }:
 
 let
@@ -103,12 +109,14 @@ in
 # Enable build of dtbo.img
 , dtboImg ? false
 
+# Enables a patch (for 5.4+) that forces the logo to be shown
+, enableForceLogoPatch ? true
+
 # Linux logo centering (as a boot logo)
 , enableCenteredLinuxLogo ? true
 
 # Linux logo replacement
 , enableLinuxLogoReplacement ? true
-, linuxLogo224PPMFile ? ./logo_linux_clut224.ppm
 
 # Mainly to mask issues with newer compilers
 , enableRemovingWerror ? false
@@ -228,6 +236,11 @@ stdenv.mkDerivation (inputArgs // {
     ++ optional ((lib.versionAtLeast version "4.13" && lib.versionOlder version "5.19")) (nixosKernelPath + "/randstruct-provide-seed.patch")
     ++ optional ((lib.versionAtLeast version "5.19")) (nixosKernelPath + "/randstruct-provide-seed-5.19.patch")
     ++ optional (enableDefaultYYLOCPatch && lib.versionOlder version "4.0") ./gcc10-extern_YYLOC_global_declaration.patch
+    ++ optional (enableForceLogoPatch && lib.versionAtLeast version "5.4")
+      (fetchpatch {
+        url = "https://github.com/samueldr/linux/commit/fa2b50d61364fbe3d6e2c655804605221ed43dce.patch";
+        hash = "sha256-MOqHr7FUaiWs1OuKa66mVSa39jgsf0UETvIz1L8VXgY=";
+      })
     ++ patches
   ;
 

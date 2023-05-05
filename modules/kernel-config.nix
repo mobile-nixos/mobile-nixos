@@ -46,12 +46,18 @@ in
         EXT4_FS_POSIX_ACL = yes;
 
         # Required config for Nix
+        MULTIUSER = whenAtLeast "4.1" yes;
         NAMESPACES = yes;
         USER_NS = yes;
         PID_NS = yes;
 
         # Additional options
         SYSVIPC = yes;
+        TTY = whenAtLeast "3.9" yes;
+        VT = yes;
+
+        # Support for initramfs
+        BLK_DEV_INITRD = yes;
 
         # Options from Android kernels that break stuff
         # While not *universally available*, it's universally required to
@@ -79,9 +85,16 @@ in
         SYSFS_DEPRECATED = no;
         UEVENT_HELPER = no;
         FW_LOADER_USER_HELPER = option no;
+        BLOCK = yes;
         SCSI = yes;
         BLK_DEV_BSG = yes;
         DEVPTS_MULTIPLE_INSTANCES = whenOlder "4.7" yes;
+      })
+      # Needed for logo at boot
+      (helpers: with helpers; {
+        LOGO = yes;
+        FRAMEBUFFER_CONSOLE = yes;
+        FRAMEBUFFER_CONSOLE_DEFERRED_TAKEOVER = whenAtLeast "4.19" no;
       })
       # Needed for firewall
       (helpers: with helpers; let
