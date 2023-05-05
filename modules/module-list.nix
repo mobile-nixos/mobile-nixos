@@ -5,6 +5,7 @@
   ./beautification.nix
   ./boot-control.nix
   ./boot-initrd.nix
+  ./boot.nix
   ./bootloader.nix
   ./cross-workarounds.nix
   ./devices-metadata.nix

@@ -49,10 +49,6 @@
     ];
   };
 
-  boot.kernelParams = [
-    "console=tty0"
-  ];
-
   mobile.usb.mode = "gadgetfs";
   # The identifiers used here serve as a compatible well-known identifier.
   mobile.usb.idVendor = lib.mkDefault "18D1"; # Google

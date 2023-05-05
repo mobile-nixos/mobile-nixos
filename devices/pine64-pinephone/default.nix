@@ -30,11 +30,11 @@
   };
 
   boot.kernelParams = lib.mkAfter [
-    # TODO: useSerial option
-    # Serial console on ttyS0, using the serial headphone adapter.
-    "console=ttyS0,115200"
     "earlycon=uart,mmio32,0x01c28000"
   ];
+
+  # Serial console on ttyS0, using the serial headphone adapter.
+  mobile.boot.serialConsole = "ttyS0,115200";
 
   mobile.system.type = "u-boot";
 

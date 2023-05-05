@@ -71,6 +71,10 @@ in
     log.level = "DEBUG";
   };
 
+  mobile.beautification = {
+    silentBoot = lib.mkDefault true;
+  };
+
   # Ensure hello-gui isn't trampled over by the TTY
   systemd.services."getty@tty1" = {
     enable = false;
