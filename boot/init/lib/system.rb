@@ -102,16 +102,12 @@ module System
   # The return format is a hash, with keys being mount point paths,
   # and values being their respective line from /proc/mounts.
   def self.mount_points()
-    # This is the most horrible hack :(
-    mounted_proc = false
-    unless File.exists?("/proc/mounts")
-      $logger.debug("Temporarily mounting /proc...")
-      FileUtils.mkdir_p("/proc")
-      run("mount", "-t", "proc", "proc", "/proc")
-      mounted_proc = true
+    unless File.exists?("/.proc/mounts")
+      $logger.debug("Mounting private procfs at /.proc...")
+      FileUtils.mkdir_p("/.proc")
+      run("mount", "-t", "proc", "proc", "/.proc")
     end
-    result = File.read("/proc/mounts").split("\n")
-    run("umount", "-f", "/proc") if mounted_proc
+    result = File.read("/.proc/mounts").split("\n")
 
     result = result.map do |line|
       [
@@ -121,9 +117,6 @@ module System
         line
       ]
     end.to_h
-
-    # We mounted /proc? Hide it! We've now unmounted it.
-    result.delete("/proc") if mounted_proc
 
     result
   end

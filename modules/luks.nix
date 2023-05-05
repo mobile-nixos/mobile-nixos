@@ -10,7 +10,8 @@ lib.mkIf (luks.devices != {} || luks.forceLuksSupportInInitrd) {
       luksDevices = luks.devices;
     };
     kernel = {
-      modules = [
+      modules = [ "dm_mod" ];
+      additionalModules = [
         "dm_mod" "dm_crypt" "cryptd" "input_leds"
       ] ++ luks.cryptoModules
       ;
