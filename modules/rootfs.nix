@@ -20,6 +20,16 @@ in
             Whether some of the rootfs configuration is managed by Mobile NixOS or not.
           '';
         };
+        rehydrateStore = mkOption {
+          type = types.bool;
+          default = config.nix.enable;
+          defaultText = lib.literalExpression "config.nix.enable";
+          description = lib.mdDoc ''
+            Whether to rehydrate the store at first boot or not.
+
+            The only reason you would disable this is to build a target system that has no Nix binaries.
+          '';
+        };
       };
     };
   };
@@ -73,7 +83,7 @@ in
       zstd = compressLargeArtifacts;
     };
 
-    boot.postBootCommands = ''
+    boot.postBootCommands = mkIf (config.mobile.rootfs.rehydrateStore) ''
       # On the first boot do some maintenance tasks
       if [ -f /nix-path-registration ]; then
         # Register the contents of the initial Nix store
