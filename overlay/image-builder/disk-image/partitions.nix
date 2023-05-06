@@ -100,7 +100,7 @@ let
 
       filesystem = mkOption {
         type = types.nullOr (types.submodule ({
-          imports = import (../filesystem-image/module-list.nix);
+          imports = [ ../filesystem-image ];
           _module.args.pkgs = pkgs;
         }));
         default = null;

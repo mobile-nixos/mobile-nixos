@@ -10,7 +10,7 @@
 
   types = {
     disk-image = lib.types.submodule ({
-      imports = import (./disk-image/module-list.nix);
+      imports = [ ./disk-image ];
       _module.args.pkgs = pkgs;
     });
     filesystem-image = lib.types.submodule ({
