@@ -7,7 +7,7 @@
 }:
 let config' = config; in
 rec {
-  module = { imports = import ./module-list.nix; };
+  module = { imports = [ ./. ]; };
   config = (pkgs.lib.evalModules {
     modules = [
       { _module.args.pkgs = pkgs; }

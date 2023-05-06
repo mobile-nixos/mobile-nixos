@@ -14,7 +14,7 @@
       _module.args.pkgs = pkgs;
     });
     filesystem-image = lib.types.submodule ({
-      imports = import (./filesystem-image/module-list.nix);
+      imports = [ ./filesystem-image ];
       _module.args.pkgs = pkgs;
     });
   };
