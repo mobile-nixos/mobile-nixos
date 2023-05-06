@@ -72,7 +72,7 @@ in
         mobile.boot.stage-1.stage = 0;
         mobile.boot.stage-1.extraUtils = [
           { package = pkgs.kexectools; }
-          { package = pkgs.fdt-forward; }
+          { package = fdt-forward; }
         ];
         mobile.boot.stage-1.bootConfig.stage-0 = {
           forward = {
