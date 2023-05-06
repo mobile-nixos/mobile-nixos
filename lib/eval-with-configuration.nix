@@ -64,6 +64,7 @@ in
 
   # The evaluated config
   inherit (eval) config;
+  inherit (eval) options;
 
   # The final pkgs set, usable as -A pkgs.[...] on the CLI.
   inherit (eval) pkgs;
