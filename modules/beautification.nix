@@ -25,7 +25,7 @@ in
           type = types.bool;
           default = config.mobile.enable;
           defaultText = "config.mobile.enable";
-          description = ''
+          description = lib.mdDoc ''
             Whether silentBoot assumes the kernel logo is used as early splash,
             or leaves the fbcon unmapped such that (possibly) the vendor splash
             is kept on the display until the stage-1 boot interface starts.
