@@ -204,6 +204,7 @@ in
                   baseVersion = "3.18";
                   kernelOlder = lib.versionOlder baseVersion;
                   kernelAtLeast = lib.versionAtLeast baseVersion;
+                  modDirVersion = "99";
                 };
                 version = "99";
               } "mkdir $out; touch $out/no-kernel"
