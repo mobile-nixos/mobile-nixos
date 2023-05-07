@@ -109,9 +109,6 @@ in
       buildInputs = buildInputs ++ [
         self.openssl
       ];
-      patches = patches ++ [
-        ./u-boot/0001-mobile-nixos-work-around-ubootTools-cross-compilatio.patch
-      ];
     });
 
 
