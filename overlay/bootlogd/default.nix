@@ -2,13 +2,13 @@
 
 stdenv.mkDerivation {
   pname = "bootlogd";
-  version = "2020-02-02";
+  version = "2023-07-20";
 
   src = fetchFromGitHub {
     owner = "mobile-nixos";
     repo = "bootlogd";
-    rev = "e5af793da15def578eb3b25cb2c02196267021b1";
-    sha256 = "0m6y1369xs8hds66q5z2bxd80vxwnkqsnppmkfqk6i1d2259i903";
+    rev = "b9a89f30c1c6987eeb4277a071808621d6251f4e";
+    sha256 = "sha256-9XC1NiOEU3+fk5qFhSFpn1Bb+ydoloDFZn0BPxTstV4=";
   };
 
   sourceRoot = "source/src";
