@@ -33,6 +33,8 @@ module Configuration
           return "pine64-pinephone"
         when /^pine64,pinetab/
           return "pine64-pinetab"
+        when /^google,juniper/
+          return "acer-juniper"
         when /^google,krane/
           return "lenovo-krane"
         when /^google,wormdingler/
@@ -69,7 +71,7 @@ module Configuration
       case identifier
       when "pine64-pinephone", "pine64-pinetab", "pine64-pinephonepro"
         return "u-boot"
-      when "lenovo-krane", "lenovo-wormdingler", "asus-dumo"
+      when "acer-juniper", "lenovo-krane", "lenovo-wormdingler", "asus-dumo"
         return "depthcharge"
       end
 
@@ -95,7 +97,7 @@ module Configuration
         when "asus-dumo", "pine64-pinephonepro"
           # RK3399 eMMC
           File.join("/dev/disk/by-path", "platform-fe330000.mmc")
-        when "lenovo-krane"
+        when "acer-juniper", "lenovo-krane"
           # MT8183 eMMC
           File.join("/dev/disk/by-path", "platform-11230000.mmc")
         when "lenovo-wormdingler"
