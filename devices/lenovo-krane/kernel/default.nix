@@ -5,12 +5,6 @@
 , ...
 }:
 
-let
-  sdrPatch = rev: sha256: fetchpatch {
-    url = "https://github.com/samueldr/linux/commit/${rev}.patch";
-    inherit sha256;
-  };
-in
 mobile-nixos.kernel-builder {
   version = "6.0.0";
   configfile = ./config.aarch64;
