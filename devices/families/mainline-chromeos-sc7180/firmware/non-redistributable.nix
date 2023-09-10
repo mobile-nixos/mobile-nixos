@@ -5,7 +5,7 @@
 , p7zip
 }:
 
-runCommand "lenovo-wormdingler-unredistributable-firmware" {
+runCommand "chromeos-sc7180-unredistributable-firmware" {
   nativeBuildInputs = [
     p7zip
     util-linux
