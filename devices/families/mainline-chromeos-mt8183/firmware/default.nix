@@ -3,8 +3,8 @@
 , firmwareLinuxNonfree
 }:
 
-# The minimum set of firmware files required for the device.
-runCommand "lenovo-krane-firmware" {
+# The minimum set of firmware files required for the family
+runCommand "mt8183-chromeos-firmware" {
   src = firmwareLinuxNonfree;
   meta.license = firmwareLinuxNonfree.meta.license;
 } ''
