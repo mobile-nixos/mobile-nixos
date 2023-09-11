@@ -16,6 +16,7 @@
 
   mobile.kernel.structuredConfig = [
     (helpers: with helpers; {
+      MODULES = yes;
       I2C_SMBUS = module;
       BATTERY_SBS = module;
       CHARGER_SBS = module;
