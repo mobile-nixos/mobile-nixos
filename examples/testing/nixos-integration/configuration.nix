@@ -1,5 +1,9 @@
 { lib, ... }:
 {
+  imports = [
+    ../../common-configuration.nix
+  ];
+
   # This system is not expected to be bootable.
   fileSystems = {
     "/" = {

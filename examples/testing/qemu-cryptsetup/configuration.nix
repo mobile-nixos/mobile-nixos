@@ -52,6 +52,10 @@ let
 in
 
 {
+  imports = [
+    ../../common-configuration.nix
+  ];
+
   boot.initrd.luks.devices = {
     LUKS-MOBILE-ROOTFS = {
       device = "/dev/disk/by-uuid/${uuid}";
