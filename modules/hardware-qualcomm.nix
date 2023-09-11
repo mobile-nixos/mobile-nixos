@@ -9,6 +9,18 @@ let
     types
   ;
   cfg = config.mobile.hardware.socs;
+  anyQualcomm = lib.any (v: v) [
+    cfg.qualcomm-msm8940.enable
+    cfg.qualcomm-msm8939.enable
+    cfg.qualcomm-msm8953.enable
+    cfg.qualcomm-msm8996.enable
+    cfg.qualcomm-msm8998.enable
+    cfg.qualcomm-sc7180.enable
+    cfg.qualcomm-sdm660.enable
+    cfg.qualcomm-sdm845.enable
+    cfg.qualcomm-sm6125.enable
+    cfg.qualcomm-apq8064-1aa.enable
+  ];
 in
 {
   options.mobile = {
@@ -124,5 +136,13 @@ in
         quirks.fb-refresher.enable = true;
       };
     }
+    (mkIf anyQualcomm {
+      mobile.kernel.structuredConfig = [
+        (helpers: with helpers; {
+          ARCH_QCOM = lib.mkDefault (whenAtLeast "4.1" yes);
+          ARCH_MSM = lib.mkDefault (whenOlder "4.1" yes);
+        })
+      ];
+    })
   ];
 }
