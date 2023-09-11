@@ -40,10 +40,13 @@ DEVICE = other_args.shift
 args =
   # Is the device a path?
   if DEVICE.match(%r{/})
-    ["--arg", "device", DEVICE]
+    ["--arg", "device", DEVICE.sub(%r{/+$}, "")]
   else
     ["--argstr", "device", DEVICE]
   end
+
+# 
+args << File.join(ROOT, "default.nix")
 
 @file =
   if params["file"]
@@ -86,16 +89,14 @@ end
 
 $stderr.puts "\nNOTE: This will update '#{@file}'\n\n"
 
-Dir.chdir(ROOT) do
-  result = `#{[
-    "nix-build",
-    "--no-out-link",
-    *args,
-    "-A", "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
-  ].shelljoin}`.strip
+result = `#{[
+  "nix-build",
+  "--no-out-link",
+  *args,
+  "-A", "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
+].shelljoin}`.strip
 
-  # We "cat" into the file to ensure we don't copy the store path access rights.
-  File.write(@file, File.read(result))
-end
+# We "cat" into the file to ensure we don't copy the store path access rights.
+File.write(@file, File.read(result))
 
 # vim: ft=ruby
