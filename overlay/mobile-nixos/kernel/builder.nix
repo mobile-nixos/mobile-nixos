@@ -334,7 +334,7 @@ stdenv.mkDerivation (inputArgs // {
       echo "ERROR: $buildRoot/.config : file exists."
       echo "       The kernel source tree must not contain a .config file."
       echo "       Remove the .config file and provide it as an input for the derivation."
-      exit 1
+      exit 4
     fi
 
     # Catting so we can write to the config file
@@ -408,7 +408,7 @@ stdenv.mkDerivation (inputArgs // {
           echo '       Use the `bin/kernel-normalize-config` tool to refresh the configuration.'
           echo "       Don't forget to make sure the changed configuration options are good!"
           printf "\n"
-          exit 1
+          exit 3
         fi
         rm -v $buildRoot/.tmp.config{.old,}
       fi
