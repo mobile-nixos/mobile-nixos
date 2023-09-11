@@ -1,0 +1,18 @@
+= Kernel configuration
+
+This directory holds the *suggested* kernel configuration.
+
+This is used by the `bin/kernel-normalize*` helpers.
+
+In your systems, feel free to override any of those with what you prefer.
+
+The **required** options are found in `modules/kernel-config.nix`.
+
+== Goals
+
+The goals for these options are as follow:
+
+ * Remove all unneeded options to reduce compilation time
+ * Select the appropriate defaults
+
+A device can change the options as needed.
