@@ -16,7 +16,13 @@
   };
 
   mobile.system.depthcharge.kpart = {
-    dtbs = "${config.mobile.boot.stage-1.kernel.package}/dtbs/qcom";
+    dtbs = pkgs.runCommand "sc7180-dtbs" {} ''
+      mkdir -p $out
+      cd $out
+      for f in ${config.mobile.boot.stage-1.kernel.package}/dtbs/qcom/sc7180*.dtb; do
+        ln -sv "$f"
+      done
+    '';
   };
 
   # Serial console on ttyMSM0, using a suzyqable or equivalent.
