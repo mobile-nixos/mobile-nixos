@@ -8,6 +8,9 @@ let
     types
   ;
   cfg = config.mobile.hardware.socs;
+  anyRockchip = lib.any (v: v) [
+    cfg.rockchip-op1.enable
+  ];
 in
 {
   options.mobile = {
@@ -24,5 +27,12 @@ in
         system.system = "aarch64-linux";
       };
     }
+    (mkIf anyRockchip {
+      mobile.kernel.structuredConfig = [
+        (helpers: with helpers; {
+          ARCH_ROCKCHIP = lib.mkDefault yes;
+        })
+      ];
+    })
   ];
 }
