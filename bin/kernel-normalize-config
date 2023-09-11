@@ -37,17 +37,26 @@ end.to_h
 
 DEVICE = other_args.shift
 
-@file =
+args =
   # Is the device a path?
   if DEVICE.match(%r{/})
-    Dir.glob(File.join(DEVICE, "kernel", "config.*")).sort.first
+    ["--arg", "device", DEVICE]
   else
-    Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel", "config.*")).sort.first
+    ["--argstr", "device", DEVICE]
   end
 
-if params["file"]
-  @file = params.delete("file")
-end
+@file =
+  if params["file"]
+    params.delete("file")
+  else
+    $stderr.puts "\nGetting config file path to update..."
+    `#{[
+      "nix-instantiate",
+      "--eval",
+      *args,
+      "--attr", "config.mobile.boot.stage-1.kernel.package.configfile",
+    ].shelljoin}`.strip
+  end
 
 unless @file and File.exists?(@file)
   $stderr.puts "Kernel config file not found."
@@ -75,19 +84,13 @@ unless @file
   exit 1
 end
 
-arg =
-  # Is the device a path?
-  if DEVICE.match(%r{/})
-    ["--arg", "device", DEVICE]
-  else
-    ["--argstr", "device", DEVICE]
-  end
+$stderr.puts "\nNOTE: This will update '#{@file}'\n\n"
 
 Dir.chdir(ROOT) do
   result = `#{[
     "nix-build",
     "--no-out-link",
-    *arg,
+    *args,
     "-A", "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
   ].shelljoin}`.strip
 
