@@ -9,6 +9,7 @@ in
 {
   imports = [
     ./phosh.nix
+    ../common-configuration.nix
   ];
 
   config = {
