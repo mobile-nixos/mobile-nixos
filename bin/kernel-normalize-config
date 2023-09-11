@@ -13,9 +13,10 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: bin/kernel-normalize-config [--file=config.path] <device_name>"
+  puts "Usage: bin/kernel-normalize-config [--file=config.path] --only-check <device_name>"
   puts ""
   puts " --file=path/to/kernel/config.file -- detected automatically if not present."
+  puts " --only-check"
 end
 
 # Poor approximation to arguments parsing.
@@ -35,6 +36,14 @@ params = params.map do |param|
   [k, v]
 end.to_h
 
+ONLY_CHECK =
+  if params["only-check"] then
+    true
+    params.delete("only-check")
+  else
+    false
+  end
+
 DEVICE = other_args.shift
 
 args =
@@ -51,26 +60,10 @@ args << File.join(ROOT, "default.nix")
 @file =
   if params["file"]
     params.delete("file")
-  else
-    $stderr.puts "\nGetting config file path to update..."
-    `#{[
-      "nix-instantiate",
-      "--eval",
-      *args,
-      "--attr", "config.mobile.boot.stage-1.kernel.package.configfile",
-    ].shelljoin}`.strip
   end
 
-unless @file and File.exists?(@file)
-  $stderr.puts "Kernel config file not found."
-  $stderr.puts "Please provide path to the config file with `--file=...`."
-  $stderr.puts
-  usage
-  exit 1
-end
-
 unless params.empty?
-  $stderr.puts "Unknown parameters #{params.join(", ")}."
+  $stderr.puts "Unknown parameters #{params.keys.join(", ")}."
   usage
   exit 1
 end
@@ -81,22 +74,60 @@ unless other_args.empty?
   exit 1
 end
 
-unless @file
-  $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
-  usage
-  exit 1
+unless ONLY_CHECK
+  unless @file
+    $stderr.puts "\nGetting config file path to update..."
+    @file = 
+      `#{[
+        "nix-instantiate",
+        "--eval",
+        *args,
+        "--attr", "config.mobile.boot.stage-1.kernel.package.configfile",
+      ].shelljoin}`.strip
+  end
+
+  unless @file and File.exists?(@file)
+    $stderr.puts "Kernel config file not found."
+    $stderr.puts "Please provide path to the config file with `--file=...`."
+    $stderr.puts
+    usage
+    exit 1
+  end
+
+  unless @file
+    $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
+    usage
+    exit 1
+  end
+
+  $stderr.puts "\nNOTE: This will update '#{@file}'\n\n"
 end
 
-$stderr.puts "\nNOTE: This will update '#{@file}'\n\n"
+attr =
+  if ONLY_CHECK
+    "config.mobile.boot.stage-1.kernel.package.validatedConfig"
+  else
+    "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
+  end
 
 result = `#{[
   "nix-build",
   "--no-out-link",
   *args,
-  "-A", "config.mobile.boot.stage-1.kernel.package.normalizedConfig"
+  "-A", attr
 ].shelljoin}`.strip
 
-# We "cat" into the file to ensure we don't copy the store path access rights.
-File.write(@file, File.read(result))
+if ONLY_CHECK
+  if $?.success?
+    $stderr.puts "Configuration passed."
+    exit 0
+  else
+    $stderr.puts "Configuration is stale."
+    exit 1
+  end
+else
+  # We "cat" into the file to ensure we don't copy the store path access rights.
+  File.write(@file, File.read(result))
+end
 
 # vim: ft=ruby
