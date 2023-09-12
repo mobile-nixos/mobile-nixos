@@ -8,8 +8,6 @@ let
     types
   ;
   
-  failed = map (x: x.message) (filter (x: !x.assertion) config.assertions);
-
   system_type = config.mobile.system.type;
 
   known_system_types = config.mobile.system.types ++ [ "none" ];
