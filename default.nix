@@ -9,30 +9,25 @@ let
     inherit pkgs;
   };
 
-  # Selection of the configuration can by made either through NIX_PATH,
-  # through local.nix or as a parameter.
   defaultConfiguration =
-    let
-      configPathFromNixPath = (builtins.tryEval <mobile-nixos-configuration>).value;
-    in
-    if configPathFromNixPath != false then
-      [ configPathFromNixPath ]
-    else if configuration != null then
-      [ configuration ]
+    if configuration != null then
+      configuration
     else if (builtins.pathExists ./local.nix) then
       builtins.trace ''
         ${"\n"}
         ********************************************
         * WARNING: evaluation includes ./local.nix *
         ********************************************
-      '' [ ./local.nix ]
+      '' ./local.nix
     else
-      []
+      {}
   ;
 in
 
 import ./lib/eval-with-configuration.nix (args // {
-  configuration = defaultConfiguration;
+  configuration = [
+    defaultConfiguration
+  ];
   additionalHelpInstructions = ''
     You can build the `-A outputs.default` attribute to build an empty and
     un-configured image. That image can be configured using `local.nix`.
