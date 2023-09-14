@@ -1,14 +1,15 @@
 { config, lib, pkgs, ... }:
 
-
 let
   qcom-video-firmware =
     pkgs.runCommand "potter-firmware" {} ''
       dir=$out/lib/firmware/qcom
       mkdir -p $dir
       cp  ${pkgs.linux-firmware}/lib/firmware/qcom/a530* $dir
-    '';
-in {
+    ''
+  ;
+in
+{
   mobile.device.name = "motorola-potter";
   mobile.device.identity = {
     name = "Moto G5 Plus";
