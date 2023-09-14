@@ -248,7 +248,7 @@ rec {
         device.uefi-x86_64.x86_64-linux              # UEFI system
 
         # Cross builds
-        device.asus-z00t.x86_64-linux                # Android
+        device.motorola-potter.x86_64-linux          # Android
         device.asus-dumo.x86_64-linux                # Depthcharge
 
         # Example systems
@@ -261,7 +261,7 @@ rec {
         overlay.x86_64-linux.aarch64-linux-cross.mobile-nixos.android-flashable-zip-binaries
       ]
       ++ lib.optionals (hasSystem "aarch64-linux") [
-        device.asus-z00t.aarch64-linux               # Android
+        device.motorola-potter.aarch64-linux         # Android
         device.asus-dumo.aarch64-linux               # Depthcharge
 
         # Example systems
@@ -290,14 +290,16 @@ rec {
     constituents = tested.constituents
       ++ cross-canaries.armv7l-linux.constituents
       ++ lib.optionals (hasSystem "x86_64-linux") [
-        device.asus-flo.x86_64-linux
+        # FIXME: add an armv7l system once one is available again
+        # device.asus-flo.x86_64-linux
         overlay.x86_64-linux.armv7l-linux-cross.mobile-nixos.android-flashable-zip-binaries
         examples.hello.cross-x86-armv7l.toplevel
       ]
       ++ lib.optionals (hasSystem "aarch64-linux") [
       ]
       ++ lib.optionals (hasSystem "armv7l-linux") [
-        device.asus-flo.armv7l-linux
+        # FIXME: add an armv7l system once one is available again
+        # device.asus-flo.armv7l-linux
         overlay.armv7l-linux.armv7l-linux.mobile-nixos.android-flashable-zip-binaries
       ]
       ;
