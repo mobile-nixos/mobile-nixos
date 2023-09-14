@@ -19,6 +19,10 @@ SUPPORT_LEVELS = {
     title: "Best effort",
     description: "These devices are almost supported, but may not be a priority, or require more work.",
   },
+  "broken" => {
+    title: "Broken at the moment",
+    description: "Generally for a technical reason, will not work. See recent changes or issues.",
+  },
   "vendor" => {
     title: "Using vendor tooling",
     description: "These devices are best-effort with kernel and different dependencies coming from vendor forks.",
@@ -35,6 +39,7 @@ SUPPORT_LEVELS = {
 SUPPORT_LEVEL_ORDER = [
   "supported",
   "best-effort",
+  "broken",
   "vendor",
   "unsupported",
   "abandoned",

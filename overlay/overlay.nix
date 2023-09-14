@@ -66,6 +66,8 @@ in
     pd-mapper = callPackage ./qrtr/pd-mapper.nix { };
     rmtfs = callPackage ./qrtr/rmtfs.nix { };
 
+    lk2ndMsm8953 = callPackage ./lk2nd/msm8953.nix {};
+
     #
     # Hacks
     # -----
