@@ -61,6 +61,11 @@ let
         --RECOVERY "$dir"/recovery.img
       ''}
     ''
+    else if flashingMethod == "lk2nd" then ''
+      echo "There is no automated script for flashing with lk2nd yet."
+      echo "Please refer to the installation instructions for your device."
+      exit 1
+    ''
     else builtins.throw "No flashing method for ${flashingMethod}"})
     echo ""
     echo "Flashing completed."
@@ -105,6 +110,7 @@ in
       flashingMethod = lib.mkOption {
         type = types.enum [
           "fastboot" # Default, using `fastboot`
+          "lk2nd"    # Some Qualcomm mainline devices, using fastboot and lk2nd
           "odin"     # Mainly Samsung, using `heimdall`
         ];
         description = lib.mdDoc "Configures which flashing method is used by the device.";
