@@ -82,4 +82,5 @@ in
   };
 
   mobile.system.type = "android";
+  mobile.system.android.flashingMethod = "lk2nd";
 }
