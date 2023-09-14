@@ -55,7 +55,7 @@ in
     };
 
     supportLevel = mkOption {
-      type = types.enum [ "supported" "best-effort" "vendor" "unsupported" "abandoned" ];
+      type = types.enum [ "supported" "best-effort" "broken" "vendor" "unsupported" "abandoned" ];
       default = "unsupported";
       description = lib.mdDoc ''
         Support level for the device.
