@@ -78,29 +78,4 @@ in {
   };
 
   mobile.system.type = "android";
-  fileSystems.configfs = {
-    device = "none";
-    fsType = "configfs";
-    mountPoint = "/sys/kernel/config";
-  };
-  systemd.services.restart-adb = {
-    description = "Restart ADB service for stage-2";
-    wantedBy = [ "multi-user.target" ];
-    enable = true;
-    script = ''
-        cd /sys/kernel/config/usb_gadget
-        for gadget in * ; do
-          if test -n $gadget/UDC ; then
-            # honestly this does nothing more than "echo",
-            # am only using gt to show that it exists
-            ${pkgs.gadget-tool}/bin/gt enable $gadget
-          fi
-        done
-        ${pkgs.adbd}/bin/adbd &
-    '';
-    serviceConfig = {
-      Type = "oneshot";
-      RemainAfterExit = true;
-    };
-  };
 }
