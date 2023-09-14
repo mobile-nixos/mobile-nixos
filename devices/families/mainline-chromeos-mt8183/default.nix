@@ -36,6 +36,7 @@
       # Undeclared dependency needed for some
       # hid-over-i2c trackpads (e.g. acer-juniper)
       HID_RMI = yes;
+      SERIO = yes;
     })
   ];
 }
