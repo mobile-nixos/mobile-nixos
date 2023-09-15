@@ -24,7 +24,7 @@ let
 
   android-recovery = recovery.mobile.outputs.android.android-bootimg;
 
-  inherit (config.mobile.outputs.generatedFilesystems) rootfs;
+  inherit (config.mobile.generatedFilesystems) rootfs;
 
   # Note:
   # The flash scripts, by design, are not using nix-provided paths for
@@ -33,7 +33,7 @@ let
   # output should be usable even on systems without Nix.
   android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {} ''
     mkdir -p $out
-    cp -v ${rootfs}/${rootfs.filename} $out/system.img
+    cp -v ${rootfs.imagePath} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
     ${optionalString has_recovery_partition ''
     cp -v ${android-recovery} $out/recovery.img

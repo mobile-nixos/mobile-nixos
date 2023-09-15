@@ -9,7 +9,7 @@ in
   mobile.generatedFilesystems = {
     rootfs = mkDefault {
       label = mkForce "MOBILE_INSTALLER";
-      id    = mkForce "12345678-9000-0001-0000-D00D00000001";
+      ext4.partitionID = mkForce "12345678-9000-0001-0000-D00D00000001";
     };
   };
 
