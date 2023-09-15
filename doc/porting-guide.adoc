@@ -11,21 +11,17 @@ In a nutshell, the basic steps are:
 
 == Kernel configuration
 
-The kernel can be configured using the following command, where `$DEVICE` is
-the device name.
+The kernel can be configured using a helper command, assuming you are at the
+root of the repo. (Replace `$device_name` with the correct name.)
 
 ```
- $ bin/menuconfig $DEVICE
+ $ bin/menuconfig $device_name
 ```
 
 When importing a configuration from another source, manually editing the kernel
 configuration, or updating the kernel version, it is recommended to run the
-kernel configuration normalization too.
+kernel configuration normalization helper, too.
 
 ```
- $ bin/kernel-normalize-config $DEVICE
+ $ bin/kernel-normalize-config $device_name
 ```
-
-Be mindful of your `$NIX_PATH` when running these tools. Ensure it points to
-the Nixpkgs checkout you use to work on Mobile NixOS or else it may build the
-toolchain fresh.
