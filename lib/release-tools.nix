@@ -46,18 +46,20 @@ rec {
       specialConfig = {name, buildingForSystem, system, config ? {}}: {
         special = true;
         inherit name;
-        config = lib.mkMerge [
-          config
-          {
-            mobile.system.type = "none";
-            mobile.hardware.soc = {
-              x86_64-linux = "generic-x86_64";
-              aarch64-linux = "generic-aarch64";
-              armv7l-linux = "generic-armv7l";
-            }.${buildingForSystem};
-            nixpkgs.localSystem = knownSystems.${system};
-          }
-        ];
+        config = {
+          imports = [
+            config
+            {
+              mobile.system.type = "none";
+              mobile.hardware.soc = {
+                x86_64-linux = "generic-x86_64";
+                aarch64-linux = "generic-aarch64";
+                armv7l-linux = "generic-armv7l";
+              }.${buildingForSystem};
+              nixpkgs.localSystem = knownSystems.${system};
+            }
+          ];
+        };
       };
 
       # Shortcuts from a simple system name to the structure required for
