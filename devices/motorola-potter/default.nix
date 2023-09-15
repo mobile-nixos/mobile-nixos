@@ -85,4 +85,11 @@ in
 
   mobile.system.type = "android";
   mobile.system.android.flashingMethod = "lk2nd";
+
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      CC_OPTIMIZE_FOR_PERFORMANCE = no;
+      CC_OPTIMIZE_FOR_SIZE = yes;
+    })
+  ];
 }
