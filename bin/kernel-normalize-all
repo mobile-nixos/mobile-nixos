@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+set -u
+set -o pipefail
+
+FAILED=()
+
+maybe_normalize() {
+	# Prevent needlessly updating the config file when only compiler
+	# information is updated (e.g. native vs. cross-compiled).
+	if ! bin/kernel-normalize-config --only-check "$1"; then
+		if ! bin/kernel-normalize-config "$1"; then
+			FAILED+=("$1")
+		fi
+	fi
+	:
+}
+
+ROOT="$(cd "${BASH_SOURCE[0]%/*}"/..; pwd)"
+cd "$ROOT"
+
+for device in devices/*/default.nix; do
+	device="${device%/*}"
+	if [[ "$device" == "devices/uefi-x86_64" ]]; then
+		continue
+	fi
+	maybe_normalize "$device"
+done
+maybe_normalize support/additional-devices/uefi-x86_64-with-kernel
+
+echo "These devices failed to normalize:"
+for device in "${FAILED[@]}"; do
+	printf "  - %s\n" "$device"
+done

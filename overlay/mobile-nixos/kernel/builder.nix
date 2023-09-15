@@ -334,7 +334,7 @@ stdenv.mkDerivation (inputArgs // {
       echo "ERROR: $buildRoot/.config : file exists."
       echo "       The kernel source tree must not contain a .config file."
       echo "       Remove the .config file and provide it as an input for the derivation."
-      exit 1
+      exit 4
     fi
 
     # Catting so we can write to the config file
@@ -408,7 +408,7 @@ stdenv.mkDerivation (inputArgs // {
           echo '       Use the `bin/kernel-normalize-config` tool to refresh the configuration.'
           echo "       Don't forget to make sure the changed configuration options are good!"
           printf "\n"
-          exit 1
+          exit 3
         fi
         rm -v $buildRoot/.tmp.config{.old,}
       fi
@@ -544,6 +544,20 @@ stdenv.mkDerivation (inputArgs // {
 
   passthru = let
     baseVersion = lib.head (lib.splitString "-rc" version);
+    configUpdater = attrs: kernelDerivation.overrideAttrs({ ... }: ({
+      # This is because we'll use the new output!
+      # So skip the checks.
+      forceNormalizedConfig = false;
+      # Ensure we get new config elements from structured config.
+      updateConfigFromStructuredConfig = true;
+      # Copy the produced config
+      installPhase = ''
+        cp .config $out
+      '';
+      # Skip other phases entirely
+      buildPhase = ":";
+      fixupPhase = ":";
+    } // attrs));
   in {
     # Used by consumers of the kernel derivation to configure the build
     # appropriately for different quirks.
@@ -556,15 +570,14 @@ stdenv.mkDerivation (inputArgs // {
     # Used by consumers to refer to the kernel build product.
     file = kernelFile;
 
-    # Derivation with the as-built normalized kernel config
-    normalizedConfig = kernelDerivation.overrideAttrs({ ... }: {
-      forceNormalizedConfig = false;
-      updateConfigFromStructuredConfig = true;
-      buildPhase = "echo Skipping build phase...";
-      installPhase = ''
-        cp .config $out
-      '';
-    });
+    # Used to update the config.
+    normalizedConfig = configUpdater {};
+
+    # Used to fail CI when configs don't pass anymore.
+    validatedConfig  = configUpdater {
+      updateConfigFromStructuredConfig = false;
+      forceNormalizedConfig = true;
+    };
 
     # Patching over this configuration to expose menuconfig.
     menuconfig = kernelDerivation.overrideAttrs({nativeBuildInputs ? [] , ...}: {
