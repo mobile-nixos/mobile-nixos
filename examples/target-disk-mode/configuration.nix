@@ -23,6 +23,10 @@ let
   ;
 in
 {
+  imports = [
+    ../common-configuration.nix
+  ];
+
   mobile.boot.stage-1.tasks = [
     (# Slip an assertion here; nixos asserts only operate on `build.toplevel`.
     if !internalStorageConfigured

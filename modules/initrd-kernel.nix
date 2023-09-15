@@ -84,6 +84,20 @@ in
         This is not using a kernelPackages attrset, but a kernel derivation directly.
       '';
     };
+    useStrictKernelConfig = mkOption {
+      type = types.bool;
+      default = false;
+      description = lib.mdDoc ''
+        Whether or not to fail when the config file differs when built.
+
+        When building a personal configuration, this should be disabled (`false`)
+        for convenience, as it allows implicitly tracking revision updates.
+
+        When in testing scenarios (e.g. building an example system) this should
+        be enabled (`true`), as it ensures all required configuration is set
+        as expected.
+      '';
+    };
     # These options are not intended for end-user use, which is why they must
     # all be marked internal.
     # The only reason is to prevent needless rebuilds by end-users.
@@ -138,6 +152,12 @@ in
           "crc32c"
         ];
       });
+
+      nixpkgs.overlays = [(_: _: {
+        # Used to transmit the option to the kernel builder
+        # *sigh*
+        __mobile-nixos-useStrictKernelConfig = cfg.useStrictKernelConfig;
+      })];
     }
     # Logo configuration
     {

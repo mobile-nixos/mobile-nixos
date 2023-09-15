@@ -62,6 +62,10 @@
 # system build.
 , systemBuild-structuredConfig ? {}
 
+# When set to true, the kernel build will be failed when the kernel
+# config differs from expected.
+, __mobile-nixos-useStrictKernelConfig ? false
+
 # Only the logo file has to be overridable; the enable/disable flags are part
 # of the builder signature such that if enabling the logo replacement causes
 # issues, it can be disabled for a particular kernel.
@@ -206,10 +210,10 @@ stdenv.mkDerivation (inputArgs // {
 
   # Allows disabling the kernel config normalization.
   # Set to false when normalizing the kernel config.
-  forceNormalizedConfig = true;
+  forceNormalizedConfig = __mobile-nixos-useStrictKernelConfig;
 
   # Allows updating the kernel config to conform to the structured config.
-  updateConfigFromStructuredConfig = false;
+  updateConfigFromStructuredConfig = !__mobile-nixos-useStrictKernelConfig;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
