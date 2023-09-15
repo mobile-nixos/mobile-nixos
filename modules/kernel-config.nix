@@ -225,6 +225,39 @@ in
         # Let's not enable it.
         # NETFILTER_XT_MATCH_IPVS = ...;
       })
+
+      # Needed for waydroid
+      (helpers: with helpers; let
+        inherit (lib) mkMerge;
+        # TODO drop when we fix modular kernels
+        module = yes;
+      in {
+        ANDROID = whenBetween "3.19" "6.0" yes;
+        ANDROID_BINDER_IPC = whenAtLeast "3.19" yes;
+        ANDROID_BINDERFS = whenAtLeast "5.0" yes;
+        PSI = whenAtLeast "4.20" yes;
+
+        # Needed for waydroid networking to function
+        NF_TABLES = whenAtLeast "3.13" yes;
+        NF_TABLES_IPV4 = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NF_TABLES_IPV6 = mkMerge [ (whenBetween "3.13" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NF_TABLES_INET = mkMerge [ (whenBetween "3.14" "4.17" module) (whenAtLeast "4.17" yes) ];
+        NFT_MASQ = whenAtLeast "3.18" module;
+        NFT_NAT = whenAtLeast "3.13" module;
+        IP_ADVANCED_ROUTER = yes;
+        IP_MULTIPLE_TABLES = yes;
+        IPV6_MULTIPLE_TABLES = yes;
+
+        # Needed for XfrmController
+        XFRM = yes;
+        XFRM_ALGO = whenAtLeast "3.5" module;
+        XFRM_USER = module;
+
+        # netd uses NFLOG
+        NETFILTER_NETLINK = yes;
+        NETFILTER_NETLINK_LOG = yes;
+        NETFILTER_XT_TARGET_NFLOG = module;
+      })
     ];
 
     nixpkgs.overlays = [(final: super: {
