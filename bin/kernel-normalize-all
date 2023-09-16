@@ -29,6 +29,9 @@ for device in devices/*/default.nix; do
 done
 maybe_normalize support/additional-devices/uefi-x86_64-with-kernel
 
+echo
+echo " :: Done..."
+echo
 echo "These devices failed to normalize:"
 for device in "${FAILED[@]}"; do
 	printf "  - %s\n" "$device"
