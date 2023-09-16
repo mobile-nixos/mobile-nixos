@@ -3,6 +3,12 @@
 let
   inherit (lib) mkOption mkMerge mkIf types;
   cfg = config.mobile.hardware.socs;
+  anyMediatek = lib.any (v: v) [
+    cfg.mediatek-mt6755.enable
+    cfg.mediatek-mt6785.enable
+    cfg.mediatek-mt8127.enable
+    cfg.mediatek-mt8183.enable
+  ];
 in
 {
   options.mobile = {
@@ -44,6 +50,12 @@ in
       mobile = mkIf cfg.mediatek-mt8127.enable {
         system.system = "armv7l-linux";
         quirks.fb-refresher.enable = true;
+        kernel.structuredConfig = [
+          (helpers: with helpers; {
+            ARCH_MT8127 = lib.mkDefault yes;
+            ARCH_MEDIATEK = option yes;
+          })
+        ];
       };
     }
     {
@@ -51,5 +63,12 @@ in
         system.system = "aarch64-linux";
       };
     }
+    (mkIf anyMediatek {
+      mobile.kernel.structuredConfig = [
+        (helpers: with helpers; {
+          ARCH_MEDIATEK = lib.mkDefault yes;
+        })
+      ];
+    })
   ];
 }

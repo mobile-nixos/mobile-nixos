@@ -54,5 +54,11 @@ in
       FRAMEBUFFER_CONSOLE_ROTATION = yes;
       FRAMEBUFFER_CONSOLE_DETECT_PRIMARY = yes;
     })
+
+    (helpers: with helpers; {
+      WIRELESS = no;
+      CFG80211 = no;
+      CFG80211_WEXT = no;
+    })
   ];
 }

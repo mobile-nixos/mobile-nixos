@@ -4,6 +4,10 @@ let
   inherit (lib) mkIf mkMerge mkOption types;
   inherit (pkgs) imageBuilder;
   cfg = config.mobile.hardware.socs;
+  anyAllwinner = lib.any (v: v) [
+    cfg.allwinner-a64.enable
+    cfg.allwinner-r18.enable
+  ];
 in
 {
   options.mobile = {
@@ -30,5 +34,12 @@ in
         system.system = "aarch64-linux";
       };
     }
+    (mkIf anyAllwinner {
+      mobile.kernel.structuredConfig = [
+        (helpers: with helpers; {
+          ARCH_SUNXI = lib.mkDefault yes;
+        })
+      ];
+    })
   ];
 }

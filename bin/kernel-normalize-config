@@ -17,7 +17,10 @@ def usage()
   puts ""
   puts " --file=path/to/kernel/config.file -- detected automatically if not present."
   puts " --only-check"
+  puts " --also-commit"
 end
+
+FAMILIES_DIR = File.absolute_path(File.join(__dir__(), "..", "/devices/families/"))
 
 # Poor approximation to arguments parsing.
 params, other_args = ARGV.partition { |s| s.match(/^--/) }
@@ -44,6 +47,14 @@ ONLY_CHECK =
     false
   end
 
+ALSO_COMMIT =
+  if params["also-commit"] then
+    true
+    params.delete("also-commit")
+  else
+    false
+  end
+
 DEVICE = other_args.shift
 
 args =
@@ -55,7 +66,7 @@ args =
   end
 
 # 
-args << File.join(ROOT, "default.nix")
+args << File.join(ROOT, "support/kernel-config/default.nix")
 
 @file =
   if params["file"]
@@ -125,9 +136,20 @@ if ONLY_CHECK
     $stderr.puts "Configuration is stale."
     exit 1
   end
-else
-  # We "cat" into the file to ensure we don't copy the store path access rights.
-  File.write(@file, File.read(result))
+end
+
+# We "cat" into the file to ensure we don't copy the store path access rights.
+File.write(@file, File.read(result))
+
+if ALSO_COMMIT
+  device_name =
+    if @file.match?(%r{^#{FAMILIES_DIR}})
+      @file.split("/")[-3]
+    else
+      DEVICE.split("/").last
+    end
+  message = "#{device_name}: Normalize kernel config\n\n(Automatically using bin/kernel-normalize-all)"
+  system("git", "commit", "-m", message, "--", @file)
 end
 
 # vim: ft=ruby

@@ -33,6 +33,7 @@ in
       # Basic universal options
       (helpers: with helpers; {
         LOCALVERSION = lib.mkDefault (freeform ''""'');
+        LOCALVERSION_AUTO = no;
         # POSIX_ACL and XATTR are generally needed.
         TMPFS = yes;
         TMPFS_POSIX_ACL = yes;

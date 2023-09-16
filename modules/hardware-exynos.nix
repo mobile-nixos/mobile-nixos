@@ -3,6 +3,9 @@
 let
   inherit (lib) mkMerge mkOption mkIf types;
   cfg = config.mobile.hardware.socs;
+  anyExynos = lib.any (v: v) [
+    cfg.exynos-7880.enable
+  ];
 in
 {
   options.mobile = {
@@ -20,5 +23,12 @@ in
         quirks.fb-refresher.enable = true;
       };
     }
+    (mkIf anyExynos {
+      mobile.kernel.structuredConfig = [
+        (helpers: with helpers; {
+          ARCH_EXYNOS = lib.mkDefault yes;
+        })
+      ];
+    })
   ];
 }
