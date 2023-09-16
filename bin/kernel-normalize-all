@@ -10,7 +10,7 @@ maybe_normalize() {
 	# Prevent needlessly updating the config file when only compiler
 	# information is updated (e.g. native vs. cross-compiled).
 	if ! bin/kernel-normalize-config --only-check "$1"; then
-		if ! bin/kernel-normalize-config "$1"; then
+		if ! bin/kernel-normalize-config --also-commit "$1"; then
 			FAILED+=("$1")
 		fi
 	fi
