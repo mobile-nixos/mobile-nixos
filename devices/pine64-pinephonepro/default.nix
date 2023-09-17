@@ -7,11 +7,7 @@
   };
 
   boot.kernelParams = [
-    # Serial console on ttyS2, using the dedicated cable.
-    # TODO: option to enable serial console.
-    #"console=ttyS2,115200"
-    #"earlycon=uart8250,mmio32,0xff1a0000"
-    #"earlyprintk"
+    "earlycon=uart8250,mmio32,0xff1a0000"
   ];
 
   mobile.boot.stage-1 = {
@@ -25,6 +21,9 @@
       width = 720; height = 1440;
     };
   };
+
+  # Serial console on ttyS2, using the serial headphone adapter.
+  mobile.boot.serialConsole = "ttyS2,115200";
 
   mobile.system.type = "u-boot";
   # By design we're not adding a U-Boot package.
