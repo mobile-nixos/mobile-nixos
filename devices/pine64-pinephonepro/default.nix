@@ -1,17 +1,10 @@
 { config, lib, pkgs, ... }:
+
 {
   mobile.device.name = "pine64-pinephonepro";
   mobile.device.identity = {
     name = "Pinephone Pro";
     manufacturer = "Pine64";
-  };
-
-  boot.kernelParams = [
-    "earlycon=uart8250,mmio32,0xff1a0000"
-  ];
-
-  mobile.boot.stage-1 = {
-    kernel.package = pkgs.callPackage ./kernel { };
   };
 
   mobile.hardware = {
@@ -22,26 +15,21 @@
     };
   };
 
+  mobile.boot.stage-1 = {
+    kernel.package = pkgs.callPackage ./kernel { };
+  };
+
+  boot.kernelParams = [
+    "earlycon=uart8250,mmio32,0xff1a0000"
+  ];
+
   # Serial console on ttyS2, using the serial headphone adapter.
   mobile.boot.serialConsole = "ttyS2,115200";
 
   mobile.system.type = "u-boot";
-  # By design we're not adding a U-Boot package.
-  # We're starting to dogfood using Tow-Boot.
-
-  mobile.device.firmware = pkgs.callPackage ./firmware {};
-  mobile.boot.stage-1.firmware = [
-    config.mobile.device.firmware
-  ];
-  hardware.firmware = [
-    config.mobile.device.firmware
-  ];
 
   mobile.usb.mode = "gadgetfs";
 
-  # Alsa UCM profiles
-  mobile.quirks.audio.alsa-ucm-meld = true;
-  environment.systemPackages = [ pkgs.mobile-nixos.pine64-alsa-ucm ];
 
   # It seems Pine64 does not have an idVendor...
   mobile.usb.idVendor = "1209";  # http://pid.codes/1209/
@@ -58,6 +46,18 @@
     # Used by target-disk-mode to share the internal drive
     storage.internal = "/dev/disk/by-path/platform-fe330000.mmc";
   };
+
+  mobile.device.firmware = pkgs.callPackage ./firmware {};
+  mobile.boot.stage-1.firmware = [
+    config.mobile.device.firmware
+  ];
+  hardware.firmware = [
+    config.mobile.device.firmware
+  ];
+
+  # Alsa UCM profiles
+  mobile.quirks.audio.alsa-ucm-meld = true;
+  environment.systemPackages = [ pkgs.mobile-nixos.pine64-alsa-ucm ];
 
   mobile.boot.stage-1.tasks = [ ./usb_role_switch_task.rb ];
 
