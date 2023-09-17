@@ -1,0 +1,26 @@
+From 03aedba687e2aacb258aa0f92876c48f5bde30e7 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Thu, 28 Jan 2021 15:42:29 -0500
+Subject: [PATCH] usb: dwc3: Enable userspace role switch control
+
+Self-explanatory. Allows end-users to control the role of the controller
+without having to rely on debugfs.
+---
+ drivers/usb/dwc3/drd.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/usb/dwc3/drd.c b/drivers/usb/dwc3/drd.c
+index d7f76835137f..eb23ce88f3b6 100644
+--- a/drivers/usb/dwc3/drd.c
++++ b/drivers/usb/dwc3/drd.c
+@@ -555,6 +555,7 @@ static int dwc3_setup_role_switch(struct dwc3 *dwc)
+ 	dwc3_role_switch.set = dwc3_usb_role_switch_set;
+ 	dwc3_role_switch.get = dwc3_usb_role_switch_get;
+ 	dwc3_role_switch.driver_data = dwc;
++	dwc3_role_switch.allow_userspace_control = true;
+ 	dwc->role_sw = usb_role_switch_register(dwc->dev, &dwc3_role_switch);
+ 	if (IS_ERR(dwc->role_sw))
+ 		return PTR_ERR(dwc->role_sw);
+-- 
+2.29.2
+

@@ -160,6 +160,8 @@ in
 
       cross-canary-test = callPackage ./mobile-nixos/cross-canary/test.nix {};
       cross-canary-test-static = self.pkgsStatic.callPackage ./mobile-nixos/cross-canary/test.nix {};
+
+      pine64-alsa-ucm = callPackage ./mobile-nixos/pine64-alsa-ucm {};
     };
 
     image-builder = callPackage ./image-builder {};
