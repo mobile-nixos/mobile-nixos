@@ -60,6 +60,9 @@
     config.mobile.device.firmware
   ];
 
+  # Modem service
+  services.eg25-manager.enable = lib.mkDefault true;
+
   # Alsa UCM profiles
   mobile.quirks.audio.alsa-ucm-meld = true;
   environment.systemPackages = [ pkgs.mobile-nixos.pine64-alsa-ucm ];
