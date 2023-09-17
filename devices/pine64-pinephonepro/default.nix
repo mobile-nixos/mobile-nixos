@@ -10,6 +10,7 @@
     name = "Pinephone Pro";
     manufacturer = "Pine64";
   };
+  mobile.device.supportLevel = "supported";
 
   mobile.hardware = {
     soc = "rockchip-rk3399s";
