@@ -11,6 +11,7 @@
   ./devices-metadata.nix
   ./disk-image.nix
   ./documentation.nix
+  ./eg25-manager.nix
   ./hardware-eink.nix
   ./generated-disk-images.nix
   ./generated-filesystems.nix
