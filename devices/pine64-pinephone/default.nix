@@ -3,7 +3,6 @@
 {
   imports = [
     ./modem.nix
-    ./sound.nix
   ];
 
   nixpkgs.overlays = [
