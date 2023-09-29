@@ -1,0 +1,42 @@
+= Acer Chromebook Spin 513
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Developer mode
+
+For more details the link:https://chromium.googlesource.com/chromiumos/docs/+/HEAD/debug_buttons.md#Firmware-Menu-Interface[
+Firmware Menu Interface] section from the upstream documentation can be read.
+
+You will need to:
+
+. Boot in _Recovery mode_ by resetting pressing `Esc` + `Refresh (F3)` + `Power`
+. Activate Developer mode by navigating the on-screen menu
+
+Note that this is only to allow you to boot unverified images.
+
+You may want to configure other options with GBB flags. This is left as an
+exercise to the reader.
+
+=== Wi-Fi support
+
+The Wi-Fi interface requires the modem to be initialized, even on non-LTE
+devices.
+
+The modem requires currently unredistributable firmware. It has been overlaid
+in the package set as `chromeos-sc7180-unredistributable-firmware`.
+
+For the time being, you will need to manually add this to your configuration
+for Wi-Fi.
+
+[source,nix]
+----
+{ /* configuration.nix */
+  hardware.firmware = [
+    pkgs.chromeos-sc7180-unredistributable-firmware
+  ];
+}
+----
+
+You will also need to connect with an alternative connection with the
+installer, or build it with the firmware yourself.
