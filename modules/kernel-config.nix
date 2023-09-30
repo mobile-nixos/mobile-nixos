@@ -227,6 +227,26 @@ in
         # NETFILTER_XT_MATCH_IPVS = ...;
       })
 
+      # Needed for iio sensors (e.g. accel) to be useful
+      (helpers: with helpers; let
+        inherit (lib) mkMerge;
+        module = yes;
+      in {
+        HID_SENSOR_HUB = whenAtLeast "3.7" module;
+        HID_SENSOR_IIO_COMMON = whenAtLeast "3.7" module;
+        HID_SENSOR_ACCEL_3D = whenAtLeast "3.8" module;
+        HID_SENSOR_GYRO_3D = whenAtLeast "3.7" module;
+        HID_SENSOR_HUMIDITY = whenAtLeast "4.12" module;
+        HID_SENSOR_ALS = whenAtLeast "3.7" module;
+        HID_SENSOR_PROX = whenAtLeast "3.15" module;
+        HID_SENSOR_MAGNETOMETER_3D = whenAtLeast "3.7" module;
+        HID_SENSOR_INCLINOMETER_3D = whenAtLeast "3.14" module;
+        HID_SENSOR_DEVICE_ROTATION = whenAtLeast "3.16" module;
+        HID_SENSOR_CUSTOM_INTEL_HINGE = whenAtLeast "5.12" module;
+        HID_SENSOR_PRESS = whenAtLeast "3.15" module;
+        HID_SENSOR_TEMP = whenAtLeast "4.12" module;
+      })
+
       # Needed for waydroid
       (helpers: with helpers; let
         inherit (lib) mkMerge;
