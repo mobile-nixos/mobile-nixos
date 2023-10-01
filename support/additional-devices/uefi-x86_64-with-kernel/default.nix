@@ -60,5 +60,22 @@ in
       CFG80211 = no;
       CFG80211_WEXT = no;
     })
+
+    # Not needed for testing here, and brings in too many deps.
+    (helpers: with helpers; {
+        HID_SENSOR_HUB = mkForce no;
+        HID_SENSOR_IIO_COMMON = mkForce no;
+        HID_SENSOR_ACCEL_3D = mkForce no;
+        HID_SENSOR_GYRO_3D = mkForce no;
+        HID_SENSOR_HUMIDITY = mkForce no;
+        HID_SENSOR_ALS = mkForce no;
+        HID_SENSOR_PROX = mkForce no;
+        HID_SENSOR_MAGNETOMETER_3D = mkForce no;
+        HID_SENSOR_INCLINOMETER_3D = mkForce no;
+        HID_SENSOR_DEVICE_ROTATION = mkForce no;
+        HID_SENSOR_CUSTOM_INTEL_HINGE = mkForce no;
+        HID_SENSOR_PRESS = mkForce no;
+        HID_SENSOR_TEMP = mkForce no;
+    })
   ];
 }
