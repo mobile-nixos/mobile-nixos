@@ -1,4 +1,4 @@
-{ lib, runCommand, mobile-nixos }:
+{ lib, mobile-nixos }:
 
 mobile-nixos.mkLVGUIApp {
   name = "boot-recovery-menu.mrb";

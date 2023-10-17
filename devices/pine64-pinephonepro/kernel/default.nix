@@ -1,6 +1,5 @@
 {
   mobile-nixos
-, fetchpatch
 , fetchFromGitLab
 , ...
 }:

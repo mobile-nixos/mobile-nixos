@@ -4,7 +4,7 @@
 , ...
 }:
 
-mobile-nixos.kernel-builder rec {
+mobile-nixos.kernel-builder {
   version = "6.4.0";
   configfile = ./config.aarch64;
 

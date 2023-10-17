@@ -10,9 +10,6 @@
     (self: super: {
       google-trogdor-alsa-ucm = self.callPackage (
         { runCommand, fetchgit }:
-        let
-          rev = "fac4d7e17871a8e7ec1c39f58257389e9bf62f06";
-        in
         runCommand "google-trogdor-alsa-ucm" {
           src = fetchgit {
             url = "https://chromium.googlesource.com/chromiumos/overlays/board-overlays";

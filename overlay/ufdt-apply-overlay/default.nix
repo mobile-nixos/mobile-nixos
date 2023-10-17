@@ -31,7 +31,7 @@ stdenv.mkDerivation {
 
   meta = with lib; {
     # up-upstream: https://android.googlesource.com/platform/system/libufdt/
-    homepage = https://github.com/hybris-mobian/android-platform-system-libufdt;
+    homepage = "https://github.com/hybris-mobian/android-platform-system-libufdt";
     description = "Standalone fork of platform/system/libufdt";
     platforms = platforms.linux;
     maintainers = [ maintainers.samueldr ];

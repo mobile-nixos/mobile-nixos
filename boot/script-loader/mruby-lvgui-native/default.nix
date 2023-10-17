@@ -1,7 +1,5 @@
 { mrbgems
 , callPackage
-, fetchFromGitHub
-, pkg-config
 , buildPackages
 
 # Configuration

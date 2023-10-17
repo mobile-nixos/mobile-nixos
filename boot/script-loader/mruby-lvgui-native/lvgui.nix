@@ -10,7 +10,7 @@
 }:
 
 let
-  inherit (lib) optional optionals optionalString;
+  inherit (lib) optional optionals;
   simulatorDeps = [
     SDL2
   ];
