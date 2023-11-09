@@ -26,7 +26,7 @@ stdenv.mkDerivation {
   '';
 
   meta = with lib; {
-    homepage = https://git.openwrt.org/?p=project/make_ext4fs.git;
+    homepage = "https://git.openwrt.org/?p=project/make_ext4fs.git";
     description = "Standalone fork of Android make_ext4fs utility";
     license = licenses.asl20;
     platforms = platforms.linux;

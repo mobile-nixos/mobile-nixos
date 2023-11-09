@@ -1,5 +1,4 @@
 { mobile-nixos
-, stdenv
 , fetchFromGitHub
 , ...
 }:

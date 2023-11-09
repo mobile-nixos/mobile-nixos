@@ -1,6 +1,5 @@
 { lib
 , runCommand
-, fetchFromGitHub
 , fetchurl
 , modem ? builtins.throw ''
 
