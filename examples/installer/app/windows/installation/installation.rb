@@ -83,7 +83,7 @@ module GUI
 
       @failure_text.set_text([
         "Something went wrong when installing.",
-        "The system is in an uknown state.",
+        "The system is in an unknown state.",
         "\nReturn value: #{@installer_terminal.pane_dead_status}",
       ].join("\n"))
     end

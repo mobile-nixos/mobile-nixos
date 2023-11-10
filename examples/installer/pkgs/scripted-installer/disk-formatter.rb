@@ -191,7 +191,7 @@ partition_count += 1 if $system_type == "depthcharge"
 
 if do_partitioning then
   puts ""
-  puts "Partitionning..."
+  puts "Partitioning..."
   puts ""
 
   Helpers::wipefs(disk)
