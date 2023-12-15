@@ -1,7 +1,6 @@
 self: super:
 
 let
-  fetchpatch = self.fetchpatch;
   callPackage = self.callPackage;
   # FIXME : upstream fix for .a in "lib" instead of this hack.
   # This is used to "re-merge" the split gcc package.

@@ -4,17 +4,11 @@
 
 , mruby
 , buildPackages
-
-, static ? false
 }:
 
 let
-  inherit (lib) concatStringsSep optional optionalString;
+  inherit (lib) optionalString;
 
-  isCross = stdenv.targetPlatform != stdenv.hostPlatform;
-  # FIXME: Discover from stdenv rather than from a parameter.
-  # (See comment in overlay)
-  isStatic = static;
 in
 
 # The actual builder function

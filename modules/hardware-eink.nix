@@ -4,7 +4,6 @@ let
   inherit (lib)
     mkIf
     mkOption
-    types
   ;
   cfg = config.mobile.hardware.eink;
 in

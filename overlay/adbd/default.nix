@@ -10,9 +10,6 @@ stdenv
 # This removes systemd socket activation (from ubports)
 # This also removes any selinux support.
 
-let
-  inherit (stdenv) targetPlatform;
-in
 stdenv.mkDerivation {
   name = "adbd";
   version = "0";

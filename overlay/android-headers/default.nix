@@ -11,7 +11,7 @@ stdenvNoCC.mkDerivation {
   name = "android-headers";
 
   src = fetchgit {
-    url = https://git.launchpad.net/android-headers;
+    url = "https://git.launchpad.net/android-headers";
     rev = "957ab6e28aea03d0cf6495f33ade9ddfff480ccc";
     sha256 = "1ma872lq46qqpfvc3x9hlcs28w7vbaaf6k5p9v114h92qsza3cm0";
   };

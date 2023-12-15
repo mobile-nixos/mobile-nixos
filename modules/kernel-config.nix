@@ -229,7 +229,6 @@ in
 
       # Needed for iio sensors (e.g. accel) to be useful
       (helpers: with helpers; let
-        inherit (lib) mkMerge;
         module = yes;
       in {
         HID_SENSOR_HUB = whenAtLeast "3.7" module;

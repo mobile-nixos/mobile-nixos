@@ -5,7 +5,6 @@ let
     mkOption
     types
   ;
-  cfg = config.mobile.hardware.screen;
 in
 {
   options.mobile.hardware.screen = {

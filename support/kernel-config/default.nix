@@ -1,6 +1,6 @@
 { pkgs ? (import ../../pkgs.nix {})
 , device
-}@args':
+}:
 
 let
   eval = import ../../lib/eval-with-configuration.nix ({

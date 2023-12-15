@@ -77,7 +77,7 @@ let
     # This is the executable name
     name = "simulator";
     applet = "${app}/${app.executablePath}";
-  }).overrideAttrs(old: rec {
+  }).overrideAttrs(old: {
     # Override the name for the derivation
     name = "simulator-for-${app.name}";
   })

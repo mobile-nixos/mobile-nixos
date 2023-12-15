@@ -4,18 +4,13 @@ let
   inherit (lib)
     mkDefault
     mkIf
-    mkMerge
-    mkOptionDefault
   ;
 
   inherit (pkgs.stdenv)
-    is64bit
     isAarch32
-    isAarch64
     isx86_32
     isx86_64
   ;
-  isArm = isAarch64 || isAarch32;
   isx86 = isx86_32 || isx86_64;
 
   mkDefaultIze =

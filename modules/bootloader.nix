@@ -1,11 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (config.boot) growPartition;
-  inherit (lib) mkIf mkOption optionalString types;
-  inherit (config.mobile._internal) compressLargeArtifacts;
-  inherit (pkgs) buildPackages;
-  rootfsLabel = config.mobile.generatedFilesystems.rootfs.label;
+  inherit (lib) mkIf mkOption types;
 in
 {
   options = {

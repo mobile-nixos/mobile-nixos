@@ -25,7 +25,7 @@ let
 in
 
 {
-  environment.systemPackages = with pkgs; [
+  environment.systemPackages = [
     installer-gui
   ];
 

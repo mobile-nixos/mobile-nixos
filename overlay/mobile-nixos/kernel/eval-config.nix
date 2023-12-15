@@ -65,7 +65,6 @@
             let
               line = lib.escapeShellArg (mkConfigLine key item);
               lineNotSet = "# CONFIG_${key} is not set";
-              linePattern = "^CONFIG_${key}=";
               presencePattern = "CONFIG_${key}[ =]";
             in
             ''

@@ -1,9 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkIf mkOption types;
-
-  cfg = config.mobile.boot.stage-1.fail;
+  inherit (lib) mkOption types;
 in
 {
   options.mobile = {

@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkOption types mkMerge mkIf;
+  inherit (lib) mkOption types mkIf;
   cfg = config.mobile.quirks;
 in
 {

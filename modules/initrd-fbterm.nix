@@ -5,7 +5,6 @@ let
     mkOption
     types
   ;
-  device_name = config.mobile.device.name;
   cfg = config.mobile.boot.stage-1.fbterm;
   fontsConf = pkgs.writeText "fonts.conf" ''
     <?xml version="1.0"?>

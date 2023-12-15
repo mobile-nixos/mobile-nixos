@@ -1,5 +1,4 @@
 { pkgs
-, stdenv
 , glibcLocales
 , runCommand
 , symlinkJoin

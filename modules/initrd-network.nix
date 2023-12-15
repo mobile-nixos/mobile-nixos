@@ -6,8 +6,6 @@ let
     types
   ;
   cfg = config.mobile.boot.stage-1.networking;
-  IP = cfg.IP;
-  hostIP = cfg.hostIP;
 in
 {
   options.mobile.boot.stage-1.networking = {
