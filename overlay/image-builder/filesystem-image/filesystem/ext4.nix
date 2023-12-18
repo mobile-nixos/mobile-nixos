@@ -14,7 +14,7 @@ let
     chopDecimal
   ;
 
-  inherit (config) label sectorSize blockSize;
+  inherit (config) label;
   inherit (config.ext4) partitionID;
 
   # Bash doesn't do floating point representations. Multiplications and divisions

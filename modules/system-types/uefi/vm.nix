@@ -1,12 +1,8 @@
 { config, pkgs, lib, ... }:
 
 let
-  # This particular VM module is only enabled for the uefi system type.
-  enabled = config.mobile.system.type == "uefi";
-
-  inherit (lib) mkAfter mkIf mkMerge mkOption types;
+  inherit (lib) mkIf mkMerge mkOption types;
   inherit (config.mobile) device hardware;
-  inherit (config.mobile.boot) stage-1;
   inherit (config.mobile.generatedDiskImages) disk-image;
 
   ram  = toString hardware.ram;

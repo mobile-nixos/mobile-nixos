@@ -11,7 +11,7 @@ let
     types
   ;
 
-  inherit (config) label sectorSize blockSize;
+  inherit (config) label;
   inherit (config.btrfs) partitionID;
 in
 {

@@ -1,6 +1,5 @@
 { pkgs ? (import ../../../pkgs.nix {})
-}@args':
-let args = args' // { inherit pkgs; }; in
+}:
 
 let
   eval = configuration: import (pkgs.path + "/nixos") {

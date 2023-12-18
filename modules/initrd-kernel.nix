@@ -4,16 +4,13 @@ let
 
   inherit (lib)
     literalExpression
-    mergeEqualOption
     mkDefault
     mkIf
     mkMerge
     mkOption
-    mkOverride
     types
   ;
   cfg = config.mobile.boot.stage-1.kernel;
-  device_config = config.mobile.device;
 
   modulesClosure = pkgs.makeModulesClosure {
     kernel = cfg.package;

@@ -49,7 +49,6 @@ let
   ];
   inherit (pkgs.stdenv)
     is64bit
-    isAarch32
     isAarch64
     isx86_32
     isx86_64

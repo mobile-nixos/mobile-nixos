@@ -3,7 +3,6 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (config.boot) growPartition;
   inherit (lib) mkIf mkOption optionalString types;
   inherit (config.mobile._internal) compressLargeArtifacts;
   inherit (pkgs) buildPackages;

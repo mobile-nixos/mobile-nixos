@@ -8,7 +8,7 @@ let
 in
 
 # A basic shell with some tools available for porting devices.
-pkgs.mkShell rec {
+pkgs.mkShell {
   name = "nixos-mobile";
   buildInputs = with pkgs; [
     # Custom tools

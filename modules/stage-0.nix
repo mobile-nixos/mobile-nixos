@@ -6,7 +6,6 @@
 let 
   inherit (lib) mkOption types;
   inherit (config.mobile.quirks) supportsStage-0;
-  inherit (config.mobile.boot.stage-1) kernel;
 
   # A bit dirty, but actually works for what we want.
   fdt-forward = pkgs.runCommand "fdt-forward-for-initrd" {} ''

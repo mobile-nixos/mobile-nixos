@@ -1,7 +1,7 @@
 { config, lib, pkgs, ... }:
 
 let
-  inherit (lib) mkIf mkMerge mkOption types;
+  inherit (lib) mkMerge mkOption types;
   cfg = config.mobile.hardware.socs;
 in
 {

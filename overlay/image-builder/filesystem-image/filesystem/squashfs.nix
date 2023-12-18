@@ -3,15 +3,12 @@
 let
   enabled = config.filesystem == "squashfs";
   inherit (lib)
-    escapeShellArg
     mkIf
     mkMerge
     mkOption
-    optionalString
     types
   ;
 
-  inherit (config) label sectorSize blockSize;
   inherit (config.squashfs)
     compression
     compressionParams

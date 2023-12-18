@@ -2,7 +2,6 @@
 
 let
   inherit (lib)
-    mkIf
     optionalString
   ;
   inherit (config.mobile)

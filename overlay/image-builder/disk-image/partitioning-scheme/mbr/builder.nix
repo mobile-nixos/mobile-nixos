@@ -1,15 +1,11 @@
 { stdenvNoCC
 , lib
-, fetchpatch
-, buildPackages
 , utillinux
 , config
 }:
 
 let
   inherit (lib)
-    concatMapStringsSep
-    concatStringsSep
     optionalString
   ;
   inherit (config.helpers)

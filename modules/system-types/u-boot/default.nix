@@ -4,14 +4,12 @@ let
   enabled = config.mobile.system.type == "u-boot";
 
   inherit (config.mobile.outputs) recovery stage-0;
-  inherit (pkgs) buildPackages image-builder runCommand;
+  inherit (pkgs) buildPackages runCommand;
   inherit (lib) mkBefore mkIf mkOption  types;
   cfg = config.mobile.quirks.u-boot;
-  inherit (cfg) soc;
   deviceName = config.mobile.device.name;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
   kernel_file = "${kernel}/${if kernel ? file then kernel.file else pkgs.stdenv.hostPlatform.linux-kernel.target}";
-  inherit (config.mobile.generatedFilesystems) rootfs;
   boot-partition = config.mobile.generatedFilesystems.boot.output;
 
   # Look-up table to translate from targetPlatform to U-Boot names.

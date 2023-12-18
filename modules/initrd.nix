@@ -10,7 +10,6 @@ let
     writeText
   ;
   inherit (lib)
-    concatMap
     concatStringsSep
     filter
     flatten

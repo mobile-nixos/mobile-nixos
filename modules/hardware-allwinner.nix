@@ -2,7 +2,6 @@
 
 let
   inherit (lib) mkIf mkMerge mkOption types;
-  inherit (pkgs) imageBuilder;
   cfg = config.mobile.hardware.socs;
   anyAllwinner = lib.any (v: v) [
     cfg.allwinner-a64.enable

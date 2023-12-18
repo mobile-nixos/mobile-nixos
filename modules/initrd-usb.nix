@@ -11,9 +11,6 @@ let
   ;
   inherit (config.mobile.usb) gadgetfs;
   cfg = config.mobile.boot.stage-1;
-  device_name = device_config.name;
-  device_config = config.mobile.device;
-  system_type = config.mobile.system.type;
 in
 {
   options.mobile.boot.stage-1.usb = {

@@ -3,14 +3,11 @@
 let
   enabled = config.mobile.system.type == "uefi";
 
-  inherit (lib) mkBefore mkEnableOption mkIf mkOption types;
-  inherit (pkgs.stdenv) hostPlatform;
-  inherit (pkgs) image-builder runCommand;
+  inherit (lib) mkBefore mkIf mkOption types;
   inherit (config.mobile.outputs) recovery stage-0;
   deviceName = config.mobile.device.name;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
   kernelFile = "${kernel}/${if kernel ? file then kernel.file else pkgs.stdenv.hostPlatform.linux-kernel.target}";
-  inherit (config.mobile.generatedFilesystems) rootfs;
   boot-partition = config.mobile.generatedFilesystems.boot.output;
 
   # Look-up table to translate from targetPlatform to U-Boot names.

@@ -2,7 +2,6 @@
 
 let
   inherit (lib)
-    filter
     mkIf
     mkOption
     types

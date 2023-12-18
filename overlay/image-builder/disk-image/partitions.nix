@@ -7,10 +7,6 @@ let
     mkOption
     types
   ;
-  listEntrySubmodule = {
-    options = {
-    };
-  };
 
   inherit (config) helpers;
 
