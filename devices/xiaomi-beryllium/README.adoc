@@ -1,14 +1,22 @@
-= Xiaomi POCO F1
+= Xiaomi Pocophone F1 / POCO F1
 include::_support/common.inc[]
 
 == Device-specific notes
+
+This not an A/B device despite it having a SDM845.
+
+If you want to erase dtbo you do it like this:
+```
+ $ fastboot erase dtbo
+```
 
 === First time setup notes
 
 ==== Update firmware
 
+==== Prepare for mainline
+
 ==== Dual booting
 
-This is not supported. Refer to other non-Android Linux instructions and
-adapt as needed. Here be snapdragons.
-
+This is not really supported. 
+There are hacks to give the appearance of dual-booting for beryllium but you are a bit on your own for that.
