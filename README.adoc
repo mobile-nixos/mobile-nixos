@@ -73,7 +73,7 @@ endif::[]
 ifndef::env-github[]
  * <<contributing.adoc#,Contributing to Mobile NixOS>>
 endif::[]
- * link:https://github.com/NixOS/nixpkgs/blob/master/.github/CONTRIBUTING.md[Contributing to Nixpkgs or NixOS]
+ * link:https://github.com/NixOS/nixpkgs/blob/master/CONTRIBUTING.md[Contributing to Nixpkgs or NixOS]
 
 Contributions are always welcome. If it's your first time contributing:
 jump in and don't be scared. Mistakes in your first contributions are room for
