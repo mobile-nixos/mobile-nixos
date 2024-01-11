@@ -37,7 +37,7 @@ allow mainline kernels to run on your device - as well as providing a
 
 You can build lk2nd for your device as foilows:
 
- $ nix-build --argstr device <%= info["identifier"] %> -A pkgs.lk2ndMsm8953 -o lk2nd
+ $ nix-build --argstr device <%= info["identifier"] %> -A pkgs.pkgsBuild.lk2ndMsm8953 -o lk2nd
 
 To install it, reboot into the bootloader (`fastboot` mode), then run
 

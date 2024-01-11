@@ -51,6 +51,10 @@ in stdenv.mkDerivation {
     cp ./build-msm8953-secondary/lk2nd.img $out
   '';
 
-  makeFlags = [ "msm8953-secondary" "TOOLCHAIN_PREFIX=arm-none-eabi-" ];
+  makeFlags = [
+    "msm8953-secondary"
+    "LD=arm-none-eabi-ld"
+    "TOOLCHAIN_PREFIX=arm-none-eabi-"
+  ];
 
 }
