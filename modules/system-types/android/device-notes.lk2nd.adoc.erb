@@ -4,6 +4,15 @@ There is one tested installation method for your _<%= info["fullName"] %>_.
 It relies on flashing one or more partitions on your device
 and creating a filesytem for the boot image.
 
+[NOTE]
+===
+These instructions depend on adb being enabled, so
+will not work with an "unconfigured" Mobile NixOS image.  If you have
+changed nothing else in your Mobile NixOS system the you will at
+minimum need something like
+`{ lib, ... }: { mobile.adbd.enable = true; }` in the `local.nix` file.
+
+
 [WARNING]
 ====
 *All installation methods can lead to data loss.*
@@ -35,7 +44,7 @@ your existing bootloader and does some hardware setup required to
 allow mainline kernels to run on your device - as well as providing a
 "fastboot" interface for devices that don't already have one.
 
-You can build lk2nd for your device as foilows:
+You can build lk2nd for your device as follows:
 
  $ nix-build --argstr device <%= info["identifier"] %> -A pkgs.pkgsBuild.lk2ndMsm8953 -o lk2nd
 
