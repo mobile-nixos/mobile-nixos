@@ -3,61 +3,6 @@ include::_support/common.inc[]
 
 == Device-specific notes
 
-=== Hardware Revisions
-
-This device has been through several hardware revisions: the kernel
-describes `P0A`, `P1A`, `P1B`, `P2A`, `P2A2`, `P2B`, and `P3A` but
-that's not an exhaustive list.  Each of these revisions corresponds to
-a separate hardware configuration description (device tree) in the
-vendor kernel, but on examination it turns out that several are
-identical to each other.
-
-According to the commit messages, the two hardware changes that required
-device tree changes were
-
-* (U) "Change usbid-gpio from 66 to 59" (git sha 305e2610c598dc4e)
-* (D) "boost clock use pdm clock instead" (git sha c42744ebf80da79a0)
-
-[width="50%",options="header"]
-|==========================
-|hwrev | board-id | (mis)features
-
-|P0A  | <0x44 0x80a0> |  U D
-|P1A  | <0x44 0x81a0> |  U D
-|P1B  | <0x44 0x81b0> |  D
-|P2A  | <0x44 0x82a0> |  D
-|     | <0x45 0x82a0> |  D
-|P2A2 | <0x45 0x82a2> | 
-|P2B  | <0x45 0x82b0> |
-|P3A  | <0x46 0x83a0> |
-|P3B  | <0x46 0x83b0> |
-|==========================
-
-
-Thus we can describe the complete range of hardware using only three
-variations instead of seven, which represents a significant space
-saving on the boot partition
-
-- msm8953-potter-p0a-p1a.dtb   (contains U and D fixes)
-- msm8953-potter-p1b-p2a.dtb   (contains D fix only)
-- msm8953-potter-p2a2-plus.dtb (contains no fix)
-
-
-==== What about `P3B`?
-
-The vendor kernel does not include a device tree source with
-appropriate board-id for hwrev `P3B`, but empirically (by consulting
-`/proc/device-tree/board-id` on a device running Android) it looks like
-the bootloader chooses the `P3A` DTB instead. As far as I understand it
-this goes against the https://github.com/xiaolu/mkbootimg_tools/blob/master/dtbtool.txt[documented rules]
-for choosing a device tree - https://android.googlesource.com/kernel/msm.git/+/android-msm-bullhead-3.10-n-preview-1/Documentation/devicetree/bindings/arm/msm/board-id.txt?autodive=0%2F%2F%2F%2F[according to
-sources]
-the platform subtype is the lowest 8 bits of the second element of the
-`board-id`, and clearly `0xa0 != 0xb0`, but it seems to do it anyway.
-
-If you have a device with a hwrev *after* `P3B`, I'd love to hear from
-you about how it behaves in this regard.
-
 
 === Firmware for Wi-Fi
 
