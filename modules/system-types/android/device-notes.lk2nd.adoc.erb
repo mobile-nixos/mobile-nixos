@@ -29,7 +29,7 @@ Alternatively, you can build a specific partition image:
 
 
 The device requires the
-"[lk2nd](https://github.com/msm8953-mainline/lk2nd)" secondary
+link:https://github.com/msm8953-mainline/lk2nd[lk2nd] secondary
 bootloader to be installed in the `boot` partition. This runs after
 your existing bootloader and does some hardware setup required to
 allow mainline kernels to run on your device - as well as providing a
@@ -37,11 +37,11 @@ allow mainline kernels to run on your device - as well as providing a
 
 You can build lk2nd for your device as foilows:
 
-$ nix-build --argstr device <%= info["identifier"] %> -A pkgs.lk2ndMms8953
+ $ nix-build --argstr device <%= info["identifier"] %> -A pkgs.lk2ndMsm8953 -o lk2nd
 
 To install it, reboot into the bootloader (`fastboot` mode), then run
 
- $ fastboot flash boot result/lk2nd.img
+ $ fastboot flash boot lk2nd/lk2nd.img
 
 Now you can boot into lk2nd - press Volume Down while booting to enter
 Fastboot mode.  If your stock bootloader uses the same key
