@@ -4,16 +4,16 @@ include::_support/common.inc[]
 == Device-specific notes
 
 
-=== Firmware for Wi-Fi
+=== Firmware for Wi-Fi and modem
 
-This particular phone keeps the firmware files on a partition named
-`modem`.
+This particular phone keeps the firmware files on partitions named
+`modem` and `fsg` (and possibly others we don't know about yet).
 
 To make use of the Wi-Fi capabilities of this phone you will need to
 make them available to the firmware derivation.
 
 The files can be acquired through different methods. You can use an
-alternate recovery like TWRP, mount the partition (identified using
+alternate recovery like TWRP, mount each partition (identified using
 `blkid`) and copy the files.
 
 Another way is to do it using an installed Mobile NixOS system, where,
@@ -23,10 +23,15 @@ too, you mount the partition and copy them:
 $ sudo mount -o ro /dev/disk/by-partlabel/modem /mnt
 $ cp -r /mnt ./modem
 $ sudo umount /mnt
+$ sudo mount -o ro /dev/disk/by-partlabel/fsg /mnt
+$ cp -r /mnt ./fsg
+$ sudo umount /mnt
 ```
 
-The copy of the firmware files will be in the modem directory, in the
-current working directory, ready to be referred to.
+The copy of the firmware files will be in the `modem` and `fsg`
+subdirectories of the current working directory. Please refer to
+devices/motorola-potter/firmware/default.nix for instructions
+on how to use it.
 
 === Touchscreen
 

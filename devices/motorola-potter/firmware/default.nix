@@ -1,6 +1,7 @@
 { lib
 , runCommand
 , fetchurl
+, fsg ? null
 , modem ? builtins.throw ''
 
     Your attention is required:
@@ -11,6 +12,7 @@
       hardware.firmware = [
         (config.mobile.device.firmware.override {
           modem = ./path/to/copy/of/modem;
+          fsg = ./path/to/copy/of/fsg; # optional, not needed for wifi-only
         })
       ];
 
@@ -35,7 +37,7 @@ let
   };
 in
 runCommand "motorola-potter-firmware" {
-  inherit modem cfg dict nv;
+  inherit modem cfg dict nv fsg;
   meta.license = [
     # We make no claims that it can be redistributed.
     lib.licenses.unfree
@@ -44,6 +46,7 @@ runCommand "motorola-potter-firmware" {
   fwpath="$out/lib/firmware"
   mkdir -p $fwpath
   cp -vr $modem/image/* $fwpath/
+  ${if fsg != null then "cp -vr $fsg $fwpath/fsg" else "true"}
   mkdir -p $fwpath/wlan/prima/
   cp -v $cfg  $fwpath/wlan/prima/WCNSS_qcom_cfg.ini
   cp -v $dict $fwpath/wlan/prima/WCNSS_wlan_dictionary.dat
