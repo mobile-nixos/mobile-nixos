@@ -9,8 +9,8 @@ stdenv.mkDerivation {
   src = fetchFromGitHub {
     owner = "andersson";
     repo = "tqftpserv";
-    rev = "783425b550de2a359db6aa3b41577c3fbaae5903";
-    hash = "sha256-Qybmd/mXhKotCem/xN0bOvWyAp2VJf+Hdh6PQyFnd3s==";
+    rev = "de42697a2466cc5ee267ffe36ab4e8494f005fb0";
+    hash = "sha256-FAj1R9CNnYICpEgoiddHPLTXJsvZiDvYsiYPaosMJxI=";
   };
 
   patches = [
