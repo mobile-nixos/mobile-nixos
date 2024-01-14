@@ -14,7 +14,9 @@ stdenv.mkDerivation {
   };
 
   patches = [
+    ./tqftpserv-messing-with-pathname-maps.diff
     ./tqftpserv-firmware-path.diff
+
   ];
 
   installFlags = [ "prefix=$(out)" ];

@@ -1,0 +1,102 @@
+    allow requests to /readonly/ paths other than .../firmware/image
+    
+    My Motorola "Potter" makes requests for
+    /readonly/fsg/potter/emea/customer/super.mbn
+    
+    According to logs posted on the internet, other moto handsets
+    do similar. For example (seen in a random gist):
+    
+    04-29 04:23:37.236   493   882 I tftp_server: pid=493 tid=882 tftp-server : INF :[tftp_server_utils.c, 113] file [readonly/fsg/cedric/india/customer/super.mbn] :[/vendor/rfs/msm/mpss/readonly/fsg/cedri
+    
+    We handle these in exactly the same way as /readonly/firmware/image/
+    - this may be wrong on devices that have pathnames in
+    /sys/class/remoteproc/*/firmware but I have no way to tell.
+diff --git a/translate.c b/translate.c
+index 63161a0..6939d24 100644
+--- a/translate.c
++++ b/translate.c
+@@ -43,6 +43,7 @@
+ #include "translate.h"
+ 
+ #define READONLY_PATH	"/readonly/firmware/image/"
++#define READONLY_SHORT_PATH	"/readonly/"
+ #define READWRITE_PATH	"/readwrite/"
+ 
+ #ifndef ANDROID
+@@ -67,8 +68,9 @@
+  *
+  * Return: opened fd on success, -1 otherwise
+  */
+-static int translate_readonly(const char *file)
++static int translate_readonly(const char *file_with_prefix, int prefix_len)
+ {
++	char * file = file_with_prefix + prefix_len;
+ 	char firmware_value[PATH_MAX];
+ 	char firmware_attr[32];
+ 	char path[PATH_MAX];
+@@ -78,6 +80,8 @@ static int translate_readonly(const char *file)
+ 	int class_fd;
+ 	ssize_t n;
+ 	int fd = -1;
++	char *files_not_found[10];
++	int num_files_not_found = 0;
+ 
+ 	class_fd = open("/sys/class/remoteproc", O_RDONLY | O_DIRECTORY);
+ 	if (class_fd < 0) {
+@@ -126,6 +130,9 @@ static int translate_readonly(const char *file)
+ 
+ 		if (errno != ENOENT)
+ 			warn("failed to open %s", path);
++		else
++			if(num_files_not_found < (sizeof files_not_found)/(sizeof files_not_found[0]))
++				files_not_found[num_files_not_found++] = path;
+ 	}
+ 
+ 	closedir(class_dir);
+@@ -133,6 +140,11 @@ static int translate_readonly(const char *file)
+ close_class:
+ 	close(class_fd);
+ 
++	if(fd < 0) {
++		for(int i = 0; i < num_files_not_found; i++)
++			warnx("requested path %s not found in [%d] %s",
++			      file_with_prefix, i+1, files_not_found[i]);
++	}
+ 	return fd;
+ }
+ 
+@@ -151,20 +163,20 @@ static int translate_readwrite(const char *file, int flags)
+ 
+ 	ret = mkdir(TQFTPSERV_TMP, 0700);
+ 	if (ret < 0 && errno != EEXIST) {
+-		warn("failed to create temporary tqftpserv directory");
++		warn("failed to create temporary tqftpserv directory " TQFTPSERV_TMP);
+ 		return -1;
+ 	}
+ 
+ 	base = open(TQFTPSERV_TMP, O_RDONLY | O_DIRECTORY);
+ 	if (base < 0) {
+-		warn("failed top open temporary tqftpserv directory");
++		warn("failed to open temporary tqftpserv directory "  TQFTPSERV_TMP);
+ 		return -1;
+ 	}
+ 
+ 	fd = openat(base, file, flags, 0600);
+ 	close(base);
+ 	if (fd < 0)
+-		warn("failed to open %s", file);
++		warn("failed to open " TQFTPSERV_TMP "/%s", file);
+ 
+ 	return fd;
+ }
+@@ -180,7 +192,9 @@ static int translate_readwrite(const char *file, int flags)
+ int translate_open(const char *path, int flags)
+ {
+ 	if (!strncmp(path, READONLY_PATH, strlen(READONLY_PATH)))
+-		return translate_readonly(path + strlen(READONLY_PATH));
++		return translate_readonly(path, strlen(READONLY_PATH));
++	else if (!strncmp(path, READONLY_SHORT_PATH, strlen(READONLY_SHORT_PATH)))
++	        return translate_readonly(path, strlen(READONLY_SHORT_PATH));
+ 	else if (!strncmp(path, READWRITE_PATH, strlen(READWRITE_PATH)))
+ 		return translate_readwrite(path + strlen(READWRITE_PATH), flags);
+ 
