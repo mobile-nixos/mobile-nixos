@@ -11,6 +11,8 @@ let
 in
 {
   mobile.device.name = "motorola-potter";
+  mobile.quirks.qualcomm.msm8953-modem.enable = true;
+
   mobile.device.identity = {
     name = "Moto G5 Plus";
     manufacturer = "Motorola";
