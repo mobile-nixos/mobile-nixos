@@ -66,7 +66,7 @@ in
       pagesize = "2048";
     };
     appendDTB = [
-      "dtbs/qcom/sdm625-motorola-potter.dtb"
+      "dtbs/qcom/msm8953-motorola-potter.dtb"
     ];
   };
 

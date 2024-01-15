@@ -4,14 +4,14 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "5.16.0";
+  version = "6.5.2";
   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "msm8953-mainline";
     repo = "linux";
-    rev = "c6e1854c059c7db13fa0299194f2a55137e29900";  #  branch msm8953-5.16
-    sha256 = "sha256-mWd6FsGCPzC2DTQ23WxgItsq5gHdoPMXEMOhH5C3p2g=";
+    rev = "e7797492485f14684f5575f82800d09508df2034"; # 6.5.2/ipa
+    hash = "sha256-iJl4+2W96IlBiWiSq58ZAWgO3L3wNmuNLbmkCjCID1Y=";
   };
 
   isModular = true;
