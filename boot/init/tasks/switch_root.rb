@@ -27,7 +27,7 @@ class Tasks::SwitchRoot < SingletonTask
         filename = File.readlink(File.join(SYSTEM_MOUNT_POINT, prev_filename))
 
         # Relative link? Make absolute.
-        unless filename.match(%r{^/})
+        unless filename.start_with?("/")
           filename = File.join(File.dirname(prev_filename), filename)
         end
       end
@@ -267,7 +267,7 @@ class Tasks::SwitchRoot < SingletonTask
       full_path = File.join(resolved_generation, name)
 
       # Then resolve links to the actual artifact of the generation.
-      artifact = readlink_system(File.join(resolved_generation, name))
+      artifact = readlink_system(full_path)
       # Finally, return joined to the mount point.
       File.join(SYSTEM_MOUNT_POINT, artifact)
     rescue => e
