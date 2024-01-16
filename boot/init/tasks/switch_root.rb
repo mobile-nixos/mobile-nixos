@@ -50,13 +50,14 @@ class Tasks::SwitchRoot < SingletonTask
       if path == base then
         {
           id: "$default",
-          name: "Mobile NixOS - Default",
+          name: "Default",
         }
       else
         date = File.lstat(path).mtime.strftime("%F")
-        version_file = File.join(path, "nixos-version")
+        generation = path.delete_prefix(SYSTEM_MOUNT_POINT)
+        version_file = generation_file("nixos-version", generation: generation, missing_allowed: true)
         version =
-          if File.exist?(version_file)
+          unless version_file.nil?
             File.read(version_file)
           else
             nil
@@ -67,7 +68,7 @@ class Tasks::SwitchRoot < SingletonTask
           version,
         ].compact.join(" - ")
 
-        name = "Mobile NixOS ##{num} (#{details})"
+        name = "##{num} (#{details})"
 
         # This is the path we want to switch_root into.
         path = File.readlink(path)
@@ -258,11 +259,11 @@ class Tasks::SwitchRoot < SingletonTask
       .all?
   end
 
-  def generation_file(name, missing_allowed: false)
+  def generation_file(name, generation: selected_generation, missing_allowed: false)
     begin
       # First, resolve any links pointing to the generation dir itself.
       # Otherwise we'll try to resolve a path that may not exist.
-      resolved_generation = readlink_system(selected_generation)
+      resolved_generation = readlink_system(generation)
 
       full_path = File.join(resolved_generation, name)
 
