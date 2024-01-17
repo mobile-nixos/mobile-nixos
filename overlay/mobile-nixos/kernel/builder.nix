@@ -659,7 +659,7 @@ stdenv.mkDerivation (inputArgs // {
         export KERNEL_TREE=\$(mktemp -d)
 
         function finish {
-          rm -rf "\$KERNEL_TREE"
+          chmod -R +w "\$KERNEL_TREE" ; rm -rf "\$KERNEL_TREE"
         }
         trap finish EXIT
 
