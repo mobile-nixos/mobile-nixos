@@ -254,6 +254,9 @@ stdenv.mkDerivation (inputArgs // {
         sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
     done
     sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
+    if [ -e scripts/depmod.sh ]; then
+       sed -i scripts/depmod.sh -e "/DEPMOD:=/a DEPMOD=${buildPackages.kmod}/bin/depmod"
+    fi
     if [ -e scripts/ld-version.sh ]; then
       sed -i scripts/ld-version.sh -e "s|/usr/bin/awk|${buildPackages.gawk}/bin/awk|"
     fi
