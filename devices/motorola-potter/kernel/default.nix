@@ -18,13 +18,15 @@ in mobile-nixos.kernel-builder {
   inherit version;
   configfile = ./config.aarch64;
 
-  src = fetchFromGitHub {
-    owner = "msm8953-mainline";
-    repo = "linux";
-    inherit (hashes.${version}) rev hash;
-  };
+  # src = fetchFromGitHub {
+  #   owner = "msm8953-mainline";
+  #   repo = "linux";
+  #   inherit (hashes.${version}) rev hash;
+  # };
+  src = ../../../../msm8953-mainline-linux;
 
   patches = [
+    # ./0001-add-supplies-to-simple-fb-dts
     # ./random-msm-bindings-fixes.patch # already in 6.6.10
   ];
 
