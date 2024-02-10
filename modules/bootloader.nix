@@ -26,6 +26,9 @@ in
   config = mkIf (config.mobile.bootloader.enable) {
     boot.loader.grub.enable = false;
     boot.loader.generic-extlinux-compatible.enable = false;
+
+    # Shut up warning about not having a boot loader.
+    system.build.installBootLoader = lib.mkDefault "${pkgs.coreutils}/bin/true";
   };
 }
 
