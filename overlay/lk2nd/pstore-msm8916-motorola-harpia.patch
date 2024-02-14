@@ -1,0 +1,23 @@
+diff --git a/dts/msm8916/msm8916-motorola-harpia.dtsi b/dts/msm8916/msm8916-motorola-harpia.dtsi
+index 4bfbc782..047c2518 100644
+--- a/dts/msm8916/msm8916-motorola-harpia.dtsi
++++ b/dts/msm8916/msm8916-motorola-harpia.dtsi
+@@ -4,6 +4,18 @@
+ / {
+ 	model = "Motorola Moto G4 Play (harpia)";
+ 	compatible = "motorola,harpia", "qcom,msm8916", "lk2nd,device";
++	lk2nd,pstore = <0x9ff00000 0x100000>;
++
++
++	reserved-memory {
++		pstore_reserve_mem: pstore_reserve_mem_region@0 {
++			linux,reserve-contiguous-region;
++			linux,reserve-region;
++			linux,remove-completely;
++			reg = <0x0 0x9ff00000 0x0 0x100000>;
++			label = "pstore_reserve_mem";
++		};
++	};
+ 
+ 	panel {
+ 		compatible = "motorola,harpia-panel";
