@@ -4,44 +4,36 @@ include::_support/common.inc[]
 == Device-specific notes
 
 
-=== Firmware for Wi-Fi
+=== Firmware
 
-This particular phone keeps the firmware files on a partition named
-`modem`.
+To use Wi-Fi (and possibly also accelerated graphics, due to a weird
+startup dependency) you need to extract some non-redistributable files
+from the device itself. These comprise:
 
-To make use of the Wi-Fi capabilities of this phone you will need to
-make them available to the firmware derivation.
+* the full contents of the `modem` partition, which you should 
+copy to a directory (e.g. `harpia-modem`) on your build system
 
-The files can be acquired through different methods. You can use an
-alternate recovery like TWRP, mount the partition (identified using
-`blkid`) and copy the files.
+* the directory tree rooted at `/etc/firmware/wlan` in the
+`system` partition, which you should copy to a different directory
+(e.g. `harpia-wlan`) on your build system
 
-Another way is to do it using an installed Mobile NixOS system, where,
-too, you mount the partition and copy them:
+* the file `WCNSS_wlan_dictionary.dat` in the `persist` partition,
+which is the target of a symlink `/etc/firmware/wlan/prima/WCNSS_wlan_dictionary.dat`.  
+
+The files can be acquired through different methods - for example, you
+can use `adb pull` after booting an alternate recovery like
+TWRP or a running Mobile NixOS system.
+
+Once you have the files, you can override the `firmware` derivation
+to point at them when you define `config.hardware.firmware`
+
 
 ```
-$ sudo mount -o ro /dev/disk/by-partlabel/modem /mnt
-$ cp -r /mnt ./modem
-$ sudo umount /mnt
+  config.hardware.firmware = [
+    pkgs.wireless-regdb
+    config.mobile.device.firmware.override {
+      modem = ./local/harpia-modem;
+      wlan = ./local/harpia-wlan;
+    };
+  ];
 ```
-
-The copy of the firmware files will be in the modem directory, in the
-current working directory, ready to be referred to.
-
-=== Touchscreen
-
-There seem to be three distinct versions of the Synaptics DSx
-touchscreen driver in the vendor kernel: one in
-`drivers/input/touchscreen/synaptics_*.[ch]/`, plus two others in
-subdirectories `drivers/input/touchscreen/synaptics_dsx/`
-
-Since commit 219587de9e92a in the vendor kernel, the touchscreen is
-declared in the device tree as `compatible = "synaptics,dsx-i2c"`
-which corresponds to the code in
-`drivers/input/touchscreen/synaptics_dsx_2.6/`, but the kernel config
-options specify a weird mismash of that code and and some of the files
-in the parent folder. I tried cleaning this up but it broke more than
-it fixed.
-
-The option for `CONFIG_SCREEN_OFF_GESTURES` is disabled because it is
-incompatible with `CONFIG_FB`

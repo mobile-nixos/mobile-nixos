@@ -1,14 +1,5 @@
 { config, lib, pkgs, ... }:
 
-let
-  qcom-video-firmware =
-    pkgs.runCommand "potter-firmware" {} ''
-      dir=$out/lib/firmware/qcom
-      mkdir -p $dir
-      cp  ${pkgs.linux-firmware}/lib/firmware/qcom/a306* $dir
-    ''
-  ;
-in
 {
   mobile.device.name = "motorola-harpia";
   mobile.device.identity = {
@@ -16,8 +7,6 @@ in
     manufacturer = "Motorola";
   };
   mobile.device.supportLevel = "broken";
-
-
 
   mobile.hardware = {
     soc = "qualcomm-msm8916";
@@ -27,32 +16,33 @@ in
     };
   };
 
-  mobile.boot.stage-1.firmware = [
-#    qcom-video-firmware
-  ];
-
   mobile.boot.stage-1.kernel = {
     package = pkgs.callPackage ./kernel { };
     modular = true;
     modules = [
-      # These are modules because postmarketos builds them as
-      # modules.  Excepting that you only need one of the two
-      # panel modules (hardware-dependent) it might make more
-      # sense to build them monolithically. Unless you want to
-      # run your phone headlessly ...
       # "rmi_i2c"                 # touchscreen driver
-      # "qcom-pon"                # power and volume down keys
-      # "panel-boe-bs052fhm-a00-6c01"
-      # "panel-tianma-tl052vdxp02"
+      "panel-motorola-harpia-tianma"
       "msm"                     # DRM module
+      "qcom_wcnss_pil"
+      "wcn36xx"
     ];
   };
 
-  # in your configuration.nix hardware.firmware, in addition to this
-  # package you will probably need pkgs.linux-firmware, pkgs.wireless-regdb
-#  mobile.device.firmware = pkgs.callPackage ./firmware {};
-  # Firmware is not enabled by default since it requires manually providing unredistributable files.
-  mobile.device.enableFirmware = false;
+  # Device firmware is not added to hardware.firmware automatically as
+  # the package needs an override to point it at the files copied from
+  # the device. In your configuration.nix you will need something like
+  #
+  # hardware.firmware = [
+  #   (config.mobile.device.firmware.override {
+  #     modem = ./path/to/copy/of/modem;
+  #   })
+  #   pkgs.wireless-regdb
+  # ];
+
+  mobile.device = {
+    firmware = pkgs.callPackage ./firmware {};
+    enableFirmware = false;
+  };
 
   mobile.system.android.device_name = "harpia";
   mobile.system.android = {
