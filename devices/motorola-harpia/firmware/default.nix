@@ -1,4 +1,9 @@
-let instructions = ''
+{ lib
+, runCommand
+, fetchurl
+, firmwareLinuxNonfree
+, buildPackages
+, modem ? builtins.throw ''
 
     Your attention is required:
     ---------------------------
@@ -8,38 +13,39 @@ let instructions = ''
       hardware.firmware = [
         (config.mobile.device.firmware.override {
           modem = ./path/to/copy/of/modem;
-          wlan = ./path/to/copy/of/wlan;
         })
       ];
 
     Refer to the device's documentation page for more details about enabling use of the firmware files.
-  '';
-in
-{ lib
-, runCommand
-, firmwareLinuxNonfree
-, wlan ? builtins.throw instructions
-, modem ? builtins.throw instructions
+  ''
 }:
+
+let
+  nv = muppets "/etc/firmware/wlan/prima/WCNSS_qcom_wlan_nv.bin" "sha256-Tz5TSSzUBTvhVCLPYzexCD6eD4zp5yg6oBwrxrsMqzU=";
+
+  # Helper to download the proprietary files.
+  # Per https://gitlab.com/postmarketOS/pmaports/-/merge_requests/3746/diffs
+  # the Osprey firmware works better on this device than the Harpia
+  muppets = file: sha256: fetchurl {
+    url = "https://github.com/TheMuppets/proprietary_vendor_motorola/raw/d12d48ad2d08f928f3c75dd40cc2027751d8ac72/osprey/proprietary${file}";
+    inherit sha256;
+  };
+in
 runCommand "motorola-harpia-firmware" {
-  inherit modem wlan;
+  inherit modem nv;
+  src = "${firmwareLinuxNonfree}/lib/firmware";
   meta.license = [
     # We make no claims that it can be redistributed.
     lib.licenses.unfree
   ];
-
-  src = "${firmwareLinuxNonfree}/lib/firmware";
 } ''
-  # echo fw modem $modem  dist $src wlan $wlan
   fwpath="$out/lib/firmware"
   mkdir -p $fwpath
+  set -x
+  cp -vr $modem/* $fwpath/
+  mkdir -p $fwpath/wlan/prima/
+  cp -v $nv $fwpath/wlan/prima/WCNSS_qcom_wlan_nv.bin
   for i in $(cd $src && echo qcom/a300_p*.fw) ; do
     install -v -D $src/$i $fwpath/$i
-  done
-  for i in $(cd $modem && echo wcnss.*) ; do
-    install -D $modem/$i $fwpath/$i
-  done
-  for i in $(cd $wlan && echo prima/*) ; do
-    install -D $wlan/$i $fwpath/wlan/$i
   done
 ''

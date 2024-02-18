@@ -4,36 +4,52 @@ include::_support/common.inc[]
 == Device-specific notes
 
 
-=== Firmware
+=== Wi-Fi
 
-To use Wi-Fi (and possibly also accelerated graphics, due to a weird
-startup dependency) you need to extract some non-redistributable files
-from the device itself. These comprise:
+This particular phone keeps some of its firmware files on a partition
+named `modem`.
 
-* the full contents of the `modem` partition, which you should 
-copy to a directory (e.g. `harpia-modem`) on your build system
+To make use of the Wi-Fi capabilities (and possibly also accelerated
+graphics, due to a weird startup dependency) of this phone you will
+need to make them available to the firmware derivation.
 
-* the directory tree rooted at `/etc/firmware/wlan` in the
-`system` partition, which you should copy to a different directory
-(e.g. `harpia-wlan`) on your build system
+The files can be acquired through different methods. You can use an
+alternate recovery like TWRP, mount the partition (identified using
+`blkid`) and copy the files.
 
-* the file `WCNSS_wlan_dictionary.dat` in the `persist` partition,
-which is the target of a symlink `/etc/firmware/wlan/prima/WCNSS_wlan_dictionary.dat`.  
+Another way is to do it using an installed Mobile NixOS system, where,
+too, you mount the partition and copy them:
 
-The files can be acquired through different methods - for example, you
-can use `adb pull` after booting an alternate recovery like
-TWRP or a running Mobile NixOS system.
+```
+$ sudo mount -o ro /dev/disk/by-partlabel/modem /mnt
+$ cp -r /mnt ./modem
+$ sudo umount /mnt
+```
 
-Once you have the files, you can override the `firmware` derivation
-to point at them when you define `config.hardware.firmware`
+Once you have the files, you can override the `firmware` derivation to
+point at them when you define `config.hardware.firmware`. You may also
+need to add them to `mobile.boot.stage-1.firmware`.
 
 
 ```
   config.hardware.firmware = [
     pkgs.wireless-regdb
     config.mobile.device.firmware.override {
-      modem = ./local/harpia-modem;
-      wlan = ./local/harpia-wlan;
+      modem = ./modem;
     };
   ];
 ```
+
+==== Wi-Fi issues
+
+Some users of Motorola Harpia on other mainline Linux distributions
+(see the [postmarketOS issue tracker](https://gitlab.com/postmarketOS/pmaports/-/issues/1085) report that it will not work with Wi-Fi access points on all channels
+but that _it does work on channel 6_. The usual symptom is that
+`wpa_supplicant` connects to the AP and authenticates but then that no
+IP packets are sent, meaning DHCP fails. Attempting to configure the
+device for a static IP address doesn't work either.
+
+For Mobile NixOS we follow the postmarketOS lead and use the firmware
+from Motorola Osprey instead of the Harpia firmware. For me this
+doesn't help, and the only thing that worked was to reconfigure
+my access point.  Your mileage may vary.
