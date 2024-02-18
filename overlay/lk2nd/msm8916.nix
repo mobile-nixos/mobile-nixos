@@ -28,28 +28,22 @@ in stdenv.mkDerivation {
   ];
 
   patches = [
-    # (fetchpatch {
-    #   # this doesn't apply but the same bug needs fixing here
-    #   url = "https://patch-diff.githubusercontent.com/raw/msm8953-mainline/lk2nd/pull/35.patch";
-    #   hash = "sha256-6Iqn1K+l0Xek7afb4iTFewoF3SL4uiRBZubc8AE9OSU=";
 
+    # support "fastboot oem pstore"
     (fetchpatch {
       url = "https://patch-diff.githubusercontent.com/raw/msm8916-mainline/lk2nd/pull/93.patch";
       hash = "sha256-CTqgy3wXzAAPnCKKU2gn8IswHmI6lQcxsH71hzhN5Yg=";
     })
+
+    # add pstore compatible and reserved-memory node
     ./pstore-msm8916-motorola-harpia.patch
 
-    # })
-    # (fetchpatch {
-    #   # haven't looked at this one
-    #   url = "https://patch-diff.githubusercontent.com/raw/msm8953-mainline/lk2nd/pull/36.patch";
-    #   hash = "sha256-hPyqQ5ykhE57gnEBqEOeP7oVigz/JjvTQjDZso2Z3Us=";
-    # })
+    # this is https://patch-diff.githubusercontent.com/raw/msm8953-mainline/lk2nd/pull/36.patch but applies cleanly
+    ./msm8916-ext2-align-blocks.patch
   ];
 
   postPatch = ''
     PATH=${python}/bin/:$PATH patchShebangs  scripts/{dtbTool,mkbootimg}
-    sed -i.bak -e '/compatible/a lk2nd,pstore = <0x9ff00000 0x00100000>; '  dts/msm8916/msm8916-motorola-harpia.dtsi
   '';
 
   LD_LIBRARY_PATH = "${python}/lib";
