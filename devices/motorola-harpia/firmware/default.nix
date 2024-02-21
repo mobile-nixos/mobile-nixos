@@ -41,11 +41,10 @@ runCommand "motorola-harpia-firmware" {
 } ''
   fwpath="$out/lib/firmware"
   mkdir -p $fwpath
-  set -x
-  cp -vr $modem/* $fwpath/
+  cp -r $modem/* $fwpath/
   mkdir -p $fwpath/wlan/prima/
-  cp -v $nv $fwpath/wlan/prima/WCNSS_qcom_wlan_nv.bin
-  for i in $(cd $src && echo qcom/a300_p*.fw) ; do
+  cp  $nv $fwpath/wlan/prima/WCNSS_qcom_wlan_nv.bin
+  for i in $(cd $src && echo qcom/a300_p*.fw qcom/venus-1.8/*) ; do
     install -v -D $src/$i $fwpath/$i
   done
 ''
