@@ -156,7 +156,7 @@ in
 
     (helpers: with helpers; mkDefaultIze {
       RCU_CPU_STALL_TIMEOUT = freeform "21";
-      RCU_EXP_CPU_STALL_TIMEOUT = whenAtLeast "5.19" (freeform "20");
+#      RCU_EXP_CPU_STALL_TIMEOUT = whenAtLeast "5.19" (freeform "0");
       RCU_TRACE = yes;
       FRAME_WARN = freeform "2048";
       STRIP_ASM_SYMS = yes;
