@@ -14,16 +14,15 @@ class Tasks::SwitchRoot < SingletonTask
     @use_generation_kernel = STAGE == 0
   end
 
-  # Given a path name, without the leading SYSTEM_MOUNT_POINT, resolves
-  # symlinks to get the real name of the file.
-  # The returned path is not prefixed with SYSTEM_MOUNT_POINT either.
-  def readlink_system(filename)
+  # Resolves symlinks under a given root to get the real name of the file.
+  # The returned path is not prefixed with given root either.
+  def readlink_rooted(root, filename)
     # Resolve the full pathname
     loop do
       prev_filename = filename
 
-      if File.symlink?(File.join(SYSTEM_MOUNT_POINT, prev_filename))
-        filename = File.readlink(File.join(SYSTEM_MOUNT_POINT, prev_filename))
+      if File.symlink?(File.join(root, prev_filename))
+        filename = File.readlink(File.join(root, prev_filename))
 
         # Relative link? Make absolute.
         unless filename.match(%r{^/})
@@ -34,6 +33,10 @@ class Tasks::SwitchRoot < SingletonTask
     end
 
     filename
+  end
+
+  def readlink_system(filename)
+    readlink_rooted(SYSTEM_MOUNT_POINT, filename)
   end
 
   # Creates the generation selection list.
