@@ -1,9 +1,114 @@
 class Tasks::SwitchRoot < SingletonTask
-  # Relative to root.
-  DEFAULT_SYSTEM_LINK = "/nix/var/nix/profiles/system"
+  module Utils
+    # Resolves symlinks under a given root to get the real name of the file.
+    # The returned path is not prefixed with given root either.
+    def readlink_rooted(root, filename)
+      # Resolve the full pathname
+      loop do
+        prev_filename = filename
 
-  # Where the system will be mounted.
+        if File.symlink?(File.join(root, prev_filename))
+          filename = File.readlink(File.join(root, prev_filename))
+
+          # Relative link? Make absolute.
+          unless filename.match(%r{^/})
+            filename = File.join(File.dirname(prev_filename), filename)
+          end
+        end
+        break if prev_filename == filename
+      end
+
+      filename
+    end
+  end
+
+  # Where the system rootfs will be mounted.
   SYSTEM_MOUNT_POINT = "/mnt"
+
+  #
+  # Represents resources and facts from a NixOS generation.
+  # 
+  # A generation can be:
+  #  - a symlink (e.g. from `/nix/var/nix/profiles`)
+  #  - a bare store path.
+  #
+  class NixOSGeneration
+    include Utils
+
+    NIX_PROFILES_PATH = "/nix/var/nix/profiles"
+    DEFAULT_PROFILE_LINK = File.join(NIX_PROFILES_PATH, "system")
+
+    @@default_generation = nil
+
+    # path: path to a generation (absolute according to the system rootfs)
+    def initialize(path)
+      @generation_path = path
+    end
+
+    # Whether the generation path exists or not.
+    def exist?()
+      # A symlink to a dangling path does not exist.
+      File.exist?(mounted_path) || File.symlink?(mounted_path)
+    end
+
+    # A label for the generation
+    def label()
+      date = File.lstat(mounted_path).mtime.strftime("%F")
+
+      version_file = mounted_path("nixos-version", readlink: true)
+      version =
+        if File.exist?(version_file)
+          File.read(version_file)
+        else
+          nil
+        end
+
+      details = [
+        date,
+        version,
+      ].compact.join(" - ")
+
+      num = path.split("-")[-2]
+
+      "NixOS ##{num} (#{details})"
+    end
+
+    # This generation's path, or a path within.
+    def path(target = nil, readlink: false)
+      resolved_path = @generation_path
+      resolved_path = readlink_rooted(SYSTEM_MOUNT_POINT, resolved_path) if readlink
+
+      return resolved_path unless target
+
+      target = File.join(resolved_path, target)
+      return target unless readlink
+
+      readlink_rooted(SYSTEM_MOUNT_POINT, target)
+    end
+
+    # Path of the generation, or a path within, according to its location during stage-1.
+    def mounted_path(target = nil, readlink: false)
+      target = path(target, readlink: readlink)
+      File.join(SYSTEM_MOUNT_POINT, target)
+    end
+
+    def self.default_generation()
+      return @@default_generation if @@default_generation
+      @@default_generation = NixOSGeneration.new(DEFAULT_PROFILE_LINK)
+    end
+
+    # Returns the list of generations, ordered from newest to oldest.
+    def self.generations()
+      Dir.glob(File.join(SYSTEM_MOUNT_POINT, NixOSGeneration::DEFAULT_PROFILE_LINK) + "-*")
+        .sort do |a, b|
+          # a and b are reversed here to sort descending.
+          File.lstat(b).mtime <=> File.lstat(a).mtime
+        end
+        .map do |path|
+          NixOSGeneration.new(path.delete_prefix(SYSTEM_MOUNT_POINT))
+        end
+    end
+  end
 
   def initialize()
     add_dependency(:Task, Tasks::Splash.instance)
@@ -14,61 +119,12 @@ class Tasks::SwitchRoot < SingletonTask
     @use_generation_kernel = STAGE == 0
   end
 
-  # Resolves symlinks under a given root to get the real name of the file.
-  # The returned path is not prefixed with given root either.
-  def readlink_rooted(root, filename)
-    # Resolve the full pathname
-    loop do
-      prev_filename = filename
-
-      if File.symlink?(File.join(root, prev_filename))
-        filename = File.readlink(File.join(root, prev_filename))
-
-        # Relative link? Make absolute.
-        unless filename.match(%r{^/})
-          filename = File.join(File.dirname(prev_filename), filename)
-        end
-      end
-      break if prev_filename == filename
-    end
-
-    filename
-  end
-
-  def readlink_system(filename)
-    readlink_rooted(SYSTEM_MOUNT_POINT, filename)
-  end
-
   # Creates the generation selection list.
   def generate_selection()
-    base = File.join(SYSTEM_MOUNT_POINT, DEFAULT_SYSTEM_LINK)
-    selection = (
-      Dir.glob(base + "-*").sort do |a, b|
-        File.lstat(a).mtime <=> File.lstat(b).mtime
-      end.reverse
-    ).map do |path|
-      date = File.lstat(path).mtime.strftime("%F")
-      version_file = File.join(path, "nixos-version")
-      version =
-        if File.exist?(version_file)
-          File.read(version_file)
-        else
-          nil
-        end
-      num = path.split("-")[-2]
-      details = [
-        date,
-        version,
-      ].compact.join(" - ")
-
-      name = "NixOS ##{num} (#{details})"
-
-      # This is the path we want to switch_root into.
-      path = File.readlink(path)
-
+    selection = NixOSGeneration.generations.map do |generation|
       {
-        id: path,
-        name: name,
+        id: generation.path,
+        name: generation.label,
       }
     end
 
@@ -101,7 +157,7 @@ class Tasks::SwitchRoot < SingletonTask
   #
   # Returns the path to a generation (absolute according to the system rootfs)
   #
-  def default_generation()
+  def default_selection_path()
     # Given as a command-line option, most likely from stage-0.
     generation_parameter = System.cmdline().grep(/^mobile-nixos.generation=/).first
     unless generation_parameter.nil?
@@ -122,9 +178,10 @@ class Tasks::SwitchRoot < SingletonTask
     end
 
     # The default generation
-    if File.symlink?(File.join(SYSTEM_MOUNT_POINT, DEFAULT_SYSTEM_LINK))
-      $logger.info("Using '#{DEFAULT_SYSTEM_LINK}' default generation...")
-      return DEFAULT_SYSTEM_LINK
+    if NixOSGeneration.default_generation().exist?()
+      generation = NixOSGeneration.default_generation().path
+      $logger.info("Using '#{generation}' default generation...")
+      return generation
     end
 
     # Otherwise, we need to re-hydrate a system!
@@ -160,11 +217,8 @@ class Tasks::SwitchRoot < SingletonTask
     # Because there may be no generations folder. It's easier to cheat and
     # use "$default" and rely on the existing default "maybe rehydrate"
     # codepath.
-    if generation == "$default"
-      default_generation()
-    else
-      generation
-    end
+    generation = default_selection_path() if generation == "$default"
+    NixOSGeneration.new(generation)
   end
 
   def selected_generation()
@@ -174,7 +228,7 @@ class Tasks::SwitchRoot < SingletonTask
       Tasks::Splash.instance.quit("Continuing to recovery menu")
       @selected_generation = choose_generation()
     else
-      @selected_generation = default_generation()
+      @selected_generation = NixOSGeneration.new(default_selection_path())
       if will_kexec?()
         Tasks::Splash.instance.quit("Rebooting in generation kernel", sticky: true)
       else
@@ -275,16 +329,7 @@ class Tasks::SwitchRoot < SingletonTask
 
   def generation_file(name, missing_allowed: false)
     begin
-      # First, resolve any links pointing to the generation dir itself.
-      # Otherwise we'll try to resolve a path that may not exist.
-      resolved_generation = readlink_system(selected_generation)
-
-      full_path = File.join(resolved_generation, name)
-
-      # Then resolve links to the actual artifact of the generation.
-      artifact = readlink_system(File.join(resolved_generation, name))
-      # Finally, return joined to the mount point.
-      File.join(SYSTEM_MOUNT_POINT, artifact)
+      selected_generation.mounted_path(name, readlink: true)
     rescue => e
       log "While searching for generation_file(#{name.inspect}):"
       log e.inspect
@@ -297,7 +342,7 @@ class Tasks::SwitchRoot < SingletonTask
   end
 
   def run()
-    init = File.join(selected_generation, "init")
+    init = File.join(selected_generation.path, "init")
 
     # This is the traditional way we printed the init path.
     # This is still helpful to take vertical real estate when visually looking
@@ -306,7 +351,7 @@ class Tasks::SwitchRoot < SingletonTask
     log("***")
     log("")
     if will_kexec?
-      log("Kexecing into #{selected_generation}")
+      log("Kexecing into #{selected_generation.path}")
     else
       log("Switching root to #{init}")
     end
@@ -335,16 +380,16 @@ class Tasks::SwitchRoot < SingletonTask
         *[maybe_dtb()].compact(),
         "--command-line",
         [
-          "init=#{readlink_system(File.join(selected_generation, "init"))}",
+          ["init", selected_generation.path("init", readlink: true)].join("="),
           # Flag used to describe we're in a kexec situation.
           # For the time being, the flag is the whole string, not the value yes to that key.
           "mobile-nixos.kexec=yes",
-          "mobile-nixos.generation=#{selected_generation}",
+          "mobile-nixos.generation=#{selected_generation.path}",
           File.read(generation_file("kernel-params")),
         ].join(" ")
       )
       System.exec("kexec", "-e")
-      raise "Failed to kexec into #{selected_generation}"
+      raise "Failed to kexec into #{selected_generation.path}"
     end
 
     Tasks::UDev.instance.teardown()
