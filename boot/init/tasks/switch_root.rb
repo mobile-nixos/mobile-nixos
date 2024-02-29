@@ -49,7 +49,7 @@ class Tasks::SwitchRoot < SingletonTask
       if path == base then
         {
           id: "$default",
-          name: "Mobile NixOS - Default",
+          name: "NixOS - Default",
         }
       else
         date = File.lstat(path).mtime.strftime("%F")
@@ -66,7 +66,7 @@ class Tasks::SwitchRoot < SingletonTask
           version,
         ].compact.join(" - ")
 
-        name = "Mobile NixOS ##{num} (#{details})"
+        name = "NixOS ##{num} (#{details})"
 
         # This is the path we want to switch_root into.
         path = File.readlink(path)
