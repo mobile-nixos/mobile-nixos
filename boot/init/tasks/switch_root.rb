@@ -8,7 +8,6 @@ class Tasks::SwitchRoot < SingletonTask
   def initialize()
     add_dependency(:Task, Tasks::Splash.instance)
     add_dependency(:Target, :SwitchRoot)
-    @target = SYSTEM_MOUNT_POINT
 
     # By default, with stage-0, we prefer using the generation kernel
     # This may be overriden by the user recovery user interface
@@ -110,13 +109,13 @@ class Tasks::SwitchRoot < SingletonTask
     end
 
     # The default generation
-    if File.symlink?(File.join(@target, DEFAULT_SYSTEM_LINK))
+    if File.symlink?(File.join(SYSTEM_MOUNT_POINT, DEFAULT_SYSTEM_LINK))
       $logger.info("Using '#{DEFAULT_SYSTEM_LINK}' default generation...")
       return DEFAULT_SYSTEM_LINK
     end
 
     # Otherwise, we need to re-hydrate a system!
-    registration = File.join(@target, "nix-path-registration")
+    registration = File.join(SYSTEM_MOUNT_POINT, "nix-path-registration")
     if File.exist?(registration)
       $logger.info("Getting NixOS generation from nix-path-registration...")
       path = File.read(registration)
@@ -340,12 +339,12 @@ class Tasks::SwitchRoot < SingletonTask
       "/dev",
       "/run",
     ].each do |mount_point|
-      new_location = File.join(@target, mount_point)
+      new_location = File.join(SYSTEM_MOUNT_POINT, mount_point)
       FileUtils.mkdir_p(new_location)
       System.run("mount", "--move", mount_point, new_location)
     end
 
     switch_root = System.which("switch_root")
-    System.exec({}, switch_root, @target, init)
+    System.exec({}, switch_root, SYSTEM_MOUNT_POINT, init)
   end
 end
