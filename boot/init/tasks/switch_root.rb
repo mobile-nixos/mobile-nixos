@@ -81,18 +81,27 @@ class Tasks::SwitchRoot < SingletonTask
     File.write("/run/boot/selection.json", selection.to_json)
   end
 
-  # Boot the default generation.
+  #
+  # Pick the default generation.
+  #
   # This does either of:
   #
-  #  * Booting the generation given in parameters
-  #  * Booting the default system link.
-  #  * Find the generation store path that needs to be rehydrated.
+  #  * Booting the generation given in boot ("kernel") parameters.
+  #     * From stage-0
+  #     * From bootloader
+  #  * Booting the default `system` profile link.
+  #  * Guess and find the generation store path for first boot.
   #
   # This is *always* a sane default to fallback on.
+  # This is what the `$default` generation button picks, and what is started by default.
+  #
+  # Returns the path to a generation (absolute according to the system rootfs)
+  #
   def default_generation()
     # Given as a command-line option, most likely from stage-0.
     generation_parameter = System.cmdline().grep(/^mobile-nixos.generation=/).first
     unless generation_parameter.nil?
+      $logger.info("Using '#{generation_parameter}' cmdline parameter to select generation...")
       return generation_parameter.split("=", 2).last
     end
 
@@ -122,7 +131,10 @@ class Tasks::SwitchRoot < SingletonTask
         .split("\n")
         .grep(%r{^/nix/store/[a-z0-9]+-nixos-system-})
         .first
-      return path if path
+      if path
+        $logger.info("... found '#{path}'")
+        return path
+      end
     end
 
     System.failure("INIT_NOT_FOUND", "Stage-2 init not found", "Could not find init path for stage-2", color: "FF00FF")
