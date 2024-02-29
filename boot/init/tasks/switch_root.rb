@@ -38,46 +38,47 @@ class Tasks::SwitchRoot < SingletonTask
 
   # Creates the generation selection list.
   def generate_selection()
-    FileUtils.mkdir_p("/run/boot/")
     base = File.join(SYSTEM_MOUNT_POINT, DEFAULT_SYSTEM_LINK)
-    selection = [
-      base,
-      *(Dir.glob(base + "-*").sort do |a, b|
+    selection = (
+      Dir.glob(base + "-*").sort do |a, b|
         File.lstat(a).mtime <=> File.lstat(b).mtime
-      end.reverse)
-    ].map do |path|
-      if path == base then
-        {
-          id: "$default",
-          name: "NixOS - Default",
-        }
-      else
-        date = File.lstat(path).mtime.strftime("%F")
-        version_file = File.join(path, "nixos-version")
-        version =
-          if File.exist?(version_file)
-            File.read(version_file)
-          else
-            nil
-          end
-        num = path.split("-")[-2]
-        details = [
-          date,
-          version,
-        ].compact.join(" - ")
+      end.reverse
+    ).map do |path|
+      date = File.lstat(path).mtime.strftime("%F")
+      version_file = File.join(path, "nixos-version")
+      version =
+        if File.exist?(version_file)
+          File.read(version_file)
+        else
+          nil
+        end
+      num = path.split("-")[-2]
+      details = [
+        date,
+        version,
+      ].compact.join(" - ")
 
-        name = "NixOS ##{num} (#{details})"
+      name = "NixOS ##{num} (#{details})"
 
-        # This is the path we want to switch_root into.
-        path = File.readlink(path)
+      # This is the path we want to switch_root into.
+      path = File.readlink(path)
 
-        {
-          id: path,
-          name: name,
-        }
-      end
+      {
+        id: path,
+        name: name,
+      }
     end
 
+    # Prepend a special entry representing the default action.
+    selection.unshift(
+      {
+        id: "$default",
+        name: "NixOS - Default",
+      }
+    )
+
+    FileUtils.mkdir_p("/run/boot/")
+    # The recovery applet uses this file to allow generation selection.
     File.write("/run/boot/selection.json", selection.to_json)
   end
 
