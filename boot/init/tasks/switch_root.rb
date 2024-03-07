@@ -22,6 +22,137 @@ class Tasks::SwitchRoot < SingletonTask
     end
   end
 
+  # Extracted bits for stage-0 support.
+  # This should make deprecating and removing easier down the line.
+  module StageZeroSupport
+    # Returns whether the current boot will `kexec` into the generation.
+    def will_kexec?()
+      # Only stage-0 bootloader-flavoured init will kexec.
+      return false unless STAGE == 0
+
+      # The user wants to use the generation's kernel
+      return false unless @use_generation_kernel
+
+      # AND if we find the required files.
+      [
+        "initrd",
+        "kernel",
+        "kernel-params",
+      ]
+        .map { |file| generation_file(file) }
+        .map { |file| File.exist?(file) }
+        .all?
+    end
+
+    def kexec_in_generation(selected_generation)
+      if Tasks.constants.include?(:SetupGadgetMode)
+        Progress.exec_with_message("Tearing down USB Gadget mode") do
+          begin
+            Tasks::SetupGadgetMode.instance.teardown()
+          rescue => e
+            $logger.fatal("Caught an error during teardown for kexec...")
+            $logger.fatal(e.inspect)
+          end
+        end
+      end
+
+      log("About to kexec...")
+
+      System.run(
+        "kexec", "--load",
+        generation_file("kernel"),
+        "--initrd=#{generation_file("initrd")}",
+        *[maybe_dtb()].compact(),
+        "--command-line",
+        [
+          ["init", selected_generation.path("init", readlink: true)].join("="),
+          # Flag used to describe we're in a kexec situation.
+          # For the time being, the flag is the whole string, not the value yes to that key.
+          "mobile-nixos.kexec=yes",
+          "mobile-nixos.generation=#{selected_generation.path}",
+          File.read(generation_file("kernel-params")),
+        ].join(" ")
+      )
+      System.exec("kexec", "-e")
+      # Execution shouldn't reach here, as `exec` replaces this process with `kexec`.
+    ensure
+      raise "Failed to kexec into #{selected_generation.path}"
+    end
+
+    # If the system build exports a DTB file name to load, return the appropriate
+    # command-line argument for `kexec`. Otherwise nil.
+    def maybe_dtb()
+      log("Looking for a DTB file...")
+
+      mapping_path = generation_file("mobile-nixos/dtb-mapping.json", missing_allowed: true)
+      unless mapping_path && File.exist?(mapping_path)
+        log("  DTB: dtb-mapping.json not found... skipping DTB mapping...")
+        return nil
+      end
+
+      log("  DTB: Mappings from: `#{mapping_path}`...")
+      mapping = JSON.parse(File.read(mapping_path))
+
+      # Work only off the first compatible name.
+      # It is assumed that the loader uses the exact same scheme as the kernel
+      # build does. If this assumption stops holding true, it will be a new
+      # feature to implement.
+      board_compatible = File.read("/proc/device-tree/compatible").split("\0").first
+      log("  DTB: board_compatible: #{board_compatible}")
+
+      desired_dtb = mapping[board_compatible]
+      if desired_dtb
+        log("  DTB: wants: #{desired_dtb}")
+      else
+        log("  DTB: no DTB mapping found for #{board_compatible}...")
+        return nil
+      end
+
+      # The desired_dtb path is an absolute path in the mounted system.
+      file = File.join(SYSTEM_MOUNT_POINT, desired_dtb)
+
+      if File.exist?(file)
+        log("  DTB: file `#{file}` found")
+        "--dtb=#{forward_fdt_bootloader_info(file)}"
+      else
+        log("  DTB: file `#{file}` not found... skipping DTB mapping")
+        nil
+      end
+    end
+
+    # Given a path to a DTB file, merges required properties that the bootloader
+    # has setup. It will additionally merge optional properties.
+    def forward_fdt_bootloader_info(path)
+      args = [
+        "--print-header",
+        "--copy-dtb", path,
+        Configuration["stage-0"]["forward"]["nodes"].map {|path| [ "--forward-node", path] },
+        Configuration["stage-0"]["forward"]["props"].map {|pair| [ "--forward-prop", *pair] },
+      ].flatten
+      log(" $ fdt-forward #{args.shelljoin}")
+      dts = `fdt-forward #{args.shelljoin}`
+
+      # Declare we booted using stage-0's kexec
+      # And additional useful debugging data...
+      dts << [
+        "\n",
+        "// Declare we booted using kexec",
+        %Q{/ { mobile-nixos,stage-0; };},
+        %Q{/ { mobile-nixos,stage-0,timestamp = #{Time.now.to_s.to_json}; };},
+        %Q{/ { mobile-nixos,stage-0,uname = #{`uname -a`.to_json}; };},
+        %Q{/ { mobile-nixos,stage-0,uptime = #{`uptime`.to_json}; };},
+      ].join("\n")
+
+      FileUtils.mkdir_p("/run/boot/")
+      File.write("/run/boot/fdt.dts", dts)
+      System.run("fdt-forward --to-dtb < /run/boot/fdt.dts > /run/boot/fdt.dtb")
+
+      return "/run/boot/fdt.dtb"
+    end
+  end
+
+  include StageZeroSupport
+
   # Where the system rootfs will be mounted.
   SYSTEM_MOUNT_POINT = "/mnt"
 
@@ -238,95 +369,6 @@ class Tasks::SwitchRoot < SingletonTask
     @selected_generation
   end
 
-  # If the system build exports a DTB file name to load, return the appropriate
-  # command-line argument for `kexec`. Otherwise nil.
-  def maybe_dtb()
-    log("Looking for a DTB file...")
-
-    mapping_path = generation_file("mobile-nixos/dtb-mapping.json", missing_allowed: true)
-    unless mapping_path && File.exist?(mapping_path)
-      log("  DTB: dtb-mapping.json not found... skipping DTB mapping...")
-      return nil
-    end
-
-    log("  DTB: Mappings from: `#{mapping_path}`...")
-    mapping = JSON.parse(File.read(mapping_path))
-
-    # Work only off the first compatible name.
-    # It is assumed that the loader uses the exact same scheme as the kernel
-    # build does. If this assumption stops holding true, it will be a new
-    # feature to implement.
-    board_compatible = File.read("/proc/device-tree/compatible").split("\0").first
-    log("  DTB: board_compatible: #{board_compatible}")
-
-    desired_dtb = mapping[board_compatible]
-    if desired_dtb
-      log("  DTB: wants: #{desired_dtb}")
-    else
-      log("  DTB: no DTB mapping found for #{board_compatible}...")
-      return nil
-    end
-
-    # The desired_dtb path is an absolute path in the mounted system.
-    file = File.join(SYSTEM_MOUNT_POINT, desired_dtb)
-
-    if File.exist?(file)
-      log("  DTB: file `#{file}` found")
-      "--dtb=#{forward_fdt_bootloader_info(file)}"
-    else
-      log("  DTB: file `#{file}` not found... skipping DTB mapping")
-      nil
-    end
-  end
-
-  # Given a path to a DTB file, merges required properties that the bootloader
-  # has setup. It will additionally merge optional properties.
-  def forward_fdt_bootloader_info(path)
-    args = [
-      "--print-header",
-      "--copy-dtb", path,
-      Configuration["stage-0"]["forward"]["nodes"].map {|path| [ "--forward-node", path] },
-      Configuration["stage-0"]["forward"]["props"].map {|pair| [ "--forward-prop", *pair] },
-    ].flatten
-    log(" $ fdt-forward #{args.shelljoin}")
-    dts = `fdt-forward #{args.shelljoin}`
-
-    # Declare we booted using stage-0's kexec
-    # And additional useful debugging data...
-    dts << [
-      "\n",
-      "// Declare we booted using kexec",
-      %Q{/ { mobile-nixos,stage-0; };},
-      %Q{/ { mobile-nixos,stage-0,timestamp = #{Time.now.to_s.to_json}; };},
-      %Q{/ { mobile-nixos,stage-0,uname = #{`uname -a`.to_json}; };},
-      %Q{/ { mobile-nixos,stage-0,uptime = #{`uptime`.to_json}; };},
-    ].join("\n")
-
-    FileUtils.mkdir_p("/run/boot/")
-    File.write("/run/boot/fdt.dts", dts)
-    System.run("fdt-forward --to-dtb < /run/boot/fdt.dts > /run/boot/fdt.dtb")
-
-    return "/run/boot/fdt.dtb"
-  end
-
-  def will_kexec?()
-    # Only stage-0 bootloader-flavourd init will kexec.
-    return false unless STAGE == 0
-
-    # The user wants to use the generation's kernel
-    return false unless @use_generation_kernel
-
-    # AND if we find the required files.
-    [
-      "initrd",
-      "kernel",
-      "kernel-params",
-    ]
-      .map { |file| generation_file(file) }
-      .map { |file| File.exist?(file) }
-      .all?
-  end
-
   def generation_file(name, missing_allowed: false)
     begin
       selected_generation.mounted_path(name, readlink: true)
@@ -359,38 +401,7 @@ class Tasks::SwitchRoot < SingletonTask
     log("***")
     log("")
 
-    if will_kexec?
-      if Tasks.constants.include?(:SetupGadgetMode)
-        Progress.exec_with_message("Tearing down USB Gadget mode") do
-          begin
-            Tasks::SetupGadgetMode.instance.teardown()
-          rescue => e
-            $logger.fatal("Caught an error during teardown for kexec...")
-            $logger.fatal(e.inspect)
-          end
-        end
-      end
-
-      log("About to kexec...")
-
-      System.run(
-        "kexec", "--load",
-        generation_file("kernel"),
-        "--initrd=#{generation_file("initrd")}",
-        *[maybe_dtb()].compact(),
-        "--command-line",
-        [
-          ["init", selected_generation.path("init", readlink: true)].join("="),
-          # Flag used to describe we're in a kexec situation.
-          # For the time being, the flag is the whole string, not the value yes to that key.
-          "mobile-nixos.kexec=yes",
-          "mobile-nixos.generation=#{selected_generation.path}",
-          File.read(generation_file("kernel-params")),
-        ].join(" ")
-      )
-      System.exec("kexec", "-e")
-      raise "Failed to kexec into #{selected_generation.path}"
-    end
+    kexec_in_generation(selected_generation) if will_kexec?
 
     Tasks::UDev.instance.teardown()
 
