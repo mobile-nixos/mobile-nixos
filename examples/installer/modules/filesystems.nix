@@ -1,4 +1,4 @@
-{ lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (lib) mkDefault mkForce;
@@ -22,24 +22,16 @@ in
     };
   };
 
-  # It's acceptable here to lose some boot time to resizing the partition all the time.
-  # Logic is the same as SD card enlargement.
-  boot.postBootCommands = ''
-    (
-      set -euo pipefail
-      PS4=" $ "
-      set -x
-
-      # Figure out device names for the boot device and root filesystem.
-      rootPart=$(${pkgs.util-linux}/bin/findmnt -n -o SOURCE /)
-      bootDevice=$(lsblk -npo PKNAME $rootPart)
-      partNum=$(lsblk -npo MAJ:MIN $rootPart | ${pkgs.gawk}/bin/awk -F: '{print $2}')
-
-      # Resize the root partition and the filesystem to fit the disk
-      echo ",+," | sfdisk -N$partNum --no-reread $bootDevice
-      ${pkgs.parted}/bin/partprobe
-      ${pkgs.e2fsprogs}/bin/resize2fs $rootPart
-    )
-  '';
-
+  # Use `systemd-repart` for enlarging the rootfs.
+  systemd.repart = {
+    enable = true;
+    partitions = {
+      "rootfs" = {
+        Type = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
+        UUID = config.mobile.generatedFilesystems.rootfs.ext4.partitionID;
+      };
+    };
+  };
+  # ... which requires growPartition to be disabled.
+  boot.growPartition = false;
 }
