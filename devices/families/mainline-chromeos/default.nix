@@ -9,11 +9,6 @@
       "sbs-battery"
       "sbs-charger"
       "sbs-manager"
-
-      "tpm"
-      "tpm_tis_core"
-      "tpm_tis_spi"
-      "tcg_tis_i2c_cr50"
     ];
   };
 
@@ -27,11 +22,11 @@
       CHARGER_SBS = module;
       MANAGER_SBS = module;
 
-      TCG_TPM = module;
-      TCG_TIS_CORE = module;
-      TCG_TIS_SPI = module;
+      # CR50 TPM support
+      TCG_TIS_CORE = yes;
+      TCG_TIS_SPI = yes;
       TCG_TIS_SPI_CR50 = yes;
-      TCG_TIS_I2C_CR50 = module;
+      TCG_TIS_I2C_CR50 = yes;
     })
   ];
 }
