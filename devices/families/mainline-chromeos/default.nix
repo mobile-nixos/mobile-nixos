@@ -25,10 +25,10 @@
       CHARGER_SBS = module;
       MANAGER_SBS = module;
 
-      TCG_TIS_CORE        = module;
-      TCG_TIS_SPI         = module;
-      TCG_TIS_SPI_CR50    = yes;
-      TCG_TIS_I2C_CR50    = yes;
+      TCG_TIS_CORE = module;
+      TCG_TIS_SPI = module;
+      TCG_TIS_SPI_CR50 = yes;
+      TCG_TIS_I2C_CR50 = yes;
     })
   ];
 }
