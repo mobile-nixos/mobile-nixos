@@ -253,12 +253,19 @@ stdenv.mkDerivation (inputArgs // {
         echo "stripping FHS paths in \`$mf'..."
         sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
     done
-    sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
+
     if [ -e scripts/ld-version.sh ]; then
       sed -i scripts/ld-version.sh -e "s|/usr/bin/awk|${buildPackages.gawk}/bin/awk|"
     fi
-  ''
-    + maybeString prePatch
+  '' + (if lib.versionOlder version "6.6" then ''
+    # For Linux < 6.6, path to depmod is defined in Makefile
+    sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'''}
+  '' else ''
+    # For Linux >= 6.6, path to depmod is defined in /scripts/depmod.sh
+    if [ -e scripts/depmod.sh ]; then
+      sed -i scripts/depmod.sh -e 's|:=depmod|:=${buildPackages.kmod}/bin/depmod|'
+    fi
+  '') + maybeString prePatch
   ;
 
   postPatch = ''
