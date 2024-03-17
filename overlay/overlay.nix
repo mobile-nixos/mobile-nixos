@@ -106,14 +106,6 @@ in
       '';
     });
 
-    ubootTools = super.ubootTools.overrideAttrs({ buildInputs ? [], patches ? [], ... }: {
-      # Needed for cross-compiling ubootTools
-      buildInputs = buildInputs ++ [
-        self.openssl
-      ];
-    });
-
-
     # Things specific to mobile-nixos.
     # Not necessarily internals, but they probably won't go into <nixpkgs>.
     mobile-nixos = {
