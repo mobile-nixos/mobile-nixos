@@ -104,17 +104,20 @@ class UI
     # as per the spec, but in practice many have centered BGRTs.
     # So we try to guesstimate a centered BGRT here.
     midpoint = @screen.get_height/2
+    bottom_third = @screen.get_height() / 3.0 * 2
     logo_bottom = @logo.get_height() + @logo.get_y()
     @vertical_offset = logo_bottom - midpoint + 5*@unit
     @vertical_offset = 0 if @vertical_offset < 0
 
-    # TODO: support "big" or "fullscreen" BGRTs
-    #       -> when they dip into the 1/3rd area?
     # Some vendors ship a full-screen BGRT.
     # Since we can't do much about it, we're assuming this:
     #   - Has a centered logo
     #   - The bottom third of the display is free
     # This assumption should hold since this is the assumptions for Windows.
+    if (@vertical_offset + midpoint) > bottom_third
+      # Force the UI area to be at the last third at the bottom.
+      @vertical_offset = bottom_third - midpoint + 5*@unit
+    end
   end
 
   def add_progress_bar()
