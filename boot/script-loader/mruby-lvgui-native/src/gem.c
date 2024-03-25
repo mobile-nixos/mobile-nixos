@@ -15,6 +15,7 @@
 #include <lv_drv_conf.h>
 #include <lv_conf.h>
 #include <lvgl/lvgl.h>
+#include <lv_lib_bmp/lv_bmp.h>
 #include <lv_lib_nanosvg/lv_nanosvg.h>
 #include <font.h>
 #include <hal.h>
@@ -4878,6 +4879,27 @@ mrb_mruby_lvgui_native_hal_init(mrb_state *mrb, mrb_value self)
   
     // Calling native function
     hal_init(param_unnamed_parameter_0);
+  
+    // Converts return value back to a valid mruby value
+    return mrb_nil_value();
+}
+
+//
+////////
+
+////////
+// Bindings for: `void lv_bmp_init()`
+
+static mrb_value
+mrb_mruby_lvgui_native_lv_bmp_init(mrb_state *mrb, mrb_value self)
+{
+    /* No return value */
+  
+  
+  
+  
+    // Calling native function
+    lv_bmp_init();
   
     // Converts return value back to a valid mruby value
     return mrb_nil_value();
@@ -13585,6 +13607,22 @@ mrb_mruby_lvgui_native_gem_init(mrb_state* mrb)
     mLVGUI__Native__References,
     mrb_symbol_value(mrb_intern_lit(mrb, "hal_init")),
     mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) hal_init)
+  );
+
+  // ```void lv_bmp_init();```
+  mrb_define_module_function(
+    mrb,
+    mLVGUI__Native,
+    "lv_bmp_init",
+    mrb_mruby_lvgui_native_lv_bmp_init,
+    MRB_ARGS_REQ(0)
+  );
+  
+  mrb_hash_set(
+    mrb,
+    mLVGUI__Native__References,
+    mrb_symbol_value(mrb_intern_lit(mrb, "lv_bmp_init")),
+    mrb_mruby_lvgui_native_wrap_pointer(mrb, (void *) lv_bmp_init)
   );
 
   // ```void lv_nanosvg_init();```
