@@ -33,6 +33,10 @@ class UI
     File.exist?(BGRT_PATH)
   end
 
+  def use_bgrt?()
+    has_bgrt?() && Configuration["splash"]["useBGRT"]
+  end
+
   def initialize()
     @vertical_offset = 0
 
@@ -67,9 +71,9 @@ class UI
   end
 
   def add_logo()
-    if has_bgrt?()
+    if use_bgrt?()
       # Work around the extension sniffing from the image decoders...
-      File.symlink(BGRT_PATH, "/bgrt.bmp")
+      File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
       file = "/bgrt.bmp"
     else
       file = LVGL::Hacks.get_asset_path("logo.svg")
@@ -87,7 +91,7 @@ class UI
     @logo.set_src(file)
 
     # Position the logo
-    if has_bgrt?
+    if use_bgrt?
       x = File.read("/sys/firmware/acpi/bgrt/xoffset").to_i
       y = File.read("/sys/firmware/acpi/bgrt/yoffset").to_i
       @logo.set_pos(x, y)
@@ -198,6 +202,8 @@ class UI
   # Its presence will be whatever state the cover is in.
   def add_cover_bgrt()
     return unless has_bgrt?()
+    # Work around the extension sniffing from the image decoders...
+    File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
     file = "/bgrt.bmp"
 
     @cover_bgrt = LVGL::LVImage.new(@cover)
