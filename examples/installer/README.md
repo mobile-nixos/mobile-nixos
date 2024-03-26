@@ -27,7 +27,7 @@ This will have different implications depending on the device.
 (E.g. `pine64-pinephone`)
 
 ```
- $ nix-build examples/installer/ --argstr device pine64-pinephone -A build.default
+ $ nix-build examples/installer/ --argstr device pine64-pinephone -A outputs.default
  $ file -L result
 result: DOS/MBR boot sector; partition 1 : ID=0xee, start-CHS (0x0,0,2), end-CHS (0x3ff,255,63), startsector 1, 319555 sectors, extended partition table (last)
 ```
