@@ -60,7 +60,6 @@ in
 {
   # The build artifacts from the modules system.
   inherit outputs;
-  build = builtins.trace "The `build` argument has been renamed `outputs`. This alias will be removed after 2022-05." outputs;
 
   # The evaluated config
   inherit (eval) config;
