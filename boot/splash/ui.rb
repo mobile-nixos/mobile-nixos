@@ -11,6 +11,8 @@ module Kernel
 end
 
 class UI
+  BGRT_PATH = "/sys/firmware/acpi/bgrt/image"
+
   FG_COLOR = Configuration["splash"] && Configuration["splash"]["foreground"]
   FG_COLOR = FG_COLOR.to_i(16) if FG_COLOR.is_a?(String)
   FG_COLOR ||= 0xFFFFFFFF
@@ -27,7 +29,17 @@ class UI
   # As this is not using BaseWindow, LVGUI::init isn't handled for us.
   LVGUI.init(theme: THEME.to_sym, assets_path: "boot-splash/assets")
 
+  def has_bgrt?()
+    File.exist?(BGRT_PATH)
+  end
+
+  def use_bgrt?()
+    has_bgrt?() && Configuration["splash"]["useBGRT"]
+  end
+
   def initialize()
+    @vertical_offset = 0
+
     add_screen
     add_page
     # Biggest of horizontal or vertical; a percent.
@@ -40,7 +52,8 @@ class UI
     add_textarea
     add_keyboard
 
-    add_cover # last
+    add_cover
+    add_cover_bgrt
   end
 
   def add_label()
@@ -58,21 +71,53 @@ class UI
   end
 
   def add_logo()
-    file = LVGL::Hacks.get_asset_path("logo.svg")
-
-    if @page.get_height > @page.get_width
-      # 80% of the width
-      file = "#{file}?width=#{(@page.get_width * 0.8).to_i}"
+    if use_bgrt?()
+      # Work around the extension sniffing from the image decoders...
+      File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
+      file = "/bgrt.bmp"
     else
-      # 15% of the height
-      file = "#{file}?height=#{(@page.get_height * 0.15).to_i}"
+      file = LVGL::Hacks.get_asset_path("logo.svg")
+
+      if @page.get_height > @page.get_width
+        # 80% of the width
+        file = "#{file}?width=#{(@page.get_width * 0.8).to_i}"
+      else
+        # 15% of the height
+        file = "#{file}?height=#{(@page.get_height * 0.15).to_i}"
+      end
     end
 
     @logo = LVGL::LVImage.new(@page)
     @logo.set_src(file)
 
     # Position the logo
-    @logo.set_pos(*center(@logo, 0, -@logo.get_height))
+    if use_bgrt?
+      x = File.read("/sys/firmware/acpi/bgrt/xoffset").to_i
+      y = File.read("/sys/firmware/acpi/bgrt/yoffset").to_i
+      @logo.set_pos(x, y)
+    else
+      @logo.set_pos(*center(@logo, 0, -@logo.get_height))
+    end
+
+    # This is used to unify custom logo and BGRT sizes.
+    # The BGRT's center point **should** be at the one third mark of the screen,
+    # as per the spec, but in practice many have centered BGRTs.
+    # So we try to guesstimate a centered BGRT here.
+    midpoint = @screen.get_height/2
+    bottom_third = @screen.get_height() / 3.0 * 2
+    logo_bottom = @logo.get_height() + @logo.get_y()
+    @vertical_offset = logo_bottom - midpoint + 5*@unit
+    @vertical_offset = 0 if @vertical_offset < 0
+
+    # Some vendors ship a full-screen BGRT.
+    # Since we can't do much about it, we're assuming this:
+    #   - Has a centered logo
+    #   - The bottom third of the display is free
+    # This assumption should hold since this is the assumptions for Windows.
+    if (@vertical_offset + midpoint) > bottom_third
+      # Force the UI area to be at the last third at the bottom.
+      @vertical_offset = bottom_third - midpoint + 5*@unit
+    end
   end
 
   def add_progress_bar()
@@ -138,15 +183,15 @@ class UI
   # Used to handle fade-in/fade-out
   # This is because opacity handles multiple overlaid objects wrong.
   def add_cover()
-    @cover = LVGL::LVObject.new(@screen)
+    @cover = LVGL::LVContainer.new(@screen)
     # Make it so we can use the opacity to fade in/out
     @cover.set_opa_scale_enable(true)
     @cover.set_width(@screen.get_width())
     @cover.set_height(@screen.get_height())
     @cover.set_click(false)
 
-    @cover.get_style().dup.tap do |style|
-      @cover.set_style(style)
+    @cover.get_style(LVGL::CONT_STYLE::MAIN).dup.tap do |style|
+      @cover.set_style(LVGL::CONT_STYLE::MAIN, style)
 
       # Background for the splash
       style.body_main_color = BG_COLOR
@@ -154,6 +199,23 @@ class UI
       # Some themes will add a border to LVObject.
       style.body_border_width = 0
     end
+  end
+
+  # This is used to act as if we were fading "around" the BGRT.
+  # Its presence will be whatever state the cover is in.
+  def add_cover_bgrt()
+    return unless has_bgrt?()
+    # Work around the extension sniffing from the image decoders...
+    File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
+    file = "/bgrt.bmp"
+
+    @cover_bgrt = LVGL::LVImage.new(@cover)
+    @cover_bgrt.set_src(file)
+
+    # Position the logo
+    x = File.read("/sys/firmware/acpi/bgrt/xoffset").to_i
+    y = File.read("/sys/firmware/acpi/bgrt/yoffset").to_i
+    @cover_bgrt.set_pos(x, y)
   end
 
   def add_textarea()
@@ -303,7 +365,7 @@ class UI
   def center(el, x = 0, y = 0)
     [
       @screen.get_width  / 2 - el.get_width  / 2 + x,
-      @screen.get_height / 2 - el.get_height / 2 + y,
+      @screen.get_height / 2 - el.get_height / 2 + y + @vertical_offset,
     ]
   end
 end

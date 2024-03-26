@@ -21,6 +21,7 @@ module LVGL::Hacks
     LVGL::Hacks.set_assets_path(data_dir)
 
     LVGUI::Native.hal_init(get_asset_path(""))
+    LVGUI::Native.lv_bmp_init()
     LVGUI::Native.lv_nanosvg_init()
   end
 

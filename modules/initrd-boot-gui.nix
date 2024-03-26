@@ -122,6 +122,7 @@ in
             theme = mkDefault "night";
             background = mkDefault "0xFF000000";
             foreground = mkDefault "0xFFFFFFFF";
+            useBGRT    = mkDefault true;
           };
         }
       ];

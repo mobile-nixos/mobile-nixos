@@ -1,6 +1,6 @@
 let
-  sha256 = "sha256:1gvi4vlq1cxyi3w2mqm939c5ib5509a2ycpwyki51jdgcpkh4x9c";
-  rev = "684c17c429c42515bafb3ad775d2a710947f3d67";
+  sha256 = "sha256:0xxbzvrr7kylvjn2yj0nnrm1qndx8rq99mlkk0ghvy364y5c5pv0";
+  rev = "44d0940ea560dee511026a53f0e2e2cde489b4d4";
 in
 builtins.trace "(Using pinned Nixpkgs at ${rev})"
 import (fetchTarball {
