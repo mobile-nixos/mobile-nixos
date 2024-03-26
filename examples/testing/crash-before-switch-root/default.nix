@@ -11,4 +11,4 @@ let
     ]; } ];
   });
 in
-  system-build.build.vm
+  system-build.outputs.vm
