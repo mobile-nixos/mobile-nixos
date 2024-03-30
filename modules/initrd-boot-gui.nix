@@ -49,7 +49,7 @@ in
       };
       delay = mkOption {
         type = types.int;
-        default = 2;
+        default = 0;
         description = lib.mdDoc ''
           Minimum delay spent waiting for input devices to settle.
 

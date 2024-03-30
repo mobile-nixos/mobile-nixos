@@ -86,6 +86,8 @@ class Tasks::Splash < SingletonTask
     # Minimum amount of time spent waiting for devices, in seconds.
     wait_for_devices_delay = Configuration["quirks"]["wait_for_devices_delay"]
 
+    return unless wait_for_devices_delay > 0
+
     # Number of times this is looking at the state every second.
     # This is the "precision" at which it works, e.g. wait_for_devices_delay + (1.0/looks_per_second)
     # is the approximative minimum amount of time this will wait for.
