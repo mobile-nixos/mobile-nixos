@@ -259,7 +259,7 @@ stdenv.mkDerivation (inputArgs // {
     fi
   '' + (if lib.versionOlder version "6.6" then ''
     # For Linux < 6.6, path to depmod is defined in Makefile
-    sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'''}
+    sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
   '' else ''
     # For Linux >= 6.6, path to depmod is defined in /scripts/depmod.sh
     if [ -e scripts/depmod.sh ]; then
