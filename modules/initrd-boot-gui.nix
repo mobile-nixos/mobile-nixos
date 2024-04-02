@@ -49,7 +49,7 @@ in
       };
       delay = mkOption {
         type = types.int;
-        default = 2;
+        default = 0;
         description = lib.mdDoc ''
           Minimum delay spent waiting for input devices to settle.
 
@@ -122,6 +122,7 @@ in
             theme = mkDefault "night";
             background = mkDefault "0xFF000000";
             foreground = mkDefault "0xFFFFFFFF";
+            useBGRT    = mkDefault true;
           };
         }
       ];
