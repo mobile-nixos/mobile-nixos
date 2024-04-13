@@ -78,7 +78,7 @@ that the full disk image can be flashed to an SD card, and it will prioritise
 booting it.
 
 ```
- $ nix-build --argstr device pine64-pinephone -A build.disk-image
+ $ nix-build --argstr device pine64-pinephone -A outputs.disk-image
  $ dd if=result of=/dev/mmcblkX bs=8M oflag=sync,direct status=progress
 ```
 
