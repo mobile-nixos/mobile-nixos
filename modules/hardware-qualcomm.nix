@@ -10,6 +10,7 @@ let
   ;
   cfg = config.mobile.hardware.socs;
   anyQualcomm = lib.any (v: v) [
+    cfg.qualcomm-msm8916.enable
     cfg.qualcomm-msm8940.enable
     cfg.qualcomm-msm8939.enable
     cfg.qualcomm-msm8953.enable
@@ -28,6 +29,11 @@ in
       type = types.bool;
       default = false;
       description = lib.mdDoc "enable when SOC is APQ8064–1AA";
+    };
+    hardware.socs.qualcomm-msm8916.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = lib.mdDoc "enable when SOC is msm8916";
     };
     hardware.socs.qualcomm-msm8940.enable = mkOption {
       type = types.bool;
@@ -78,55 +84,61 @@ in
 
   config = mkMerge [
     {
+      mobile = mkIf cfg.qualcomm-msm8916.enable {
+        system.system = lib.mkDefault "aarch64-linux";
+        quirks.fb-refresher.enable = true;
+      };
+    }
+    {
       mobile = mkIf cfg.qualcomm-msm8940.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8953.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8996.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8998.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-sc7180.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
       };
     }
     {
       mobile = mkIf cfg.qualcomm-sdm660.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-sdm845.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         boot.boot-control.enable = mkDefault true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-sm6125.enable {
-        system.system = "aarch64-linux";
+        system.system = lib.mkDefault "aarch64-linux";
         quirks.fb-refresher.enable = true;
       };
     }
