@@ -14,6 +14,9 @@ runCommand "chromeos-sc7180-firmware" {
     qca/crnv32u.bin \
     qcom/a630_gmu.bin \
     qcom/a630_sqe.fw \
+    qcom/qcm2290 \
+    qcom/qrb4210 \
+    qcom/sdm845 \
     qcom/venus-5.4 \
   ; do
     mkdir -p "$(dirname $out/lib/firmware/$firmware)"
