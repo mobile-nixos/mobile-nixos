@@ -11,6 +11,8 @@ let
 in
 {
   mobile.device.name = "motorola-potter";
+  mobile.quirks.qualcomm.msm8953-modem.enable = true;
+
   mobile.device.identity = {
     name = "Moto G5 Plus";
     manufacturer = "Motorola";
@@ -64,7 +66,7 @@ in
       pagesize = "2048";
     };
     appendDTB = [
-      "dtbs/qcom/sdm625-motorola-potter.dtb"
+      "dtbs/qcom/msm8953-motorola-potter.dtb"
     ];
   };
 

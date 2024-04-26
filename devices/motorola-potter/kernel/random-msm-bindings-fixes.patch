@@ -1,0 +1,941 @@
+From patchwork Mon Jun 26 20:00:23 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293460
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0EC7C001DE
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:00:45 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229750AbjFZUAo (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:00:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51152 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229742AbjFZUAn (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:00:43 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com
+ [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F033171A
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:42 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id
+ 2adb3069b0e04-4f973035d60so4713937e87.3
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809640; x=1690401640;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=+ew8UatElinQVBbDWQGC104jo5vUD1VtlF84hGFnzhg=;
+        b=EAe6QtmYYgTZelseWCLZ5EjotNUhXYzKz6i2W5LPHuT7Fgx6BY0Er7F5edr6pkkfQb
+         8LJk2y+JZTunXE48IGHcFmw4j5aR5Ic4+SwYC9bRTRk3WM2jDFrsyariapKF+VyvegTo
+         JJt/yVtrTTPBgPA1jjlR0sJhKXJDOStinipwR5qDOFSOtW6kGT7a1mL6PhTFKxF1Qqby
+         jh8SdD0LH7clWQ7lEhrfTihibtQyJshXCRA5J1SVc1Dmhy4qXpuyMSUWkz1WJUkrNcnb
+         1ZlV07l/cxsFBYUBmxgxvs3yZAcpCGUMXcKtiFtwSZzICpjgtxC5dqNTUVbdR3XBE84D
+         Gofw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809640; x=1690401640;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=+ew8UatElinQVBbDWQGC104jo5vUD1VtlF84hGFnzhg=;
+        b=cpIcMI6r3g4mRkokVVzzaSNXvX1y5/6oZ4a7ofz1oYrQ14eHv5K5kzxUktp8KZmh5J
+         IYhRIhFADOgvIW0h6ahpkJsxR4hpegsyt3wkclbvhJCP97WLmq8VKlLgQ1+BR8BdsjgS
+         i7mdr1Siv34efA3ZUDAJcte/JjZHZUZsuqTXHnmSnxdubtm87ilbInrNoTGN8E8ssv/h
+         dCip5FHv809KDudRRbhVlQ6Tv++JU5LasCKWjUgexnY5vpXOVLB3HG2GNUNkI15tpgQo
+         uHoxRfLx+uIvk5AxaljhW8CBwyAMqFdSq4A+BAZNLTsRgn6W/gPlDy3irFzvTA8qv8N8
+         zrPA==
+X-Gm-Message-State: AC+VfDwX+1UZ7znxw+lczQ/UH59RWlmcgF+eT/cik8evlDi5vSFryBOB
+        gLUsQPEyPbqcQW3ehDVkCn20SbomtlkhZKVo1lg=
+X-Google-Smtp-Source: 
+ ACHHUZ48rX088vH0dhMGHftvtlxvi1YK3Clds1VpB2F/cRhWAq/7GpE+v7k0g0C/xt0AZckG9Iywcw==
+X-Received: by 2002:ac2:5f4c:0:b0:4fb:7666:3bbf with SMTP id
+ 12-20020ac25f4c000000b004fb76663bbfmr1813808lfz.26.1687809640337;
+        Mon, 26 Jun 2023 13:00:40 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:40 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:23 +0200
+Subject: [PATCH 1/7] dt-bindings: qcom: Allow SoC names ending in "pro"
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-1-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=1157;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=MDTupbJX2laygjY7lrmHa0kx1X7wxMzcrvh+5JykFVY=;
+ b=kC6o6929j1t55J2hnXYqgbd4NnLclYK9YjNA7k63aZI53tl69GPgQjtg6jgH3tEMmNjunfaA8
+ 7HVChW9ztcNCPrB45d9eIuq/BqcLZKrjrJ7r7CvYser9Twh0m02WwCu
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+There are a couple of SoCs whose names end in "pro", with the currently-
+upstream examples being msm8974pro and msm8996pro. Allow such suffix in
+SoC-specific compatibles.
+
+Fixes: 5aa332c5e7ca ("dt-bindings: qcom: document preferred compatible naming")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/arm/qcom-soc.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/arm/qcom-soc.yaml b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+index e333ec4a9c5f..607a1cf1ef94 100644
+--- a/Documentation/devicetree/bindings/arm/qcom-soc.yaml
++++ b/Documentation/devicetree/bindings/arm/qcom-soc.yaml
+@@ -31,7 +31,7 @@ properties:
+   compatible:
+     oneOf:
+       # Preferred naming style for compatibles of SoC components:
+-      - pattern: "^qcom,(apq|ipq|mdm|msm|qcm|qcs|sa|sc|sdm|sdx|sm)[0-9]+-.*$"
++      - pattern: "^qcom,(apq|ipq|mdm|msm|qcm|qcs|sa|sc|sdm|sdx|sm)[0-9]+(pro|)-.*$"
+       - pattern: "^qcom,(sa|sc)8[0-9]+[a-z][a-z]?-.*$"
+ 
+       # Legacy namings - variations of existing patterns/compatibles are OK,
+
+From patchwork Mon Jun 26 20:00:24 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293461
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E83EB64DD
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:00:53 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229779AbjFZUAw (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:00:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51190 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229780AbjFZUAp (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:00:45 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com
+ [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4971727
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:44 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id
+ 2adb3069b0e04-4f865f0e16cso4924999e87.3
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809642; x=1690401642;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=dZhC2Qk4+yJVkkmC8iX7qYnuk5bnEQ8L34QUHmXs8vw=;
+        b=U2aWaZtOHvhc/tKfTB+0SlQRqDY5QHhWsCbw2kMbONbX0OX8Gvpy7vNrcukYX3evN9
+         /N09KCeZaXV/iSnpawCT6lv6Mv45BnlEx2dkHVUjt0c6FxfLQlB9ysli1awgPAwOMRfZ
+         ttBzGhpIOW9XOoZGu4zq0MDqNSO81EC4GkTz2FmOG8hvgZE1dEEFTSolPFiHwKZPVJ1V
+         e7sZeKMrkWUlPTAneMAUTCq5E35LW1SKeYqz1UHdaa9lmskLDeLkhjLVNniIc+70phXx
+         hkcqZMPL7NibAdnP9m11jHH+cnCUAbt/tUYg7AvcWa5EllOs9ILwxpmrR0+3YOwJGH8G
+         lmQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809642; x=1690401642;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=dZhC2Qk4+yJVkkmC8iX7qYnuk5bnEQ8L34QUHmXs8vw=;
+        b=Yu/XOVtO7pJf/x0G+6zzH0lptKIeHfFkpLszxAj/lNBuYX2i4ZiDvqVhyK2ub6QtMz
+         LYc5fdU9Akgis3G7kL8P6Jmp4bmkkwOesu1c9EfAcX6sfGkbiN1r47i2+AjlwikNfqgb
+         RYvagFLS9GbhGQ/dbCTGRZ2XYawxZDxP/0Ts8ztr8OtZVG1LmYeHs0TxCE9xLloQ9BqK
+         nlCiSW+inBmAzF6SKISQKzV5anOvjBG93WaP5WebAoAR3L3HkzgMWuqBucP/Gie/dhfR
+         vKfQ2FcJ/QgBD+XZP8jcCCFGo8w3Cct8fPiJ9gMKaeksER0NegWkcU6uRKTJ+9CUDmph
+         4I8g==
+X-Gm-Message-State: AC+VfDy8FnNiZaeHCPvJ6MDtXX78LB8m4kIYuQun4+ERA41eTiZofIyr
+        WaT+JOvE0Tvt1k3gBd1r4615ot+eiDNgyqf0uEE=
+X-Google-Smtp-Source: 
+ ACHHUZ6b2hQMNtTLi1F+9X3vOIZprHgCOQOLawP7qUc5CtwhNvkTYGBI63YfknDA9064/FJoU2QL+g==
+X-Received: by 2002:a19:ab11:0:b0:4f8:75ac:c4e8 with SMTP id
+ u17-20020a19ab11000000b004f875acc4e8mr6484561lfe.43.1687809642027;
+        Mon, 26 Jun 2023 13:00:42 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.40
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:41 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:24 +0200
+Subject: [PATCH 2/7] dt-bindings: remoteproc: qcom,msm8996-mss-pil: Fix
+ 8996 clocks
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-2-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=1513;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=nOsZ7J30rWic3dHnzSrrbrvLqXr5jRF6S1BliJFP7HM=;
+ b=xXNJCYMVsUEMs8T/YRxPTYogaCoAaGuG3UV4Oy/qRyyaaZBJ9v4crXyNyHdsJERbS2rDBIjMb
+ UUAjZ7jB5QjC0M6yU/NbsUPgqyRiUcMXXmEdYthuNgQHllHIKmAy4Lo
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+Change RPMH to RPM (as RPMh was introduced 2 generations later) and drop
+the prng reference, which made ARRAY_SIZE(clocks) !=
+ARRAY_SIZE(clock-names).
+
+Fixes: bdea142295ff ("dt-bindings: remoteproc: qcom,q6v5: Move MSM8996 to schema")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/remoteproc/qcom,msm8996-mss-pil.yaml       | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/remoteproc/qcom,msm8996-mss-pil.yaml b/Documentation/devicetree/bindings/remoteproc/qcom,msm8996-mss-pil.yaml
+index c1ac6ca1e759..4e2358fea49e 100644
+--- a/Documentation/devicetree/bindings/remoteproc/qcom,msm8996-mss-pil.yaml
++++ b/Documentation/devicetree/bindings/remoteproc/qcom,msm8996-mss-pil.yaml
+@@ -215,13 +215,12 @@ allOf:
+             - description: GCC MSS IFACE clock
+             - description: GCC MSS BUS clock
+             - description: GCC MSS MEM clock
+-            - description: RPMH XO clock
++            - description: RPM XO clock
+             - description: GCC MSS GPLL0 clock
+             - description: GCC MSS SNOC_AXI clock
+             - description: GCC MSS MNOC_AXI clock
+-            - description: RPMH PNOC clock
+-            - description: GCC MSS PRNG clock
+-            - description: RPMH QDSS clock
++            - description: RPM PNOC clock
++            - description: RPM QDSS clock
+         clock-names:
+           items:
+             - const: iface
+
+From patchwork Mon Jun 26 20:00:25 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293462
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A34DC0015E
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:00:54 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229977AbjFZUAx (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:00:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51302 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229763AbjFZUAv (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:00:51 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com
+ [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFF50172E
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:45 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id
+ 2adb3069b0e04-4f954d7309fso4594446e87.1
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809644; x=1690401644;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=cBd8zYmgXYIJEREOfSmC9QA82+fRkHgoZhhw+yecJog=;
+        b=jll4tYqzu7BMIfP4ApSYC6LZa4nDGYV1Nyq5BYckVuVw2SJIsTOPY7Kqyi+Dr1qQwg
+         siJPnAB8YCZs7/2JNlMAXEatIO090IWzSvod55RnTIHFUaJiNErQwSAvUR0H5jXh4XqG
+         fniW42lFDYAFzNFgl0PBTqgt9uFXz1hYv0N8i4JCIhYjC3WAPe8WrZinFk7lpNnqYFb2
+         R3IqSpaLjguqRY5CqQkSNJlzXgd2rH9I1nzy6FZaBFYL3t5ai9gwC60JhzCKMDCKlTqf
+         l6YPtkSxSgtCkkFNC58x3QRoHpM2NGGQ88R60ObwaO0cVttcKllqbhpG1cfmcyNwZgVy
+         hS/Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809644; x=1690401644;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=cBd8zYmgXYIJEREOfSmC9QA82+fRkHgoZhhw+yecJog=;
+        b=bsG6plJu+Ntz/1Ncbso1FKxS/nDd0Gqll3UY7UEo4wge7FeoodEzVTfOtdEuXwO+ho
+         vRf70XyctLkjwEdc7amxa8it5rt0KhLjyDb0Y0QDrfXrKAkyLTmv6xkMjJWzwkZeB6lY
+         SdVhUq8O+cjq8m2Jj6KTMxR+piD+B6qfBa9tSij+WkP0MLtgrplDTD+AHa9s/83vjnZT
+         +LZEVKAbshAfxMFl97MC8/mMzD1OKluYEYI7YhmdPoy1eIlZZZwviVwRsXCUHBTxcDoI
+         4aPRL6NrMDTBqEEr5NELxqMw4Elynyim07naY7kZwfvaysmeHJBFQX+vyWgP56V7m8Vv
+         6NNQ==
+X-Gm-Message-State: AC+VfDx7C2z0xU8HcwIJAuJvYQHzt4h+59bmg95Sp0CHshp3xvzrGgko
+        Ou4oL61S3pnxHXNGvA+oayla/MkUEK9Zu7C3TBs=
+X-Google-Smtp-Source: 
+ ACHHUZ6n/y7KAJeGbOMz7+mh+y2vPDpUaiElzO4mf+ROXSrqj/nAWYSYK03jdE9sAaZ6NI5/aI3Yaw==
+X-Received: by 2002:a05:6512:3088:b0:4f6:2d47:274c with SMTP id
+ z8-20020a056512308800b004f62d47274cmr12391004lfd.15.1687809643729;
+        Mon, 26 Jun 2023 13:00:43 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:43 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:25 +0200
+Subject: [PATCH 3/7] arm64: dts: qcom: pm6150l: Add missing short interrupt
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-3-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=1027;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=ujcheFLL/6qV12qqejjbZeIk898Ii1a50BTU4uUbDeY=;
+ b=NGVkEswwSUw3X5KijxbzS2TpVSNV+7El5Pf99qS9FEoTk3ICMAcsn62N018+OLx8A/O9/Rhy1
+ UDq6h9qiILRAUHLFbMxyhxQtOd4i6+UfK6BEnOlz0r8U493lH3wLFMP
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+Add the missing short interrupt. This fixes the schema warning:
+
+wled@d800: interrupt-names: ['ovp'] is too short
+
+Fixes: fe508ced49dd ("arm64: dts: qcom: pm6150l: Add wled node")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Reviewed-by: Luca Weiss <luca@z3ntu.xyz>
+---
+ arch/arm64/boot/dts/qcom/pm6150l.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/pm6150l.dtsi b/arch/arm64/boot/dts/qcom/pm6150l.dtsi
+index 6a7fe1e59f15..d13a1ab7c20b 100644
+--- a/arch/arm64/boot/dts/qcom/pm6150l.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm6150l.dtsi
+@@ -121,8 +121,9 @@ pm6150l_flash: led-controller@d300 {
+ 		pm6150l_wled: leds@d800 {
+ 			compatible = "qcom,pm6150l-wled";
+ 			reg = <0xd800>, <0xd900>;
+-			interrupts = <0x5 0xd8 0x1 IRQ_TYPE_EDGE_RISING>;
+-			interrupt-names = "ovp";
++			interrupts = <0x5 0xd8 0x1 IRQ_TYPE_EDGE_RISING>,
++				     <0x5 0xd8 0x2 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "ovp", "short";
+ 			label = "backlight";
+ 
+ 			status = "disabled";
+
+From patchwork Mon Jun 26 20:00:26 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293463
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02D96C001E0
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:00:55 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229621AbjFZUAy (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:00:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51320 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229834AbjFZUAw (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:00:52 -0400
+Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com
+ [IPv6:2a00:1450:4864:20::12f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52553173A
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:47 -0700 (PDT)
+Received: by mail-lf1-x12f.google.com with SMTP id
+ 2adb3069b0e04-4f8689fbf59so5929437e87.0
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809645; x=1690401645;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=imK7Izrf9XR0OzZ//Iou7g22arhXPCMNK+D4dNlp2hs=;
+        b=oeJIeukDECgfDArUfNvY+piZwLvJVsJqVdtUK71oyzAJPwHjMoRyrqcNz2qmKckza1
+         2bhSE24nn9Koor08zFL3xs0ypbKDXDuQ3aqs2Y3egMdAaIE5DrlrNOeIQS7vPsD+zG3z
+         7vd/P4fAz7DWOlaYlkrmMdAPWIHC99JU7DQoRXybf6rhTBoLnbWpv0ZjvM55CQ+DIEGr
+         iGFFSyUZDj4ZQkdC5WwZX9si8B/i/PgiqGvYSFbNGUii+bER3Ul9nhySR050W4+x3tTR
+         iQ2f70k6rJcrKlDJymvHKwCdNfOk7tvuUsIvf2N6SWuafsB5/6x+4R53Gsil6aiJInCh
+         Cpxg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809645; x=1690401645;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=imK7Izrf9XR0OzZ//Iou7g22arhXPCMNK+D4dNlp2hs=;
+        b=Oe2s1y2RfeJs7VrdNvJIM39uWl2wPe1iPDeGdeQEcXBmWM9hrpl0n7VOJDoDj1tRBe
+         NK26+zzRnFRDnKDHYqPolrpyzLZrez9MPVteAe+MhihhgnZYIl6GZbXUy2SguMEyt8d+
+         t/G0L7Szl9Oqq/AqAg0MuNKTznk4UlG5qaYPEuBQf5lSNTapMwGjcOLwE8uV4t3CBT6U
+         YBCAOULgXwSsthnr3TlvmL8DPQ55k05SCLROrCHfwIL5tVQQhyKq6BF7n5GoVgLsJUMr
+         TeR7jmsO/2L5LiUspzo8kC4WQQjIdiOiY7RN28BX9cxEztUQsQPjXjVxFBwejS5UsxV3
+         crRw==
+X-Gm-Message-State: AC+VfDzS/Krw2D7r53loGKt5oqXGQe0iWNjX7XMkmoajlL7LzZyWJfz7
+        ivRMxKYjGzxQu91ulWfBXMLlH8HD1/rJyleWcpE=
+X-Google-Smtp-Source: 
+ ACHHUZ7VCjJOZiS3WzEnzBQTQhU2ENJVrUE11RzNnix8tmm+eAeK5rtPHJs71pENoFBFyWy/zIglEw==
+X-Received: by 2002:a19:5e01:0:b0:4f3:b18a:6494 with SMTP id
+ s1-20020a195e01000000b004f3b18a6494mr9009627lfb.22.1687809645418;
+        Mon, 26 Jun 2023 13:00:45 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:45 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:26 +0200
+Subject: [PATCH 4/7] arm64: dts: qcom: pm660l: Add missing short interrupt
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-4-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=1001;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=J+dkBOrcQCIu7gPctg2TZ5QROQCaxdqVG4hEZO0yoyA=;
+ b=0gJ0roLPKeoCHgf+euqfCRvW6DzudIvp48K5ZYq5FKATxUBnSe+iuDqXkagQndQvumQ6/T5m6
+ i3FQk573ojNAZyHRpViu0uLF4jDYUwsE9SyWvaInL4nX+aoVlK10Br8
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+Add the missing short interrupt. This fixes the schema warning:
+
+wled@d800: interrupt-names: ['ovp'] is too short
+
+Fixes: 7b56a804e58b ("arm64: dts: qcom: pm660l: Add WLED support")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/pm660l.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/pm660l.dtsi b/arch/arm64/boot/dts/qcom/pm660l.dtsi
+index 87b71b7205b8..6fdbf507c262 100644
+--- a/arch/arm64/boot/dts/qcom/pm660l.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm660l.dtsi
+@@ -74,8 +74,9 @@ pm660l_lpg: pwm {
+ 		pm660l_wled: leds@d800 {
+ 			compatible = "qcom,pm660l-wled";
+ 			reg = <0xd800>, <0xd900>;
+-			interrupts = <0x3 0xd8 0x1 IRQ_TYPE_EDGE_RISING>;
+-			interrupt-names = "ovp";
++			interrupts = <0x3 0xd8 0x1 IRQ_TYPE_EDGE_RISING>,
++				     <0x3 0xd8 0x2 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "ovp", "short";
+ 			label = "backlight";
+ 
+ 			status = "disabled";
+
+From patchwork Mon Jun 26 20:00:27 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293464
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AC9EB64D7
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:00:58 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229780AbjFZUA4 (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:00:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51270 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229851AbjFZUAw (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:00:52 -0400
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com
+ [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 022301984
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:49 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id
+ 2adb3069b0e04-4fb5bcb9a28so2430473e87.3
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809647; x=1690401647;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=jKfIdLUUH2RS/LUserqASM5cmaLcT+sMjCEMVJp6OG0=;
+        b=qsKd6ggy1Axj9lwIWB2x+mFB2qIylwRI7aUVdF0KWYKyzCnHXgocW+DxYET2wtcQJ7
+         ms7H9kIvTWV4I+LzJv6w0tdtv5EvUSwYtKWosuxUMUY4I7HrPLkYFmhawBfQY9uGGOjq
+         z1aVRVxrhiAPdsqDx6vvrQQaPQ0m3Dyu2G4MLf2E2xIyfHKXOBHkRWP8l9URAz8IH5Ho
+         C8biajrPGizw8+ceEXeUdlcSR+CPY4xKtJ7C3FGCCuKIJ10wRPUy/TznqAzhRmJXDNMM
+         bWxiXvh/HCylYruibx/6DXyA8PXwL3LprjPQXQECtlDi26AebNyGljYSLKMGNbqgn533
+         ZX2Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809647; x=1690401647;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=jKfIdLUUH2RS/LUserqASM5cmaLcT+sMjCEMVJp6OG0=;
+        b=iWtE0NI/RadyApTM3dfSYxz0w6yA7cfwA//WeO+uqalljvU7vUH0H607i+9pv8H16H
+         wsUQQ8DsJCXG6VGVnEKnoxbWbH9y8jsmtEazc5yMDyazcIvw+5uACVrc/JBGa7GxPPMU
+         ixMarsWH9wqXBck5xGA8wAZEXjjdO4vU21XMnO3AoBIzQIz8NA+zIalx/eswJRNw6oHk
+         qxwEEw+8qgCWqBp6jIxMlK23tVCIeSg0NW94I5G8qyO/xaiG8O7eV37H/hXwMnf0z29E
+         w/85EdgK2B6+yZTL+IKDxoNhla4UJXurbtrYefUEuK2yer6FBveltIcMu+cBDynpDmb0
+         S7YA==
+X-Gm-Message-State: AC+VfDwAB8OKfin8wjz8yNJp6681EWGTItvWHTQ8Ly6DlUKJidETH136
+        XjC3qCALAtMQJJGS6K3L0G1pQu0aeOplX2B+hJE=
+X-Google-Smtp-Source: 
+ ACHHUZ4NLSXysy6psp13JHUXwmMYc7ARbE87NuhMyBupcqaANX/p2M/kcomktzH1OGLoppl6tRXEnw==
+X-Received: by 2002:a05:6512:447:b0:4f8:5fce:3683 with SMTP id
+ y7-20020a056512044700b004f85fce3683mr15653218lfk.20.1687809647097;
+        Mon, 26 Jun 2023 13:00:47 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:46 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:27 +0200
+Subject: [PATCH 5/7] arm64: dts: qcom: pmi8950: Add missing OVP interrupt
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-5-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=1018;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=KUd2AC4tc+iLheKuH/ERKh2OsQIUCXg4x0GOwnEVQBc=;
+ b=3BhxLUb7/d4mmkWDECw8N4IewedZ36153EHBhClQZe07ll84G9Q/ATFQMLlZrTTxPAYqXzcp2
+ RexIcXisuOjBJwBAaW0zxlo66RnSjeHVuZBf22YFCMJCNhOFJp14BO1
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+Add the missing OVP interrupt. This fixes the schema warning:
+
+wled@d800: interrupt-names: ['short'] is too short
+
+Fixes: 0d97fdf380b4 ("arm64: dts: qcom: Add configuration for PMI8950 peripheral")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/pmi8950.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/pmi8950.dtsi b/arch/arm64/boot/dts/qcom/pmi8950.dtsi
+index c09a9681bc0c..1029f3b1bb9a 100644
+--- a/arch/arm64/boot/dts/qcom/pmi8950.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8950.dtsi
+@@ -87,8 +87,9 @@ pmic@3 {
+ 		pmi8950_wled: leds@d800 {
+ 			compatible = "qcom,pmi8950-wled";
+ 			reg = <0xd800>, <0xd900>;
+-			interrupts = <0x3 0xd8 0x02 IRQ_TYPE_EDGE_RISING>;
+-			interrupt-names = "short";
++			interrupts = <0x3 0xd8 0x1 IRQ_TYPE_EDGE_RISING>,
++				     <0x3 0xd8 0x2 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "ovp", "short";
+ 			label = "backlight";
+ 
+ 			status = "disabled";
+
+From patchwork Mon Jun 26 20:00:28 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293467
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED955EB64DC
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:01:29 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229666AbjFZUB2 (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:01:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229742AbjFZUAy (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:00:54 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com
+ [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32ABB1BC1
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:51 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id
+ 2adb3069b0e04-4f96d680399so4947484e87.0
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809649; x=1690401649;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=9oE1vA9oZECxb4lngoFC5l9QDNuTaz25Y3kIWdbl1G4=;
+        b=vw1Zn2lkdQDV8C2mNkXXf2b6yxaSYrNGCJ/o/8rmXru/l9NDdM7l8Amw9sahWGfL1/
+         b1cqNvH9gTWYlX+k8BYada27hhiz0RMgMNoJfe1nkmC89ya0YNMcpYJnXXFjMjRIsIpE
+         rK2TFcb/eVhmOh3lL72hu1geZq6ASYxpWKfMKdneXpddc5fTN1Zxdi6tbQeVUgrmzR9b
+         ZUk6ExFgrqnqIZhJtDuxOSk0N6QO4+n7QcX6SFG92kHPnFkf0wlQHoegIzsvDDhsr1RS
+         /lCGwg7fR7Kjg1djr0IiaDrMwmlhFilMiOoIdvEjuJMuW0/Q1fXHwieLeWfT7chpSBL0
+         +ucA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809649; x=1690401649;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=9oE1vA9oZECxb4lngoFC5l9QDNuTaz25Y3kIWdbl1G4=;
+        b=gCr99zQxNlyhzHdVtHfphQSx5zUnxdruJe5UFZlhWVyyLvG7K1JxaqUPuFzwuEBq95
+         E5HWIcj4BnV4TNifOE1aTB81IjWVfyRrpLdtudxnjP+vaJ8dew4VJ7wbeae3gHWsbjSd
+         xbPDSgH/cmcm3xpfCskzxGkYFf9VsKc+/h5HWjEDldWZfuyMmAMQQ/zzXSmQ5udgN7LQ
+         969i76tOxN/T9h4z/dpFw32jn/zXWi7Ei4Q19Yg9VkEXv6TKmZkaRF6Njy2k2XPMPXpn
+         yx6bRqgnszElRtmLfdylECpm5MAtmd3ebyMCtQdRfRzv2O1BWI+g4zxY9CowQcAPFiMn
+         7NRA==
+X-Gm-Message-State: AC+VfDwMAxAs9Cc94x3ebm8T8jcYkPrg7fJqYisPYMghzPHX3r0A6ejb
+        Nisula2FhNuJIzj6Ora8M37pZYkytusnKOq+aTY=
+X-Google-Smtp-Source: 
+ ACHHUZ4OiBhU4ZhPCNUmYmycNqrSBBeUaIAmkQGKJPpildJC6x6za9LCFa2p42QVBFQtf9EZLkInIw==
+X-Received: by 2002:a05:6512:3a96:b0:4fb:7642:88d3 with SMTP id
+ q22-20020a0565123a9600b004fb764288d3mr2947490lfu.27.1687809649016;
+        Mon, 26 Jun 2023 13:00:49 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.47
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:48 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:28 +0200
+Subject: [PATCH 6/7] arm64: dts: qcom: pmi8994: Add missing OVP interrupt
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-6-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=1039;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=ZiBnl3ppLgPG+6RsUgiLkAxM9fVUIHOAF6RSdTbrPSM=;
+ b=GKIu4T7ibjpsm2tmTrKQED9br3OgA+LWnPEAhuS767DpB016iimNdk40hfz04vB7l0+oZsFJq
+ lBP0unrfJyqCBgyGG23dbfIJIghh/6j/QEmu65W3NnR/vGTVMi89B61
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+Add the missing OVP interrupt. This fixes the schema warning:
+
+wled@d800: interrupt-names: ['short'] is too short
+
+Fixes: 37aa540cbd30 ("arm64: dts: qcom: pmi8994: Add WLED node")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/pmi8994.dtsi | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/pmi8994.dtsi b/arch/arm64/boot/dts/qcom/pmi8994.dtsi
+index 0192968f4d9b..36d6a1fb553a 100644
+--- a/arch/arm64/boot/dts/qcom/pmi8994.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8994.dtsi
+@@ -54,8 +54,9 @@ pmi8994_spmi_regulators: regulators {
+ 		pmi8994_wled: wled@d800 {
+ 			compatible = "qcom,pmi8994-wled";
+ 			reg = <0xd800>, <0xd900>;
+-			interrupts = <3 0xd8 0x02 IRQ_TYPE_EDGE_RISING>;
+-			interrupt-names = "short";
++			interrupts = <0x3 0xd8 0x1 IRQ_TYPE_EDGE_RISING>,
++				     <0x3 0xd8 0x2 IRQ_TYPE_EDGE_RISING>;
++			interrupt-names = "ovp", "short";
+ 			qcom,cabc;
+ 			qcom,external-pfet;
+ 			status = "disabled";
+
+From patchwork Mon Jun 26 20:00:29 2023
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
+X-Patchwork-Submitter: Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Patchwork-Id: 13293468
+Return-Path: <linux-remoteproc-owner@vger.kernel.org>
+X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
+	aws-us-west-2-korg-lkml-1.web.codeaurora.org
+Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28CEBC001DE
+	for <linux-remoteproc@archiver.kernel.org>;
+ Mon, 26 Jun 2023 20:01:31 +0000 (UTC)
+Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
+        id S229763AbjFZUB3 (ORCPT
+        <rfc822;linux-remoteproc@archiver.kernel.org>);
+        Mon, 26 Jun 2023 16:01:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51702 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230070AbjFZUBD (ORCPT
+        <rfc822;linux-remoteproc@vger.kernel.org>);
+        Mon, 26 Jun 2023 16:01:03 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com
+ [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 062301BE4
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:52 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id
+ 2adb3069b0e04-4f9fdb0ef35so3073819e87.0
+        for <linux-remoteproc@vger.kernel.org>;
+ Mon, 26 Jun 2023 13:00:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google; t=1687809650; x=1690401650;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:from:to:cc:subject:date:message-id
+         :reply-to;
+        bh=EuktTM1UhdAXyb9mJvjHwufVvOKEzeBXkcK386zAIO0=;
+        b=hGFXgcp1n/VTAG9JKtBSrKkyJIMQ5W9aN33MYvWk0ga+6fcAkKRLJKt1fxiCYKqav9
+         4KThNR3P50sR78T010b7R7SoBTu0RQJCWAbfcRPObzUrPhK2zSs8FZkJH/tjBYwkf17z
+         piEIHO/fhmx9fW5tpEafldrGNsjBBGQcFUUzoIoHqvPCYi342GeJvLCN3SZ0t9//wzMA
+         jMWmGFdWeqsQS5Q3NQRgUioze2z0r9cRoEpGCVMc0KlJ7vshUUQM+iFHPLwBKRuWYrSe
+         P9alLc6v+qhYtqR0EOG7a1wIndaftiGDgqH2Sedzf6Hn/MoiPzLhUFgEpjYnZl55vIUd
+         lk/A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20221208; t=1687809650; x=1690401650;
+        h=cc:to:in-reply-to:references:message-id:content-transfer-encoding
+         :mime-version:subject:date:from:x-gm-message-state:from:to:cc
+         :subject:date:message-id:reply-to;
+        bh=EuktTM1UhdAXyb9mJvjHwufVvOKEzeBXkcK386zAIO0=;
+        b=MVDFUf7p32exJfCW5jZldOLuJwCHIUsUHpRqa1iWoZq9XTJ8NTGNASKoGCtUj5OC50
+         2uPXF3/SkcUz48B3gKgISySgEq8BqWzjSFT/+LVhN7rww9aDSCQN3ZQmu7OQPq/Mafsr
+         YdKaVaHaQ4U9ewoBNlgzX19n98Uj8CAs1gAh59t9WpwZFW3olf3Soru5B5D8pNq9BPgt
+         YDXAs8w/dOXjpPIKww0Lffz4NhOPPx1gbfLdgZB9bSsNAveHhHpT88gTbonLHnGmEbag
+         QgZjp/7y5jP++sIW5G7dl3JxJCTs1+98UGb7ihd6n5YU2CQ9VcQuKwjJUwSvy74sUW3E
+         v9ww==
+X-Gm-Message-State: AC+VfDz263ZHlpxJ3XVoMAviaJUFE00H/GAHMJeCYB9BzBoHAcQlf4Ik
+        o/bESZjbSQHp5nB+9y7BAq0GQtzFZZKVWCcVZrc=
+X-Google-Smtp-Source: 
+ ACHHUZ7EXepLP9S0iQxWok0b76K0pbQWxmI21PNK3vwwhPWOkkfzSbxqTwv0BqrkbGqJc+qzUVwKmw==
+X-Received: by 2002:a19:7715:0:b0:4f9:5a87:1028 with SMTP id
+ s21-20020a197715000000b004f95a871028mr8492827lfc.30.1687809650686;
+        Mon, 26 Jun 2023 13:00:50 -0700 (PDT)
+Received: from [192.168.1.101] (abyk179.neoplus.adsl.tpnet.pl. [83.9.30.179])
+        by smtp.gmail.com with ESMTPSA id
+ o11-20020ac2494b000000b004fb74cb9670sm628082lfi.125.2023.06.26.13.00.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 26 Jun 2023 13:00:50 -0700 (PDT)
+From: Konrad Dybcio <konrad.dybcio@linaro.org>
+Date: Mon, 26 Jun 2023 22:00:29 +0200
+Subject: [PATCH 7/7] arm64: dts: qcom: sc8180x: Add missing 'cache-unified'
+ to L3
+MIME-Version: 1.0
+Message-Id: <20230626-topic-bindingsfixups-v1-7-254ae8642e69@linaro.org>
+References: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+In-Reply-To: <20230626-topic-bindingsfixups-v1-0-254ae8642e69@linaro.org>
+To: Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <andersson@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Conor Dooley <conor+dt@kernel.org>,
+        Bhupesh Sharma <bhupesh.sharma@linaro.org>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Mathieu Poirier <mathieu.poirier@linaro.org>,
+        Sibi Sankar <quic_sibis@quicinc.com>,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        AngeloGioacchino Del Regno
+        <angelogioacchino.delregno@somainline.org>,
+        AngeloGioacchino Del Regno <kholk11@gmail.com>,
+        Luca Weiss <luca@z3ntu.xyz>, Vinod Koul <vkoul@kernel.org>
+Cc: Marijn Suijten <marijn.suijten@somainline.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>,
+        Rob Herring <robh@kernel.org>, linux-arm-msm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@linaro.org>
+X-Mailer: b4 0.12.2
+X-Developer-Signature: v=1; a=ed25519-sha256; t=1687809636; l=751;
+ i=konrad.dybcio@linaro.org; s=20230215; h=from:subject:message-id;
+ bh=ibNUSGIgP6PhhvRriKU7DI4t+22ag5VAkhr7uTbUPMA=;
+ b=PtMSn6MU54shBkuVwhD30ztIxSCv8W5HtCsm2V3hIf4gC1CdzHM4oX54cI2b2WAz1X6VI5gv0
+ nuUIs36narkAfFei2b3tnCm708vhbpIALOw5HObFpt8ZcBQ5FzQv+ZZ
+X-Developer-Key: i=konrad.dybcio@linaro.org; a=ed25519;
+ pk=iclgkYvtl2w05SSXO5EjjSYlhFKsJ+5OSZBjOkQuEms=
+Precedence: bulk
+List-ID: <linux-remoteproc.vger.kernel.org>
+X-Mailing-List: linux-remoteproc@vger.kernel.org
+
+Add the missing property to fix the dt checker warning:
+
+qcom/sc8180x-primus.dtb: l3-cache: 'cache-unified' is a required property
+
+Fixes: 8575f197b077 ("arm64: dts: qcom: Introduce the SC8180x platform")
+Signed-off-by: Konrad Dybcio <konrad.dybcio@linaro.org>
+Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ arch/arm64/boot/dts/qcom/sc8180x.dtsi | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/arch/arm64/boot/dts/qcom/sc8180x.dtsi b/arch/arm64/boot/dts/qcom/sc8180x.dtsi
+index 204deefbfa8b..5d8303a8dc95 100644
+--- a/arch/arm64/boot/dts/qcom/sc8180x.dtsi
++++ b/arch/arm64/boot/dts/qcom/sc8180x.dtsi
+@@ -64,6 +64,7 @@ L2_0: l2-cache {
+ 				L3_0: l3-cache {
+ 					compatible = "cache";
+ 					cache-level = <3>;
++					cache-unified;
+ 				};
+ 			};
+ 		};

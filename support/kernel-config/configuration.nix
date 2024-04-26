@@ -386,8 +386,8 @@ in
       PSTORE_LZ4_COMPRESS = no;
       PSTORE_LZ4HC_COMPRESS = no;
       PSTORE_842_COMPRESS = no;
-      PSTORE_ZSTD_COMPRESS = whenAtLeast "4.19" yes;
-      PSTORE_COMPRESS_DEFAULT = freeform ''"zstd"'';
+      PSTORE_ZSTD_COMPRESS = whenBetween "4.19" "5.999" yes;
+#      PSTORE_COMPRESS_DEFAULT = freeform ''"zstd"'';
     })
 
     (helpers: with helpers; mkDefaultIze {

@@ -12,6 +12,7 @@ let
   ;
   anyCompatible = any id [
     cfg.sdm845-modem.enable
+    cfg.msm8953-modem.enable
     cfg.sc7180-modem.enable
   ];
 
@@ -20,10 +21,19 @@ let
   # Once we have more accrued knowledge, add a discrete option.
   rmtfsReadsPartition = any id [
     cfg.sdm845-modem.enable
+    cfg.msm8953-modem.enable
   ];
 
-  # TODO: figure out what PD mapper exactly is...
-  # is it USB PD or something modem related?
+  # 'pd-mapper' is "the reference implementation for Qualcomm's
+  # Protection Domain mapper service. It is required for userspace
+  # applications to access the various remote processors (Wi-Fi, modem,
+  # sensors...) on recent Qualcomm SoCs using the QRTR protocol."
+
+  # pd-mapper refers to firmware files ending in ".jsn" to determine
+  # the protection domains. If it can't find any it will fail with
+  # the error "no pd maps available" so don't run it if you don't need
+  # it.
+
   withPDMapper = any id [
     cfg.sdm845-modem.enable
   ];
@@ -42,6 +52,14 @@ in
       default = false;
       description = lib.mdDoc ''
         Enable this on a mainline-based SDM845 device for modem support
+      '';
+    };
+    quirks.qualcomm.msm8953-modem.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = lib.mdDoc ''
+        Enable this on a mainline-based MSM8953 device for modem support.
+        (Note that it has only been tested on a motorola-potter device)
       '';
     };
   };
@@ -68,6 +86,7 @@ in
               "/lib/firmware/rmtfs"
             ]
               ++ optional cfg.sdm845-modem.enable "/lib/firmware/qcom/sdm845"
+              ++ optional cfg.msm8953-modem.enable "/lib/firmware/fsg"
               ++ optional cfg.sc7180-modem.enable "/lib/firmware/qcom/sc7180-trogdor"
             ;
           };

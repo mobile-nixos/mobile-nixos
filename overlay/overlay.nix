@@ -98,6 +98,38 @@ in
     # All that follows will have to be cleaned and then upstreamed.
     #
 
+    # kmscon = super.kmscon.override { libxslt = null; };
+    kmscon = super.kmscon.overrideAttrs(attrs: {
+      nativeBuildInputs = attrs.nativeBuildInputs ++ [
+        self.buildPackages.libxslt.all
+      ];
+    });
+
+    # need at least 23.2.1 for adreno a506 sdupport
+    mesa23 =
+      let
+        version = "23.3.3";
+        hash = "sha256-UYMHwAV/o87otY33i+Qx1N9ar6ftxg0JJ4stegqA87Q=";
+      in super.mesa.overrideAttrs(attrs: {
+        inherit version hash;
+        src = self.fetchurl {
+          inherit hash;
+          urls = [
+            "https://archive.mesa3d.org/mesa-${version}.tar.xz"
+            "https://mesa.freedesktop.org/archive/mesa-${version}.tar.xz"
+            "ftp://ftp.freedesktop.org/pub/mesa/mesa-${version}.tar.xz"
+            "ftp://ftp.freedesktop.org/pub/mesa/${version}/mesa-${version}.tar.xz"
+          ];
+        };
+        patches = builtins.tail attrs.patches;
+      });
+
+    pcsclite = super.pcsclite.overrideAttrs(attrs: {
+      patches = [
+        ./pcsc-cross-compile.patch
+      ];
+    });
+
     vboot_reference = super.vboot_reference.overrideAttrs(attrs: {
       # https://github.com/NixOS/nixpkgs/pull/69039
       postPatch = ''
