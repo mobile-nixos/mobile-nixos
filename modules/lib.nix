@@ -24,7 +24,7 @@ in
         filteredArgs // {
         # Needed for hermetic eval, otherwise `eval-config.nix` will try
         # to use `builtins.currentSystem`.
-        inherit system;
+        inherit system pkgs;
         inherit baseModules;
         # Newer versions of module system pass specialArgs to modules, so try
         # to pass that to eval if possible.

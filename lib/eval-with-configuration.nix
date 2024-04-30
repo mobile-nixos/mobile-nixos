@@ -8,6 +8,7 @@
   # The identifier of the device this should be built for.
   # (This gets massaged later on)
 , device ? null
+, system ? if (pkgs == null) then builtins.currentSystem else pkgs.system
 , configuration
   # Internally used to tack on configuration by release.nix
 , additionalConfiguration ? {}
@@ -32,7 +33,7 @@ let
   eval = evalWith {
     device = final_device;
     modules = configuration;
-    inherit additionalConfiguration;
+    inherit additionalConfiguration pkgs system;
   };
 
   # Makes a mostly useless header.
