@@ -12,8 +12,8 @@ mobile-nixos.kernel-builder {
     domain = "codeberg.org";
     owner = "megi";
     repo = "linux";
-    rev = "orange-pi-6.9-20240512-2332";
-    hash = "sha256-6hWft1+EGdFZo4My1lsr2PkJBgOcoKrLYSgJSGrM/Z8=";
+    rev = "orange-pi-6.9-20240514-1047";
+    hash = "sha256-l4+qRr8emjWJtAVlaM65HLPuvIp3EzvJth9gUBAuXtY=";
   };
   patches = [
     ./0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch
