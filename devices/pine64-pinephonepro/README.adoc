@@ -70,7 +70,7 @@ device. That block device can be the internal eMMC or the SD card.
 When using Tow-Boot, hold _volume down_ during boot to boot from the SD card.
 
 ```
- $ nix-build --argstr device pine64-pinephonepro -A build.disk-image
+ $ nix-build --argstr device pine64-pinephonepro -A outputs.disk-image
  $ dd if=result of=/dev/mmcblkX bs=8M oflag=sync,direct status=progress
 ```
 
