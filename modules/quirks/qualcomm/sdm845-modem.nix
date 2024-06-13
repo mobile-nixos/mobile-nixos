@@ -33,14 +33,14 @@ in
     quirks.qualcomm.sc7180-modem.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable this on a mainline-based SC7180 device for modem/Wi-Fi support
       '';
     };
     quirks.qualcomm.sdm845-modem.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable this on a mainline-based SDM845 device for modem support
       '';
     };

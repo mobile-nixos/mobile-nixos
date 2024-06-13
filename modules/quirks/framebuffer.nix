@@ -14,7 +14,7 @@ in
     quirks.fb-refresher.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enables use of `msm-fb-refresher`.
         Use sparingly, it is better to patch software to flip buffers instead.
 
@@ -25,7 +25,7 @@ in
     quirks.fb-refresher.stage-1.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Add `msm-fb-refresher` to stage-1.
 
         It should not be needed for the usual assortment of Mobile NixOS tools.

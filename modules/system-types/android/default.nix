@@ -88,21 +88,21 @@ in
     mobile.system.android = {
       ab_partitions = lib.mkOption {
         type = types.bool;
-        description = lib.mdDoc "Configures whether the device uses an A/B partition scheme";
+        description = "Configures whether the device uses an A/B partition scheme";
         default = false;
         internal = true;
       };
 
       boot_as_recovery = lib.mkOption {
         type = types.bool;
-        description = lib.mdDoc "Configures whether the device uses 'boot as recovery'";
+        description = "Configures whether the device uses 'boot as recovery'";
         default = config.mobile.system.android.ab_partitions;
         internal = true;
       };
 
       device_name = lib.mkOption {
         type = types.nullOr types.str;
-        description = lib.mdDoc "Value of `ro.product.device` or `ro.build.product`. Used to compare against in flashable zips.";
+        description = "Value of `ro.product.device` or `ro.build.product`. Used to compare against in flashable zips.";
         default = null;
         internal = true;
       };
@@ -113,28 +113,28 @@ in
           "lk2nd"    # Some Qualcomm mainline devices, using fastboot and lk2nd
           "odin"     # Mainly Samsung, using `heimdall`
         ];
-        description = lib.mdDoc "Configures which flashing method is used by the device.";
+        description = "Configures which flashing method is used by the device.";
         default = "fastboot";
         internal = true;
       };
 
       has_recovery_partition = lib.mkOption {
         type = types.bool;
-        description = lib.mdDoc "Configures whether the device uses a distinct recovery partition";
+        description = "Configures whether the device uses a distinct recovery partition";
         default = !config.mobile.system.android.boot_as_recovery;
         internal = true;
       };
 
       boot_partition_destination = lib.mkOption {
         type = types.str;
-        description = lib.mdDoc "Partition label on which to install the boot image. Some OEM name the partition BOOT.";
+        description = "Partition label on which to install the boot image. Some OEM name the partition BOOT.";
         default = "boot";
         internal = true;
       };
 
       system_partition_destination = lib.mkOption {
         type = types.str;
-        description = lib.mdDoc "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
+        description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
         default = "system";
         internal = true;
       };
@@ -142,7 +142,7 @@ in
       bootimg = {
         name = lib.mkOption {
           type = types.str;
-          description = lib.mdDoc "Suffix for the image name. Use it to distinguish speciality boot images.";
+          description = "Suffix for the image name. Use it to distinguish speciality boot images.";
           default = "boot.img";
           internal = true;
         };
@@ -150,7 +150,7 @@ in
         dt = lib.mkOption {
           type = types.nullOr types.path;
           default = null;
-          description = lib.mdDoc "Path to a flattened device tree to pass as --dt to mkbootimg";
+          description = "Path to a flattened device tree to pass as --dt to mkbootimg";
           internal = true;
         };
 
@@ -167,7 +167,7 @@ in
       appendDTB = lib.mkOption {
         type = with types; nullOr (listOf (oneOf [path str]));
         default = null;
-        description = lib.mdDoc "List of dtb files to append to the kernel, when device uses appended DTB.";
+        description = "List of dtb files to append to the kernel, when device uses appended DTB.";
       };
     };
     mobile = {
@@ -175,21 +175,21 @@ in
         android = {
           android-bootimg = lib.mkOption {
             type = types.package;
-            description = lib.mdDoc ''
+            description = ''
               `boot.img` type image for Android-based systems.
             '';
             visible = false;
           };
           android-recovery = lib.mkOption {
             type = types.package;
-            description = lib.mdDoc ''
+            description = ''
               `recovery.img` type image for Android-based systems.
             '';
             visible = false;
           };
           android-fastboot-images = lib.mkOption {
             type = types.package;
-            description = lib.mdDoc ''
+            description = ''
               Flashing scripts and images for use with fastboot or odin.
             '';
             visible = false;

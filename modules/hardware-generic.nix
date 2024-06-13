@@ -10,19 +10,19 @@ in
     generic-x86_64.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "Enable when system is a generic x86_64";
+      description = "Enable when system is a generic x86_64";
       internal = true;
     };
     generic-aarch64.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "Enable when system is a generic AArch64";
+      description = "Enable when system is a generic AArch64";
       internal = true;
     };
     generic-armv7l.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "Enable when system is a generic armv7l";
+      description = "Enable when system is a generic armv7l";
       internal = true;
     };
   };

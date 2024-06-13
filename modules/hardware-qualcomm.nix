@@ -27,52 +27,52 @@ in
     hardware.socs.qualcomm-apq8064-1aa.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is APQ8064–1AA";
+      description = "enable when SOC is APQ8064–1AA";
     };
     hardware.socs.qualcomm-msm8940.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is msm8940";
+      description = "enable when SOC is msm8940";
     };
     hardware.socs.qualcomm-msm8953.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is msm8953";
+      description = "enable when SOC is msm8953";
     };
     hardware.socs.qualcomm-msm8939.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is msm8939";
+      description = "enable when SOC is msm8939";
     };
     hardware.socs.qualcomm-msm8996.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is msm8996";
+      description = "enable when SOC is msm8996";
     };
     hardware.socs.qualcomm-msm8998.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is msm8998";
+      description = "enable when SOC is msm8998";
     };
     hardware.socs.qualcomm-sc7180.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is 7c (SC7180)";
+      description = "enable when SOC is 7c (SC7180)";
     };
     hardware.socs.qualcomm-sdm660.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is SDM660";
+      description = "enable when SOC is SDM660";
     };
     hardware.socs.qualcomm-sdm845.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is SDM845";
+      description = "enable when SOC is SDM845";
     };
     hardware.socs.qualcomm-sm6125.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is SM6125";
+      description = "enable when SOC is SM6125";
     };
   };
 

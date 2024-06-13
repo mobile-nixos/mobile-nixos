@@ -10,13 +10,13 @@ in
   options.mobile.hardware.screen = {
     width = mkOption {
       type = types.int;
-      description = lib.mdDoc ''
+      description = ''
         Width of the device's display.
       '';
     };
     height = mkOption {
       type = types.int;
-      description = lib.mdDoc ''
+      description = ''
         Height of the device's display.
       '';
     };

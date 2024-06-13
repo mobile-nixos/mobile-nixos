@@ -19,7 +19,7 @@ in
     };
     partitioningScheme = mkOption {
       type = types.enum config.availablePartitioningSchemes;
-      description = lib.mdDoc ''
+      description = ''
         Partitioning scheme for the disk image output.
       '';
     };

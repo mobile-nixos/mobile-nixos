@@ -54,7 +54,7 @@ in
       type = types.nullOr config.helpers.types.uuid;
       example = "45454545-4545-4545-4545-454545454545";
       default = null;
-      description = lib.mdDoc ''
+      description = ''
         Volume ID of the filesystem.
       '';
     };

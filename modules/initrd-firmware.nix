@@ -9,7 +9,7 @@ in
     mobile.boot.stage-1.firmware = lib.mkOption {
       type = types.listOf types.package;
       default = [];
-      description = lib.mdDoc ''
+      description = ''
         List of packages containing firmware files to be included in the
         stage-1 for the device.
       '';

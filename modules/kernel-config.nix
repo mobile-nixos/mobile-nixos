@@ -12,7 +12,7 @@ in
       kernel = {
         structuredConfig = mkOption {
           type = with types; listOf (functionTo attrs);
-          description = lib.mdDoc ''
+          description = ''
             Functions returning kernel structured config.
 
             The functions take one argument, an attrset of helpers.
