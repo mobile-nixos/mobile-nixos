@@ -9,7 +9,7 @@ let
   # We are re-using the raw filesystem from the hello system.
   rootfsExt4 = (
     import ../../hello { device = config.mobile.device.name; }
-  ).build.rootfs;
+  ).config.mobile.generatedFilesystems.rootfs;
 
   # This is not a facility from the disk images builder because **it is really
   # insecure to use**.
@@ -18,8 +18,9 @@ let
   encryptedRootfs = pkgs.vmTools.runInLinuxVM (
     pkgs.runCommand "encrypted-rootfs" {
       buildInputs = [ pkgs.cryptsetup ];
-      passthru = {
+      passthru = rec {
         filename = "encrypted.img";
+        location = "/${filename}";
         filesystemType = "LUKS";
       };
     } ''
@@ -36,7 +37,7 @@ let
 
       # Catting both to ensure it's writable, and to add some slack space at
       # the end
-      cat ${rootfsExt4}/${rootfsExt4.label}.img tmp.img > encrypted.img
+      cat ${rootfsExt4.imagePath} tmp.img > encrypted.img
       rm tmp.img
 
       echo ${builtins.toJSON passphrase} | cryptsetup \
@@ -71,6 +72,9 @@ in
 
   # Instead of the (mkDefault) rootfs, provide our raw encrypted rootfs.
   mobile.generatedFilesystems.rootfs = {
-    raw = encryptedRootfs;
+    inherit (rootfsExt4) filesystem label;
+    inherit (encryptedRootfs) location;
+
+    output = lib.mkForce encryptedRootfs;
   };
 }
