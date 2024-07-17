@@ -133,4 +133,6 @@ in
     ;
 
     enableParallelBuilding = true;
+
+    env.NIX_CFLAGS_COMPILE = "-Wno-error";
   }
