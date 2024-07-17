@@ -133,4 +133,7 @@ in
     ;
 
     enableParallelBuilding = true;
+
+    # https://github.com/mobile-nixos/lvgui/issues/23
+    env.NIX_CFLAGS_COMPILE = "-Wno-error";
   }
