@@ -6,14 +6,14 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "6.9.7";
+  version = "6.9.10";
   configfile = ./config.aarch64;
   src = fetchFromGitea {
     domain = "codeberg.org";
     owner = "megi";
     repo = "linux";
-    rev = "orange-pi-6.9-20240630-2043";
-    hash = "sha256-OoIBVxSNALklZz2/XbD+dI+C56noY8mumYqQBBrIQJo=";
+    rev = "orange-pi-6.9-20240721-2345";
+    hash = "sha256-WtLkMJnThYMLsZqbqTIhaTwQ0e2EE1Zq7DQX36L481o=";
   };
   patches = [
     ./0001-dts-pinephone-Setup-default-on-and-panic-LEDs.patch
