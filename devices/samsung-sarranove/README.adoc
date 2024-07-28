@@ -1,0 +1,6 @@
+= Samsung Galaxy S4 Mini Value Edition
+include::_support/common.inc[]
+
+== Device-specific notes
+
+none
