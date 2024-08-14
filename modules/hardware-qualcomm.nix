@@ -80,31 +80,26 @@ in
     {
       mobile = mkIf cfg.qualcomm-msm8940.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8939.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8953.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8996.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-msm8998.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
@@ -115,7 +110,6 @@ in
     {
       mobile = mkIf cfg.qualcomm-sdm660.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
@@ -127,13 +121,11 @@ in
     {
       mobile = mkIf cfg.qualcomm-sm6125.enable {
         system.system = "aarch64-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     {
       mobile = mkIf cfg.qualcomm-apq8064-1aa.enable {
         system.system = "armv7l-linux";
-        quirks.fb-refresher.enable = true;
       };
     }
     (mkIf anyQualcomm {
