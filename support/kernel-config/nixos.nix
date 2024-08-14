@@ -183,7 +183,8 @@ in
       BINFMT_SCRIPT = whenAtLeast "3.10" yes;
       BINFMT_MISC   = option yes;
       FW_LOADER_USER_HELPER_FALLBACK = option no;
-      FW_LOADER_COMPRESS = option yes;
+      FW_LOADER_COMPRESS = whenAtLeast "5.3" yes;
+      FW_LOADER_COMPRESS_ZSTD = whenAtLeast "5.19" yes;
       PREEMPT = no;
       PREEMPT_VOLUNTARY = yes;
       SCHED_SMT = yes;
