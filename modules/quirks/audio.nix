@@ -9,7 +9,7 @@ in
     alsa-ucm-meld = lib.mkOption {
       type = lib.types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Combines the derivation output path share/alsa/ucm2/ with
         pkgs.alsa-ucm-conf and points ALSA to the result.
       '';

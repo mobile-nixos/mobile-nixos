@@ -29,7 +29,7 @@ in
       type = types.bool;
       default = !config.mobile.enable;
       defaultText = literalExpression "!config.mobile.enable";
-      description = lib.mdDoc ''
+      description = ''
         Whether Mobile NixOS relies on upstream NixOS settings for kernel config.
 
         Enable this when using the NixOS machinery for kernels.
@@ -38,7 +38,7 @@ in
     modular = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Whether the kernel is built with modules or not.
         This will enable modules closure generation and listing modules
         to bundle and load.
@@ -48,7 +48,7 @@ in
       type = types.listOf types.str;
       default = [
       ];
-      description = lib.mdDoc ''
+      description = ''
         Module names to add to the closure.
         They will be modprobed.
       '';
@@ -57,7 +57,7 @@ in
       type = types.listOf types.str;
       default = [
       ];
-      description = lib.mdDoc ''
+      description = ''
         Module names to add to the closure.
         They will not be modprobed.
       '';
@@ -65,7 +65,7 @@ in
     allowMissingModules = mkOption {
       type = types.bool;
       default = true;
-      description = lib.mdDoc ''
+      description = ''
         Chooses whether the modules closure build fails if a module is missing.
       '';
     };
@@ -74,7 +74,7 @@ in
     package = mkOption {
       type = types.nullOr types.package;
       default = null;
-      description = lib.mdDoc ''
+      description = ''
         Kernel to be used by the system-type to boot into the Mobile NixOS
         stage-1.
 
@@ -84,7 +84,7 @@ in
     useStrictKernelConfig = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Whether or not to fail when the config file differs when built.
 
         When building a personal configuration, this should be disabled (`false`)
@@ -103,14 +103,14 @@ in
       linuxLogo224PPMFile = mkOption {
         type = types.package;
         internal = true;
-        description = lib.mdDoc ''
+        description = ''
           Final logo file consumed by the Mobile NixOS kernel-builder infra.
         '';
       };
       logo = mkOption {
         type = with types; either package path;
         internal = true;
-        description = lib.mdDoc ''
+        description = ''
           Input file for the logo.
 
           It will be scaled according to the device-specific configuration.

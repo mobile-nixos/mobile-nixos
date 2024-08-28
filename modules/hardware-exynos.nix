@@ -12,7 +12,7 @@ in
     hardware.socs.exynos-7880.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is Exynos 7880";
+      description = "enable when SOC is Exynos 7880";
     };
   };
 

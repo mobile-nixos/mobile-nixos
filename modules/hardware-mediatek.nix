@@ -15,22 +15,22 @@ in
     hardware.socs.mediatek-mt6755.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is Mediatek MT6755 (Helio P10)";
+      description = "enable when SOC is Mediatek MT6755 (Helio P10)";
     };
     hardware.socs.mediatek-mt6785.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is Mediatek MT6785 (Helio G90)";
+      description = "enable when SOC is Mediatek MT6785 (Helio G90)";
     };
     hardware.socs.mediatek-mt8127.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is Mediatek MT8127";
+      description = "enable when SOC is Mediatek MT8127";
     };
     hardware.socs.mediatek-mt8183.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc "enable when SOC is Mediatek MT8183";
+      description = "enable when SOC is Mediatek MT8183";
     };
   };
 

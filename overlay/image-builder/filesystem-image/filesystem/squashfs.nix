@@ -24,7 +24,7 @@ in
         "zstd"
       ];
       default = "xz";
-      description = lib.mdDoc ''
+      description = ''
         Volume ID of the filesystem.
       '';
     };

@@ -17,7 +17,7 @@ in
     alignment = mkOption {
       type = types.int;
       default = config.helpers.size.MiB 1;
-      description = lib.mdDoc ''
+      description = ''
         Partitions alignment.
 
         Automatically computed partition start position will be aligned to
@@ -31,7 +31,7 @@ in
       type = types.int;
       default = 512;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Sector size. This is used mainly internally. Changing this should have
         no effects on the actual disk image produced.
 
@@ -42,7 +42,7 @@ in
     location = mkOption {
       type = types.str;
       default = "";
-      description = lib.mdDoc ''
+      description = ''
         Location of the image in the `$out` path.
 
         The default value means that `$img == $out`, which means that the
@@ -58,7 +58,7 @@ in
     output = mkOption {
       type = types.package;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         The build output for the disk image.
       '';
     };
@@ -68,7 +68,7 @@ in
       default = "${config.output}${config.location}";
       defaultText = lib.literalExpression "\"\${config.output}\${config.location}\"";
       readOnly = true;
-      description = lib.mdDoc ''
+      description = ''
         Output path for the image file.
       '';
     };
@@ -76,7 +76,7 @@ in
     additionalCommands = mkOption {
       type = types.lines;
       default = "";
-      description = lib.mdDoc ''
+      description = ''
         Additional commands to run during the disk image build.
       '';
     };
@@ -86,7 +86,7 @@ in
     #   type = types.bool;
     #   default = false;
     #   internal = true;
-    #   description = lib.mdDoc ''
+    #   description = ''
     #     Whether to produce discrete derivations for each steps, or to produce
     #     a single derivation that builds the image from A to Z.
     #
