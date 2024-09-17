@@ -180,7 +180,7 @@ $devicesInfo.values.each do |info|
     file.puts("\n\n")
     
     deviceNotesFile = File.join($devicesDir, identifier, "README.adoc")
-    if File.exists?(deviceNotesFile)
+    if File.exist?(deviceNotesFile)
       notes = File.read(deviceNotesFile).split("\n\n", 2).last.strip
       first_line = notes.lines.first.strip
       unless first_line == NOTES_HEADER

@@ -224,7 +224,7 @@ puts "Waiting for target partitions to show up..."
 (1..600).each do |i|
   print "."
   # Assumes they're all present if the last is present
-  break if File.exists?(Helpers::Part.part(disk, partition_count))
+  break if File.exist?(Helpers::Part.part(disk, partition_count))
   sleep(0.1)
 end
 # two dots such that if it's instant we get a proper length ellipsis!
