@@ -176,6 +176,7 @@ let
 
           # Copy udev.
           copy_bin_and_libs ${udev}/bin/udevadm
+          cp ${lib.getLib udev.kmod}/lib/libkmod.so* $out/lib
           for BIN in ${udev}/lib/udev/*_id; do
             copy_bin_and_libs $BIN
           done
