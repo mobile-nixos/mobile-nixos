@@ -8,7 +8,7 @@ module Configuration
     end
 
     def is_uefi()
-      @is_uefi ||= File.exists?("/sys/firmware/efi")
+      @is_uefi ||= File.exist?("/sys/firmware/efi")
       @is_uefi
     end
 
@@ -22,7 +22,7 @@ module Configuration
       end
 
       # Then let's try with the device tree compatible.
-      if File.exists?("/proc/device-tree/compatible") then
+      if File.exist?("/proc/device-tree/compatible") then
         # Let's take the most precise compatible name.
         compatible = File.read("/proc/device-tree/compatible").split("\0").first
 
@@ -49,7 +49,7 @@ module Configuration
 
       # Uh, no device tree? no problem!
       # Let's try and detect the device with its DMI info
-      if File.exists?("/sys/class/dmi/id/product_name")
+      if File.exist?("/sys/class/dmi/id/product_name")
         product_name = File.read("/sys/class/dmi/id/product_name")
         # Bogus example of an UEFI system detection
         #case product_name

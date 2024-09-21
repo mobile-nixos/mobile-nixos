@@ -79,7 +79,7 @@ module System
   def self.which(program_name)
     (ENV["PATH"] or "").split(":").each do |path|
       full = File.join(path, program_name)
-      if File.exists?(full) && !File.directory?(full) && File.stat(full).executable? then
+      if File.exist?(full) && !File.directory?(full) && File.stat(full).executable? then
         return full
       end
     end
@@ -102,7 +102,7 @@ module System
   # The return format is a hash, with keys being mount point paths,
   # and values being their respective line from /proc/mounts.
   def self.mount_points()
-    unless File.exists?("/.proc/mounts")
+    unless File.exist?("/.proc/mounts")
       $logger.debug("Mounting private procfs at /.proc...")
       FileUtils.mkdir_p("/.proc")
       run("mount", "-t", "proc", "proc", "/.proc")
@@ -203,7 +203,7 @@ module System
   end
 
   def self.cmdline()
-    if File.exists?("/proc/cmdline") then
+    if File.exist?("/proc/cmdline") then
       File.read("/proc/cmdline").split(/\s+/)
     else
       []

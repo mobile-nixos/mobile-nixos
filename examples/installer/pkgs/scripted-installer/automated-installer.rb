@@ -97,7 +97,7 @@ step_marker "Copying channels"
 defexpr = File.join(MOUNT_POINT, "/root/.nix-defexpr")
 FileUtils.mkdir_p(defexpr)
 File.chmod(0700, defexpr)
-unless File.exists?(File.join(defexpr, "/channels")) or File.symlink?(File.join(defexpr, "/channels"))
+unless File.exist?(File.join(defexpr, "/channels")) or File.symlink?(File.join(defexpr, "/channels"))
   File.symlink("/nix/var/nix/profiles/per-user/root/channels", File.join(defexpr, "/channels"))
 end
 

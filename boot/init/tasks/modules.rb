@@ -11,7 +11,7 @@ class Tasks::Modules < Task
   end
 
   def run()
-    unless File.exists?(SYS_MODPROBE_PATH)
+    unless File.exist?(SYS_MODPROBE_PATH)
       $logger.warn("Could not tell the path to modprobe to the kernel.")
       $logger.warn("('#{SYS_MODPROBE_PATH}' is missing.)")
       return

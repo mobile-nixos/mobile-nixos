@@ -97,7 +97,7 @@ unless ONLY_CHECK
       ].shelljoin}`.strip
   end
 
-  unless @file and File.exists?(@file)
+  unless @file and File.exist?(@file)
     $stderr.puts "Kernel config file not found."
     $stderr.puts "Please provide path to the config file with `--file=...`."
     $stderr.puts
