@@ -1,0 +1,23 @@
+commit 32608bf3a1bafc267f37e7eb8e8c235916b73588
+Author: Daniel Barlow <dan@telent.net>
+Date:   Wed Jan 17 23:36:33 2024 +0000
+
+    potter: add supplies to simple-framebuffer dts
+    
+    This fixes a bug that, when DRM is not running, causes the screen to
+    go blank after 30 seconds and log the message "ibb: disabling"
+
+diff --git a/arch/arm64/boot/dts/qcom/msm8953-motorola-potter.dts b/arch/arm64/boot/dts/qcom/msm8953-motorola-potter.dts
+index dfc634bae03f..e6258320ab63 100644
+--- a/arch/arm64/boot/dts/qcom/msm8953-motorola-potter.dts
++++ b/arch/arm64/boot/dts/qcom/msm8953-motorola-potter.dts
+@@ -34,6 +34,9 @@ framebuffer@90001000 {
+ 
+ 			power-domains = <&gcc MDSS_GDSC>;
+ 
++			vsp-supply = <&lab_vreg>;
++			vsn-supply = <&ibb_vreg>;
++
+ 			clocks = <&gcc GCC_MDSS_AHB_CLK>,
+ 				 <&gcc GCC_MDSS_AXI_CLK>,
+ 				 <&gcc GCC_MDSS_VSYNC_CLK>,
