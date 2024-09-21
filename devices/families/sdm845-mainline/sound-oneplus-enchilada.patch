@@ -1,0 +1,89 @@
+diff --git a/ucm2/OnePlus/enchilada/HiFi.conf b/ucm2/OnePlus/enchilada/HiFi.conf
+index 14e4d3d..b24bfb8 100644
+--- a/ucm2/OnePlus/enchilada/HiFi.conf
++++ b/ucm2/OnePlus/enchilada/HiFi.conf
+@@ -97,71 +97,3 @@ SectionDevice."Speaker" {
+ 		PlaybackPCM "hw:${CardId},2" # MultiMedia3
+ 	}
+ }
+-
+-SectionDevice."Mic2" {
+-	Comment "Top Microphone"
+-
+-	EnableSequence [
+-		cset "name='ADC MUX6' AMIC"
+-		cset "name='AMIC MUX6' ADC3"
+-	]
+-
+-	DisableSequence [
+-		cset "name='ADC MUX6' ZERO"
+-		cset "name='AMIC MUX6' ZERO"
+-	]
+-
+-	Value {
+-		CapturePriority 100
+-		CapturePCM "hw:${CardId},3" # MultiMedia4
+-		CaptureMixerElem "ADC3"
+-		CaptureVolume "ADC3 Volume"
+-	}
+-}
+-
+-SectionDevice."Headphones" {
+-	Comment "Headphones"
+-
+-	EnableSequence [
+-		cset "name='COMP1 Switch' 1"
+-		cset "name='COMP2 Switch' 1"
+-		cset "name='RX INT1_1 MIX1 INP0' RX2"
+-		cset "name='RX INT2_1 MIX1 INP0' RX3"
+-	]
+-	
+-	DisableSequence [
+-		cset "name='COMP1 Switch' 0"
+-		cset "name='COMP2 Switch' 0"
+-		cset "name='RX INT1_1 MIX1 INP0' ZERO"
+-		cset "name='RX INT2_1 MIX1 INP0' ZERO"
+-	]
+-
+-	Value {
+-		PlaybackPriority 30
+-		PlaybackPCM "hw:${CardId},4" # MultiMedia5
+-		PlaybackMixer "default:${CardId}"
+-		JackControl "Headset Jack"
+-	}
+-}
+-
+-SectionDevice."Headset" {
+-	Comment "Headset Microphone"
+-
+-	EnableSequence [
+-		cset "name='AMIC MUX0' ADC2"
+-		cset "name='ADC MUX0' AMIC"
+-	]
+-
+-	DisableSequence [
+-		cset "name='AMIC MUX0' ZERO"
+-		cset "name='ADC MUX0' ZERO"
+-	]
+-
+-	Value {
+-		CapturePriority 30
+-		CapturePCM "hw:${CardId},5" # MultiMedia6
+-		CaptureMixerElem "ADC2"
+-		CaptureVolume "ADC2 Volume"
+-		JackControl "Headset Jack"
+-	}
+-}
+diff --git a/ucm2/lib/card-init.conf b/ucm2/lib/card-init.conf
+index 527a5e0..c6433f3 100644
+--- a/ucm2/lib/card-init.conf
++++ b/ucm2/lib/card-init.conf
+@@ -5,6 +5,6 @@
+ Define.LibDir "/var/lib/alsa/card${CardNumber}.conf.d"
+ 
+ FixedBootSequence [
+-	exec "/bin/rm -rf ${var:LibDir}"
+-	exec "/bin/mkdir -p -m 0755 ${var:LibDir}"
++	exec "/run/current-system/sw/bin/rm -rf ${var:LibDir}"
++	exec "/run/current-system/sw/bin/mkdir -p -m 0755 ${var:LibDir}"
+ ]
