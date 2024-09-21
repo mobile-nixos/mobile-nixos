@@ -52,6 +52,9 @@
 , pkg-config
 , runtimeShell
 
+# For depmod in modules_install target
+, kmod
+
 # A structured Linux configuration option attrset.
 # When present, it will be used to validate the configuration.
 # The kernel is not configured with it *directly*. It is assumed that any
@@ -216,7 +219,7 @@ stdenv.mkDerivation (inputArgs // {
   updateConfigFromStructuredConfig = !__mobile-nixos-useStrictKernelConfig;
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
-  nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr ]
+  nativeBuildInputs = [ perl bc nettools openssl rsync gmp libmpc mpfr kmod ]
     ++ optional (platform.linux-kernel.target == "uImage") buildPackages.ubootTools
     ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
     ++ optional (lib.versionAtLeast version "4.15") util-linux
@@ -253,7 +256,9 @@ stdenv.mkDerivation (inputArgs // {
         echo "stripping FHS paths in \`$mf'..."
         sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
     done
-    sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
+    # Ensure that depmod gets resolved through PATH
+    # https://github.com/NixOS/nixpkgs/blob/f0a375cf7d1d33b2aa8264c4f8a0864f82fdebf2/pkgs/os-specific/linux/kernel/manual-config.nix#L184-L185
+    sed -i Makefile -e 's|= /sbin/depmod|= depmod|'
     if [ -e scripts/ld-version.sh ]; then
       sed -i scripts/ld-version.sh -e "s|/usr/bin/awk|${buildPackages.gawk}/bin/awk|"
     fi
