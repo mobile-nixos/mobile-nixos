@@ -10,7 +10,7 @@ in
     mobile = {
       outputs = {
         default = mkOption {
-          description = lib.mdDoc ''
+          description = ''
             Default most likely desired output for this Mobile NixOS build.
 
             The default depends on the system type in use.
@@ -19,7 +19,7 @@ in
           internal = true;
         };
         toplevel = mkOption {
-          description = lib.mdDoc ''
+          description = ''
             First-class attribute to refer to `config.system.build.toplevel`.
           '';
           internal = true;

@@ -147,14 +147,14 @@
             configfile = lib.mkOption {
               readOnly = true;
               type = lib.types.str;
-              description = lib.mdDoc ''
+              description = ''
                 String that can directly be used as a kernel config file contents.
               '';
             };
             validatorSnippet = lib.mkOption {
               readOnly = true;
               type = lib.types.package;
-              description = lib.mdDoc ''
+              description = ''
                 Path to a script that can directly be called to validate the kernel config.
               '';
             };

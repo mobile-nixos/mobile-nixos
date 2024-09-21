@@ -9,7 +9,7 @@ in
     quirks.qualcomm.dwc3-otg_switch.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable this on a device which requires otg_switch to be
         configured for OTG to work.
       '';

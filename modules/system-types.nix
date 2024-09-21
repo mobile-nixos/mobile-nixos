@@ -23,13 +23,13 @@ in
     system.types = mkOption {
       type = types.listOf types.str;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Registry of system types.
       '';
     };
     system.type = mkOption {
       type = types.enum known_system_types;
-      description = lib.mdDoc ''
+      description = ''
         Defines the kind of system the device is.
 
         The different kind of system types will define the outputs

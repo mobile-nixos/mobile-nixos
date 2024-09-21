@@ -10,7 +10,7 @@ in
       internal = true;
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable when building a generic rootfs that does not include a kernel image.
 
         This makes sturdier rootfs that work on different devices.

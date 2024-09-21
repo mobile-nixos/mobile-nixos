@@ -9,7 +9,7 @@ in
     quirks.qualcomm.wcnss-wlan.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable this on a device which uses wcnss wlan.
       '';
     };

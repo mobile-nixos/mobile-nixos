@@ -11,13 +11,13 @@ in
   options.mobile.hardware.eink = {
     enable = mkOption {
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable to change some defaults so they work better on an eink display.
       '';
     };
     enableEinkTheme = mkOption {
       default = cfg.enable;
-      description = lib.mdDoc ''
+      description = ''
         Enable only the eink changes affecting the theme.
       '';
     };

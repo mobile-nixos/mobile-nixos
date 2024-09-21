@@ -12,7 +12,7 @@ in
           type = types.listOf types.str;
           internal = true;
           default = [];
-          description = lib.mdDoc ''
+          description = ''
             Identifiers known by the boot menu to provide reboot options
             that are hardware-dependent. E.g. reboot to bootloader.
           '';

@@ -92,21 +92,21 @@ in
       uefi = {
         boot-partition = mkOption {
           type = types.package;
-          description = lib.mdDoc ''
+          description = ''
             Boot partition for the system.
           '';
           visible = false;
         };
         disk-image = lib.mkOption {
           type = types.package;
-          description = lib.mdDoc ''
+          description = ''
             Full Mobile NixOS disk image for a UEFI-based system.
           '';
           visible = false;
         };
         efiKernel = mkOption {
           type = types.package;
-          description = lib.mdDoc ''
+          description = ''
             EFI executable with the kernel, cmdline and initramfs built-in.
           '';
           visible = false;

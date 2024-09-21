@@ -17,7 +17,7 @@ in
           "${hex}{8}"
       );
       default = null;
-      description = lib.mdDoc ''
+      description = ''
         Identifier for the disk.
       '';
     };

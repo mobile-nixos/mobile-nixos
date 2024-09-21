@@ -12,21 +12,21 @@ in
     enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enables networking.
       '';
     };
     IP = mkOption {
       type = types.str;
       default = "172.16.42.1";
-      description = lib.mdDoc ''
+      description = ''
         IP address for the USB networking gadget.
       '';
     };
     hostIP = mkOption {
       type = types.str;
       default = "172.16.42.2";
-      description = lib.mdDoc ''
+      description = ''
         IP address for the USB networking gadget.
       '';
     };

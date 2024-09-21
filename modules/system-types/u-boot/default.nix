@@ -110,7 +110,7 @@ in
       additionalCommands = mkOption {
         type = types.lines;
         default = "";
-        description = lib.mdDoc ''
+        description = ''
           Additional U-Boot commands to run.
         '';
       };
@@ -120,21 +120,21 @@ in
       u-boot = {
         boot-partition = mkOption {
           type = types.package;
-          description = lib.mdDoc ''
+          description = ''
             Boot partition for the system.
           '';
           visible = false;
         };
         disk-image = lib.mkOption {
           type = types.package;
-          description = lib.mdDoc ''
+          description = ''
             Full Mobile NixOS disk image for a u-boot-based system.
           '';
           visible = false;
         };
         u-boot = mkOption {
           type = types.package;
-          description = lib.mdDoc ''
+          description = ''
             U-Boot build for the system.
           '';
           visible = false;

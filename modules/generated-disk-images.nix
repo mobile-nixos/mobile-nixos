@@ -11,14 +11,14 @@ in
   options = {
     mobile.generatedDiskImages = mkOption {
       type = types.attrsOf (pkgs.image-builder.types.disk-image);
-      description = lib.mdDoc ''
+      description = ''
         Disk image definitions that will be created at build.
       '';
     };
     mobile.outputs.generatedDiskImages = mkOption {
       type = with types; attrsOf package;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         All generated disk images from the build.
       '';
     };

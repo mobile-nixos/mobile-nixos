@@ -15,7 +15,7 @@ in
   options.mobile.boot = {
     defaultConsole = mkOption {
       type = with types; nullOr str;
-      description = lib.mdDoc ''
+      description = ''
         When not null, sets a `console=` parameter early in the kernel cmdline.
 
         This option is useful to control the default console that will be
@@ -35,7 +35,7 @@ in
       type = with types; listOf str;
       default = [ ];
       example = [ "ttyS0" ];
-      description = lib.mdDoc ''
+      description = ''
         List of additional console names to be prepended in the list of
         consoles in the kernel cmdline.
 
@@ -53,7 +53,7 @@ in
       type = with types; nullOr str;
       default = null;
       example = "ttyS0";
-      description = lib.mdDoc ''
+      description = ''
         The console name for the serial console. Additional parameters allowed.
 
         It will be used as an additional console by default. It can also be
@@ -63,14 +63,14 @@ in
     enableSerial = mkOption {
       type = types.bool;
       default = true;
-      description = lib.mdDoc ''
+      description = ''
         Whether or not to enable the serial console as an additional console.
       '';
     };
     enableDefaultSerial = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Whether or not to enable the serial console as an additional console.
       '';
     };

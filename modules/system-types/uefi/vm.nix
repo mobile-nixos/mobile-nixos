@@ -16,7 +16,7 @@ in
         type = types.bool;
         default = false;
         internal = true;
-        description = lib.mdDoc ''
+        description = ''
           Internal switch to select whether the `outputs.uefi.vm` value points
           to the composeConfig usage, or to the actual output.
         '';
@@ -25,7 +25,7 @@ in
         uefi = {
           vm = mkOption {
             type = types.package;
-            description = lib.mdDoc ''
+            description = ''
               Script to start a UEFI-based virtual machine.
             '';
             visible = false;

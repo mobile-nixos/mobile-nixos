@@ -21,7 +21,7 @@ in
     };
     filesystem = mkOption {
       type = types.enum config.availableFilesystems;
-      description = lib.mdDoc ''
+      description = ''
         Filesystem used in this filesystem image.
       '';
     };

@@ -14,14 +14,14 @@ in
   options = {
     mobile.generatedFilesystems = mkOption {
       type = types.attrsOf (pkgs.image-builder.types.filesystem-image);
-      description = lib.mdDoc ''
+      description = ''
         Filesystem definitions that will be created at build.
       '';
     };
     mobile.outputs.generatedFilesystems = mkOption {
       type = with types; attrsOf package;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         All generated filesystems from the build.
       '';
     };

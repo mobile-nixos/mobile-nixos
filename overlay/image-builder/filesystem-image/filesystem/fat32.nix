@@ -47,7 +47,7 @@ in
       example = "2e24ec82";
       default = null;
       defaultText = "[Depends on the file system creation time]";
-      description = lib.mdDoc ''
+      description = ''
         Volume ID of the filesystem.
 
         The default is a number which depends on the file system creation time.

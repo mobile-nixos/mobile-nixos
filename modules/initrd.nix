@@ -237,7 +237,7 @@ in
       mobile.boot.stage-1.enable = mkOption {
         type = types.bool;
         default = config.mobile.enable;
-        description = lib.mdDoc ''
+        description = ''
           Whether to use the Mobile NixOS stage-1 implementation or not.
 
           This will forcible override the NixOS stage-1 when enabled.
@@ -247,7 +247,7 @@ in
       mobile.boot.stage-1.stage = mkOption {
         type = types.enum [ 0 1 ];
         default = 1;
-        description = lib.mdDoc ''
+        description = ''
           Used with a "specialization" of the config to build the "stage-0"
           init which can kexec into another kernel+initrd found on the system.
 
@@ -258,7 +258,7 @@ in
       mobile.boot.stage-1.compression = mkOption {
         type = types.enum [ "gzip" "xz" ];
         default = "gzip";
-        description = lib.mdDoc ''
+        description = ''
           The compression method for the stage-1 (initrd).
 
           This may be set as a default by some devices requiring specific
@@ -269,7 +269,7 @@ in
         type = with types; listOf (either package path);
         default = [];
         internal = true;
-        description = lib.mdDoc ''
+        description = ''
           Add tasks to the boot/init program.
           The build system for boot/init will `find -iname '*.rb'` the given paths.
         '';
@@ -278,14 +278,14 @@ in
         type = JSONValue;
         default = {};
         internal = true;
-        description = lib.mdDoc ''
+        description = ''
           The things being put in the JSON configuration file in stage-1.
         '';
       };
       mobile.boot.stage-1.crashToBootloader = mkOption {
         type = types.bool;
         default = false;
-        description = lib.mdDoc ''
+        description = ''
           When the stage-1 bootloader crashes, prefer rebooting directly to
           bootloader rather than panic by killing init.
 
@@ -298,7 +298,7 @@ in
       mobile.boot.stage-1.earlyInitScripts = mkOption {
         type = types.lines;
         default = "";
-        description = lib.mdDoc ''
+        description = ''
           Additional shell commands to run before the actual init.
 
           Prefer writing a task. This should be used mainly to redirect logging,
@@ -309,7 +309,7 @@ in
       };
       mobile.boot.stage-1.environment = mkOption {
         type = types.attrsOf types.str;
-        description = lib.mdDoc ''
+        description = ''
           Environment variables present for the whole stage-1.
           Keep this as minimal as needed.
         '';
@@ -318,7 +318,7 @@ in
       mobile.boot.stage-1.extraUdevRules = mkOption {
         type = types.lines;
         default = "";
-        description = lib.mdDoc ''
+        description = ''
           Additional udev rules for stage-1.
         '';
         internal = true;
@@ -328,7 +328,7 @@ in
         extraUtils = mkOption {
           type = types.package;
           internal = true;
-          description = lib.mdDoc ''
+          description = ''
             Stripped packages for use in stage-1.
 
             See `mobile.boot.stage-1.extraUtils`.
@@ -337,14 +337,14 @@ in
         initrd = mkOption {
           type = types.str;
           internal = true;
-          description = lib.mdDoc ''
+          description = ''
             Path to the initrd, likely compressed, for the system.
           '';
         };
         initrd-meta = mkOption {
           type = types.package;
           internal = true;
-          description = lib.mdDoc ''
+          description = ''
             Additional metadata about the initrd; used for debugging.
           '';
         };

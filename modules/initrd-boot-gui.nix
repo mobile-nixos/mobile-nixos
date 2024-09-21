@@ -31,7 +31,7 @@ in
     enable = mkOption {
       type = types.bool;
       default = true;
-      description = lib.mdDoc ''
+      description = ''
         enable splash and boot selection GUI
       '';
     };
@@ -39,7 +39,7 @@ in
       enable = mkOption {
         type = types.bool;
         default = false;
-        description = lib.mdDoc ''
+        description = ''
           Whether to wait a bit for input devices before starting the user interface.
 
           This is only necessary on "slow" busses where devices may arrive a tad later than expected.
@@ -50,7 +50,7 @@ in
       delay = mkOption {
         type = types.int;
         default = 0;
-        description = lib.mdDoc ''
+        description = ''
           Minimum delay spent waiting for input devices to settle.
 
           The boot GUI will wait until this many seconds elapsed without changes before starting.
@@ -61,7 +61,7 @@ in
       type = with types; either package path;
       internal = true;
       default = ../artwork/logo/logo.white.svg;
-      description = lib.mdDoc ''
+      description = ''
         Logo shown during stage-1 init.
 
         Option marked internal since there are some particular quirks in changing the logo.
