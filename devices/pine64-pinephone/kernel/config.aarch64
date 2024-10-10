@@ -1,6 +1,6 @@
 #
 # Automatically generated file; DO NOT EDIT.
-# Linux/arm64 6.11.0 Kernel Configuration
+# Linux/arm64 6.11.3 Kernel Configuration
 #
 CONFIG_CC_VERSION_TEXT="aarch64-unknown-linux-gnu-gcc (GCC) 13.3.0"
 CONFIG_CC_IS_GCC=y
@@ -3710,7 +3710,6 @@ CONFIG_V4L_PLATFORM_DRIVERS=y
 #
 # Chips&Media media platform drivers
 #
-# CONFIG_VIDEO_E5010_JPEG_ENC is not set
 
 #
 # Intel media platform drivers
@@ -3748,7 +3747,6 @@ CONFIG_V4L_PLATFORM_DRIVERS=y
 #
 # Raspberry Pi media platform drivers
 #
-# CONFIG_VIDEO_RASPBERRYPI_PISP_BE is not set
 
 #
 # Renesas media platform drivers
@@ -6968,6 +6966,9 @@ CONFIG_PERSISTENT_KEYRINGS=y
 # CONFIG_ENCRYPTED_KEYS is not set
 # CONFIG_KEY_DH_OPERATIONS is not set
 # CONFIG_SECURITY_DMESG_RESTRICT is not set
+CONFIG_PROC_MEM_ALWAYS_FORCE=y
+# CONFIG_PROC_MEM_FORCE_PTRACE is not set
+# CONFIG_PROC_MEM_NO_FORCE is not set
 CONFIG_SECURITY=y
 CONFIG_SECURITYFS=y
 CONFIG_SECURITY_NETWORK=y
