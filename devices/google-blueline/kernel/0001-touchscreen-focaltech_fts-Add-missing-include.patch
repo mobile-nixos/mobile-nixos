@@ -1,0 +1,24 @@
+From 181143e64906fef4c6ab4f3775485846569b7777 Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Fri, 26 Aug 2022 14:55:12 -0400
+Subject: [PATCH] touchscreen: focaltech_fts: Add missing include
+
+---
+ drivers/input/touchscreen/focaltech_fts.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/input/touchscreen/focaltech_fts.c b/drivers/input/touchscreen/focaltech_fts.c
+index 8b658480b9f88..f9359a9db152d 100644
+--- a/drivers/input/touchscreen/focaltech_fts.c
++++ b/drivers/input/touchscreen/focaltech_fts.c
+@@ -27,6 +27,7 @@
+ #include <linux/slab.h>
+ #include <linux/interrupt.h>
+ #include <linux/i2c.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/delay.h>
+ #include <linux/regmap.h>
+-- 
+2.35.1
+
