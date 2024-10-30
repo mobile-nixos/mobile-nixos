@@ -168,7 +168,7 @@ in
       # Devices using serial I/O; AT keyboard, PS/2 mouse, etc...
       # Option no since some HID devices may `select` it.
       SERIO = if isx86 then yes else (option no);
-      USB_ONBOARD_HUB = whenAtLeast "6.0" yes;
+      USB_ONBOARD_HUB = whenBetween "6.0" "6.10" yes;
     })
 
     (helpers: with helpers; mkDefaultIze {
