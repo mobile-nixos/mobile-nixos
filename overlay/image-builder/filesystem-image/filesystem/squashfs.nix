@@ -25,7 +25,7 @@ in
       ];
       default = "xz";
       description = ''
-        Volume ID of the filesystem.
+        Compression type for the filesystem
       '';
     };
     compressionParams = mkOption {
