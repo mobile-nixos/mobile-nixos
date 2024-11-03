@@ -168,6 +168,26 @@ module System
       args << type
     end
 
+    # Fixup overlayfs to be relative to SYSTEM_MOUNT_POINT.
+    # Also handle deeper structure creation.
+    options = options.map do |option|
+      if [
+        "lowerdir",
+        "upperdir",
+        "workdir",
+      ].include?(option.split(/=/).first)
+        option, value = option.split(/=/, 2)
+        effective = File.join(Tasks::SwitchRoot::SYSTEM_MOUNT_POINT, value)
+        FileUtils.mkdir_p(effective)
+        [
+          option,
+          effective,
+        ].join("=")
+      else
+        option
+      end
+    end
+
     # Filter options that busybox mount can't handle.
     options = options.select { |option| !option.match(/^x-/) }
     unless options.empty?
