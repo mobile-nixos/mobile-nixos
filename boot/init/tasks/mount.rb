@@ -35,26 +35,48 @@ class Tasks::Mount < Task
     if mount_point
       @source = source
       @mount_point = mount_point
-      # Only add a dependency for an absolute path.
+
+      # Only add device dependencies for non-bind-mount absolute path.
       # Otherwise we would wait on the file "tmpfs" for tmpfs, and such.
-      if source.match(%{^/})
-        add_dependency(:Devices, source)
+      if @source.match(%{^/}) && !bind_mount?()
+        add_dependency(:Devices, @source)
+      end
+
+      if bind_mount?()
+        @source = File.join(Tasks::SwitchRoot::SYSTEM_MOUNT_POINT, @source)
+        add_dependency(:Files, @source)
       end
     else
+      @mount_point = @source
       @source = named[:type]
-      @mount_point = source
     end
+
     add_dependency(:Target, :Environment)
     self.class.register(@mount_point, self)
   end
 
   def run()
-    FileUtils.mkdir_p(mount_point)
+    if bind_mount?() && !File.directory?(source)
+      # When bind mounting a file, create a file
+      FileUtils.mkdir_p(File.dirname(mount_point))
+      File.write(mount_point, "")
+    else
+      # Otherwise, create the target mount dir
+      FileUtils.mkdir_p(mount_point)
+    end
     System.mount(source, mount_point, **@named)
   end
 
   def type
     @named[:type]
+  end
+
+  def options()
+    @named[:options] or []
+  end
+
+  def bind_mount?()
+    options.include?("bind")
   end
 
   def refresh_lvm()
