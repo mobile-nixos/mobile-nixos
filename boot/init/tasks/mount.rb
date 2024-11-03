@@ -92,6 +92,11 @@ module Dependencies
     end
 
     def depends_on?(other)
+      unless task
+        $logger.warn("Missing Mount task for mount point #{@mount_point}")
+        return false
+      end
+
       task.depends_on?(other)
     end
 
