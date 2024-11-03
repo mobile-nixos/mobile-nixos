@@ -1,5 +1,6 @@
 # Mounts mount point
 class Tasks::Mount < Task
+  attr_reader :depends
   attr_reader :source
   attr_reader :mount_point
 
@@ -26,7 +27,10 @@ class Tasks::Mount < Task
     @registry
   end
 
-  def initialize(source, mount_point=nil, **named)
+  def initialize(source, mount_point=nil, depends: [], **named)
+    @depends = depends.map do |dep|
+      File.join(Tasks::SwitchRoot::SYSTEM_MOUNT_POINT, dep)
+    end
     @named = named
     if mount_point
       @source = source

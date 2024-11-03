@@ -12,6 +12,11 @@ module Mounting
           target.add_dependency(:Mount, higher.mount_point)
         end
       end
+      # Add additional dependencies for a mount point.
+      # (See overlayfs usage)
+      target.depends.each do |path|
+        target.add_dependency(:Mount, path)
+      end
     end
   end
 
@@ -28,6 +33,7 @@ module Mounting
         *args,
         type: config["fsType"],
         options: config["options"],
+        depends: config["depends"],
       )
 
       [mount_point, task]
@@ -55,6 +61,7 @@ module Mounting
         mount_point,
         type: config["fsType"],
         options: options,
+        depends: config["depends"],
       )
 
       # TODO: Handle failures gracefully
