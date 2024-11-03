@@ -13,6 +13,7 @@ class Tasks::Mount < Task
   end
 
   def self.register(mount_point, instance)
+    $logger.debug("Registering Mount task for mount point #{mount_point} #{instance.inspect}")
     mount_point = normalize_mountpoint(mount_point)
     @registry ||= {}
     unless @registry[mount_point].nil? then
