@@ -70,7 +70,7 @@ in
       config = { config, ... }: lib.mkIf supportsStage-0 {
         mobile.boot.stage-1.stage = 0;
         mobile.boot.stage-1.extraUtils = [
-          { package = pkgs.kexectools; }
+          { package = pkgs.kexec-tools; }
           { package = fdt-forward; }
         ];
         mobile.boot.stage-1.bootConfig.stage-0 = {
