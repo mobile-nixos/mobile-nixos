@@ -37,7 +37,7 @@ jobs:
         run: |
           nix-build doc
           cp -prf $(readlink -f result) built-documentation
-      - uses: actions/upload-artifact@v1
+      - uses: actions/upload-artifact@v4
         with:
           name: documentation
           path: built-documentation
