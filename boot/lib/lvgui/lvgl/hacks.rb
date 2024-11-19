@@ -13,7 +13,7 @@ module LVGL::Hacks
     ]
       .flatten()
       .map { |dir| File.join(dir, assets_path) }
-      .find { |dir| File.exists?(dir) }
+      .find { |dir| File.exist?(dir) }
 
     # Fallback to a probably non-existent dir
     # (So things don't crash too hard)

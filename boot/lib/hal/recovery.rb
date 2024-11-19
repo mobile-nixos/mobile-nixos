@@ -22,7 +22,7 @@ module Hal
       # know the intent is to boot the normal system.
       # Is a "boot as recovery" device, and Is `[s_]kip_initramfs` missing?
       if Configuration["device"]["boot_as_recovery"] then
-        if File.exists?("/proc/cmdline") then
+        if File.exist?("/proc/cmdline") then
           !File.read("/proc/cmdline").split(/\s+/).grep(/[s_]kip_initramfs/).any?
         end
       end

@@ -19,10 +19,10 @@ module GUI
     end
 
     def device_info()
-      if File.exists?("/sys/class/dmi/id/product_name")
+      if File.exist?("/sys/class/dmi/id/product_name")
         return "Product Name: #{File.read("/sys/class/dmi/id/product_name").strip}"
       end
-      if File.exists?("/proc/device-tree/model")
+      if File.exist?("/proc/device-tree/model")
         return "DT Model: #{File.read("/proc/device-tree/model").delete("\u0000").strip}"
       end
 
@@ -32,7 +32,7 @@ module GUI
     # Tries to guess at a user-facing CPU name.
     def cpu_name()
       name =
-        if File.exists?("/sys/devices/soc0") then
+        if File.exist?("/sys/devices/soc0") then
           [
             File.read("/sys/devices/soc0/family").strip,
             File.read("/sys/devices/soc0/machine").strip,
@@ -63,7 +63,7 @@ module GUI
     # sys_vendor:QEMU
     def dmi_info()
       dmi_path = "/sys/class/dmi/id"
-      return nil unless File.exists?(dmi_path)
+      return nil unless File.exist?(dmi_path)
       info = [
         "bios_date",
         "bios_release",
@@ -77,7 +77,7 @@ module GUI
         "sys_vendor",
       ].map do |key|
         path = File.join(dmi_path, key)
-        if File.exists?(path) then
+        if File.exist?(path) then
           "  - #{key}: #{File.read(path).strip}"
         else
           nil
@@ -175,7 +175,7 @@ module GUI
       # /sys/devices/soc0/revision:2.1
       # /sys/devices/soc0/serial_number:000000000
       # /sys/devices/soc0/soc_id:321
-      if File.exists?("/sys/devices/soc0") then
+      if File.exist?("/sys/devices/soc0") then
         fields << [
           " - soc0 Family: #{File.read("/sys/devices/soc0/family").strip}",
           " - soc0 Machine: #{File.read("/sys/devices/soc0/machine").strip}",
