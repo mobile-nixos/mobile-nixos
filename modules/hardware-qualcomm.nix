@@ -74,6 +74,11 @@ in
       default = false;
       description = lib.mdDoc "enable when SOC is SM6125";
     };
+    hardware.socs.qualcomm-msm8974.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is msm8974";
+    };
   };
 
   config = mkMerge [
@@ -121,6 +126,12 @@ in
     {
       mobile = mkIf cfg.qualcomm-sm6125.enable {
         system.system = "aarch64-linux";
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-msm8974.enable {
+        system.system = "armv7l-linux";
+        quirks.qualcomm.msm-fb-refresher.enable = true;
       };
     }
     {
