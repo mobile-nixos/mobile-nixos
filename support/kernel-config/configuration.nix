@@ -241,6 +241,7 @@ in
       ZRAM = yes;
       ZRAM_DEF_COMP_LZ4 = (whenAtLeast "5.11" yes);
       ZRAM_DEF_COMP = (whenAtLeast "5.11" (freeform ''"lz4"''));
+      ZRAM_BACKEND_LZ4 = (whenAtLeast "6.12" yes);
       ZRAM_WRITEBACK = option yes;
       ZBUD = option yes;
 
