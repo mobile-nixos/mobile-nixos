@@ -159,41 +159,7 @@ let
 
   extraUtils = mkExtraUtils {
     name = "${device_name}-extra-utils";
-    packages = [
-      busybox
-    ]
-    ++ optionals (stage-1 ? extraUtils) stage-1.extraUtils
-    ++ [{
-      package = runCommand "empty" {} "mkdir -p $out";
-      extraCommand =
-      let
-        inherit udev;
-      in
-        ''
-          # Copy modprobe.
-          copy_bin_and_libs ${pkgs.kmod}/bin/kmod
-          ln -sf kmod $out/bin/modprobe
-
-          # Copy udev.
-          copy_bin_and_libs ${udev}/bin/udevadm
-          cp ${lib.getLib udev.kmod}/lib/libkmod.so* $out/lib
-          for BIN in ${udev}/lib/udev/*_id; do
-            copy_bin_and_libs $BIN
-          done
-          ln -sf udevadm $out/bin/systemd-udevd
-        ''
-      ;
-    }]
-    ++ [
-      { package = pkgs.mobile-nixos.stage-1.script-loader; }
-    ]
-    ++ optionals withStrace [
-      {
-        # Remove libunwind, allows us to skip requiring libgcc_s
-        package = pkgs.strace.overrideAttrs(old: { buildInputs = []; });
-      }
-    ]
-    ;
+    packages = stage-1.extraUtils;
   };
 
   initrd = makeInitrd {
@@ -376,6 +342,41 @@ in
         if config.mobile.rootfs.shared.enabled
         then pkgs.runCommand "nullInitialRamdisk" {} "touch $out"
         else initrd
+      ;
+
+      mobile.boot.stage-1.extraUtils = [
+          busybox
+        ]
+        ++ [{
+          package = runCommand "empty" {} "mkdir -p $out";
+          extraCommand =
+            let
+              inherit udev;
+            in
+            ''
+              # Copy modprobe.
+              copy_bin_and_libs ${pkgs.kmod}/bin/kmod
+              ln -sf kmod $out/bin/modprobe
+
+              # Copy udev.
+              copy_bin_and_libs ${udev}/bin/udevadm
+              cp ${lib.getLib udev.kmod}/lib/libkmod.so* $out/lib
+              for BIN in ${udev}/lib/udev/*_id; do
+              copy_bin_and_libs $BIN
+              done
+              ln -sf udevadm $out/bin/systemd-udevd
+            ''
+            ;
+          }]
+        ++ [
+          { package = pkgs.mobile-nixos.stage-1.script-loader; }
+        ]
+        ++ optionals withStrace [
+          {
+            # Remove libunwind, allows us to skip requiring libgcc_s
+            package = pkgs.strace.overrideAttrs(old: { buildInputs = []; });
+          }
+        ]
       ;
 
       mobile.boot.stage-1.bootConfig = {
