@@ -20,14 +20,14 @@ in
     enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enables fbterm.
       '';
     };
     fb = mkOption {
       type = types.str;
       default = "/dev/fb1";
-      description = lib.mdDoc ''
+      description = ''
         framebuffer to run fbterm on.
       '';
     };
@@ -35,7 +35,7 @@ in
       type = types.str;
       internal = true;
       default = "2";
-      description = lib.mdDoc ''
+      description = ''
         The tty to run on. This will be switched for you.
 
         This is used to side-step an issue where X11 will not start

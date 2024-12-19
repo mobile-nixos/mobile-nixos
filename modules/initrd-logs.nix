@@ -10,14 +10,14 @@ in
     enable = mkOption {
       type = types.bool;
       default = config.mobile.boot.stage-1.enable;
-      description = lib.mdDoc ''
+      description = ''
         Enables bootlogd logging multiplexer.
       '';
     };
     kmsg = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enables logging to /dev/kmsg.
 
         Note that this may render switching to stage-2 inoperable.

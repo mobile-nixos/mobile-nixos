@@ -17,7 +17,7 @@ in
         silentBoot = mkOption {
           type = types.bool;
           default = false;
-          description = lib.mdDoc ''
+          description = ''
             When enabled, fbcon consoles are disabled.
           '';
         };
@@ -25,7 +25,7 @@ in
           type = types.bool;
           default = config.mobile.enable;
           defaultText = "config.mobile.enable";
-          description = lib.mdDoc ''
+          description = ''
             Whether silentBoot assumes the kernel logo is used as early splash,
             or leaves the fbcon unmapped such that (possibly) the vendor splash
             is kept on the display until the stage-1 boot interface starts.
@@ -42,7 +42,7 @@ in
         splash = mkOption {
           type = types.bool;
           default = false;
-          description = lib.mdDoc ''
+          description = ''
             When enabled, plymouth is configured with nice defaults.
 
             Note that this requires an update to the kernel command-line

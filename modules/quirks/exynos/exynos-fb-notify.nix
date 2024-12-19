@@ -9,7 +9,7 @@ in
     quirks.exynos.fb-notify.enable = mkOption {
       type = types.bool;
       default = false;
-      description = lib.mdDoc ''
+      description = ''
         Enable this on a device which requires the framebuffer
         to be notified for some components to work right.
 

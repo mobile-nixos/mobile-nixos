@@ -14,7 +14,7 @@ in
     diskID = mkOption {
       type = types.nullOr config.helpers.types.uuid;
       default = null;
-      description = lib.mdDoc ''
+      description = ''
         Identifier for the disk.
       '';
     };
@@ -22,7 +22,7 @@ in
     partitionEntriesCount = mkOption {
       type = types.int;
       default = 128;
-      description = lib.mdDoc ''
+      description = ''
         Number of partitions in the partition table.
 
         The default value is likely appropriate.
@@ -33,7 +33,7 @@ in
       type = with types; listOf str;
       default = [];
       example = [ "1" "3" "6" "EE" ];
-      description = lib.mdDoc ''
+      description = ''
         Creates an hybrid MBR with the given (string) partition numbers.
 
         Up to three partitions can be present in the hybrid MBR, an additional

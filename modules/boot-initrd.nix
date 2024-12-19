@@ -10,7 +10,7 @@ in
   options.mobile.boot = {
     stage-1.extraUtils = mkOption {
       type = types.listOf (types.either types.attrs types.package);
-      description = lib.mdDoc ''
+      description = ''
         Additional packages to be included inside stage-1.
 
         Do note that *special manipulation* happens and may
@@ -26,7 +26,7 @@ in
     stage-1.contents = mkOption {
       type = types.listOf types.attrs;
       default = [];
-      description = lib.mdDoc ''
+      description = ''
         Additional files for the initrd.
 
         See `makeInitrd` for use of `contents`.

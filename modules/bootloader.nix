@@ -10,7 +10,7 @@ in
         enable = mkOption {
           type = types.bool;
           default = config.mobile.enable;
-          description = lib.mdDoc ''
+          description = ''
             Whether the bootloader **configuration** for Mobile NixOS
             is enabled.
 

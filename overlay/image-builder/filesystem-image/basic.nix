@@ -24,7 +24,7 @@ in
     label = mkOption {
       type = with types; nullOr str;
       default = null;
-      description = lib.mdDoc ''
+      description = ''
         Filesystem label
 
         Not to be confused with either the output name, or the partition label.
@@ -34,7 +34,7 @@ in
     sectorSize = mkOption {
       type = types.int;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Default value should probably not be changed. Used internally for some
         automatic size maths.
       '';
@@ -43,7 +43,7 @@ in
     blockSize = mkOption {
       type = types.int;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Used with the assumption that files are rounded up to blockSize increments.
       '';
     };
@@ -52,7 +52,7 @@ in
       type = with types; nullOr int;
       default = null;
       defaultText = "[automatically computed]";
-      description = lib.mdDoc ''
+      description = ''
         When null, size is computed automatically.
 
         Otherwise sets the size of the filesystem image.
@@ -65,7 +65,7 @@ in
     computeMinimalSize = mkOption {
       internal = true;
       type = types.str;
-      description = lib.mdDoc ''
+      description = ''
         Filesystem-specific snippet to adapt the size of the filesystem image
         so the content can fit.
       '';
@@ -74,7 +74,7 @@ in
     extraPadding = mkOption {
       type = types.int;
       default = 0;
-      description = lib.mdDoc ''
+      description = ''
         When size is computed automatically, how many bytes to add to the
         filesystem total size.
       '';
@@ -84,7 +84,7 @@ in
       type = types.int;
       internal = true;
       default = 0;
-      description = lib.mdDoc ''
+      description = ''
         Minimum usable size the filesystem must have. "Usable" here may not
         actually be useful.
       '';
@@ -94,7 +94,7 @@ in
       type = types.lines;
       internal = true;
       default = "";
-      description = lib.mdDoc ''
+      description = ''
         Bash functions required by the builder.
       '';
     };
@@ -102,7 +102,7 @@ in
     buildPhases = mkOption {
       type = with types; lazyAttrsOf str;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Implementation of build phases for the filesystem image.
       '';
     };
@@ -110,7 +110,7 @@ in
     buildPhasesOrder = mkOption {
       type = with types; listOf str;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Order of the filesystem image build phase. Adding to this is likely to
         cause issues. Use this sparingly, and as a last resort.
       '';
@@ -119,7 +119,7 @@ in
     populateCommands = lib.mkOption {
       type = types.lines;                  
       default = "";
-      description = lib.mdDoc ''
+      description = ''
         Commands used to fill the filesystem.
 
         `$PWD` is the root of the filesystem.
@@ -129,7 +129,7 @@ in
     buildInputs = mkOption {
       type = with types; listOf package;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Allows adding to the builder buildInputs.
       '';
     };
@@ -137,7 +137,7 @@ in
     nativeBuildInputs = mkOption {
       type = with types; listOf package;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         Allows adding to the builder nativeBuildInputs.
 
         As this list is built without *splicing*, use `pkgs.buildPackages` as
@@ -148,7 +148,7 @@ in
     location = mkOption {
       type = types.str;
       default = "";
-      description = lib.mdDoc ''
+      description = ''
         Location of the image in the `$out` path.
 
         The default value means that `$img == $out`, which means that the
@@ -164,7 +164,7 @@ in
     output = mkOption {
       type = types.package;
       internal = true;
-      description = lib.mdDoc ''
+      description = ''
         The build output for the filesystem image.
       '';
     };
@@ -174,7 +174,7 @@ in
       default = "${config.output}${config.location}";
       defaultText = lib.literalExpression "\"\${config.output}\${config.location}\"";
       readOnly = true;
-      description = lib.mdDoc ''
+      description = ''
         Output path for the image file.
       '';
     };
@@ -182,7 +182,7 @@ in
     additionalCommands = mkOption {
       type = types.lines;
       default = "";
-      description = lib.mdDoc ''
+      description = ''
         Additional commands to run during the filesystem image build.
       '';
     };

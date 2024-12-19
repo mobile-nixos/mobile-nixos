@@ -102,14 +102,14 @@ in
         depthcharge = {
           disk-image = mkOption {
             type = types.package;
-            description = lib.mdDoc ''
+            description = ''
               Full Mobile NixOS disk image for a depthcharge-based system.
             '';
             visible = false;
           };
           kpart = mkOption {
             type = types.package;
-            description = lib.mdDoc ''
+            description = ''
               Kernel partition for a depthcharge-based system.
             '';
             visible = false;

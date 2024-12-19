@@ -14,7 +14,7 @@ let
     options = {
       name = mkOption {
         type = types.str;
-        description = lib.mdDoc ''
+        description = ''
           Identifier for the partition.
         '';
       };
@@ -23,7 +23,7 @@ let
         type = types.str;
         default = config.name;
         defaultText = lib.literalExpression "config.name";
-        description = lib.mdDoc ''
+        description = ''
           Partition label on supported partition schemes. Defaults to ''${name}.
 
           Not to be confused with _filesystem_ label.
@@ -33,7 +33,7 @@ let
       partitionUUID = mkOption {
         type = types.nullOr helpers.types.uuid;
         default = null;
-        description = lib.mdDoc ''
+        description = ''
           Partition UUID, for supported partition schemes.
 
           Not to be confused with _filesystem_ UUID.
@@ -45,7 +45,7 @@ let
       length = mkOption {
         type = types.nullOr types.int;
         default = null;
-        description = lib.mdDoc ''
+        description = ''
           Size in bytes for the partition.
 
           Defaults to the filesystem image length (computed at runtime).
@@ -55,7 +55,7 @@ let
       offset = mkOption {
         type = types.nullOr types.int;
         default = null;
-        description = lib.mdDoc ''
+        description = ''
           Offset (in bytes) the partition starts at.
 
           Defaults to the next aligned location on disk.
@@ -69,7 +69,7 @@ let
         ];
         default = "0FC63DAF-8483-4772-8E79-3D69D8477DE4";
         defaultText = "Linux filesystem data (0FC63DAF-8483-4772-8E79-3D69D8477DE4)";
-        description = lib.mdDoc ''
+        description = ''
           Partition type UUID.
 
           Not to be confused with _partitionUUID_.
@@ -81,7 +81,7 @@ let
       bootable = mkOption {
         type = types.bool;
         default = false;
-        description = lib.mdDoc ''
+        description = ''
           Sets the "legacy bios bootable flag" on the partition.
         '';
       };
@@ -89,7 +89,7 @@ let
       requiredPartition = mkOption {
         type = types.bool;
         default = false;
-        description = lib.mdDoc ''
+        description = ''
           For GPT, sets the Required Partition attribute on the partition.
         '';
       };
@@ -100,7 +100,7 @@ let
           _module.args.pkgs = pkgs;
         }));
         default = null;
-        description = lib.mdDoc ''
+        description = ''
           A filesystem image configuration.
 
           The filesystem image produced by this configuration is the default
@@ -111,7 +111,7 @@ let
       isGap = mkOption {
         type = types.bool;
         default = false;
-        description = lib.mdDoc ''
+        description = ''
           When set to true, only the length attribute is used, and describes
           an unpartitioned span in the disk image.
         '';
@@ -121,7 +121,7 @@ let
         type = with types; nullOr (oneOf [ package path ]);
         defaultText = "[contents of the filesystem attribute]";
         default = null;
-        description = lib.mdDoc ''
+        description = ''
           Raw image to be used as the partition content.
 
           By default uses the output of the `filesystem` submodule.
@@ -141,7 +141,7 @@ in
   options = {
     partitions = mkOption {
       type = with types; listOf (submodule partitionSubmodule);
-      description = lib.mdDoc ''
+      description = ''
         List of partitions to include in the disk image.
       '';
     };
