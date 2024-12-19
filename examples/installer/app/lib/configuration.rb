@@ -222,8 +222,8 @@ EOF
 networking.wireless.enable = false;
 networking.networkmanager.enable = true;
 
-# Use PulseAudio
-hardware.pulseaudio.enable = true;
+# Use PipeWire
+services.pipewire.enable = true;
 
 # Enable Bluetooth
 hardware.bluetooth.enable = true;
