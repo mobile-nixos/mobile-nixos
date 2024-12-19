@@ -1,9 +1,28 @@
+#
+# “convenient” entry-point to refer to when needing a Nixpkgs.
+#
+# This is used both as a way to keep the existing code as-is,
+# but also to ensure the trace for using the pinned Nixpkgs is used.
+#
+# The pinning is now managed using `npins`.
+#
 let
-  sha256 = "sha256:0bmnxsn9r4qfslg4mahsl9y9719ykifbazpxxn1fqf47zbbanxkh";
-  rev = "d3c42f187194c26d9f0309a8ecc469d6c878ce33";
+  inherit (import ./npins)
+    nixpkgs
+  ;
+  channelInfo =
+    builtins.match
+      # https://releases.nixos.org/nixos/unstable/nixos-25.05beta723344.d3c42f187194/nixexprs.tar.xz
+      "https?://(.*)/([^/]+)/([^/]+)/([^/]+)/.*"
+      nixpkgs.url
+  ;
+  channelName =
+    builtins.concatStringsSep "-" [
+      (builtins.elemAt channelInfo 1)
+      (builtins.elemAt channelInfo 2)
+    ]
+  ;
+  identifier = builtins.elemAt channelInfo 3;
 in
-builtins.trace "(Using pinned Nixpkgs at ${rev})"
-import (fetchTarball {
-  url = "https://github.com/NixOS/nixpkgs/archive/${rev}.tar.gz";
-  inherit sha256;
-})
+builtins.trace "(Using pinned Nixpkgs; ${channelName} @ ${identifier})"
+(import nixpkgs)
