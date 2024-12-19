@@ -39,7 +39,7 @@ in
       users.users.root.password  = "nixos";
 
       # Automatically login as defaultUserName.
-      services.xserver.displayManager.autoLogin = {
+      services.displayManager.autoLogin = {
         user = defaultUserName;
       };
     }
