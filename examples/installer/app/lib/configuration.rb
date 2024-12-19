@@ -258,7 +258,7 @@ EOF
     when :plamo
 <<EOF
 # Auto-login for Plasma Mobile
-services.xserver.displayManager.autoLogin = {
+services.displayManager.autoLogin = {
   user = #{username.to_json};
 };
 EOF
