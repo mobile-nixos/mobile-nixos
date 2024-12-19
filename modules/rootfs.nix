@@ -48,10 +48,23 @@ in
       ''
         mkdir -p ./nix/store
         echo "Copying system closure..."
+
+        err=0
         while IFS= read -r path; do
           echo "  Copying $path"
-          cp -prf "$path" ./nix/store
+          if test -e "$path"; then
+            cp -prf "$path" ./nix/store
+          else
+            2>&1 printf "ERROR: path %q does not exist...\n" "$path"
+            (( ++err ))
+          fi
         done < "${closureInfo}/store-paths"
+
+        if (( err > 0 )); then
+          2>&1 printf "... Bailing out, %d errors.\n" "$err"
+          exit 2
+        fi
+
         echo "Done copying system closure..."
         cp -v ${closureInfo}/registration ./nix-path-registration
       '';
