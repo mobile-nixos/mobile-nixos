@@ -61,6 +61,12 @@ in
       CFG80211_WEXT = no;
     })
 
+    # QEMU Networking support
+    (helpers: with helpers; {
+      ETHERNET = yes;
+      E1000 = yes;
+    })
+
     # Not needed for testing here, and brings in too many deps.
     (helpers: with helpers; {
         HID_SENSOR_HUB = mkForce no;
