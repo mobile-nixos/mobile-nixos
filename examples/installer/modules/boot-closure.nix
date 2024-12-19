@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (lib)
@@ -23,6 +23,7 @@ in
           ln -s ${path} ${name}
         '') (
           [
+            { path = pkgs.mruby; }
           ]
           ++ (
             builtins.map
