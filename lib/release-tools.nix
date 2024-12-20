@@ -26,6 +26,7 @@ rec {
       ++ (import "${toString pkgs.path}/nixos/modules/module-list.nix")
     )
   }: evalConfig {
+    inherit (pkgs) system;
     inherit baseModules;
     modules =
       (if device ? special
