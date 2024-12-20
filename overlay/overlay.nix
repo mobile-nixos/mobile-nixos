@@ -109,17 +109,8 @@ in
     # Not necessarily internals, but they probably won't go into <nixpkgs>.
     mobile-nixos = {
       kernel-builder = callPackage ./mobile-nixos/kernel/builder.nix {};
-      kernel-builder-gcc49 = callPackage ./mobile-nixos/kernel/builder.nix {
-        stdenv = with self; overrideCC stdenv buildPackages.gcc49;
-      };
-      kernel-builder-gcc6 = callPackage ./mobile-nixos/kernel/builder.nix {
-        stdenv = with self; overrideCC stdenv buildPackages.gcc6;
-      };
-      kernel-builder-clang_8 = callPackage ./mobile-nixos/kernel/builder.nix {
-        stdenv = with self; overrideCC stdenv buildPackages.clang_8;
-      };
-      kernel-builder-clang_9 = callPackage ./mobile-nixos/kernel/builder.nix {
-        stdenv = with self; overrideCC stdenv buildPackages.clang_9;
+      kernel-builder-clang = callPackage ./mobile-nixos/kernel/builder.nix {
+        stdenv = with self; overrideCC stdenv buildPackages.clang;
       };
 
       stage-1 = {
