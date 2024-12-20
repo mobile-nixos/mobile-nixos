@@ -10,35 +10,66 @@
 #
 # Note:
 # Verify that .ci/instantiate-all.nix lists the expected paths when adding to this file.
-let
-  # An ambiant arbitrary Nixpkgs package set.
-  # This is assumed to be used for e.g. Hydra evals where <nixpkgs> is an input.
-  # This pkgs' is used as an input to release-tools, *and* to get a `lib`.
-  # Named pkgs' to reduce confusion with fully evaluated `pkgs`.
-  pkgs' = import <nixpkgs> {};
 
-  mobileReleaseTools = (import ./lib/release-tools.nix {
-    pkgs = pkgs';
-  });
-  inherit (mobileReleaseTools) all-devices;
-in
 { mobile-nixos ? builtins.fetchGit ./.
 # By default, builds all devices.
-, devices ? all-devices
-# By default, assume we eval only for currentSystem
-, systems ? [ builtins.currentSystem ]
-# nixpkgs is also an input, used as `<nixpkgs>` in the system configuration.
+, devices ? null
+
+# By default, assume we eval only for this eval's system
+, systems ? null
 
 # Some additional configuration will be made with this.
 # Mainly to work with some limitations (output size).
 , inNixOSHydra ? false
-}:
+
+# The current system, for pure evals it must be provided.
+, system ? null
+
+# The Nixpkgs this release is evaluated with.
+# By default relies on the pinned Nixpkgs.
+, pkgs ? null
+}@args':
+
+let
+  system =
+    if args' ? system
+    then (args'.system)
+    else builtins.currentSystem
+  ;
+  systems =
+    if args' ? systems
+    then args'.systems
+    else [ system ];
+  pkgs =
+    if args' ? pkgs
+    then
+      if args' ? system
+      then builtins.throw "Providing the `system` argument when providing your own `pkgs` is forbidden. You should instead pass the desired `system` argument to your `pkgs` instance."
+      else (args'.pkgs)
+    else (import ./pkgs.nix { inherit system; })
+  ;
+
+  mobileReleaseTools = (import ./lib/release-tools.nix { inherit pkgs; });
+in
+
+# This weird shuffle is to make the `device` argument depend on the input `pkgs`,
+# while also keeping the original `devices` argument name in the code..
+let devices' = devices; in
+let
+  devices =
+    if devices' == null
+    then mobileReleaseTools.all-devices
+    else devices'
+  ;
+in
+# Drop this unneeded name.
+let devices' = null; in
 
 let
   # We require some `lib` stuff in here.
   # Pick a lib from the arbitrary package set.
-  inherit (pkgs') lib releaseTools;
-  inherit (mobileReleaseTools.withPkgs pkgs')
+  inherit (pkgs) lib releaseTools;
+  inherit (mobileReleaseTools.withPkgs pkgs)
     evalFor
     evalWithConfiguration
     knownSystems
@@ -140,6 +171,7 @@ let
     , targetSystem ? system
     }:
     import example {
+      inherit pkgs;
       device = specialConfig {
         name =
           if system == targetSystem
@@ -174,14 +206,14 @@ let
   ;
 
   doc = import ./doc {
-    pkgs = pkgs';
+    inherit pkgs;
   };
 in
 rec {
   inherit device;
   inherit kernel;
   inherit doc;
-  shell = import ./shell.nix { pkgs = pkgs'; };
+  shell = import ./shell.nix { inherit pkgs; };
 
   # Some example systems to build.
   # They track breaking changes, and ensures dependencies are built.
