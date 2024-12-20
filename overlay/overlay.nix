@@ -51,7 +51,7 @@ in
     #
 
     android-partition-tools = callPackage ./android-partition-tools {
-      stdenv = with self; overrideCC stdenv buildPackages.clang_11;
+      stdenv = with self; overrideCC stdenv buildPackages.clang;
     };
     make_ext4fs = callPackage ./make_ext4fs {};
     hardshutdown = callPackage ./hardshutdown {};
