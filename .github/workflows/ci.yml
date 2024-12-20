@@ -12,8 +12,7 @@ jobs:
       - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
       - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
       - name: "Parse .nix files"
-        run: |
-          git ls-files | grep '.nix$' | xargs nix-instantiate --parse --quiet > /dev/null
+        run: .ci/parse-all.sh
   Instantiation:
     runs-on: [ubuntu-latest]
     steps:
