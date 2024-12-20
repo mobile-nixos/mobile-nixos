@@ -12,9 +12,9 @@ let
   ucm2 = "${./ucm2}";
 in {
   config = lib.mkMerge [
-    (lib.mkIf config.sound.enable {
+    {
       environment.variables.ALSA_CONFIG_UCM2 = ucm2;
-    })
+    }
     (lib.mkIf (config.hardware.pulseaudio.enable && !config.hardware.pulseaudio.systemWide) {
       systemd.user.services.pulseaudio.environment.ALSA_CONFIG_UCM2 = ucm2;
     })

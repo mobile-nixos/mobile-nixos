@@ -3,7 +3,13 @@
 let
   enabled = config.mobile.system.type == "uefi";
 
-  inherit (lib) mkBefore mkIf mkOption types;
+  inherit (lib)
+    concatStringsSep
+    mkBefore
+    mkIf
+    mkOption
+    types
+  ;
   inherit (config.mobile.outputs) recovery stage-0;
   deviceName = config.mobile.device.name;
   kernel = stage-0.mobile.boot.stage-1.kernel.package;
@@ -19,8 +25,8 @@ let
   uefiPlatform = uefiPlatforms.${pkgs.stdenv.targetPlatform.system};
 
   efiKernel = pkgs.runCommand "${deviceName}-efiKernel" {
-    osReleaseFile = pkgs.writeText "${deviceName}-osrel.cmd" config.environment.etc."os-release".source;
-    kernelParamsFile = pkgs.writeText "${deviceName}-boot.cmd" config.boot.kernelParams;
+    osReleaseFile = pkgs.writeText "${deviceName}-osrel.cmd" config.environment.etc."os-release".text;
+    kernelParamsFile = pkgs.writeText "${deviceName}-boot.cmd" (concatStringsSep " " config.boot.kernelParams);
     systemdStub = "${pkgs.systemd}/lib/systemd/boot/efi/linux${uefiPlatform}.efi.stub";
     nativeBuildInputs = [
       pkgs.stdenv.cc.bintools.bintools_bin

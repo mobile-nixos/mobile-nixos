@@ -10,7 +10,6 @@ module GUI
       add_buttons([
         ["Device information", ->() { DeviceInformationWindow.instance.present }],
         ["Display validation", ->() { DisplayValidationWindow.instance.present }],
-        ["Input devices information", ->() { InputsWindow.instance.present }],
         ["Disks information", ->() { DisksWindow.instance.present }],
         ["Logs", ->() { LogsWindow.instance.present }],
         ["GUI testing", ->() { LVGUITestingWindow.instance.present }],

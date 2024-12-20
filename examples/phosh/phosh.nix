@@ -20,7 +20,8 @@
   programs.calls.enable = true;
 
   environment.systemPackages = with pkgs; [
-    chatty              # IM and SMS
+    # Disabled since it uses `olm` which was marked insecure.
+    #chatty              # IM and SMS
     epiphany            # Web browser
     gnome-console       # Terminal
     megapixels          # Camera

@@ -14,12 +14,6 @@
 
     desktopManager.plasma5.mobile.enable = true;
 
-    displayManager.autoLogin = {
-      enable = true;
-    };
-
-    displayManager.defaultSession = "plasma-mobile";
-
     displayManager.lightdm = {
       enable = true;
       # Workaround for autologin only working at first launch.
@@ -29,12 +23,15 @@
       '';
     };
 
-    libinput.enable = true;
   };
 
   hardware.bluetooth.enable = true;
-  hardware.pulseaudio.enable = lib.mkDefault true; # mkDefault to help out users wanting pipewire
+  services.pipewire.enable = lib.mkDefault true;
+  hardware.pulseaudio.enable = lib.mkDefault false;
   networking.networkmanager.enable = true;
   networking.wireless.enable = false;
   powerManagement.enable = true;
+  services.libinput.enable = true;
+  services.displayManager.defaultSession = "plasma-mobile";
+  services.displayManager.autoLogin.enable = true;
 }
