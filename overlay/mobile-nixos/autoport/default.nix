@@ -1,5 +1,5 @@
 { stdenv, fetchFromGitHub
-, ruby, binutils, curl, file, gzip, lz4, mkbootimg, python3Packages, zlib }:
+, ruby, binutils, curl, file, gzip, lz4, mkbootimg, binwalk, zlib }:
 
 stdenv.mkDerivation {
   pname = "mobile-nixos-autoport";
@@ -21,7 +21,7 @@ stdenv.mkDerivation {
     gzip
     lz4
     mkbootimg
-    python3Packages.binwalk
+    binwalk
     zlib
   ];
 
