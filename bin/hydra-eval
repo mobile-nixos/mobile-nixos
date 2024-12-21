@@ -1,6 +1,6 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -p ruby -i ruby
-#!nix-shell -p hydra-unstable
+#!nix-shell -p hydra
 
 # This script uses hydra's `hydra-eval-jobs` to evaluate a given expression,
 # defaulting to `release.nix`.
@@ -8,6 +8,49 @@
 require "open3"
 require "json"
 require "shellwords"
+
+def fmt_time(seconds)
+  if seconds < 1
+    return "#{seconds.round(2)} seconds"
+  end
+  seconds = seconds.to_f().round()
+
+  [
+    [ 60, "second" ],
+    [ 60, "minute" ],
+    [ nil, "hour" ],
+  ].reduce([seconds, []]) do |coll, pair|
+    leftover, elements = coll
+    amount, name = pair
+    if amount
+      current = leftover % amount
+      leftover = leftover / amount
+    else
+      current = leftover
+      leftover = 0
+    end
+
+    name = "#{name}s" if current != 1
+    if current != 0
+      elements.unshift("%d %s" % [ current, name ])
+    end
+    
+    [leftover, elements]
+  end.last().join(", ")
+end
+
+class Array
+  def pretty_shelljoin()
+    # Weird flex, but for printing it's much better than `#shelljoin`...
+    self.map do |arg|
+      if arg.shellescape.match(/\\/)
+        arg.inspect
+      else
+        arg
+      end
+    end.join(" ")
+  end
+end
 
 module MD
   extend self
@@ -45,41 +88,57 @@ module MD
   end
 end
 
+# Usage and help
+$print_usage = ARGV.grep(/^(-h|--help)$/).length > 0
+
+$cmd =
+  if ARGV.length == 0 || $print_usage
+    begin
+      root = File.join(__dir__(), "..")
+      nixpkgs, _ = Open3.capture2("nix-instantiate", "--eval", File.join(root, "pkgs.nix"), "-A", "pkgs.path")
+      nixpkgs = nixpkgs.strip()
+
+      [
+        "./release.nix",
+        "--option", "pure-eval", "true",
+        "-I", "nixpkgs=#{nixpkgs}",
+        "-I", root,
+        "--arg", "pkgs", "import <nixpkgs> {}",
+        "--arg", "systems", '[ "x86_64-linux" "aarch64-linux" ]',
+      ]
+    end
+  else
+    []
+  end
+
 def usage(io=$stdout)
   io.puts "Usage: bin/hydra-eval [args...]"
   io.puts ""
   io.puts "Arguments are passed-through to `hydra-eval-jobs`."
   io.puts ""
-  io.puts "You are likely to want to use:"
+  io.puts "When no argument is given, default arguments are provided."
   io.puts ""
-  io.puts %q{    $ bin/hydra-eval release.nix --arg systems '[ "x86_64-linux" "aarch64-linux" ]' > out.md}
+  io.puts "Equivalent to:"
+  io.puts "  $ #{["bin/hydra-eval", *$cmd].pretty_shelljoin}"
   io.puts ""
 end
 
-# No arguments, or `--help`?
-if ARGV.length == 0 || ARGV.grep(/^--help/).length > 0
+if $print_usage
   usage()
   exit 0
 end
 
-# We're only keeping `NIX_PATH` from the env.
-env = ENV.filter do |k, v|
-  [
-    "NIX_PATH",
-  ].include?(k)
-end
-
-args = []
-
-# Allow access to files in CWD
-args << "-I"
-args << "./"
+$cmd += ARGV
 
 # Run the eval
-out, ret = Open3.capture2(env, "hydra-eval-jobs", *args, *ARGV)
+timer_start = Time.now()
+$stderr.puts " $ hydra-eval-jobs #{$cmd.shelljoin}"
+out, ret = Open3.capture2({}, "hydra-eval-jobs", *$cmd)
+timer_end = Time.now()
 
 # Read the output JSON
 hydra_eval = JSON.parse(out)
+File.write("result-eval.json", out)
 
 errors, valid_jobs = hydra_eval.partition do |k, v|
   v.has_key?("error")
@@ -91,6 +150,8 @@ out.puts MD.title "Hydra-like evaluation"
 
 out.puts MD.paragraph "Command used to generate this report:"
 out.puts MD.pre " $ " + (["bin/hydra-eval"] + ARGV).shelljoin()
+
+out.puts MD.paragraph "Evaluation took: #{fmt_time(timer_end - timer_start)}"
 
 out.puts MD.section "#{valid_jobs.length} valid jobs"
 
