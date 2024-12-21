@@ -234,7 +234,7 @@ let
     meta = with lib; {
       description = "An embeddable implementation of the Ruby language";
       homepage = "https://mruby.org";
-      maintainers = [ maintainers.samueldr ];
+      maintainers = [ /*maintainers.samueldr*/ ];
       license = licenses.mit;
       platforms = platforms.unix;
     };

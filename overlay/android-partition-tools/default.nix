@@ -46,6 +46,6 @@ stdenv.mkDerivation {
     description = "Standalone fork of Android Partition Tools utilities";
     license = licenses.asl20;
     platforms = platforms.linux;
-    maintainers = [ maintainers.samueldr ];
+    maintainers = [ /*maintainers.samueldr*/ ];
   };
 }
