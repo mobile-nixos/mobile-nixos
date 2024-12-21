@@ -21,10 +21,7 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: "Instantiation"
-        run: |
-          nix-env --out-path -qaP --no-name -f .ci/instantiate-all.nix \
-            | sed -e 's/\+\+/./g' \
-            | sort
+        run: bin/hydra-eval
   Documentation:
     runs-on: [ubuntu-latest]
     steps:
