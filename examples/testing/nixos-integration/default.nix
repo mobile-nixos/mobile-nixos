@@ -1,8 +1,10 @@
-{ pkgs ? (import ../../../pkgs.nix {})
+{ pkgs ? (import ../../../pkgs.nix { inherit system; })
+, system ? builtins.currentSystem
 }:
 
 let
   eval = configuration: import (pkgs.path + "/nixos") {
+    inherit (pkgs) system;
     configuration = {
       imports = [ configuration ];
     };
