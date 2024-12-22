@@ -1,5 +1,5 @@
 ++++
-<div align="center"><a href="https://mobile.nixos.org/"><img src="artwork/logo/logo.svg" alt="Mobile NixOS" title="Mobile NixOS" width="500" height="130" /></a></div>
+<div align="center"><a href="https://mobile-nixos.github.io/"><img src="artwork/logo/logo.svg" alt="Mobile NixOS" title="Mobile NixOS" width="500" height="130" /></a></div>
 ++++
 
 *Mobile NixOS* is a superset on top of link:https://nixos.org/nixos/[NixOS Linux],
@@ -27,7 +27,7 @@ endif::[]
 
 == Documentation
 
- * link:https://mobile.nixos.org/[The Mobile NixOS website] hosts the rendered link:https://github.com/mobile-nixos/mobile-nixos/tree/development/doc[doc folder] for Mobile NixOS documentation.
+ * link:https://mobile-nixos.github.io/[The Mobile NixOS website] hosts the rendered link:https://github.com/mobile-nixos/mobile-nixos/tree/development/doc[doc folder] for Mobile NixOS documentation.
 
 As Mobile NixOS is a superset of NixOS Linux, the following documentation applies:
 
