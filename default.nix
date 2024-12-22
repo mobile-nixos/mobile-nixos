@@ -1,32 +1,8 @@
-{ device ? null
-, configuration ? null
-, system ? null
-, pkgs ? null
-}@args':
+{ configuration ? null
+, ...
+}@args:
 
-# Do some arguments parsing.
 let
-  system =
-    if args' ? system
-    then (args'.system)
-    else builtins.currentSystem
-  ;
-  pkgs =
-    if args' ? pkgs
-    then
-      if args' ? system
-      then builtins.throw "Providing the `system` argument when providing your own `pkgs` is forbidden. You should instead pass the desired `system` argument to your `pkgs` instance."
-      else (args'.pkgs)
-    else (import ./pkgs.nix { inherit system; })
-  ;
-
-  # Inherit default values correctly in `args`
-  args = builtins.removeAttrs (args' // {
-    inherit pkgs;
-  }) [
-    "system"
-  ];
-
   defaultConfiguration =
     if configuration != null then
       configuration
@@ -46,7 +22,7 @@ import ./lib/eval-with-configuration.nix (args // {
   configuration = [
     defaultConfiguration
   ];
-  additionalHelpInstructions = ''
+  additionalHelpInstructions = { device }: ''
     You can build the `-A outputs.default` attribute to build an empty and
     un-configured image. That image can be configured using `local.nix`.
 
