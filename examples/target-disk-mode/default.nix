@@ -1,11 +1,9 @@
-{ device ? null
-, pkgs ? (import ../../pkgs.nix {})
-}@args':
-let args = args' // { inherit pkgs; }; in
+# Ensure CLI passes down arguments
+{ ... }@args:
 
 import ../../lib/eval-with-configuration.nix (args // {
   configuration = [ (import ./configuration.nix) ];
-  additionalHelpInstructions = ''
+  additionalHelpInstructions = { device }: ''
     The build output to choose depends on the target.
 
     Pinephone, other u-boot, and depthcharge devices: 
