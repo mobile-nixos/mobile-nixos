@@ -37,10 +37,7 @@ As Mobile NixOS is a superset of NixOS Linux, the following documentation applie
 
 == Community
 
-Mobile NixOS development and questions is currently hosted on the
-**NixOS on ARM** channel.
-
- * link:https://matrix.to/#/#nixos-on-arm:nixos.org?via=nixos.org&via=matrix.org[NixOS on ARM on the NixOS Matrix Space]
+Mobile NixOS development and questions is done within the link:https://github.com/mobile-nixos/mobile-nixos[Mobile NixOS GitHub repository].
 
 The following community resources are also available, for NixOS questions.
 
@@ -53,11 +50,6 @@ The following community resources are also available, for NixOS questions.
  * link:https://github.com/NixOS/nixpkgs[Nixpkgs] - the Nix packages collection
 
 == Continuous Integration
-
-Mobile NixOS is continuously built on the link:https://hydra.nixos.org/[organization's Hydra instance].
-
- * link:https://hydra.nixos.org/jobset/mobile-nixos/unstable[Against the `nixos-unstable` branch of NixOS]
- ** link:https://hydra.nixos.org/job/mobile-nixos/unstable/tested[`tested` job]
 
 There is no published artifacts for the time being, but the documentation
 should point you towards resources that you can use to get started quicker when
