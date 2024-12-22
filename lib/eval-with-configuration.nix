@@ -11,7 +11,7 @@
 , configuration
   # Internally used to tack on configuration by release.nix
 , additionalConfiguration ? {}
-, additionalHelpInstructions ? ""
+, additionalHelpInstructions ? null
 }:
 if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided to eval-with-configuration.nix") else
 let
@@ -84,7 +84,7 @@ in
 
     Building this whole set is counter-productive, and not likely to be what
     is desired.
-    ${optionalString (additionalHelpInstructions != "") "\n"}${additionalHelpInstructions}
+    ${optionalString (additionalHelpInstructions != null) "\n"}${additionalHelpInstructions { device = final_device; }}
     *************************************************
     * Please also read your device's documentation. *
     *      It may contain further usage notes.      *
