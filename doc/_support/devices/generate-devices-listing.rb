@@ -46,7 +46,7 @@ SUPPORT_LEVEL_ORDER = [
 ]
 
 def githubURL(device)
-  "https://github.com/NixOS/mobile-nixos/tree/master/devices/#{device}"
+  "https://github.com/mobile-nixos/mobile-nixos/tree/development/devices/#{device}"
 end
 
 def hydraURL(job)
@@ -121,13 +121,13 @@ File.open(File.join($out, "devices/index.adoc"), "w") do |file|
   :generated: true
 
   The following table lists all devices Mobile NixOS available out of the
-  box on the master branch.
+  box on the development branch.
 
   Different devices have varying degree of support.
 
   #{devices_sections($devicesInfo)}
 
-  Remember to look at the link:https://github.com/NixOS/mobile-nixos/pulls?q=is%3Aopen+is%3Apr+label%3A%22type%3A+port%22[port label]
+  Remember to look at the link:https://github.com/mobile-nixos/mobile-nixos/pulls?q=is%3Aopen+is%3Apr+label%3A%22type%3A+port%22[port label]
   on the Mobile NixOS pull requests tracker, for upcoming devices.
 
   EOF

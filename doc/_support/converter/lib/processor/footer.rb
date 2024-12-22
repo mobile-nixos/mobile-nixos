@@ -40,7 +40,7 @@ module Processor
 
     def repo_edit_link(label)
       [
-        "<a href='#{repo_link("/edit/master/#{src}")}'>",
+        "<a href='#{repo_link("/edit/development/#{src}")}'>",
         label,
         "</a>",
       ].join("")
@@ -48,7 +48,7 @@ module Processor
 
     def repo_source_link(label)
       [
-        "<a href='#{repo_link("/blob/master/#{src}")}'>",
+        "<a href='#{repo_link("/blob/development/#{src}")}'>",
         label,
         "</a>",
       ].join("")
