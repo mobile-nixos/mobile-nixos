@@ -3,8 +3,12 @@
 # This replaces the previously quite un-hermetic `default.nix` inclusion.
 # This is meant for use internally by Mobile NixOS, the interface here
 # should not be assumed to be *stable*.
-{
-  pkgs ? null
+#
+# This file is also used to provide common in-repository arguments parsing
+# for `system` and `pkgs`.
+#
+{ system ? null
+, pkgs ? null
   # The identifier of the device this should be built for.
   # (This gets massaged later on)
 , device ? null
@@ -12,9 +16,22 @@
   # Internally used to tack on configuration by release.nix
 , additionalConfiguration ? {}
 , additionalHelpInstructions ? null
-}:
-if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided to eval-with-configuration.nix") else
+}@args':
 let
+  system =
+    if args' ? system
+    then (args'.system)
+    else builtins.currentSystem
+  ;
+  pkgs =
+    if args' ? pkgs
+    then
+      if args' ? system
+      then builtins.throw "Providing the `system` argument when providing your own `pkgs` is forbidden. You should instead pass the desired `system` argument to your `pkgs` instance."
+      else (args'.pkgs)
+    else (import ../pkgs.nix { inherit system; })
+  ;
+
   inherit (pkgs.lib) optionalString strings;
   inherit (strings) concatStringsSep stringAsChars;
 
