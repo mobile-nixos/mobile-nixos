@@ -181,6 +181,7 @@ rec {
   inherit device;
   inherit kernel;
   inherit doc;
+  shell = import ./shell.nix { pkgs = pkgs'; };
 
   # Some example systems to build.
   # They track breaking changes, and ensures dependencies are built.

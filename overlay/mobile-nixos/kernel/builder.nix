@@ -396,7 +396,9 @@ stdenv.mkDerivation (inputArgs // {
               "CONFIG_KCOV"
               "CONFIG_KCSAN"
               "CONFIG_LD_VERSION"
+              "CONFIG_RELR"
               "CONFIG_SHADOW_CALL_STACK"
+              "CONFIG_TOOLS_SUPPORT.*"
               "CONFIG_ZERO_CALL_USED_REGS"
             ]} \
             $f > .tmp$f

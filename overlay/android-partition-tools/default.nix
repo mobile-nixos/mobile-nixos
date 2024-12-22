@@ -6,13 +6,13 @@
 
 stdenv.mkDerivation {
   pname = "android-partition_tools";
-  version = "2021-03-19";
+  version = "2024-12-20";
 
   src = fetchFromGitHub {
     owner = "mobile-nixos";
     repo = "android-partition_tools";
-    rev = "85263aeab76a9396b0a2eb7e92d1c13176f522f8";
-    sha256 = "1m773chvl7gqvrpvkx5gcc16a2w2rc2km0p29ifg6lyzll63l1a0";
+    rev = "a8c564dd4d05886850faf55ecf41e302d110ac2f";
+    sha256 = "sha256-k5IG+lio1cP7rBLpMAwudSQQQqtudDJpgTVaQIl5Eug=";
   };
 
   buildInputs = [
@@ -46,6 +46,6 @@ stdenv.mkDerivation {
     description = "Standalone fork of Android Partition Tools utilities";
     license = licenses.asl20;
     platforms = platforms.linux;
-    maintainers = [ maintainers.samueldr ];
+    maintainers = [ /*maintainers.samueldr*/ ];
   };
 }

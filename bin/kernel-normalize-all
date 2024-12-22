@@ -6,11 +6,16 @@ set -o pipefail
 
 FAILED=()
 
+only_check=0
+if [[ "${1:-}" == "--only-check" ]]; then
+	only_check=1
+fi
+
 maybe_normalize() {
 	# Prevent needlessly updating the config file when only compiler
 	# information is updated (e.g. native vs. cross-compiled).
 	if ! bin/kernel-normalize-config --only-check "$1"; then
-		if ! bin/kernel-normalize-config --also-commit "$1"; then
+		if (( only_check )) || ! bin/kernel-normalize-config --also-commit "$1"; then
 			FAILED+=("$1")
 		fi
 	fi
@@ -32,7 +37,18 @@ maybe_normalize support/additional-devices/uefi-x86_64-with-kernel
 echo
 echo " :: Done..."
 echo
-echo "These devices failed to normalize:"
+
+if ( set +u; (( ${#FAILED} == 0 )) ); then
+	exit 0
+fi
+
+if (( only_check )); then
+	echo "These devices need to be normalized:"
+else
+	echo "These devices failed to normalize:"
+fi
 for device in "${FAILED[@]}"; do
 	printf "  - %s\n" "$device"
 done
+
+exit 1

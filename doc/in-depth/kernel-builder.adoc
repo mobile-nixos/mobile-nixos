@@ -6,29 +6,11 @@ attribute overlaid on top of Nixpkgs.
 
 ```
 mobile-nixos.kernel-builder
-mobile-nixos.kernel-builder-clang_9
-mobile-nixos.kernel-builder-gcc49
-mobile-nixos.kernel-builder-gcc6
+mobile-nixos.kernel-builder-clang
 ```
-
-At the base level, they are made available pre-versioned with a
-compiler-specific `stdenv` so that OEM kernels requiring a specific compiler to
-either build or boot can use the right compiler version.
 
 The kernel builder additionally provides configuration options to work with
 common quirks in kernel builds.
-
-
-== Choosing the right builder
-
-There is no clear and fast rule for this. The most likely suggestion is to look
-at the kernel version string for a kernel built from the sources you are using.
-It should describe the compiler being used.
-
-Another way to figure out which builder to use is to compare kernel derivations
-either for devices using the same SoC. It often happens that basic quirks like
-requiring specific compilers are rooted in changes from the first party that
-forked the kernels, the SoC vendor.
 
 
 == Choosing quirks

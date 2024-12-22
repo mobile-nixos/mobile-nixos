@@ -1,7 +1,7 @@
 name: CI
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "development" ]
   pull_request:
     branches: [ "**" ]
 
@@ -12,8 +12,7 @@ jobs:
       - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
       - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
       - name: "Parse .nix files"
-        run: |
-          git ls-files | grep '.nix$' | xargs nix-instantiate --parse --quiet > /dev/null
+        run: .ci/parse-all.sh
   Instantiation:
     runs-on: [ubuntu-latest]
     steps:
@@ -22,10 +21,16 @@ jobs:
         with:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: "Instantiation"
-        run: |
-          nix-env --out-path -qaP --no-name -f .ci/instantiate-all.nix \
-            | sed -e 's/\+\+/./g' \
-            | sort
+        run: bin/hydra-eval
+  Kernel_configuration_up-to-date:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
+      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+      - name: "Kernel configuration up-to-date"
+        run: bin/kernel-normalize-all --only-check
   Documentation:
     runs-on: [ubuntu-latest]
     steps:
