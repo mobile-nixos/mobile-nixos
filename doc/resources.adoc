@@ -10,7 +10,3 @@ include::_support/common.inc[]
 
 * <<porting-guide.adoc#,Porting Guide>>
 * <<in-depth/index.adoc#,In-Depth Topics>>
-
-== Additional resources
-
-* <<README.adoc#,Repository `README`>>
