@@ -24,7 +24,7 @@ module Processor
       [
         "https://github.com",
         @doc.attributes["repo"],
-        to
+        to.sub(%r{^/+}, "")
       ].join("/")
     end
 
