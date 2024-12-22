@@ -10,7 +10,7 @@ the same with Mobile NixOS.
 == Opening issues
 
 Issues you face when using or working with Mobile NixOS should be filed on
-link:https://github.com/NixOS/mobile-nixos/issues[the project's issue tracker].
+link:https://github.com/mobile-nixos/mobile-nixos/issues[the project's issue tracker].
 
 First verify an existing, open, and recent issue matching your exact problem
 doesn't already exist. In case of doubt, always open a new issue. Sometimes
@@ -30,7 +30,7 @@ ifndef::env-github[]
 See the <<porting-guide.adoc#,Device Porting Guide>>.
 endif::[]
 
-Once a port has been made for a new device, link:https://github.com/NixOS/mobile-nixos/pulls[open a Pull Request].
+Once a port has been made for a new device, link:https://github.com/mobile-nixos/mobile-nixos/pulls[open a Pull Request].
 
 == Packaging software
 
