@@ -48,9 +48,10 @@ module Processor
 
       return unless entries.length > 0
 
-      File.open(File.join($options["output_dir"], "index.xml"), "w") do |file|
-        file.write(to_rss(entries))
-      end
+      # Not producing RSS for now.
+      # File.open(File.join($options["output_dir"], "index.xml"), "w") do |file|
+      #   file.write(to_rss(entries))
+      # end
     end
   end
 end

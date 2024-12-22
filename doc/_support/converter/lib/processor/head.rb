@@ -10,9 +10,10 @@ module Processor
 
     def head()
       [
-        '<link lang="en" rel="alternate" type="application/rss+xml" title="RSS feed (EN)" href="',
-        "#{root_relative}index.xml",
-        '" />',
+        # Not producing RSS for now.
+        # '<link lang="en" rel="alternate" type="application/rss+xml" title="RSS feed (EN)" href="',
+        # "#{root_relative}index.xml",
+        # '" />',
       ].join("")
     end
 
