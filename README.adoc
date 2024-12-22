@@ -18,12 +18,6 @@ endif::[]
 ifdef::env-github[]
 ⚠️ **Note**: Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
 endif::[]
-ifndef::env-github[]
-[NOTE]
-====
-Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
-====
-endif::[]
 
 == Documentation
 
