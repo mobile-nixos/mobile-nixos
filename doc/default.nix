@@ -64,7 +64,7 @@ stdenv.mkDerivation {
 
     This is a local build of the Mobile NixOS documentation.
 
-    The full site is at https://mobile.nixos.org/.
+    The full site is at https://mobile-nixos.github.io/.
 
     EOF
     fi

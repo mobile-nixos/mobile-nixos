@@ -46,14 +46,7 @@ SUPPORT_LEVEL_ORDER = [
 ]
 
 def githubURL(device)
-  "https://github.com/NixOS/mobile-nixos/tree/master/devices/#{device}"
-end
-
-def hydraURL(job)
-  # Yes, x86_64-linux is by design.
-  # We're using the pre-built images, cross-compiled.
-  # If we used the native arch, we'd be in trouble with armv7l.
-  "https://hydra.nixos.org/job/mobile-nixos/unstable/#{job}"
+  "https://github.com/mobile-nixos/mobile-nixos/tree/development/devices/#{device}"
 end
 
 def yesno(bool)
@@ -121,13 +114,13 @@ File.open(File.join($out, "devices/index.adoc"), "w") do |file|
   :generated: true
 
   The following table lists all devices Mobile NixOS available out of the
-  box on the master branch.
+  box on the development branch.
 
   Different devices have varying degree of support.
 
   #{devices_sections($devicesInfo)}
 
-  Remember to look at the link:https://github.com/NixOS/mobile-nixos/pulls?q=is%3Aopen+is%3Apr+label%3A%22type%3A+port%22[port label]
+  Remember to look at the link:https://github.com/mobile-nixos/mobile-nixos/pulls?q=is%3Aopen+is%3Apr+label%3A%22type%3A+port%22[port label]
   on the Mobile NixOS pull requests tracker, for upcoming devices.
 
   EOF
@@ -157,14 +150,6 @@ $devicesInfo.values.each do |info|
     Architecture:: #{info["system"]["system"]}
     Supports Stage-0:: #{yesno(info["quirks"]["supportsStage-0"])}
     Source:: link:#{githubURL(identifier)}[Mobile NixOS repository]
-
-    Builds::
-    #{
-      info["documentation"]["hydraOutputs"].map do |pair|
-        output, name = pair
-        "* link:#{hydraURL(output.gsub("@device@",identifier))}[#{name}]"
-      end.join("\n")
-    }
 
     ****
 

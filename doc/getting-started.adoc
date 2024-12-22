@@ -20,8 +20,8 @@ use. These instructions are device-dependent, but not specific to Mobile NixOS.
 Briefly said, the device's bootloader must be unlocked, meaning that it allows
 running custom-built operating system images.
 
-The project is hosted under the link:https://github.com/NixOS/[NixOS organization],
-as link:https://github.com/NixOS/mobile-nixos[mobile-nixos].
+The project is hosted under the link:https://github.com/mobile-nixos/[Mobile NixOS organization],
+as link:https://github.com/mobile-nixos/mobile-nixos[mobile-nixos].
 
 === Getting the sources
 
@@ -29,13 +29,13 @@ Depending on your configuration, for users with a GitHub account and the proper
 ssh configuration.
 
 ```
-$ git clone git@github.com:NixOS/mobile-nixos.git
+$ git clone git@github.com:mobile-nixos/mobile-nixos.git
 ```
 
 Or, for everyone else.
 
 ```
-$ git clone https://github.com/NixOS/mobile-nixos.git
+$ git clone https://github.com/mobile-nixos/mobile-nixos.git
 ```
 
 Nothing else! Everything required is self-contained.
@@ -60,22 +60,8 @@ page, will likely contain the necessary instructions.
 Things change, and sometimes things break. This is even more true with Mobile
 NixOS as the project depends on another moving target, NixOS.
 
-You can look at the
-link:https://hydra.nixos.org/job/mobile-nixos/unstable/tested/latest-finished#tabs-buildinputs[latest successful build's inputs]
-to see which _revisions_ were used for a successful build.
-
-You can then clone Nixpkgs somewhere, checkout that commit ID, and refer to it
-using `NIX_PATH`. The following is only an example of how one would do this.
-
-```
-$ cd ~/Projects/
-$ git clone https://github.com/NixOS/nixpkgs.git
-$ cd nixpkgs
-$ git checkout $revision
-$ cd ~/Projects/mobile-nixos/
-$ export NIX_PATH="nixpkgs=$HOME/Projects/nixpkgs"
-$ nix-build [...]
-```
+The npins reference will be updated from time-to-time, but any breakage with
+`nixos-unstable` is a bug, and should be fixed.
 
 == Customizing
 
@@ -115,7 +101,7 @@ import the Mobile NixOS configuration for your device by doing the following.
 ```nix
 # configuration.nix
 {
-  # "xxx-yyy" is your device "Identifier" from https://mobile.nixos.org/devices,
+  # "xxx-yyy" is your device "Identifier" from https://mobile-nixos.github.io/devices,
   # e.g. "google-marlin".
   imports = [
     (import <mobile-nixos/lib/configuration.nix> { device = "xxx-yyy"; })

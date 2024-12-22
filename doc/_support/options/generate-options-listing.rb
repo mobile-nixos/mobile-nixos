@@ -34,8 +34,8 @@ File.open(File.join($out, "options/index.adoc"), "w") do |file|
 
     The following list only includes the options defined by Mobile NixOS.
 
-    Refer to the link:https://nixos.org/nixos/options.html[NixOS options listing]
-    for more options.
+    Refer to the link:https://search.nixos.org/options[NixOS options listing]
+    for the NixOS options.
 
     == Options list
 
