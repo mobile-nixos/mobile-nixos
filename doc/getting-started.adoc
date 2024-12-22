@@ -20,8 +20,8 @@ use. These instructions are device-dependent, but not specific to Mobile NixOS.
 Briefly said, the device's bootloader must be unlocked, meaning that it allows
 running custom-built operating system images.
 
-The project is hosted under the link:https://github.com/NixOS/[NixOS organization],
-as link:https://github.com/NixOS/mobile-nixos[mobile-nixos].
+The project is hosted under the link:https://github.com/mobile-nixos/[Mobile NixOS organization],
+as link:https://github.com/mobile-nixos/mobile-nixos[mobile-nixos].
 
 === Getting the sources
 
@@ -29,13 +29,13 @@ Depending on your configuration, for users with a GitHub account and the proper
 ssh configuration.
 
 ```
-$ git clone git@github.com:NixOS/mobile-nixos.git
+$ git clone git@github.com:mobile-nixos/mobile-nixos.git
 ```
 
 Or, for everyone else.
 
 ```
-$ git clone https://github.com/NixOS/mobile-nixos.git
+$ git clone https://github.com/mobile-nixos/mobile-nixos.git
 ```
 
 Nothing else! Everything required is self-contained.
