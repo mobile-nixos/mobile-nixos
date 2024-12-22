@@ -115,7 +115,7 @@ import the Mobile NixOS configuration for your device by doing the following.
 ```nix
 # configuration.nix
 {
-  # "xxx-yyy" is your device "Identifier" from https://mobile.nixos.org/devices,
+  # "xxx-yyy" is your device "Identifier" from https://mobile-nixos.github.io/devices,
   # e.g. "google-marlin".
   imports = [
     (import <mobile-nixos/lib/configuration.nix> { device = "xxx-yyy"; })
