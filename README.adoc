@@ -18,12 +18,6 @@ endif::[]
 ifdef::env-github[]
 ⚠️ **Note**: Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
 endif::[]
-ifndef::env-github[]
-[NOTE]
-====
-Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
-====
-endif::[]
 
 == Documentation
 
@@ -83,3 +77,19 @@ but only to the files in this repository (expressions, scripts, modules, etc.).
 Patches and derivative work are covered by the licenses of their respective
 packages.
 ====
+
+[#homepage-acknowledgements]
+--
+[discrete]
+== Acknowledgements
+
+This project was funded in part through the NGI PET Fund.
+link:https://nlnet.nl/PET/[Read more about it on NLnet's website].
+
+ifdef::env-github[]
+image::doc/images/NGI0_tag_black_mono.svg[NGI0,link=https://nlnet.nl/NGI0/]
+endif::[]
+ifndef::env-github[]
+image::images/NGI0_tag_black_mono.svg[NGI0,link=https://nlnet.nl/NGI0/]
+endif::[]
+--

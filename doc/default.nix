@@ -39,12 +39,12 @@ stdenv.mkDerivation {
     rm -f README.md
 
     # Replace it in-place with the repo README.
-    cat >> README.adoc <<EOF
-    = README.adoc
+    cat >> index.adoc <<EOF
+    = Mobile NixOS
     include::_support/common.inc[]
 
     EOF
-    tail -n +4 ${../README.adoc} >> README.adoc
+    tail -n +4 ${../README.adoc} >> index.adoc
 
     # The title needs to be first
     head -n1 ${../CONTRIBUTING.adoc} > contributing.adoc
@@ -56,18 +56,6 @@ stdenv.mkDerivation {
 
     # Then continuing with the file.
     tail -n +2 ${../CONTRIBUTING.adoc} >> contributing.adoc
-
-    if [ ! -e index.adoc ]; then
-    cat >> index.adoc <<EOF
-    = Main Page
-    include::_support/common.inc[]
-
-    This is a local build of the Mobile NixOS documentation.
-
-    The full site is at https://mobile-nixos.github.io/.
-
-    EOF
-    fi
 
     # Copies the generated asciidoc source for the devices.
     cp -prf ${devices}/devices devices

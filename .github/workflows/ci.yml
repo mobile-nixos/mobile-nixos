@@ -31,18 +31,3 @@ jobs:
           nix_path: nixpkgs=channel:nixos-unstable
       - name: "Kernel configuration up-to-date"
         run: bin/kernel-normalize-all --only-check
-  Documentation:
-    runs-on: [ubuntu-latest]
-    steps:
-      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
-      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
-      - name: "Build documentation"
-        run: |
-          nix-build doc
-          cp -prf $(readlink -f result) built-documentation
-      - uses: actions/upload-artifact@v4
-        with:
-          name: documentation
-          path: built-documentation
