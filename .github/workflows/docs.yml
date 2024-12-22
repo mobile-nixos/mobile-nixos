@@ -1,0 +1,30 @@
+name: Documentation
+on:
+  pull_request:
+  push:
+  workflow_call:
+
+jobs:
+  Documentation:
+    runs-on: [ubuntu-latest]
+    steps:
+      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
+      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - name: "Build documentation"
+        run: |
+          nix-build doc
+
+      - name: Unwrap build output
+        run: |
+          output=$(readlink -f result)
+          cp -vr --dereference "$output" "www"
+
+      - name: Upload archive to Artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: 'docs'
+          path: 'www'
+          if-no-files-found: error
