@@ -27,7 +27,7 @@ endif::[]
 
 == Documentation
 
- * link:https://mobile.nixos.org/[The Mobile NixOS website] hosts the rendered link:https://github.com/NixOS/mobile-nixos/tree/master/doc[doc folder] for Mobile NixOS documentation.
+ * link:https://mobile.nixos.org/[The Mobile NixOS website] hosts the rendered link:https://github.com/mobile-nixos/mobile-nixos/tree/development/doc[doc folder] for Mobile NixOS documentation.
 
 As Mobile NixOS is a superset of NixOS Linux, the following documentation applies:
 
@@ -81,7 +81,7 @@ improvement; it is not in our nature to scold new contributors.
 
 == License
 
-Mobile NixOS is licensed under the link:https://github.com/NixOS/mobile-nixos/blob/master/LICENSE[MIT License].
+Mobile NixOS is licensed under the link:https://github.com/mobile-nixos/mobile-nixos/blob/development/LICENSE[MIT License].
 
 [NOTE]
 ====
