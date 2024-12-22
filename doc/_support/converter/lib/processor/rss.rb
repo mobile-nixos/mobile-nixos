@@ -26,7 +26,7 @@ module Processor
 
     def full_url(path)
       [
-        "https://mobile.nixos.org",
+        "https://mobile-nixos.github.io",
         path
       ].join("/")
     end
