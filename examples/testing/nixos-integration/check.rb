@@ -207,3 +207,9 @@ diff.each do |name, value|
 end
 
 File.write("options-eval-diff.eval.json", JSON.pretty_generate(diff))
+
+unless diff.keys.length == 0
+  exit 1
+end
+
+exit 0
