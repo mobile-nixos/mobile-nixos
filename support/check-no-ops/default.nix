@@ -1,4 +1,4 @@
-{ pkgs ? (import ../../../pkgs.nix { inherit system; })
+{ pkgs ? (import ../../pkgs.nix { inherit system; })
 , system ? builtins.currentSystem
 }:
 
@@ -20,7 +20,7 @@ let
   mobile-nixos-eval = eval {
     imports = [
       ./configuration.nix
-      (import ../../../lib/configuration.nix { })
+      (import ../../lib/configuration.nix { })
     ];
     mobile.enable = false;
   };
@@ -28,7 +28,7 @@ let
   mobile-nixos-stage-1-eval = eval {
     imports = [
       ./configuration.nix
-      (import ../../../lib/configuration.nix { })
+      (import ../../lib/configuration.nix { })
     ];
     mobile.enable = false;
     mobile.boot.stage-1.enable = true;
