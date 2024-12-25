@@ -12,33 +12,33 @@ let
     mkdir -p $out
   '';
 in
-lib.mkIf isCross (lib.mkMerge [
-
-# All cross-compilation
 {
+  config = lib.mkIf isCross (lib.mkMerge [
+    # All cross-compilation
+    {
 
-  # Some Network Manager plugins are kinda problematic...
-  # Let's ignore them for now.
-  # Cross-compilation of Mobile NixOS for the time being is not fully-featured.
-  # If those plugins are needed, do a native build.
-  networking.networkmanager.plugins = lib.mkForce [];
+      # Some Network Manager plugins are kinda problematic...
+      # Let's ignore them for now.
+      # Cross-compilation of Mobile NixOS for the time being is not fully-featured.
+      # If those plugins are needed, do a native build.
+      networking.networkmanager.plugins = lib.mkForce [];
+    }
+
+    # 32 bit ARM
+    (lib.mkIf config.nixpkgs.crossSystem.isAarch32 {
+      nixpkgs.overlays = [
+        (final: super:
+          # Ensure pkgsBuildBuild ends up unmodified, otherwise the canary test will
+          # get super expensive to build.
+          if super.stdenv.buildPlatform == super.stdenv.hostPlatform
+          then {}
+          else {
+            # btrfs-progs-armv7l-unknown-linux-gnueabihf-5.17.drv
+            # /nix/store/wnrc4daqbd6v5ifqlxsj75ky8556zy0p-python3-3.9.12/include/python3.9/pyport.h:741:2: error: #error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
+            btrfs-progs = lib.warn "btrfs-progs neutered due to broken build with cross armv7l" nullPackage;
+          }
+        )
+      ];
+    })
+  ]);
 }
-
-# 32 bit ARM
-(lib.mkIf config.nixpkgs.crossSystem.isAarch32 {
-  nixpkgs.overlays = [
-    (final: super:
-      # Ensure pkgsBuildBuild ends up unmodified, otherwise the canary test will
-      # get super expensive to build.
-      if super.stdenv.buildPlatform == super.stdenv.hostPlatform
-      then {}
-      else {
-        # btrfs-progs-armv7l-unknown-linux-gnueabihf-5.17.drv
-        # /nix/store/wnrc4daqbd6v5ifqlxsj75ky8556zy0p-python3-3.9.12/include/python3.9/pyport.h:741:2: error: #error "LONG_BIT definition appears wrong for platform (bad gcc/glibc config?)."
-        btrfs-progs = lib.warn "btrfs-progs neutered due to broken build with cross armv7l" nullPackage;
-      }
-    )
-  ];
-})
-
-])
