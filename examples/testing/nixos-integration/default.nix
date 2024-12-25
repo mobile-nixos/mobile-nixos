@@ -24,7 +24,7 @@ let
     ];
     mobile.enable = false;
   };
-  # A Mobile NixOS eval that should be a no-op
+  # A Mobile NixOS eval that should be a no-op for the stage-2 system (system.build.toplevel).
   mobile-nixos-stage-1-eval = eval {
     imports = [
       ./configuration.nix
@@ -50,4 +50,10 @@ in
     ;
 
     mobile-nixos-stage-1 = mobile-nixos-stage-1-eval.config.system.build.vm;
+
+    # Evals named in this list will be checked by the `check.rb` script.
+    evals = [
+      "nixos-eval"
+      "mobile-nixos-eval"
+    ];
   }
