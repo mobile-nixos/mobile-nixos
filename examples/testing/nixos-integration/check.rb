@@ -191,6 +191,15 @@ common = all_options.values.map(&:to_a).reduce(&:intersection)
 # Keep content from the last attribute
 diff = (all_options[eval_attributes.last].to_a() - common).to_h
 
+# Ignore some "safe" changes
+# TODO: add more specific checks for those.
+diff.select! do |key, _|
+  ![
+    [ "lib" ],
+    [ "nixpkgs", "overlays" ],
+  ].include?(JSON.parse(key))
+end
+
 $stderr.puts ""
 $stderr.puts "There are #{diff.keys.length} options that differ."
 diff.each do |name, value|
