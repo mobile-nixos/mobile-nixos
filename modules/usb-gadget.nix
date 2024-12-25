@@ -1,9 +1,11 @@
 { config, lib, pkgs, ... }:
 
 {
-  # Ensure configfs is mounted if needed.
-  fileSystems."/sys/kernel/config" = lib.mkIf (config.mobile.usb.mode == "gadgetfs") {
-    device = "none";
-    fsType = "configfs";
+  fileSystems = lib.mkIf (config.mobile.usb.mode == "gadgetfs") {
+    # Ensure configfs is mounted, when needed.
+    "/sys/kernel/config" = {
+      device = "none";
+      fsType = "configfs";
+    };
   };
 }
