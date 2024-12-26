@@ -20,18 +20,42 @@ def verbose_cmd(*cmd)
   $stderr.puts " $ #{cmd.shelljoin}" if VERBOSE
 end
 
+class String
+  def to_nix()
+    self.to_json()
+  end
+end
+
+class Array
+  def to_nix()
+    [
+      "[",
+      self.map do |el|
+        [
+          "(",
+          el.to_nix(),
+          ")",
+        ].join("")
+      end.join(" "),
+      "]",
+    ].join(" ")
+  end
+end
+
 module Nix
   extend self
 
-  def instantiate(*cmd_args, expr: nil, args: {})
+  def instantiate(*cmd_args, expr: nil, args: {}, fail: true)
+    if VERBOSE
+      $stderr.puts "Expression:"
+      $stderr.puts expr.inspect
+    end
     cmd = ["nix-instantiate", "--json", "--strict", "--eval" ]
     cmd << "-" if expr
     args.each do |name, value|
       cmd << "--arg"
-      cmd << name
-      # Will handle strings properly...
-      # ... for more complex stuff, just don't.
-      cmd << name.to_json()
+      cmd << name.to_s()
+      cmd << value.to_nix()
     end
     cmd.concat(*cmd_args)
     verbose_cmd(*cmd)
@@ -40,7 +64,16 @@ module Nix
     if status.success?
       return JSON.parse(result), stderr, status
     else
-      return nil, stderr, status
+      if fail
+        $stderr.puts ""
+        $stderr.puts "Nix evaluation unexpectedly failed."
+        $stderr.puts ""
+        $stderr.puts stderr
+        $stderr.puts ""
+        raise "Command unexpectedly failed."
+      else
+        return nil, stderr, status
+      end
     end
   end
 end
@@ -80,13 +113,8 @@ class NixOS
           in
           dumpOptionsDefs { inherit (#{@expr}) options; }
         }
-        cmd = ["nix-instantiate", "--json", "--strict", "--eval", "-"]
-        verbose_cmd(*cmd)
-        result, status = Open3.capture2(*cmd, stdin_data: expression)
-        unless status.success?
-          raise "Command unexpectedly failed (#{status.exitstatus.inspect})"
-        end
-        JSON.parse(result)
+        result, _, _ = Nix.instantiate(expr: expression)
+        result
       end
   end
 
@@ -100,10 +128,9 @@ class NixOS
             inherit (eval.pkgs.lib)
               getAttrFromPath
             ;
-            path' = builtins.fromJSON path;
-            option = getAttrFromPath path' eval.options;
+            option = getAttrFromPath path eval.options;
           in
-          if path' == [ "lib" ]
+          if path == [ "lib" ]
           then {
             value = builtins.attrNames option.value;
             inherit (option) files;
@@ -118,11 +145,11 @@ class NixOS
               ;
             }
         }
-        cmd = ["nix-instantiate", "--json", "--strict", "--eval", "-", "--argstr", "path", path.to_json()]
-        verbose_cmd(*cmd)
-        result, stderr, status = Open3.capture3(*cmd, stdin_data: expression)
+        result, stderr, status = Nix.instantiate(expr: expression, args: {
+          path: path,
+        }, fail: false)
         if status.success?
-          JSON.parse(result)
+          result
         else
           {
             "error" => {
