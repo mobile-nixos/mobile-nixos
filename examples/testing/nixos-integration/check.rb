@@ -9,6 +9,12 @@ require "ruby-progressbar"
 
 DO_EVAL = !ARGV.include?("--skip-eval")
 VERBOSE = ARGV.include?("--verbose")
+SOURCE_EXPRESSION = [
+  (ARGV.find{_1.match(/^--source=/)}&.split("=",2)&.last),
+  File.join(__dir__(), "default.nix"),
+].compact.first
+
+$stderr.puts "Checking for no-ops as configured in #{SOURCE_EXPRESSION.inspect()}"
 
 def verbose_cmd(*cmd)
   $stderr.puts " $ #{cmd.shelljoin}" if VERBOSE
@@ -131,20 +137,36 @@ class NixOS
   end
 end
 
+$stderr.puts ""
+$stderr.puts "Checking source expression: #{SOURCE_EXPRESSION.inspect}"
+
 # Pick the evals from the expression.
-eval_attributes, _, _ = Nix.instantiate(expr: %Q{(import #{File.join(__dir__(), "default.nix")} {}).no-op-checks.evals})
+eval_attributes, _, _ = Nix.instantiate(expr: %Q{(import #{SOURCE_EXPRESSION} {}).no-op-checks.evals})
 evals = eval_attributes.map do |name|
   [
     name,
     NixOS.new(
-      %Q{ (import #{File.join(__dir__(), "default.nix")} {}).#{name} },
+      %Q{ (import #{SOURCE_EXPRESSION} {}).#{name} },
     )
   ]
 end
 .to_h
 
+$stderr.puts ""
+$stderr.puts "Checking these attributes:"
+$stderr.puts ""
+evals.each do |name, _|
+  $stderr.puts " - #{name}"
+end
+
 $ignored_options, _, _ = Nix.instantiate(expr: %Q{(import #{SOURCE_EXPRESSION} {}).no-op-checks.ignoredOptions})
 
+$stderr.puts ""
+$stderr.puts "Ignoring these options:"
+$stderr.puts ""
+$ignored_options.each do |path|
+  $stderr.puts " - #{path.to_json()}"
+end
 $stderr.puts ""
 
 # Evaluate all options, this takes a while.
