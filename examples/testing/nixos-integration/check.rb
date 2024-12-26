@@ -132,7 +132,7 @@ class NixOS
 end
 
 # Pick the evals from the expression.
-eval_attributes, _, _ = Nix.instantiate(expr: %Q{(import #{File.join(__dir__(), "default.nix")} {}).evals})
+eval_attributes, _, _ = Nix.instantiate(expr: %Q{(import #{File.join(__dir__(), "default.nix")} {}).no-op-checks.evals})
 evals = eval_attributes.map do |name|
   [
     name,
@@ -142,6 +142,8 @@ evals = eval_attributes.map do |name|
   ]
 end
 .to_h
+
+$ignored_options, _, _ = Nix.instantiate(expr: %Q{(import #{SOURCE_EXPRESSION} {}).no-op-checks.ignoredOptions})
 
 $stderr.puts ""
 
@@ -192,12 +194,8 @@ common = all_options.values.map(&:to_a).reduce(&:intersection)
 diff = (all_options[eval_attributes.last].to_a() - common).to_h
 
 # Ignore some "safe" changes
-# TODO: add more specific checks for those.
 diff.select! do |key, _|
-  ![
-    [ "lib" ],
-    [ "nixpkgs", "overlays" ],
-  ].include?(JSON.parse(key))
+  !$ignored_options.include?(JSON.parse(key))
 end
 
 $stderr.puts ""

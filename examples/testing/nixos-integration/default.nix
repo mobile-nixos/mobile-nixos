@@ -51,9 +51,20 @@ in
 
     mobile-nixos-stage-1 = mobile-nixos-stage-1-eval.config.system.build.vm;
 
-    # Evals named in this list will be checked by the `check.rb` script.
-    evals = [
-      "nixos-eval"
-      "mobile-nixos-eval"
-    ];
+    no-op-checks = {
+      # Evals named in this list will be checked by the `check.rb` script.
+      evals = [
+        "nixos-eval"
+        "mobile-nixos-eval"
+      ];
+
+      # List of attr path lists for which differences are not an error.
+      ignoredOptions = [
+        # The added `lib` functions are self-contained and realistically won't clash with others.
+        [ "lib" ]
+        # TODO: add checks validating that overlays are not replacing
+        # Nixpkgs packages in a problematic manner.
+        [ "nixpkgs" "overlays" ]
+      ];
+    };
   }
