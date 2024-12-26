@@ -20,13 +20,15 @@ rec {
   evalWith =
     { modules
     , device
+    , pkgs
+    , system ? pkgs.system
     , additionalConfiguration ? {}
     , baseModules ? (
       (import ../modules/module-list.nix)
       ++ (import "${toString pkgs.path}/nixos/modules/module-list.nix")
     )
   }: evalConfig {
-    inherit baseModules;
+    inherit baseModules pkgs system;
     modules =
       (if device ? special
       then [ device.config ]
@@ -73,7 +75,8 @@ rec {
       # Eval with a configuration, for the given device.
       evalWithConfiguration = configuration: device: evalWith {
         modules = [ configuration ];
-        inherit device;
+        inherit device pkgs;
+        inherit (pkgs) system;
       };
 
       # The simplest eval for a device, with an empty configuration.
