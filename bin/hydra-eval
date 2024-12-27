@@ -132,7 +132,7 @@ $cmd += ARGV
 
 # Run the eval
 timer_start = Time.now()
-$stderr.puts " $ hydra-eval-jobs #{$cmd.shelljoin}"
+$stderr.puts " $ hydra-eval-jobs #{$cmd.pretty_shelljoin}"
 out, ret = Open3.capture2({}, "hydra-eval-jobs", *$cmd)
 timer_end = Time.now()
 
@@ -149,7 +149,7 @@ out = $stdout
 out.puts MD.title "Hydra-like evaluation"
 
 out.puts MD.paragraph "Command used to generate this report:"
-out.puts MD.pre " $ " + (["bin/hydra-eval"] + ARGV).shelljoin()
+out.puts MD.pre " $ " + (["bin/hydra-eval"] + ARGV).pretty_shelljoin()
 
 out.puts MD.paragraph "Evaluation took: #{fmt_time(timer_end - timer_start)}"
 
