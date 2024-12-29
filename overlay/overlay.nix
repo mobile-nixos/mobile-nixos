@@ -66,6 +66,7 @@ in
       then super.xorg.overrideScope'
       else super.xorg.overrideScope
     ) (self: super: {
+      recurseForDerivations = true;
       xf86videofbdev = super.xf86videofbdev.overrideAttrs({patches ? [], ...}: {
         patches = patches ++ [
           ./xserver/0001-HACK-fbdev-don-t-bail-on-mode-initialization-fail.patch
@@ -92,12 +93,15 @@ in
     # Things specific to mobile-nixos.
     # Not necessarily internals, but they probably won't go into <nixpkgs>.
     mobile-nixos = {
+      recurseForDerivations = true;
+
       kernel-builder = callPackage ./mobile-nixos/kernel/builder.nix {};
       kernel-builder-clang = callPackage ./mobile-nixos/kernel/builder.nix {
         stdenv = with self; overrideCC stdenv buildPackages.clang;
       };
 
       stage-1 = {
+        recurseForDerivations = true;
         script-loader = callPackage ../boot/script-loader {};
         boot-recovery-menu = callPackage ../boot/recovery-menu {};
         boot-error = callPackage ../boot/error {};
