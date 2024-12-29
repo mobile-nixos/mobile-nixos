@@ -52,30 +52,6 @@ in
     lk2ndMsm8953 = callPackage ./lk2nd/msm8953.nix {};
 
     #
-    # Hacks
-    # -----
-    #
-    # Totally not upstreamable stuff.
-    #
-
-    xorg = (
-      # Backward compatibility shim
-      # Fixes eval after https://github.com/NixOS/nixpkgs/pull/199912
-      # Can be removed on or after 2023-05-16
-      if super.xorg ? overrideScope'
-      then super.xorg.overrideScope'
-      else super.xorg.overrideScope
-    ) (self: super: {
-      recurseForDerivations = true;
-      xf86videofbdev = super.xf86videofbdev.overrideAttrs({patches ? [], ...}: {
-        patches = patches ++ [
-          ./xserver/0001-HACK-fbdev-don-t-bail-on-mode-initialization-fail.patch
-        ];
-      });
-    }) # See all-packages.nix for more about this messy composition :/
-    // { inherit (self) xlibsWrapper; };
-
-    #
     # Fixes to upstream
     # -----------------
     #
