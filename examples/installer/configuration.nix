@@ -9,7 +9,6 @@
 
 {
   imports = [
-    ../common-configuration.nix
     ./modules/all.nix
   ];
 }

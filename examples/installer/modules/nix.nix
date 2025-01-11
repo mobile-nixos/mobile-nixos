@@ -1,9 +1,9 @@
-{ pkgs, ... }:
+{ pkgs, lib, ... }:
 
 {
   nix.nixPath = [
-    "nixpkgs=${pkgs.path}"
+    "nixpkgs=${lib.cleanSource pkgs.path}"
     # Mobile NixOS root
-    "mobile-nixos=${../../..}"
+    "mobile-nixos=${lib.cleanSource ../../..}"
   ];
 }

@@ -1,8 +1,9 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 let
   inherit (lib)
-    optionalString
+    optional
+    concatMapStringsSep
   ;
   inherit (config.mobile)
     system
@@ -17,13 +18,22 @@ in
       PS4=" $ "; set -x
       mkdir -p $out/mobile-nixos-installer
       cd $out/mobile-nixos-installer
-      ln -s ${config.mobile.boot.stage-1.kernel.package} kernel
-      ${optionalString (system.type == "depthcharge") ''
-        ln -s ${config.mobile.outputs.depthcharge.kpart} kpart
-      ''}
-      ${optionalString (system.type == "u-boot") ''
-        ln -s ${config.mobile.outputs.u-boot.boot-partition} boot-partition
-      ''}
+      ${
+        concatMapStringsSep "\n" ({ name ? path.name, path }: ''
+          ln -s ${path} ${name}
+        '') (
+          [
+            { path = pkgs.mruby; }
+          ]
+          ++ (
+            builtins.map
+            (p: { path = if p ? package then p.package else p; })
+            config.mobile.boot.stage-1.extraUtils
+          )
+          ++ optional (system.type == "depthcharge") { path = config.mobile.outputs.depthcharge.kpart; }
+          ++ optional (system.type == "u-boot") { path = config.mobile.outputs.u-boot.boot-partition; name = "installer.stage-1.img"; }
+        )
+      }
     )
   '';
 }

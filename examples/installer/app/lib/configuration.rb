@@ -51,11 +51,11 @@ module Configuration
       # Let's try and detect the device with its DMI info
       if File.exist?("/sys/class/dmi/id/product_name")
         product_name = File.read("/sys/class/dmi/id/product_name")
-        # Bogus example of an UEFI system detection
-        #case product_name
-        #when "Jupiter"
-        #  return "valve-jupiter"
-        #end
+        chassis_vendor = File.read("/sys/class/dmi/id/chassis_vendor")
+        case chassis_vendor
+        when /^QEMU$/
+          return "qemu-uefi"
+        end
       end
 
       # Oh, still nothing specific? Let's hope it's just generic UEFI!
@@ -105,6 +105,9 @@ module Configuration
         when "acer-lazor", "lenovo-wormdingler"
           # Qualcomm 7c eMMC
           File.join("/dev/disk/by-path", "platform-7c4000.mmc")
+        when "qemu-uefi"
+          # QEMU using e.g. `./result -drive "file=target.img"` for a second drive.
+          File.join("/dev/disk/by-id/", "ata-QEMU_HARDDISK_QM00002")
         end
 
       raise "Unknown target disk" unless path
@@ -160,7 +163,7 @@ class Configuration::NixOSConfiguration
   def cpu_count()
     core_count = File.read("/proc/cpuinfo").split(/\n+/).grep(/^processor/).count
     # Why `/2`? Assume some big.LITTLE-ness, or even "low vs. high" cores.
-    core_count / 2
+    (core_count / 2).ceil
   end
 
   def luks_name(part)
