@@ -1,5 +1,6 @@
 # Mounts mount point
 class Tasks::Mount < Task
+  attr_reader :depends
   attr_reader :source
   attr_reader :mount_point
 
@@ -13,6 +14,7 @@ class Tasks::Mount < Task
   end
 
   def self.register(mount_point, instance)
+    $logger.debug("Registering Mount task for mount point #{mount_point} #{instance.inspect}")
     mount_point = normalize_mountpoint(mount_point)
     @registry ||= {}
     unless @registry[mount_point].nil? then
@@ -25,31 +27,56 @@ class Tasks::Mount < Task
     @registry
   end
 
-  def initialize(source, mount_point=nil, **named)
+  def initialize(source, mount_point=nil, depends: [], **named)
+    @depends = depends.map do |dep|
+      File.join(Tasks::SwitchRoot::SYSTEM_MOUNT_POINT, dep)
+    end
     @named = named
     if mount_point
       @source = source
       @mount_point = mount_point
-      # Only add a dependency for an absolute path.
+
+      # Only add device dependencies for non-bind-mount absolute path.
       # Otherwise we would wait on the file "tmpfs" for tmpfs, and such.
-      if source.match(%{^/})
-        add_dependency(:Devices, source)
+      if @source.match(%{^/}) && !bind_mount?()
+        add_dependency(:Devices, @source)
+      end
+
+      if bind_mount?()
+        @source = File.join(Tasks::SwitchRoot::SYSTEM_MOUNT_POINT, @source)
+        add_dependency(:Files, @source)
       end
     else
+      @mount_point = @source
       @source = named[:type]
-      @mount_point = source
     end
+
     add_dependency(:Target, :Environment)
     self.class.register(@mount_point, self)
   end
 
   def run()
-    FileUtils.mkdir_p(mount_point)
+    if bind_mount?() && !File.directory?(source)
+      # When bind mounting a file, create a file
+      FileUtils.mkdir_p(File.dirname(mount_point))
+      File.write(mount_point, "")
+    else
+      # Otherwise, create the target mount dir
+      FileUtils.mkdir_p(mount_point)
+    end
     System.mount(source, mount_point, **@named)
   end
 
   def type
     @named[:type]
+  end
+
+  def options()
+    @named[:options] or []
+  end
+
+  def bind_mount?()
+    options.include?("bind")
   end
 
   def refresh_lvm()
@@ -92,6 +119,11 @@ module Dependencies
     end
 
     def depends_on?(other)
+      unless task
+        $logger.warn("Missing Mount task for mount point #{@mount_point}")
+        return false
+      end
+
       task.depends_on?(other)
     end
 

@@ -49,6 +49,7 @@
   ./quirks
   ./recovery.nix
   ./rootfs.nix
+  ./rootfs-squashfs.nix
   ./shared-rootfs.nix
   ./stage-0.nix
   ./system-build.nix
