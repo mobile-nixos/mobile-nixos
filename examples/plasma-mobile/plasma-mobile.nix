@@ -27,7 +27,7 @@
 
   hardware.bluetooth.enable = true;
   services.pipewire.enable = lib.mkDefault true;
-  hardware.pulseaudio.enable = lib.mkDefault false;
+  services.pulseaudio.enable = lib.mkDefault false;
   networking.networkmanager.enable = true;
   networking.wireless.enable = false;
   powerManagement.enable = true;

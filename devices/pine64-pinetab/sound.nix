@@ -15,10 +15,10 @@ in {
     {
       environment.variables.ALSA_CONFIG_UCM2 = ucm2;
     }
-    (lib.mkIf (config.hardware.pulseaudio.enable && !config.hardware.pulseaudio.systemWide) {
+    (lib.mkIf (config.services.pulseaudio.enable && !config.services.pulseaudio.systemWide) {
       systemd.user.services.pulseaudio.environment.ALSA_CONFIG_UCM2 = ucm2;
     })
-    (lib.mkIf (config.hardware.pulseaudio.enable && config.hardware.pulseaudio.systemWide) {
+    (lib.mkIf (config.services.pulseaudio.enable && config.services.pulseaudio.systemWide) {
       systemd.services.pulseaudio.environment.ALSA_CONFIG_UCM2 = ucm2;
     })
   ];
