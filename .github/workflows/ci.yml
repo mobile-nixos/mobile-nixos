@@ -7,27 +7,42 @@ on:
 
 jobs:
   Parse_nix:
-    runs-on: [ubuntu-latest]
+    name: Parse .nix files
+    runs-on: [ubuntu-24.04]
     steps:
-      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
-      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
+      - name: Checkout repository
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@v1
+
       - name: "Parse .nix files"
         run: .ci/parse-all.sh
   Instantiation:
-    runs-on: [ubuntu-latest]
+    name: Instantiation
+    runs-on: [ubuntu-24.04]
     steps:
-      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
-      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Checkout repository
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@v1
+
       - name: "Instantiation"
-        run: bin/hydra-eval
+        run: |
+          export NIX_PATH=nixpkgs=$PWD/pkgs.nix
+          bin/hydra-eval
   Kernel_configuration_up-to-date:
-    runs-on: [ubuntu-latest]
+    name: Kernel configuration up-to-date
+    runs-on: [ubuntu-24.04]
     steps:
-      - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
-      - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
-        with:
-          nix_path: nixpkgs=channel:nixos-unstable
+      - name: Checkout repository
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@v1
+
       - name: "Kernel configuration up-to-date"
-        run: bin/kernel-normalize-all --only-check
+        run: |
+          export NIX_PATH=nixpkgs=$PWD/pkgs.nix
+          bin/kernel-normalize-all --only-check
