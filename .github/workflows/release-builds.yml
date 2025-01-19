@@ -34,6 +34,17 @@ jobs:
       fail-fast: false # Try to build everything
       matrix: ${{ fromJSON(needs.Matrix.outputs.matrix) }}
     steps:
+      # Why do this? To prevent a thundering herd.
+      # This will randomly delay the actual start of every job by a value.
+      # Otherwise GHA API calls, especially regarding the cache, might 429.
+      # The amount of minutes is pretty arbitrary and could be updated in due time.
+      - name: 💤 Random delay
+        run: |
+          delay=$(( RANDOM % ( 3 * 60 ) ))
+          printf "Waiting for %d seconds...\n" "$delay"
+          while (( delay-- && delay > 0 )); do printf "."; sleep 1; done
+          printf "\n... done!\n"
+
       - name: Checkout repository
         uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
 
