@@ -1,0 +1,46 @@
+name: Images
+on:
+  workflow_call:
+    inputs:
+      bucket:
+        required: true
+        type: string
+
+jobs:
+  Matrix:
+    runs-on: [ubuntu-24.04]
+    outputs:
+      matrix: ${{ steps.build-matrix.outputs.matrix }}
+    steps:
+      - name: Checkout repository
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@v1
+
+      - id: build-matrix
+        name: "Generate Build Matrix"
+        run: |
+          PS4=" $ "
+          set -xeu
+          (
+          printf "matrix=%s\n" "$(nix-instantiate --show-trace --argstr bucket "${{ inputs.bucket }}" --strict --eval --json ./.ci/build-matrices.nix)"
+          ) >> "$GITHUB_OUTPUT"
+  Builds:
+    name: ${{ matrix.name }}
+    needs: Matrix
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false # Try to build everything
+      matrix: ${{ fromJSON(needs.Matrix.outputs.matrix) }}
+    steps:
+      - name: Checkout repository
+        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+
+      - name: Install Lix
+        uses: samueldr/lix-gha-installer-action@v1
+
+      - name: Build ${{ matrix.attr }}
+        run: |
+          export NIX_PATH=nixpkgs=$PWD/pkgs.nix
+          .ci/nix-error-to-workflow-error.rb nix-build ./release.nix --system "${{ matrix.system }}" --attr '${{ matrix.attr }}'

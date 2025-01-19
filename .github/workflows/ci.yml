@@ -46,3 +46,24 @@ jobs:
         run: |
           export NIX_PATH=nixpkgs=$PWD/pkgs.nix
           bin/kernel-normalize-all --only-check
+
+  depend-on-kernels-builds:
+    name: Kernel builds
+    uses: ./.github/workflows/release-builds.yml
+    with:
+      bucket: kernels
+
+  depend-on-overlay-builds:
+    name: Overlay builds
+    uses: ./.github/workflows/release-builds.yml
+    with:
+      bucket: overlay
+
+  depend-on-image-builds:
+    name: Image Builds
+    uses: ./.github/workflows/release-builds.yml
+    with:
+      bucket: images
+    needs:
+      - depend-on-kernels-builds
+      - depend-on-overlay-builds
