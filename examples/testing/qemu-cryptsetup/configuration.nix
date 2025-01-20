@@ -8,7 +8,10 @@ let
 
   # We are re-using the raw filesystem from the hello system.
   rootfsExt4 = (
-    import ../../hello { device = config.mobile.device.name; }
+    import ../../hello {
+      inherit pkgs;
+      device = config.mobile.device.name;
+    }
   ).config.mobile.generatedFilesystems.rootfs;
 
   # This is not a facility from the disk images builder because **it is really

@@ -1,10 +1,8 @@
-{ pkgs ? (import ../../pkgs.nix {})
-, device
-}:
+# Ensure CLI passes down arguments
+{ ... }@args:
 
 let
-  eval = import ../../lib/eval-with-configuration.nix ({
-    inherit device pkgs;
+  eval = import ../../lib/eval-with-configuration.nix (args // {
     configuration = [
       (
         { config, lib, ... }:

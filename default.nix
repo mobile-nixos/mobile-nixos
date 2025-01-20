@@ -1,14 +1,8 @@
-{ device ? null
-, configuration ? null
-, pkgs ? (import ./pkgs.nix {})
-}@args':
+{ configuration ? null
+, ...
+}@args:
 
 let
-  # Inherit default values correctly in `args`
-  args = args' // {
-    inherit pkgs;
-  };
-
   defaultConfiguration =
     if configuration != null then
       configuration
@@ -28,7 +22,7 @@ import ./lib/eval-with-configuration.nix (args // {
   configuration = [
     defaultConfiguration
   ];
-  additionalHelpInstructions = ''
+  additionalHelpInstructions = { device }: ''
     You can build the `-A outputs.default` attribute to build an empty and
     un-configured image. That image can be configured using `local.nix`.
 
