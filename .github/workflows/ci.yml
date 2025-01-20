@@ -18,20 +18,22 @@ jobs:
 
       - name: "Parse .nix files"
         run: .ci/parse-all.sh
-  Instantiation:
-    name: Instantiation
-    runs-on: [ubuntu-24.04]
-    steps:
-      - name: Checkout repository
-        uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
+  # Temporarily disable instantiation due to OOM.
+  # WIP work is under way to make this work again.
+  #Instantiation:
+  #  name: Instantiation
+  #  runs-on: [ubuntu-24.04]
+  #  steps:
+  #    - name: Checkout repository
+  #      uses: "actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683"
 
-      - name: Install Lix
-        uses: samueldr/lix-gha-installer-action@v1
+  #    - name: Install Lix
+  #      uses: samueldr/lix-gha-installer-action@v1
 
-      - name: "Instantiation"
-        run: |
-          export NIX_PATH=nixpkgs=$PWD/pkgs.nix
-          bin/hydra-eval
+  #    - name: "Instantiation"
+  #      run: |
+  #        export NIX_PATH=nixpkgs=$PWD/pkgs.nix
+  #        bin/hydra-eval
   Kernel_configuration_up-to-date:
     name: Kernel configuration up-to-date
     runs-on: [ubuntu-24.04]
