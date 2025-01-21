@@ -225,7 +225,10 @@ class UI
     # Always present, but initially hidden
     @ta.hide(skip_animation: true)
     @ta.instance_exec do
+      # passwords should not be echo'd
       set_pwd_mode(true)
+      set_pwd_show_time(0)
+
       get_style(LVGL::TA_STYLE::BG).dup.tap do |style|
         set_style(LVGL::TA_STYLE::BG, style)
         style.body_main_color = BG_COLOR
