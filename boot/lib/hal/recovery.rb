@@ -9,9 +9,10 @@ module Hal
       :KEY_UP,
       :KEY_DOWN,
       # Keys used for "computer" use-cases
+      # do not use lshift or ralt since those may be needed for LUKS password entry
       :KEY_LEFTCTRL,
       :KEY_RIGHTCTRL,
-      :KEY_LEFTSHIFT,
+      :KEY_LEFTALT,
       :KEY_RIGHTSHIFT,
       :KEY_ESC,
     ]

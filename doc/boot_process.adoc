@@ -54,7 +54,7 @@ keys are held, it will instead show the recovery menu.
 
 * Volume up
 * Volume down
-* Left shift
+* Left alt
 * Right shift
 * Left control
 * Right control
