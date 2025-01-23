@@ -82,5 +82,8 @@ if stdenv.buildPlatform == stdenv.hostPlatform then {} else (
   mruby-with-gems = mkTest "mruby-with-gems" ''
     ${emulator} ${mrubyWithGems}/bin/mruby --version
   '';
+
+  # Ensure jobs are picked from this attrset for CI.
+  recurseForDerivations = true;
 }
 )
