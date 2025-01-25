@@ -1,0 +1,55 @@
+From 285a5a4d54ca83b136b787ce5ebf1d774f9499d5 Mon Sep 17 00:00:00 2001
+From: Jan Tojnar <jtojnar@gmail.com>
+Date: Fri, 12 Aug 2022 23:57:31 +0200
+Subject: [PATCH] build: Fix Sysprof interface path with split sysprof package
+
+When sysprof-4 and libsysprof-capture-4 are installed into different
+prefixes, such as with Nix package manager, the D-Bus interfaces
+are likely not discoverable from the latter package.
+---
+ cogl/meson.build | 2 +-
+ meson.build      | 9 ++++++++-
+ src/meson.build  | 6 ------
+ 3 files changed, 9 insertions(+), 8 deletions(-)
+
+diff --git a/cogl/meson.build b/cogl/meson.build
+index a87cd18235..e73f1a8f9b 100644
+--- a/cogl/meson.build
++++ b/cogl/meson.build
+@@ -31,7 +31,7 @@ cogl_pkg_private_deps = [
+ 
+ if have_profiler
+   cogl_pkg_private_deps += [
+-    sysprof_dep,
++    libsysprof_capture_dep,
+   ]
+ endif
+ 
+diff --git a/meson.build b/meson.build
+index 739b249a84..9d1ab0c2f1 100644
+--- a/meson.build
++++ b/meson.build
+@@ -385,7 +385,7 @@ endif
+ have_profiler = get_option('profiler')
+ if have_profiler
+   # libsysprof-capture support
+-  sysprof_dep = dependency('sysprof-capture-4',
++  libsysprof_capture_dep = dependency('sysprof-capture-4',
+     required: true,
+     default_options: [
+       'enable_examples=false',
+@@ -398,6 +398,13 @@ if have_profiler
+     ],
+     fallback: ['sysprof', 'libsysprof_capture_dep'],
+   )
++
++  if libsysprof_capture_dep.type_name() == 'pkgconfig'
++    sysprof_dep = dependency('sysprof-4')
++    sysprof_dbus_interfaces_dir = join_paths(sysprof_dep.get_pkgconfig_variable('datadir'), 'dbus-1', 'interfaces')
++  else
++    sysprof_dbus_interfaces_dir = join_paths(mutter_srcdir, 'subprojects', 'sysprof', 'src')
++  endif
+ endif
+ 
+ required_functions = [
+GitLab
