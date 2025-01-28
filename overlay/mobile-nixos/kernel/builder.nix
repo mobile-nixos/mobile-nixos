@@ -254,6 +254,9 @@ stdenv.mkDerivation (inputArgs // {
         sed -i "$mf" -e 's|/usr/bin/||g ; s|/bin/||g ; s|/sbin/||g'
     done
     sed -i Makefile -e 's|= depmod|= ${buildPackages.kmod}/bin/depmod|'
+    if [ -e scripts/depmod.sh ]; then
+       sed -i scripts/depmod.sh -e "/DEPMOD:=/a DEPMOD=${buildPackages.kmod}/bin/depmod"
+    fi
     if [ -e scripts/ld-version.sh ]; then
       sed -i scripts/ld-version.sh -e "s|/usr/bin/awk|${buildPackages.gawk}/bin/awk|"
     fi
@@ -603,8 +606,8 @@ stdenv.mkDerivation (inputArgs // {
           cat ${writeShellScript "nconf-cfg.sh" ''
             export PKG_CONFIG_PATH="${buildPackages.ncurses6.dev}/lib/pkgconfig"
             PKGS="ncursesw menuw panelw"
-            echo cflags=\"$(pkg-config --cflags $PKGS)\"
-            echo libs=\"-L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKGS)\"
+            echo $(pkg-config --cflags $PKGS) > $1
+            echo -L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKGS) > $2
           ''} > scripts/kconfig/nconf-cfg.sh
         fi
 

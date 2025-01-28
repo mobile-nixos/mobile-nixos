@@ -10,6 +10,7 @@ let
   ;
   cfg = config.mobile.hardware.socs;
   anyQualcomm = lib.any (v: v) [
+    cfg.qualcomm-msm8916.enable
     cfg.qualcomm-msm8940.enable
     cfg.qualcomm-msm8939.enable
     cfg.qualcomm-msm8953.enable
@@ -28,6 +29,11 @@ in
       type = types.bool;
       default = false;
       description = "enable when SOC is APQ8064–1AA";
+    };
+    hardware.socs.qualcomm-msm8916.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = lib.mdDoc "enable when SOC is msm8916";
     };
     hardware.socs.qualcomm-msm8940.enable = mkOption {
       type = types.bool;
@@ -77,6 +83,12 @@ in
   };
 
   config = mkMerge [
+    {
+      mobile = mkIf cfg.qualcomm-msm8916.enable {
+        system.system = "aarch64-linux";
+        quirks.fb-refresher.enable = true;
+      };
+    }
     {
       mobile = mkIf cfg.qualcomm-msm8940.enable {
         system.system = "aarch64-linux";

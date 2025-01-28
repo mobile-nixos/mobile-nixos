@@ -1,0 +1,71 @@
+diff --git a/lib/bcache/bcache.c b/lib/bcache/bcache.c
+index 8ac5a491..8540146f 100644
+--- a/lib/bcache/bcache.c
++++ b/lib/bcache/bcache.c
+@@ -63,7 +63,11 @@ bcache_t bcache_create(bdev_t *dev, size_t block_size, int block_count)
+ 	struct bcache *cache;
+ 
+ 	cache = malloc(sizeof(struct bcache));
+-	
++
++	ASSERT((block_size % CACHE_LINE) == 0);
++
++	uint8_t *data_bufs = (uint8_t *)memalign(CACHE_LINE, ROUNDUP(block_size * block_count, CACHE_LINE));
++
+ 	cache->dev = dev;
+ 	cache->block_size = block_size;
+ 	cache->count = block_count;
+@@ -77,7 +81,7 @@ bcache_t bcache_create(bdev_t *dev, size_t block_size, int block_count)
+ 	for (i=0; i < block_count; i++) {
+ 		cache->blocks[i].ref_count = 0;
+ 		cache->blocks[i].is_dirty = false;
+-		cache->blocks[i].ptr = malloc(block_size);
++		cache->blocks[i].ptr = (void *) (data_bufs + i * block_size);
+ 		// add to the free list
+ 		list_add_head(&cache->free_list, &cache->blocks[i].node);	
+ 	}
+@@ -114,8 +118,8 @@ void bcache_destroy(bcache_t _cache)
+ 			printf("warning: freeing dirty block %u\n",
+ 				cache->blocks[i].blocknum);
+ 
+-		free(cache->blocks[i].ptr);
+ 	}
++	free(cache->blocks[0].ptr);
+ 
+ 	free(cache);
+ }
+diff --git a/lib/fs/ext2/ext2.c b/lib/fs/ext2/ext2.c
+index 14f1355c..93e9f792 100644
+--- a/lib/fs/ext2/ext2.c
++++ b/lib/fs/ext2/ext2.c
+@@ -113,12 +113,19 @@ status_t ext2_mount(bdev_t *dev, fscookie **cookie)
+ 
+     LTRACEF("dev %p\n", dev);
+ 
++
++    struct ext2_super_block *sb = memalign(CACHE_LINE, ROUNDUP((sizeof *sb), CACHE_LINE));
++
+     ext2_t *ext2 = malloc(sizeof(ext2_t));
+     ext2->dev = dev;
+ 
+-    err = bio_read(dev, &ext2->sb, 1024, sizeof(struct ext2_super_block));
+-    if (err < 0)
++    err = bio_read(dev, sb, 1024, sizeof(struct ext2_super_block));
++    if (err < 0) {
++          free(sb);
+         goto err;
++    }
++    memcpy(&ext2->sb, sb, sizeof *sb);
++    free(sb);
+ 
+     endian_swap_superblock(&ext2->sb);
+ 
+@@ -156,7 +163,7 @@ status_t ext2_mount(bdev_t *dev, fscookie **cookie)
+     }
+ 
+     /* read in all the group descriptors */
+-    ext2->gd = malloc(sizeof(struct ext2_group_desc) * ext2->s_group_count);
++    ext2->gd = memalign(CACHE_LINE, sizeof(struct ext2_group_desc) * ext2->s_group_count);
+     err = bio_read(ext2->dev, (void *)ext2->gd,
+                    (EXT2_BLOCK_SIZE(ext2->sb) == 4096) ? 4096 : 2048,
+                    sizeof(struct ext2_group_desc) * ext2->s_group_count);
