@@ -2,6 +2,8 @@
 
 let
   inherit (lib)
+    mkIf
+    mkMerge
     mkOption
     types
   ;
@@ -30,19 +32,26 @@ in
     };
   };
 
-  config = {
-    assertions = [
-      {
-        assertion = pkgs.stdenv.targetPlatform.system == cfg.system;
-        message = "pkgs.stdenv.targetPlatform.system expected to be `${cfg.system}`, is `${pkgs.stdenv.targetPlatform.system}`";
-      }
-    ];
+  config = mkMerge [
+    # Ensure assertion is not added if Mobile NixOS is not used.
+    (mkIf (pkgs.stdenv.targetPlatform.system != cfg.system) {
+      assertions = [
+        {
+          # Condition checked in mkIf...
+          # ... semantics around that option are not ideal for "no-op" use-case.
+          assertion = false;
+          message = "pkgs.stdenv.targetPlatform.system expected to be `${cfg.system}`, is `${pkgs.stdenv.targetPlatform.system}`";
+        }
+      ];
+    })
 
-    nixpkgs.crossSystem = lib.mkIf isCross (
-      builtins.trace ''
-        Building with crossSystem?: ${selectedPlatform.system} != ${localSystem.system} → ${if isCross then "we are" else "we're not"}.
-               crossSystem: config: ${selectedPlatform.config}''
-      selectedPlatform
-    );
-  };
+    {
+      nixpkgs.crossSystem = lib.mkIf isCross (
+        builtins.trace ''
+          Building with crossSystem?: ${selectedPlatform.system} != ${localSystem.system} → ${if isCross then "we are" else "we're not"}.
+                 crossSystem: config: ${selectedPlatform.config}''
+        selectedPlatform
+      );
+    }
+  ];
 }
