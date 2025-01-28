@@ -11,7 +11,7 @@
     manufacturer = "OnePlus";
   };
   # If anyone wants to step to the plate and support it, please do.
-  mobile.device.supportLevel = "best-effort";
+  mobile.device.supportLevel = "supported";
 
   mobile.hardware = {
     ram = 1024 * 8;
@@ -23,4 +23,8 @@
   mobile.device.firmware = pkgs.callPackage ../oneplus-enchilada/firmware {};
 
   mobile.system.android.device_name = "OnePlus6T";
+
+  mobile.device.maintainers = [
+    pkgs.mobile-nixos.lib.maintainers.matthewcroughan
+  ];
 }

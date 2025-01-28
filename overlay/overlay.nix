@@ -140,6 +140,8 @@ in
 
       mkLVGUIApp = callPackage ./mobile-nixos/lvgui {};
 
+      lib.maintainers = import ../lib/maintainers.nix;
+
       cross-canary-test = callPackage ./mobile-nixos/cross-canary/test.nix {};
       cross-canary-test-static = self.pkgsStatic.callPackage ./mobile-nixos/cross-canary/test.nix {};
 
