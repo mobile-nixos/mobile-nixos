@@ -162,4 +162,13 @@ in
       # https://github.com/samueldr/nixpkgs/compare/88195a94f390381c6afcdaa933c2f6ff93959cb4...fix/ruby-yjit-cross
       NIX_RUSTFLAGS = "--target ${super.stdenv.hostPlatform.rust.rustcTargetSpec}";
     });
+
+    unbound = super.unbound.overrideAttrs (old: {
+      # https://github.com/NixOS/nixpkgs/commit/a36d820bab68e43bf841e45ed168dc6f38bdf83c
+      nativeBuildInputs = old.nativeBuildInputs ++ [
+        super.bison
+        super.flex
+        super.pkg-config
+      ];
+    });
  })
