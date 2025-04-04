@@ -28,7 +28,6 @@
       BRCMFMAC = yes;
       BRCMFMAC_SDIO = yes;
       BRCMSMAC = yes;
-      BRCM_TRACING = yes;
       BRCMDBG = yes;
       MAC80211 = yes;
 
