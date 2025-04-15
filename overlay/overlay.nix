@@ -147,4 +147,19 @@ in
     };
 
     image-builder = callPackage ./image-builder {};
- }
+
+} // (super.lib.optionalAttrs (super.stdenv.hostPlatform != super.stdenv.buildPlatform) {
+    #
+    # Nixpkgs cross-compilation workarounds
+    # -------------------------------------
+    #
+
+    ruby_3_3 = super.ruby_3_3.overrideAttrs({
+      # https://github.com/samueldr/nixpkgs/compare/88195a94f390381c6afcdaa933c2f6ff93959cb4...fix/ruby-yjit-cross
+      NIX_RUSTFLAGS = "--target ${super.stdenv.hostPlatform.rust.rustcTargetSpec}";
+    });
+    ruby_3_4 = super.ruby_3_4.overrideAttrs({
+      # https://github.com/samueldr/nixpkgs/compare/88195a94f390381c6afcdaa933c2f6ff93959cb4...fix/ruby-yjit-cross
+      NIX_RUSTFLAGS = "--target ${super.stdenv.hostPlatform.rust.rustcTargetSpec}";
+    });
+ })
