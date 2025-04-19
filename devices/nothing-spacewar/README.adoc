@@ -1,0 +1,48 @@
+= Nothing Phone 1
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== First time setup notes
+
+[CAUTION]
+====
+IT IS HIGHLY RECOMENDED TO BACK UP ALL PARTITIONS BEFORE ATTEMPTING THIS PROJECT.
+YOU RISK PERMANENTLY BRICKING YOUR PHONE IF YOU DO NOT FOLLOW THESE INSTRUCTIONS CAREFULLY.
+
+FOLLOW BACKUP PROCEDURES HERE BEFORE PROCEEDING: https://github.com/spike0en/nothing_archive?tab=readme-ov-file#iii-backing-up-essential-partitions-after-unlocking-bootloader-[Nothing Archive Backup Procedure]
+====
+
+
+==== Disable Android Verified Boot
+
+[NOTE]
+====
+This is required else the phone will dump you to fastboot.
+====
+
+To disable verified boot you should create an empty vbmeta.img, which does not contain any hash/hashtree desriptors and specified a special flag in vbmeta header. The command for it should look like this:
+
+```
+ $ avbtool make_vbmeta_image --flags 2 --padding_size 4096 --output vbmeta_disabled.img
+```
+
+Flash with fastboot:
+```
+ $ fastboot flash vbmeta vbmeta_disabled.img
+```
+
+==== Prepare for mainline
+
+[NOTE]
+====
+This assumes the phone will only run the SM7325 mainline kernel.
+====
+
+You will need to erase the `dtbo` partitions for either slots.
+If you are planning to dual-boot, only erase the `dtbo` partition for the slot you are planning to use for mobile nixos.
+
+```
+ $ fastboot erase dtbo_a
+ $ fastboot erase dtbo_b
+```
