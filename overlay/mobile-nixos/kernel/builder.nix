@@ -47,6 +47,7 @@
 , bison
 , flex
 
+, python3
 # For menuconfig
 , ncurses
 , pkg-config
@@ -224,6 +225,7 @@ stdenv.mkDerivation (inputArgs // {
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optional  (lib.versionAtLeast version "5.2")  cpio
     ++ optional  (lib.versionAtLeast version "5.8")  elfutils
+    ++ optional  (lib.versionAtLeast version "5.16")  (python3.withPackages (ps: with ps; [ setuptools ]))
     ++ optional  (isCompressed == "lz4") lz4
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.

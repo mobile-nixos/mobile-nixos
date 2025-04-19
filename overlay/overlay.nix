@@ -15,7 +15,7 @@ in
   {
     # Misc. tools.
     # Keep sorted.
-    adbd = callPackage ./adbd { };
+    adbd = self.android-tools; # Saves having to compile libhybris for no good reason
     android-headers = callPackage ./android-headers { };
     dtbTool = callPackage ./dtbtool { };
     dtbTool-exynos = callPackage ./dtbtool-exynos { };
