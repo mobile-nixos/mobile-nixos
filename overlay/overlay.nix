@@ -7,9 +7,9 @@ let
   # Static libraries (.a) aren't available in the "lib" package.
   # libtool, reading the `.la` files in the "lib" package expects `.a`
   # to be in the "lib" package; they are in out.
-  merged_gcc7 = super.wrapCC (self.symlinkJoin {
-    name = "gcc7-merged";
-    paths = with super.buildPackages.gcc7.cc; [ out lib ];
+  merged_gcc10 = super.wrapCC (self.symlinkJoin {
+    name = "gcc10-merged";
+    paths = with super.buildPackages.gcc10.cc; [ out lib ];
   });
 in
   {
@@ -24,7 +24,7 @@ in
       stdenv = if self.buildPlatform != self.targetPlatform then
         self.stdenv
       else
-        with self; overrideCC stdenv (merged_gcc7)
+        with self; overrideCC stdenv (merged_gcc10)
       ;
     };
     mkbootimg = callPackage ./mkbootimg { };

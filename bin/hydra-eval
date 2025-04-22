@@ -1,5 +1,5 @@
 #!/usr/bin/env nix-shell
-#!nix-shell -p ruby -i ruby
+#!nix-shell -p ruby_3_3 -i ruby
 #!nix-shell -p hydra
 
 # This script uses hydra's `hydra-eval-jobs` to evaluate a given expression,
@@ -34,7 +34,7 @@ def fmt_time(seconds)
     if current != 0
       elements.unshift("%d %s" % [ current, name ])
     end
-    
+
     [leftover, elements]
   end.last().join(", ")
 end

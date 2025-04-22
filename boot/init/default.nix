@@ -8,11 +8,11 @@
 }:
 
 let
-  ruby_rev = "37457117c941b700b150d76879318c429599d83f";
+  ruby_rev = "d0b7e5b6a04bde21ca483d20a1546b28b401c2d4";
   shellwords = fetchurl {
     name = "shellwords.rb";
     url = "https://raw.githubusercontent.com/ruby/ruby/${ruby_rev}/lib/shellwords.rb";
-    sha256 = "197g7qvrrijmajixa2h9c4jw26l36y8ig6qjb5d43qg4qykhqfcx";
+    sha256 = "14ll9q3pgykv2fs8mxx2kzz1r9x4n03dlxi6nsfwvzic2dmy364h";
   };
 
   inherit (lib) concatMapStringsSep;

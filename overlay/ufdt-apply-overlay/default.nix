@@ -1,4 +1,4 @@
-{ stdenv, lib, fetchFromGitHub, dtc, python }:
+{ stdenv, lib, fetchFromGitHub, dtc, python3 }:
 
 stdenv.mkDerivation {
   pname = "ufdt-apply-overlay";
@@ -13,7 +13,7 @@ stdenv.mkDerivation {
 
   buildInputs = [
     dtc
-    python
+    python3
   ];
 
   postPatch = ''
