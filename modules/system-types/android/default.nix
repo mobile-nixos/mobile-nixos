@@ -19,7 +19,7 @@ let
     inherit (config.mobile.outputs) initrd;
     name = "mobile-nixos_${device.name}_${bootimg.name}";
     kernel = "${kernelPackage}/${kernelPackage.file}";
-    inherit (config.mobile.system.android) appendDTB;
+    inherit (config.mobile.system.android) appendDTB header_version dtb;
   };
 
   android-recovery = recovery.mobile.outputs.android.android-bootimg;
@@ -136,6 +136,20 @@ in
         type = types.str;
         description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
         default = "system";
+        internal = true;
+      };
+
+      header_version = lib.mkOption {
+        type = types.nullOr types.int;
+        default = null;
+        description = "Header version to be passed to mkbootimg";
+        internal = true;
+      };
+
+      dtb = lib.mkOption {
+        type = types.nullOr types.str;
+        default = null;
+        description = "MODERN: Path to a flattened device tree to pass as --dtb to mkbootimg";
         internal = true;
       };
 

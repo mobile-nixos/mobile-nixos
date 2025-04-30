@@ -27,7 +27,7 @@ in
         with self; overrideCC stdenv (merged_gcc7)
       ;
     };
-    mkbootimg = callPackage ./mkbootimg { };
+    mkbootimg = self.android-tools; # Update to newer mkbootimg
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
     qc-image-unpacker = callPackage ./qc-image-unpacker { };

@@ -8,6 +8,8 @@
 , cmdline
 , bootimg
 , appendDTB
+, header_version
+, dtb
 }:
 
 let
@@ -37,8 +39,10 @@ pkgs.runCommand name {
   mkbootimg \
     --kernel  $kernel \
     ${optionalString (bootimg.dt != null) "--dt ${bootimg.dt}"} \
+    ${optionalString (dtb != null) "--dtb $(dirname ${kernel})/${dtb}"} \
     --ramdisk ${initrd} \
     --cmdline       "${cmdline}" \
+    ${optionalString (header_version != null) "--header_version ${toString header_version}"} \
     --base           ${bootimg.flash.offset_base   } \
     --kernel_offset  ${bootimg.flash.offset_kernel } \
     --second_offset  ${bootimg.flash.offset_second } \
