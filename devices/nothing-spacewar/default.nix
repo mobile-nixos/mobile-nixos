@@ -10,13 +10,11 @@
 
   mobile.boot.stage-1.kernel = {
     modules = [
-      "drm"
-      "drm_kms_helper"
-      "panel-visionox-rm692e5"
+      "fsa4480"
       "msm"
+      "panel-visionox-rm692e5"
       "spi-geni-qcom"
       "fts_tp"
-      "fsa4480"
     ];
   };
 
@@ -40,15 +38,10 @@
 
   mobile.system.android.device_name = "NothingPhone";
 
-  boot.postBootCommands = ''
-    echo "Hello from Mobile NixOS!" > /dev/tty0
-  '';
-
   boot.kernelParams = lib.mkAfter [
-    "console=ttyMSM0,115200n8"
-    "console=tty0"
-    "earlycon"
-    "loglevel=7"
+    "root=/dev/disk/by-label/userdata"
+    "rootwait"
+    "rw"
   ];
   boot.consoleLogLevel = 7;
 }

@@ -41,6 +41,7 @@
     # Assume all SM7325 devices use A/B
     ab_partitions = lib.mkDefault true;
     # Assumed all SM7325 devices can boot with the same options.
+    header_version = 2;
     bootimg.flash = {
       offset_base = "0x00000000";
       offset_kernel = "0x00008000";
@@ -49,9 +50,7 @@
       offset_tags = "0x00000100";
       pagesize = "4096";
     };
-    appendDTB = lib.mkDefault [
-      "dtbs/qcom/sm7325-${config.mobile.device.name}.dtb" # Maybe make the soc dynamic as well
-    ];
+    dtb = "dtbs/qcom/sm7325-${config.mobile.device.name}.dtb";
   };
 
   mobile.usb.mode = "gadgetfs";
@@ -69,6 +68,6 @@
     # is the n8 needed?
     # If this is not present, the system will fail to boot reliably.
     # TODO: investigate if this is true when UART is not enabled in fastboot.
-    "console=ttyMSM0,115200n8"
+    "console=ttyMSM0,115200"
   ];
 }
