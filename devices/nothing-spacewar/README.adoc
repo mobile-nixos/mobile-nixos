@@ -1,4 +1,4 @@
-= Nothing Phone 1 (WIP: NOT WORKING YET)
+= Nothing Phone 1 (WIP: BOOTING WITH ERROR)
 include::_support/common.inc[]
 
 == Device-specific notes
