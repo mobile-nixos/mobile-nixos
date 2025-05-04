@@ -128,9 +128,9 @@ in
     # This can always be configured, as it does not affect the NixOS configuration.
     {
       mobile.boot.stage-1 = (mkIf cfg.modular {
-        firmware = [ modulesClosure ];
+        firmware = [ modulesClosure.kernel ];
         contents = [
-          { object = "${modulesClosure}/lib/modules"; symlink = "/lib/modules"; }
+          { object = "${modulesClosure.kernel}/lib/modules"; symlink = "/lib/modules"; }
         ];
         kernel.modules = [
           # Basic always-needed kernel modules.
@@ -257,4 +257,3 @@ in
     })
   ];
 }
-
