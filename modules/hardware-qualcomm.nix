@@ -132,6 +132,7 @@ in
     {
       mobile = mkIf cfg.qualcomm-sm7325.enable {
         system.system = "aarch64-linux";
+        boot.boot-control.enable = mkDefault true;
       };
     }
     {
