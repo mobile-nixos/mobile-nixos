@@ -38,10 +38,7 @@
 
   mobile.system.android.device_name = "NothingPhone";
 
-  boot.kernelParams = lib.mkAfter [
-    "root=/dev/disk/by-label/userdata"
-    "rootwait"
-    "rw"
-  ];
-  boot.consoleLogLevel = 7;
+  #mobile.boot.stage-1.shell.shellOnFail = true;
+
+  #boot.consoleLogLevel = 7;
 }
