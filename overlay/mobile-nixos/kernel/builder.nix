@@ -491,6 +491,14 @@ stdenv.mkDerivation (inputArgs // {
     mkdir -p $out/dtbs/
     make $makeFlags "''${makeFlagsArray[@]}" dtbs dtbs_install INSTALL_DTBS_PATH=$out/dtbs
 
+  '' + optionalString isModular ''
+      echo ":: Running depmod for installed modules"
+      if [ -d "$out/lib/modules/${modDirVersion}" ]; then
+        ${buildPackages.kmod}/bin/depmod -b $out ${modDirVersion}
+      else
+        echo "WARNING: Expected modules directory not found: $out/lib/modules/${modDirVersion}"
+      fi
+
   '' + optionalString isQcdt ''
     echo ":: Making and installing QCDT dt.img"
     mkdir -p $out/
