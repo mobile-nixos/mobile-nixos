@@ -1,4 +1,4 @@
-= Nothing Phone 1 (WIP: BOOTING WITH ERROR)
+= Nothing Phone 1 (WIP: BOOTING, ADB BROKEN/DISABLED)
 include::_support/common.inc[]
 
 == Device-specific notes
@@ -39,10 +39,10 @@ Flash with fastboot:
 This assumes the phone will only run the SM7325 mainline kernel.
 ====
 
-You will need to erase the `dtbo` partitions for either slots.
-If you are planning to dual-boot, only erase the `dtbo` partition for the slot you are planning to use for mobile nixos.
+You will need to erase the `dtbo` and `vendor_boot` partitions for one of the slots.
+In this case we will be writing to slot a, slot b will remain for recovery redundancy.
 
 ```
  $ fastboot erase dtbo_a
- $ fastboot erase dtbo_b
+ $ fastboot erase vendor_boot_a
 ```
