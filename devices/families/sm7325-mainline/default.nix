@@ -31,6 +31,12 @@
 
       # Copy extra a660 firmware from linux-firmware for the Adreno 642L? see PMOS
       cp -vf ${pkgs.linux-firmware}/lib/firmware/qcom/{a660_sqe.fw,a660_gmu.bin} $out/lib/firmware/qcom
+
+      # Copy extra ath11k firmware from linux-firmware, see PMOS
+      cp -vrf ${pkgs.linux-firmware}/lib/firmware/ath11k $out/lib/firmware/ath11k
+
+      # Copy extra qca firmware from linux-firmware, see PMOS
+      cp -vrf ${pkgs.linux-firmware}/lib/firmware/qca $out/lib/firmware/qca
     '')
   ];
 
@@ -59,7 +65,7 @@
   mobile.usb.idProduct = lib.mkDefault "D001"; # "Nexus 4"
 
   mobile.usb.gadgetfs.functions = {
-    adb = "ffs.adb";
+    #adb = "ffs.adb"; # Might be needed off for good usb start
     mass_storage = "mass_storage.0";
     rndis = "rndis.usb0";
   };
@@ -68,6 +74,6 @@
     # is the n8 needed?
     # If this is not present, the system will fail to boot reliably.
     # TODO: investigate if this is true when UART is not enabled in fastboot.
-    "console=ttyMSM0,115200"
+    "console=ttyMSM0,115200n8"
   ];
 }
