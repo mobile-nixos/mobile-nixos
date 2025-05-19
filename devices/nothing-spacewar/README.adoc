@@ -46,3 +46,18 @@ In this case we will be writing to slot a, slot b will remain for recovery redun
  $ fastboot erase dtbo_a
  $ fastboot erase vendor_boot_a
 ```
+
+==== Build Fastboot Images
+
+Build the 'example/hello' sub-project, this will provide a demo of a full boot:
+```
+ $ nix-build examples/hello --argstr device nothing-spacewar -A outputs.android-fastboot-images
+```
+
+Flash resulting images to the phone:
+```
+ $ fastboot flash boot ./result/boot.img
+ $ fastboot flash userdata ./result/system.img
+ $ fastboot set_active a
+ $ fastboot reboot
+```
