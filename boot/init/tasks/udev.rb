@@ -22,7 +22,11 @@ class Tasks::UDev < SingletonTask
 
   def run()
     udevd
-    udevadm("trigger", "--action=add")
+    begin
+      udevadm("trigger", "--action=add")
+    rescue System::CommandError => e
+      $logger.warn("udevadm trigger failed (non-fatal): #{e.message}")
+    end
     udevadm("settle")
   end
 
