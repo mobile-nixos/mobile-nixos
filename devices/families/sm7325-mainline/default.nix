@@ -70,6 +70,8 @@
     rndis = "rndis.usb0";
   };
 
+  mobile.quirks.qualcomm.sm7325-modem.enable = true;
+
   boot.kernelParams = lib.mkAfter [
     # is the n8 needed?
     # If this is not present, the system will fail to boot reliably.
