@@ -110,6 +110,7 @@ in
         };
       };
       qrtr-ns = {
+        wantedBy = [ "multi-user.target" ];
         serviceConfig = {
           ExecStart = "${pkgs.qrtr}/bin/qrtr-ns -f 1";
           Restart = "always";
@@ -135,12 +136,30 @@ in
       };
       msm-modem-uim-selection = {
         enable = true;
+        requires = [ "rmtfs.service" ];
         before = [ "ModemManager.service" ];
         wantedBy = [ "ModemManager.service" ];
         path = with pkgs; [ libqmi gawk gnugrep ];
         script = ''
           QMICLI_MODEM="qmicli --silent -pd qrtr://0"
+          count=0
+          while ! $QMICLI_MODEM --uim-noop > /dev/null 2>&1 && [ "$count" -lt 45 ]; do
+            sleep 1
+            count=$((count+1))
+          done
+          if [ "$count" -ge 45 ]; then
+            exit 2
+          fi
           QMI_CARDS=$($QMICLI_MODEM --uim-get-card-status)
+          sim_count=0
+          while ! printf "%s" "$QMI_CARDS" | grep -Fq "Card state: 'present'" && [ "$sim_count" -lt 4 ]; do
+            sleep 1
+            sim_count=$((sim_count+1))
+            QMI_CARDS=$($QMICLI_MODEM --uim-get-card-status)
+          done
+          if ! printf "%s" "$QMI_CARDS" | grep -Fq "Card state: 'present'"; then
+            exit 3
+          fi
           if ! printf "%s" "$QMI_CARDS" | grep -Fq "Primary GW:   session doesn't exist"
           then
               $QMICLI_MODEM --uim-change-provisioning-session='activate=no,session-type=primary-gw-provisioning' > /dev/null
