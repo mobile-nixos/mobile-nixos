@@ -1,14 +1,18 @@
 diff --git a/translate.c b/translate.c
-index e95dee5..f3f0811 100644
+index de3baba..484db4e 100644
 --- a/translate.c
 +++ b/translate.c
-@@ -45,7 +45,7 @@
- #define READONLY_PATH	"/readonly/firmware/image/"
+@@ -22,11 +22,11 @@
  #define READWRITE_PATH	"/readwrite/"
  
+ #ifndef ANDROID
 -#define FIRMWARE_BASE	"/lib/firmware/"
 +#define FIRMWARE_BASE	"/run/current-system/sw/share/uncompressed-firmware/"
+ #define TQFTPSERV_TMP	"/tmp/tqftpserv"
+ #define UPDATES_DIR	"updates/"
+ #else
+-#define FIRMWARE_BASE	"/vendor/firmware/"
++#define FIRMWARE_BASE	"/run/current-system/sw/share/uncompressed-firmware/"
+ #define TQFTPSERV_TMP	"/data/vendor/tmp/tqftpserv"
+ #endif
  
- /**
-  * translate_readonly() - open "file" residing with remoteproc firmware
-

@@ -2,22 +2,22 @@
 
 stdenv.mkDerivation {
   pname = "rmtfs";
-  version = "unstable-2022-07-18";
+  version = "unstable-2025-05-01";
 
   buildInputs = [ udev qrtr qmic ];
 
   src = fetchFromGitHub {
-    owner = "andersson";
+    owner = "linux-msm";
     repo = "rmtfs";
-    rev = "695d0668ffa6e2a4bf6e676f3c58a444a5d67690";
-    hash = "sha256-00KOjdkwcAER261lleSl7OVDEAEbDyW9MWxDd0GI8KA=";
+    rev = "b61c22b1cd01f4b1f5f48192f0700aa398de31a3";
+    hash = "sha256-O/o8C5YUQX/kVs89mCY/ip2cKsc/W0d0yMTy/QOETa0=";
   };
 
   installFlags = [ "prefix=$(out)" ];
 
   meta = with lib; {
     description = "Qualcomm Remote Filesystem Service";
-    homepage = "https://github.com/andersson/rmtfs";
+    homepage = "https://github.com/linux-msm/rmtfs";
     license = licenses.bsd3;
     platforms = platforms.aarch64;
   };
