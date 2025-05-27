@@ -171,7 +171,7 @@ in
             perl # Needed by netpbm
           ];
         } ''
-          convert \
+          magick \
             ${cfg.logo.logo} \
             -resize ${toString config.mobile.hardware.screen.width}x${toString config.mobile.hardware.screen.height} \
             -trim converted.ppm

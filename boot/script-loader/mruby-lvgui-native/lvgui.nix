@@ -6,6 +6,7 @@
 , freetype
 , SDL2
 , libdrm
+, libevdev
 , withSimulator ? false
 }:
 
@@ -35,8 +36,8 @@ let
     python3 = null;
   })).overrideAttrs(old: {
     buildInputs = with pkgs; [
-      libevdev     
-      mtdev        
+      libevdev
+      mtdev
     ];
     nativeBuildInputs = old.nativeBuildInputs ++ [
       pkgs.buildPackages.udev
@@ -46,14 +47,6 @@ let
     ];
   });
 
-  # Allow libevdev to cross-compile.
-  libevdev = (pkgs.libevdev.override({
-    python3 = null;
-  })).overrideAttrs({nativeBuildsInputs ? [], ...}: {
-    nativeBuildInputs = nativeBuildsInputs ++ [
-      pkgs.buildPackages.python3
-    ];
-  });
   libxkbcommon = pkgs.callPackage (
     { stdenv
     , libxkbcommon
