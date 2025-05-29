@@ -72,6 +72,14 @@
 
   mobile.quirks.qualcomm.sm7325-modem.enable = true;
 
+  # Move this to modem module later
+  mobile.kernel.structuredConfig = [
+    (helpers: with helpers; {
+      ETHERNET = yes;
+      RMNET = module;
+    })
+  ];
+
   boot.kernelParams = lib.mkAfter [
     # is the n8 needed?
     # If this is not present, the system will fail to boot reliably.
