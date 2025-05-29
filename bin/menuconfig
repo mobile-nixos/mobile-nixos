@@ -1,12 +1,24 @@
 #!/usr/bin/env nix-shell
 #!nix-shell -p ruby -i ruby
 
+# This script is expected to be used to copy back the `kernel-builder` built
+# linux configuration to the kernel's source directory.
+#
+# Use this to normalize the configuration after:
+#
+#  - Changing configuration options
+#  - Changing the kernel version
+
 require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: bin/menuconfig [--only-save] <device_name>"
+  puts "Usage: bin/menuconfig [--file=config.path] <device_name>"
+  puts ""
+  puts " --file=path/to/kernel/config.file -- detected automatically if not present."
 end
+
+FAMILIES_DIR = File.absolute_path(File.join(__dir__(), "..", "/devices/families/"))
 
 # Poor approximation to arguments parsing.
 params, other_args = ARGV.partition { |s| s.match(/^--/) }
@@ -17,20 +29,34 @@ if other_args.empty?
   exit 1
 end
 
+# Somewhat embarassing parameter parsing
+params = params.map do |param|
+  k, v = param.split("=", 2)
+  v = true unless v
+  k = k.sub(/^--/, "")
+  [k, v]
+end.to_h
+
 DEVICE = other_args.shift
 
-FILE =
+args =
   # Is the device a path?
   if DEVICE.match(%r{/})
-    Dir.glob(File.join(DEVICE, "kernel", "config.*")).sort.first
+    ["--arg", "device", DEVICE.sub(%r{/+$}, "")]
   else
-    Dir.glob(File.join(Dir.pwd, "devices", DEVICE, "kernel", "config.*")).sort.first
+    ["--argstr", "device", DEVICE]
   end
 
-ONLY_SAVE = !!params.delete("--only-save")
+#
+args << File.join(ROOT, "support/kernel-config/default.nix")
+
+@file =
+  if params["file"]
+    params.delete("file")
+  end
 
 unless params.empty?
-  $stderr.puts "Unknown parameters #{params.join(", ")}."
+  $stderr.puts "Unknown parameters #{params.keys.join(", ")}."
   usage
   exit 1
 end
@@ -41,34 +67,42 @@ unless other_args.empty?
   exit 1
 end
 
-unless FILE
+unless @file
+  $stderr.puts "\nGetting config file path to update..."
+  @file =
+    `#{[
+      "nix-instantiate",
+      "--eval",
+      *args,
+      "--attr", "config.mobile.boot.stage-1.kernel.package.configfile",
+    ].shelljoin}`.strip
+end
+
+unless @file and File.exist?(@file)
+  $stderr.puts "Kernel config file not found."
+  $stderr.puts "Please provide path to the config file with `--file=...`."
+  $stderr.puts
+  usage
+  exit 1
+end
+
+unless @file
   $stderr.puts "Could not find kernel configuration file for #{DEVICE}."
   usage
   exit 1
 end
 
-arg =
-  # Is the device a path?
-  if DEVICE.match(%r{/})
-    ["--arg", "device", DEVICE]
-  else
-    ["--argstr", "device", DEVICE]
-  end
+$stderr.puts "\nNOTE: This will update '#{@file}'\n\n"
 
 Dir.chdir(ROOT) do
   tool = File.join(`#{[
     "nix-build",
     "--no-out-link",
-    *arg,
+    *args,
     "-A", "config.mobile.boot.stage-1.kernel.package.menuconfig"
   ].shelljoin}`.strip, "bin/nconf")
 
-  if ONLY_SAVE
-    # Equivalent to F9,Enter
-    `echo -e "[20~\n" | #{[tool, FILE].shelljoin}`
-  else
-    system(tool, FILE)
-  end
+  system(tool, @file)
 
   unless $?.success?
     exit $?.exitstatus
@@ -77,5 +111,3 @@ Dir.chdir(ROOT) do
   # Force normalize at the end. Otherwise recent kernels (5.8+) will have the wrong compiler data.
   exec(File.join(ROOT, "bin", "kernel-normalize-config"), *ARGV)
 end
-
-# vim: ft=ruby
