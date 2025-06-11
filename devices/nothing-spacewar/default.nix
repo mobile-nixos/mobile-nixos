@@ -19,14 +19,7 @@
   };
 
   boot.kernelModules = [
-    "fsa4480"
-    "msm"
-    "panel-visionox-rm692e5"
-    "spi-geni-qcom"
-    "fts_tp"
-    "snd_soc_qcom_q6afe"
-    "snd_soc_qcom_q6asm"
-    "snd_soc_qcom_q6routing"
+    "snd_soc_sm8250"
     "snd_soc_tfa987x"
   ];
 
