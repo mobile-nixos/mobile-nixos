@@ -77,6 +77,10 @@
     (helpers: with helpers; {
       ETHERNET = yes;
       RMNET = module;
+      CMA_SIZE_SEL_PERCENTAGE = unset;
+      CMA_SIZE_PERCENTAGE = unset;
+      CMA_SIZE_SEL_MBYTES = yes;
+      CMA_SIZE_MBYTES = freeform ''64'';
     })
   ];
 
