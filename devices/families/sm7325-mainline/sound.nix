@@ -21,6 +21,10 @@
     })
   ];
 
+  services.udev.extraRules = ''
+    SUBSYSTEM=="sound", KERNEL=="card0", ATTR{id}=="NP1", ENV{ID_ID}="NP1"
+  '';
+
   # Alsa UCM profiles
   mobile.quirks.audio.alsa-ucm-meld = true;
   environment.systemPackages = [
