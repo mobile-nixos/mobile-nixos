@@ -4,11 +4,14 @@
   pkgs,
   ...
 }:
-
+let
+  qcom-video-firmware = pkgs.runCommand "potter-firmware" { } ''
+    dir=$out/lib/firmware/qcom
+    mkdir -p $dir
+    cp  ${pkgs.linux-firmware}/lib/firmware/qcom/a530* $dir
+  '';
+in
 {
-  imports = [
-    ../families/sdm845-mainline
-  ];
 
   mobile.device.name = "retroid-pocket-5";
   mobile.device.identity = {
@@ -18,6 +21,7 @@
   mobile.device.supportLevel = "best-effort";
 
   mobile.hardware = {
+    soc = "qualcomm-sm8250";
     ram = 1024 * 8;
     screen = {
       width = 1920;
@@ -34,19 +38,59 @@
     "fbcon=rotate:3"
   ];
 
-  boot.kernelModules = [ "panel-ddic-ch13726a" ];
-  boot.initrd.availableKernelModules = [
-    "panel-ddic-ch13726a"
-    "qcom_spmi_haptics"
-    "qcom_glink_smem"
-    "qcom_smd"
-    "qcom_common"
-    "rpmhpd"
-    "qcom_rpmh"
-    "cmd-db"
+  mobile.boot.stage-1.firmware = [
+    qcom-video-firmware
   ];
 
-  mobile.device.firmware = pkgs.callPackage ./firmware { };
+  mobile.boot.stage-1.kernel = {
+    package = pkgs.callPackage ./kernel { };
+    modular = true;
+    modules = [
+      "panel-ddic-ch13726a"
+      "qcom_spmi_haptics"
+      "qcom_glink_smem"
+      "qcom_smd"
+      "qcom_common"
+      "rpmhpd"
+      "qcom_rpmh"
+      "cmd-db"
+      # These are modules because postmarketos builds them as
+      # modules.  Excepting that you only need one of the two
+      # panel modules (hardware-dependent) it might make more
+      # sense to build them monolithically. Unless you want to
+      # run your phone headlessly ...
+      # "rmi_i2c" # touchscreen driver
+      # "qcom-pon" # power and volume down keys
+      # "panel-boe-bs052fhm-a00-6c01"
+      # "panel-tianma-tl052vdxp02"
+      # "msm" # DRM module
+    ];
+  };
 
-  mobile.system.android.device_name = "Retroidp Pocket 5";
+  # boot.kernelModules = [ "panel-ddic-ch13726a" ];
+  # boot.initrd.availableKernelModules = [
+  #   "panel-ddic-ch13726a"
+  #   "qcom_spmi_haptics"
+  #   "qcom_glink_smem"
+  #   "qcom_smd"
+  #   "qcom_common"
+  #   "rpmhpd"
+  #   "qcom_rpmh"
+  #   "cmd-db"
+  # ];
+
+  mobile.device.firmware = pkgs.armbian-firmware;
+
+  mobile.system.type = "android";
+  mobile.system.android = {
+    device_name = "Retroidp Pocket 5";
+    bootimg.flash = {
+      offset_base = "0x00000000";
+      offset_kernel = "0x00008000";
+      offset_ramdisk = "0x01000000";
+      offset_second = "0x00000000";
+      offset_tags = "0x00000100";
+      pagesize = "4096";
+    };
+  };
 }
