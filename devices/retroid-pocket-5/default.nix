@@ -24,9 +24,6 @@
       height = 2280;
     };
   };
-  
-  
-  
 
   mobile.device.firmware = pkgs.callPackage ./firmware { };
 
