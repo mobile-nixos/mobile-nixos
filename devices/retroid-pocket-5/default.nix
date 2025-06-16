@@ -42,6 +42,9 @@ in
     qcom-video-firmware
   ];
 
+
+  mobile.system.type = "u-boot";
+
   mobile.boot.stage-1.kernel = {
     package = pkgs.callPackage ./kernel { };
     modular = true;
@@ -81,16 +84,4 @@ in
 
   mobile.device.firmware = pkgs.armbian-firmware;
 
-  mobile.system.type = "android";
-  mobile.system.android = {
-    device_name = "Retroidp Pocket 5";
-    bootimg.flash = {
-      offset_base = "0x00000000";
-      offset_kernel = "0x00008000";
-      offset_ramdisk = "0x01000000";
-      offset_second = "0x00000000";
-      offset_tags = "0x00000100";
-      pagesize = "4096";
-    };
-  };
 }

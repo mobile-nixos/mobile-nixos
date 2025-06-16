@@ -16,7 +16,7 @@ runCommand "retroid-sm8250-firmware"
   {
     inherit baseFw;
     # We make no claims that it can be redistributed.
-    meta.license = lib.licenses.unfree;
+    # meta.license = lib.licenses.unfree; # TODO uncomment later
   }
   ''
     mkdir -p $out/lib/firmware

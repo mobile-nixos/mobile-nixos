@@ -39,5 +39,5 @@ mobile-nixos.kernel-builder {
     ./patches/9999-remove-log-spam.patch
   ];
 
-  isModular = true; # i dont really know if its needed but it probably wont hurt???
+  # isModular = true; # i dont really know if its needed but it probably wont hurt???
 }
