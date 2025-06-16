@@ -1,0 +1,44 @@
+= OnePlus OnePlus 6
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== First time setup notes
+
+==== Update firmware
+
+Make sure your device was updated to the latest OxygenOS 11. It may not be
+required, but this will reduce disparities.
+
+Make sure the firmware partitions are consistent by using a recovery to flash
+`copy-partitions-*.zip` as described in the installation instructions of
+LineageOS
+
+- https://wiki.lineageos.org/devices/enchilada/install#ensuring-all-firmware-partitions-are-consistent
+
+Again, it may not be strictly required, but this ensures a coherent single set
+of firmwares are present on-device where relevant. This is important as it is
+possible to have different versions flashed to different slots. This is why so
+many persons online have “only one slot that works”.
+
+
+==== Prepare for mainline
+
+[NOTE]
+====
+This assumes the phone will only run SDM845 mainline images.
+====
+
+You will need to erase the `dtbo` partitions for either slots.
+
+```
+ $ fastboot erase dtbo_a
+ $ fastboot erase dtbo_b
+```
+
+
+==== Dual booting
+
+This is not supported. Refer to other non-Android Linux instructions and
+adapt as needed. Here be snapdragons.
+
