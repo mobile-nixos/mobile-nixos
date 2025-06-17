@@ -5,6 +5,7 @@ let
   inherit (lib)
     mkBefore
     mkIf
+    mkMerge
     mkOption
     mkOptionDefault
     optional
@@ -75,29 +76,47 @@ in
       '';
     };
   };
-  config = {
-    assertions = [
-      {
-        assertion = cfg.enableDefaultSerial && cfg.enableDefaultSerial -> (cfg.serialConsole != null);
-        message = ''
-          The option `mobile.boot.serialConsole` must be defined to use `mobile.boot.enableDefaultSerial`.
-        '';
-      }
-    ];
-    mobile.boot.defaultConsole = mkOptionDefault (
-      # We add the default default console only when the whole of Mobile NixOS is enabled.
-      if config.mobile.enable then "tty1" else null
-    );
-    mobile.boot.additionalConsoles = mkIf (cfg.serialConsole != null) [
-      cfg.serialConsole
-    ];
-    boot.kernelParams = mkBefore (
-      (map (console: "console=${console}") (
-        cfg.additionalConsoles
-        ++ (optional (cfg.defaultConsole != null) cfg.defaultConsole)
-        ++ (optional (cfg.enableDefaultSerial) cfg.serialConsole)
-      ))
-      ++ (optional cfg.enableDefaultSerial "earlyprintk=${cfg.serialConsole}")
-    );
-  };
+  config = mkMerge [
+    # Ensure assertion is not added if Mobile NixOS is not used.
+    (mkIf (cfg.enableDefaultSerial) {
+      assertions = [
+        {
+          assertion = cfg.enableDefaultSerial && cfg.enableDefaultSerial -> (cfg.serialConsole != null);
+          message = ''
+            The option `mobile.boot.serialConsole` must be defined to use `mobile.boot.enableDefaultSerial`.
+          '';
+        }
+      ];
+    })
+    {
+      mobile.boot.defaultConsole = mkOptionDefault (
+        # We add the default default console only when the whole of Mobile NixOS is enabled.
+        if config.mobile.enable then "tty1" else null
+      );
+      mobile.boot.additionalConsoles = mkIf (cfg.serialConsole != null) [
+        cfg.serialConsole
+      ];
+    }
+    # The order of the following blocks matter.
+    # The last `console=` parameter will be the one used for the default console.
+    # Additional consoles should come first.
+    (mkIf (cfg.additionalConsoles != []) {
+      boot.kernelParams = mkBefore (
+        map (console: "console=${console}") cfg.additionalConsoles
+        );
+    })
+    # Then the default console
+    (mkIf (cfg.defaultConsole != null) {
+      boot.kernelParams = mkBefore [
+        "console=${cfg.defaultConsole}"
+      ];
+    })
+    # Finally, serial, when enabled as a default console.
+    (mkIf cfg.enableDefaultSerial {
+      boot.kernelParams = mkBefore [
+        "console=${cfg.serialConsole}"
+        "earlyprintk=${cfg.serialConsole}"
+      ];
+    })
+  ];
 }

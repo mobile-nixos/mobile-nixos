@@ -3,6 +3,9 @@ result
 result-*
 *.img
 
+# Results from checks, for convenience sake...
+*.eval.json
+
 # Local overrides
 local.nix
 
