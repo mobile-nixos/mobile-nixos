@@ -2,7 +2,7 @@
 
 {
   imports = [
-    ../families/msm9853-mainline
+    ../families/msm8953-mainline
   ];
 
   mobile.device.name = "lenovo-cd-18781y";

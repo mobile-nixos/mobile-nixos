@@ -15,6 +15,7 @@ mobile-nixos.kernel-builder {
     hash = "sha256-0KUOEQyrwKUzS+lVxPIaz2rELLcC6VPIG8B9+WkngLc=";
   };
 
+
 #   patches = [
 #     # ASoC: codecs: tas2559: Fix build
 #     (fetchpatch {

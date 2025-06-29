@@ -38,7 +38,7 @@ in
 {
   imports = [
     ./workaround-v4l_id-hang.nix
-    ../common-configuration.nix
+#     ../common-configuration.nix
   ];
 
   environment.systemPackages = with pkgs; [
