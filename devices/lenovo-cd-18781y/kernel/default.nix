@@ -5,16 +5,16 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "6.15.0";
+  version = "6.12.0";
+#   configfile = ./config-postmarketos-qcom-msm8953.aarch64;
   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "msm8953-mainline";
     repo = "linux";
-    rev = "v6.15.0-r0";
-    hash = "sha256-0KUOEQyrwKUzS+lVxPIaz2rELLcC6VPIG8B9+WkngLc=";
+    rev = "v6.12.0-r2";
+    hash = "sha256-TaR14+u58vXCPse9MoTJg+GDV5yXPGRhc/eeVUbNZE8=";
   };
-
 
 #   patches = [
 #     # ASoC: codecs: tas2559: Fix build
@@ -24,6 +24,5 @@ mobile-nixos.kernel-builder {
 #     })
 #   ];
 
-  isModular = false;
-  isCompressed = "gz";
+  isModular = true;
 }
