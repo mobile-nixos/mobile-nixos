@@ -11,7 +11,7 @@ in
   imports = [
     ./mobile-nixos-branding.nix
     ./plasma-mobile.nix
-    ../common-configuration.nix
+#     ../common-configuration.nix
   ];
 
   config = lib.mkMerge [

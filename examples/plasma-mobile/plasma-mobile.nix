@@ -13,6 +13,8 @@
     enable = true;
 
     desktopManager.plasma5.mobile.enable = true;
+    desktopManager.plasma5.mobile.installRecommendedSoftware = false;
+
 
     displayManager.lightdm = {
       enable = true;
@@ -27,7 +29,7 @@
 
   hardware.bluetooth.enable = true;
   services.pipewire.enable = lib.mkDefault true;
-  hardware.pulseaudio.enable = lib.mkDefault false;
+#   hardware.pulseaudio.enable = lib.mkDefault false;
   networking.networkmanager.enable = true;
   networking.wireless.enable = false;
   powerManagement.enable = true;

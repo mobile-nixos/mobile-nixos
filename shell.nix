@@ -23,5 +23,6 @@ pkgs.mkShell {
     mkbootimg                 # Pack and unpack boot images
     binwalk                   # Search a binary image for embedded files
     ubootTools                # A couple useful utilities
+    python3
   ];
 }
