@@ -47,6 +47,8 @@
 , bison
 , flex
 
+, python310
+
 # For menuconfig
 , ncurses
 , pkg-config
@@ -224,6 +226,8 @@ stdenv.mkDerivation (inputArgs // {
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optional  (lib.versionAtLeast version "5.2")  cpio
     ++ optional  (lib.versionAtLeast version "5.8")  elfutils
+    # TODO Determine why this is needed, and either which version introduced this dep, or a different way to add it
+    ++ optional  (lib.versionAtLeast version "6.0") python310
     ++ optional  (isCompressed == "lz4") lz4
     # Mobile NixOS inputs.
     # While some kernels might not need those, most will.
@@ -601,10 +605,22 @@ stdenv.mkDerivation (inputArgs // {
           # Replace the script with a hardcoded equivalent result.
           # The script echoes values that are sourced (.) in a Makefile.
           cat ${writeShellScript "nconf-cfg.sh" ''
+            set -e
+            set -u
+            set -o pipefail
+            cflags=$1
+            libs=$2
+
             export PKG_CONFIG_PATH="${buildPackages.ncurses6.dev}/lib/pkgconfig"
             PKGS="ncursesw menuw panelw"
-            echo cflags=\"$(pkg-config --cflags $PKGS)\"
-            echo libs=\"-L $(pkg-config --variable=libdir ncursesw) $(pkg-config --libs $PKGS)\"
+
+            (
+            pkg-config --cflags $PKGS
+            ) > "$cflags"
+            (
+            printf -- "-L%s\n" $(pkg-config --variable=libdir $PKGS)
+            pkg-config --libs $PKGS
+            ) > "$libs"
           ''} > scripts/kconfig/nconf-cfg.sh
         fi
 

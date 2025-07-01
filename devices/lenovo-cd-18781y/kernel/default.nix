@@ -6,8 +6,8 @@
 
 mobile-nixos.kernel-builder {
   version = "6.12.0";
-#   configfile = ./config-postmarketos-qcom-msm8953.aarch64;
-  configfile = ./config.aarch64;
+  configfile = ./config-pm-2.aarch64;
+#   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "msm8953-mainline";
