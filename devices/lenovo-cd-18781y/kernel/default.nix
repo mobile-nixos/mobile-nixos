@@ -5,16 +5,22 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "6.12.0";
-  configfile = ./config-pm-2.aarch64;
+  version = "6.15.0";
+  configfile = ./config.aarch64;
 #   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "msm8953-mainline";
     repo = "linux";
-    rev = "v6.12.0-r2";
-    hash = "sha256-TaR14+u58vXCPse9MoTJg+GDV5yXPGRhc/eeVUbNZE8=";
+    rev = "v6.15.0-r0";
+#     hash = "sha256-TaR14+u58vXCPse9MoTJg+GDV5yXPGRhc/eeVUbNZE8=";
+    hash = "sha256-0KUOEQyrwKUzS+lVxPIaz2rELLcC6VPIG8B9+WkngLc=";
   };
+
+  patches = [
+    # NixOS-specific patch for Kernel build
+#     ./modinst-arg-list-too-long.patch
+  ];
 
 #   patches = [
 #     # ASoC: codecs: tas2559: Fix build
