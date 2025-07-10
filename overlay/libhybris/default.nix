@@ -37,6 +37,14 @@ stdenv.mkDerivation {
       --replace "/usr/bin/file" "${file}/bin/file"
   '';
 
+  NIX_CFLAGS_COMPILE = [
+    # This libhybris is old, but even libhybris from 2024 fails to compile
+    # due to many warnings. Let's instead ignore the warnings, and instead
+    # plan to get an updated adbd that maybe does not depend on libhybris.
+    "-Wno-implicit-function-declaration"
+    "-Wno-incompatible-pointer-types"
+    "-Wno-int-conversion"
+  ];
   NIX_LDFLAGS = [
     # For libsupc++.a
     "-L${stdenv.cc.cc.out}/${libPrefix}/lib/"

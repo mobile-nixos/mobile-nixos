@@ -26,7 +26,7 @@ in
     # Otherwise we want to error on an unset value if not set.
     mobile.hardware.soc = mkIf (!config.mobile.enable) (
       mkOptionDefault (
-        "generic-${config.nixpkgs.localSystem.parsed.cpu.name}"
+        "generic-${config.nixpkgs.hostPlatform.parsed.cpu.name}"
       )
     );
   };

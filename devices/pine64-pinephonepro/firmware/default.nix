@@ -21,7 +21,7 @@ let
     sha256 = "sha256-i2OEkn7RtEMbJd0sYEE2Hpkvw6KRppz5AbwXJFNa/pE=";
   };
   brcm-firmware = fetchgit {
-    url = "https://megous.com/git/linux-firmware";
+    url = "https://xff.cz/git/linux-firmware";
     rev = "6e8e591e17e207644dfe747e51026967bb1edab5";
     sha256 = "sha256-TaGwT0XvbxrfqEzUAdg18Yxr32oS+RffN+yzSXebtac=";
   };

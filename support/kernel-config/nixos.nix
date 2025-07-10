@@ -34,7 +34,7 @@ in
       DETECT_HUNG_TASK          = yes;
       CRASH_DUMP                = option no;
       # Provide access to tunables like sched_migration_cost_ns
-      SCHED_DEBUG               = yes;
+      SCHED_DEBUG               = whenOlder "6.15" yes;
 
       # power-management
       CPU_FREQ_DEFAULT_GOV_PERFORMANCE = yes;

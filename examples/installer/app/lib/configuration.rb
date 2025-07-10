@@ -232,7 +232,7 @@ services.pipewire.enable = true;
 hardware.bluetooth.enable = true;
 
 # Bluetooth audio
-hardware.pulseaudio.package = pkgs.pulseaudioFull;
+services.pulseaudio.package = pkgs.pulseaudioFull;
 
 # Enable power management options
 powerManagement.enable = true;

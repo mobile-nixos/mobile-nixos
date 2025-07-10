@@ -130,10 +130,6 @@ in
       EXT4_FS_SECURITY  = yes;
       EXT4_ENCRYPTION   = whenBetween "4.1" "5.1" yes;
 
-      REISERFS_FS_XATTR     = option yes;
-      REISERFS_FS_POSIX_ACL = option yes;
-      REISERFS_FS_SECURITY  = option yes;
-
       JFS_POSIX_ACL = option yes;
       JFS_SECURITY  = option yes;
 

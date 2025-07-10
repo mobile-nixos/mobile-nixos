@@ -6,14 +6,14 @@
 }:
 
 mobile-nixos.kernel-builder {
-  version = "6.5.0";
+  version = "6.15.0";
   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "torvalds";
     repo = "linux";
-    rev = "v6.5";
-    sha256 = "sha256-qJmVSju69WcvDIbgrbtMyCi+OXUNTzNX2G+/0zwsPR4=";
+    rev = "v6.15";
+    sha256 = "sha256-PQjXBWJV+i2O0Xxbg76HqbHyzu7C0RWkvHJ8UywJSCw=";
   };
 
   patches = [
@@ -27,6 +27,11 @@ mobile-nixos.kernel-builder {
     (fetchpatch {
       url = "https://github.com/torvalds/linux/commit/4cec85ca5a098fca3d49bda9976bccaca16a8876.patch";
       sha256 = "sha256-V5d1OSJro82LIWrlJ74m5xxF26dtEe7HZmoFgUX/HBc=";
+    })
+    # [PATCH] drm/mediatek: only announce AFBC if really supported
+    (fetchpatch {
+      url = "https://lore.kernel.org/all/20250531121140.387661-1-uwu@icenowy.me/raw";
+      hash = "sha256-wY0K1ZsmfQmPHxunRf/kaczI1QsHCICQ6BPVmY1fn+E=";
     })
   ];
 
