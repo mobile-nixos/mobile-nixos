@@ -6,6 +6,7 @@
 
   imports = [
     ../families/sm7325-mainline
+    ./firmware
   ];
 
   mobile.boot.stage-1.kernel = {
@@ -35,11 +36,10 @@
   mobile.hardware = {
     ram = 1024 * 8;
     screen = {
-      width = 1080; height = 2400;
+      width = 1080;
+      height = 2400;
     };
   };
-
-  mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.device_name = "NothingPhone";
 
