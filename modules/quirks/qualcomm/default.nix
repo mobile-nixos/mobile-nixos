@@ -4,5 +4,6 @@
     ./msm-fb-notify.nix
     ./sdm845-modem.nix
     ./wcnss-wlan.nix
+    ./hexagonrpc.nix
   ];
 }

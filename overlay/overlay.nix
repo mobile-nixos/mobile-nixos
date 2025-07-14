@@ -48,6 +48,7 @@ in
   tqftpserv = callPackage ./qrtr/tqftpserv.nix { };
   pd-mapper = callPackage ./qrtr/pd-mapper.nix { };
   rmtfs = callPackage ./qrtr/rmtfs.nix { };
+  hexagonrpc = callPackage ./hexagonrpc/hexagonrpc.nix { };
 
   lk2ndMsm8953 = callPackage ./lk2nd/msm8953.nix { };
 
