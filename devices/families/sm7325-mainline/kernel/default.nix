@@ -16,6 +16,10 @@ mobile-nixos.kernel-builder {
     hash = "sha256-P+B8ln0enxAs1m6GdMnFFDnzWad+UiNPf3uAcl0/1Dk=";
   };
 
+  patches = [
+    ./nothing-spacewar-audio.patch
+  ];
+
   isModular = true;
   isCompressed = "gz";
 }
