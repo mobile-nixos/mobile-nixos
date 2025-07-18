@@ -1,14 +1,14 @@
-From ffc78120ba679f6af5d367a37e2a64b6892a3ee4 Mon Sep 17 00:00:00 2001
+From c881fec1a12bf240bc545ee4d849ecc6dba4de37 Mon Sep 17 00:00:00 2001
 From: "Kurt Morris (AKA MasterOKhan)" <kurt.morris@me.com>
-Date: Thu, 17 Jul 2025 02:17:15 -0700
+Date: Thu, 17 Jul 2025 23:12:44 -0700
 Subject: [PATCH] Update sm7325-nothing-spacewar.dts
 
 ---
- .../boot/dts/qcom/sm7325-nothing-spacewar.dts | 228 ++++++++++++++++--
- 1 file changed, 207 insertions(+), 21 deletions(-)
+ .../boot/dts/qcom/sm7325-nothing-spacewar.dts | 181 ++++++++++++++++--
+ 1 file changed, 164 insertions(+), 17 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts b/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts
-index 4f08a2da631d3f..c5507c5bfe245d 100644
+index 4f08a2da631d3f..cc2c86943b5c11 100644
 --- a/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts
 +++ b/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts
 @@ -380,6 +380,38 @@
@@ -50,19 +50,9 @@ index 4f08a2da631d3f..c5507c5bfe245d 100644
  };
  
  &apps_rsc {
-@@ -1363,39 +1395,133 @@
- };
- 
- &sound {
--	compatible = "qcom,sm7325-sndcard",
--		     "qcom,sm8250-sndcard";
--
-+	compatible = "qcom,sm7325-sndcard", "qcom,sm8250-sndcard";
- 	model = "NP1";
- 
+@@ -1371,31 +1403,84 @@
  	pinctrl-0 = <&pri_mi2s_bck_active &pri_mi2s_din_active
--		     &pri_mi2s_dout_active &pri_mi2s_ws_active>;
-+	             &pri_mi2s_dout_active &pri_mi2s_ws_active>;
+ 		     &pri_mi2s_dout_active &pri_mi2s_ws_active>;
  	pinctrl-1 = <&pri_mi2s_sleep>;
 -	pinctrl-names = "default",
 -			"sleep";
@@ -72,28 +62,35 @@ index 4f08a2da631d3f..c5507c5bfe245d 100644
 +	pinctrl-3 = <&pri_swr_sleep>;
 +	pinctrl-names = "default", "sleep", "swr", "swr-sleep";
 +
-+	audio-routing =
-+		/* Analog microphones */
-+		"AMIC1", "Analog Mic1",
-+		"Analog Mic1", "MIC BIAS1",
-+		"AMIC2", "Analog Mic2",
-+		"Analog Mic2", "MIC BIAS2",
-+		"AMIC3", "Analog Mic3",
-+		"Analog Mic3", "MIC BIAS3",
-+		"AMIC4", "Analog Mic4",
-+		"Analog Mic4", "MIC BIAS1",
-+        "AMIC5", "Analog Mic5",
-+        "Analog Mic5", "MIC BIAS2",
-+        "DMIC1", "Digital Mic1",
-+        "DMIC2", "Digital Mic2",
-+
-+		/* Headphones */
-+		"HPHL", "Headphones",
-+		"HPHR", "Headphones",
-+
-+		/* Speakers */
-+		"SpkrLeft IN", "SpkrLeft DAI",
-+		"SpkrRight IN", "SpkrRight DAI";
++    audio-routing =
++	   /* Analog microphones */
++	   "AMIC1", "Analog Mic1",
++	   "Analog Mic1", "MIC BIAS1",
++	   "AMIC2", "Analog Mic2",
++	   "Analog Mic2", "MIC BIAS2",
++	   "AMIC3", "Analog Mic3",
++	   "Analog Mic3", "MIC BIAS3",
++	   "AMIC4", "Analog Mic4",
++	   "Analog Mic4", "MIC BIAS1",
++	   "AMIC5", "Analog Mic5",
++	   "Analog Mic5", "MIC BIAS2",
++    
++	   /* SWR ADC paths (Mic1,2,4,5) */
++	   "TX SWR_ADC0", "ADC1_OUTPUT",
++	   "TX SWR_ADC1", "ADC2_OUTPUT",
++	   "TX SWR_ADC4", "ADC3_OUTPUT",
++	   "TX SWR_ADC5", "ADC4_OUTPUT",
++    
++	   /* Headphones */
++	   "HPHL", "Headphones",
++	   "HPHR", "Headphones",
++	   "IN1_HPHL", "HPHL_OUT",
++	   "IN2_HPHR", "HPHR_OUT",
++    
++	   /* Speakers */
++	   "SpkrLeft IN", "SpkrLeft DAI",
++	   "SpkrRight IN", "SpkrRight DAI",
++	   "SpkrRight IN", "WSA_SPK2 OUT";
 +
 +	dai-link@0 {
  		link-name = "MultiMedia1";
@@ -117,7 +114,7 @@ index 4f08a2da631d3f..c5507c5bfe245d 100644
 +		link-name = "WCD9385 RX Playback";
 +		cpu { sound-dai = <&q6afedai 2>; };
 +		platform { sound-dai = <&q6routing>; };
-+		codec { sound-dai = <&wcd9385_rx 0>; };
++		codec { sound-dai = <&wcd9385 0>; };
 +	};
  
 -		cpu {
@@ -127,89 +124,40 @@ index 4f08a2da631d3f..c5507c5bfe245d 100644
 +		link-name = "WCD9385 TX Capture";
 +		cpu { sound-dai = <&q6afedai 3>; };
 +		platform { sound-dai = <&q6routing>; };
-+		codec { sound-dai = <&wcd9385_tx 1>; };
++		codec { sound-dai = <&wcd9385 1>; };
 +	};
  
 -		platform {
 -			sound-dai = <&q6routing>;
 -		};
-+	dai-link@4 {
-+		link-name = "WCD9385 VA Capture";
-+		cpu { sound-dai = <&q6afedai 4>; };
-+		platform { sound-dai = <&q6routing>; };
-+		codec { sound-dai = <&wcd9385_va 2>; };
-+	};
++};
  
 -		codec {
 -			sound-dai = <&tfa9873_l 0>, <&tfa9873_r 0>;
 -		};
-+	dai-link@5 {
-+		link-name = "WCD9385 WSA Playback";
-+		cpu { sound-dai = <&q6afedai 5>; };
-+		platform { sound-dai = <&q6routing>; };
-+		codec { sound-dai = <&wcd9385_wsa 3>; };
-+	};
-+};
++&swr1 {
++	status = "okay";
 +
-+&swr0 {
-+	wcd9385_rx: codec@0 {
++	wcd9385: codec@0 {
 +		compatible = "qcom,wcd9385";
 +		reg = <0>;
 +		#sound-dai-cells = <1>;
-+		clocks = <&rpmhcc>;
++		clocks = <&rpmhcc RPMH_LN_BB_CLK2>;
 +		clock-names = "mclk";
 +		vdd-buck-supply = <&vreg_s4b>;
 +		vdd-rxtx-supply = <&vreg_l2b>;
 +		vdd-mic-bias-supply = <&vreg_l5b>;
 +		vddio-supply = <&vreg_l1b>;
-+	    status = "okay";
-+	};
-+
-+	wcd9385_tx: codec@1 {
-+		compatible = "qcom,wcd9385";
-+		reg = <1>;
-+		#sound-dai-cells = <1>;
-+		clocks = <&rpmhcc>;
-+		clock-names = "mclk";
-+		vdd-buck-supply = <&vreg_s4b>;
-+		vdd-rxtx-supply = <&vreg_l2b>;
-+		vdd-mic-bias-supply = <&vreg_l5b>;
-+		vddio-supply = <&vreg_l1b>;
-+	    status = "okay";
-+	};
-+
-+	wcd9385_va: codec@2 {
-+		compatible = "qcom,wcd9385";
-+		reg = <2>;
-+		#sound-dai-cells = <1>;
-+		clocks = <&rpmhcc>;
-+		clock-names = "mclk";
-+		vdd-buck-supply = <&vreg_s4b>;
-+		vdd-rxtx-supply = <&vreg_l2b>;
-+		vdd-mic-bias-supply = <&vreg_l5b>;
-+		vddio-supply = <&vreg_l1b>;
-+	    status = "okay";
-+	};
-+
-+	wcd9385_wsa: codec@3 {
-+		compatible = "qcom,wcd9385";
-+		reg = <3>;
-+		#sound-dai-cells = <1>;
-+		clocks = <&rpmhcc>;
-+		clock-names = "mclk";
-+		vdd-buck-supply = <&vreg_s4b>;
-+		vdd-rxtx-supply = <&vreg_l2b>;
-+		vdd-mic-bias-supply = <&vreg_l5b>;
-+		vddio-supply = <&vreg_l1b>;
-+	    status = "okay";
++		status = "okay";
  	};
  };
  
-@@ -1585,6 +1711,66 @@
+@@ -1585,6 +1670,68 @@
  		drive-strength = <8>;
  		bias-pull-up;
  	};
 +
++	/* MI2S (TFA9873) */
 +	pri_mi2s_bck_active: pri-mi2s-bck-active-state {
 +		pins = "gpio97";
 +		function = "mi2s0_sck";
@@ -250,6 +198,7 @@ index 4f08a2da631d3f..c5507c5bfe245d 100644
 +		input-enable;
 +	};
 +
++	/* SWR (WCD9385) */
 +	pri_swr_clk_active: pri-swr-clk-active {
 +		pins = "gpio145";
 +		function = "swr_tx_clk";
