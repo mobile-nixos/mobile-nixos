@@ -1,14 +1,14 @@
-From c881fec1a12bf240bc545ee4d849ecc6dba4de37 Mon Sep 17 00:00:00 2001
+From 51d4c82f15599614f25bac14a4addb2b51da76be Mon Sep 17 00:00:00 2001
 From: "Kurt Morris (AKA MasterOKhan)" <kurt.morris@me.com>
-Date: Thu, 17 Jul 2025 23:12:44 -0700
+Date: Fri, 18 Jul 2025 01:15:26 -0700
 Subject: [PATCH] Update sm7325-nothing-spacewar.dts
 
 ---
- .../boot/dts/qcom/sm7325-nothing-spacewar.dts | 181 ++++++++++++++++--
- 1 file changed, 164 insertions(+), 17 deletions(-)
+ .../boot/dts/qcom/sm7325-nothing-spacewar.dts | 119 +++++++++++++++---
+ 1 file changed, 102 insertions(+), 17 deletions(-)
 
 diff --git a/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts b/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts
-index 4f08a2da631d3f..cc2c86943b5c11 100644
+index 4f08a2da631d3f..dc3e7fbc4526f5 100644
 --- a/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts
 +++ b/arch/arm64/boot/dts/qcom/sm7325-nothing-spacewar.dts
 @@ -380,6 +380,38 @@
@@ -58,9 +58,9 @@ index 4f08a2da631d3f..cc2c86943b5c11 100644
 -			"sleep";
 -
 -	mm1-dai-link {
-+	pinctrl-2 = <&pri_swr_clk_active &pri_swr_data_active>;
-+	pinctrl-3 = <&pri_swr_sleep>;
-+	pinctrl-names = "default", "sleep", "swr", "swr-sleep";
++	pinctrl-2 = <&lpass_tx_swr_clk &lpass_tx_swr_data>;
++	pinctrl-3 = <&lpass_rx_swr_clk &lpass_rx_swr_data>;
++	pinctrl-names = "default", "sleep", "swr-tx", "swr-rx";
 +
 +    audio-routing =
 +	   /* Analog microphones */
@@ -152,72 +152,3 @@ index 4f08a2da631d3f..cc2c86943b5c11 100644
  	};
  };
  
-@@ -1585,6 +1670,68 @@
- 		drive-strength = <8>;
- 		bias-pull-up;
- 	};
-+
-+	/* MI2S (TFA9873) */
-+	pri_mi2s_bck_active: pri-mi2s-bck-active-state {
-+		pins = "gpio97";
-+		function = "mi2s0_sck";
-+		drive-strength = <8>;
-+		bias-disable;
-+		output-high;
-+	};
-+
-+	pri_mi2s_din_active: pri-mi2s-din-active-state {
-+		pins = "gpio98";
-+		function = "mi2s0_data0";
-+		drive-strength = <8>;
-+		bias-disable;
-+		output-high;
-+	};
-+
-+	pri_mi2s_dout_active: pri-mi2s-dout-active-state {
-+		pins = "gpio99";
-+		function = "mi2s0_data1";
-+		drive-strength = <8>;
-+		bias-disable;
-+		output-high;
-+	};
-+
-+	pri_mi2s_ws_active: pri-mi2s-ws-active-state {
-+		pins = "gpio100";
-+		function = "mi2s0_ws";
-+		drive-strength = <8>;
-+		bias-disable;
-+		output-high;
-+	};
-+
-+	pri_mi2s_sleep: pri-mi2s-sleep-state {
-+		pins = "gpio97", "gpio98", "gpio99", "gpio100";
-+		function = "gpio";
-+		drive-strength = <2>;
-+		bias-pull-down;
-+		input-enable;
-+	};
-+
-+	/* SWR (WCD9385) */
-+	pri_swr_clk_active: pri-swr-clk-active {
-+		pins = "gpio145";
-+		function = "swr_tx_clk";
-+		drive-strength = <8>;
-+		bias-disable;
-+	};
-+
-+	pri_swr_data_active: pri-swr-data-active {
-+		pins = "gpio158";
-+		function = "swr_tx_data";
-+		drive-strength = <8>;
-+		bias-disable;
-+	};
-+
-+	pri_swr_sleep: pri-swr-sleep {
-+		pins = "gpio145", "gpio158";
-+		drive-strength = <2>;
-+		bias-pull-down;
-+	};
- };
- 
- &uart5 {
