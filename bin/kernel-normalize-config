@@ -13,7 +13,7 @@ require "shellwords"
 ROOT = File.join(__dir__, "..")
 
 def usage()
-  puts "Usage: bin/kernel-normalize-config [--file=config.path] --only-check <device_name>"
+  puts "Usage: bin/kernel-normalize-config [--file=config.path] --only-check <device_name> [-- <nix_args>...]"
   puts ""
   puts " --file=path/to/kernel/config.file -- detected automatically if not present."
   puts " --only-check"
@@ -23,7 +23,10 @@ end
 FAMILIES_DIR = File.absolute_path(File.join(__dir__(), "..", "/devices/families/"))
 
 # Poor approximation to arguments parsing.
-params, other_args = ARGV.partition { |s| s.match(/^--/) }
+arg_chunks = ARGV.slice_before("--")
+args = arg_chunks.first || []
+extra_nix_args = arg_chunks.drop(1).flatten.drop(1)
+params, other_args = args.partition { |s| s.match(/^--/) }
 
 if other_args.empty?
   $stderr.puts "Device name required."
@@ -67,6 +70,7 @@ nix_args =
 
 # 
 nix_args << File.join(ROOT, "support/kernel-config/default.nix")
+nix_args += extra_nix_args
 
 @file =
   if params["file"]
