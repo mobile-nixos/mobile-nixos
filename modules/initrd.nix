@@ -369,7 +369,99 @@ in
             ;
           }]
         ++ [
-          { package = pkgs.mobile-nixos.stage-1.script-loader; }
+          {
+            package = 
+              pkgs.callPackage (
+                { replaceDependencies
+                , mobile-nixos
+                , libinput
+                , libxkbcommon
+                }:
+                replaceDependencies {
+                  drv = mobile-nixos.stage-1.script-loader;
+                  replacements = [
+                    {
+                      oldDependency = libinput;
+                        # Minified libinput, both for size and cross-compilation.
+                      newDependency =
+                        (libinput.override({
+                          # libwacom doesn't cross-compile at the moment
+                          libwacom = null;
+
+                          documentationSupport = false;
+                          doxygen = null;
+                          graphviz = null;
+
+                          eventGUISupport = false;
+                          cairo = null;
+                          glib = null;
+                          gtk3 = null;
+
+                          testsSupport = false;
+                          check = null;
+                          valgrind = null;
+                          python3 = null;
+                        })).overrideAttrs(old: {
+                          buildInputs = with pkgs; [
+                            libevdev
+                            mtdev
+                          ];
+                          nativeBuildInputs = old.nativeBuildInputs ++ [
+                            pkgs.buildPackages.udev
+                          ];
+                          mesonFlags = old.mesonFlags ++ [
+                            "-Dlibwacom=false"
+                          ];
+                        })
+                        ;
+                    }
+                    {
+                      oldDependency = libxkbcommon;
+                      newDependency =
+                        pkgs.callPackage (
+                          { stdenv
+                          , libxkbcommon
+                          , meson
+                          , ninja
+                          , pkg-config
+                          , bison
+                          }:
+                          let stdenv = pkgs.stdenvAdapters.keepDebugInfo pkgs.stdenv; in
+
+                          libxkbcommon.overrideAttrs({...}: {
+                            nativeBuildInputs = [ meson ninja pkg-config bison ];
+                            buildInputs = [ ];
+
+                            mesonFlags = [
+                              "-Denable-wayland=false"
+                              "-Denable-x11=false"
+                              "-Denable-docs=false"
+                              "-Denable-xkbregistry=false"
+
+                              # This is because we're forcing uses of this build
+                              # to define config and locale root; for stage-1 use.
+                              # In stage-2, use the regular xkbcommon lib.
+                              "-Dxkb-config-root=/NEEDS/OVERRIDE/etc/X11/xkb"
+                              "-Dx-locale-root=/NEEDS/OVERRIDE/share/X11/locale"
+                            ];
+
+                            outputs = [ "out" "dev" ];
+
+                            # Ensures we don't get any stray dependencies.
+                            allowedReferences = [
+                              "out"
+                              "dev"
+                              stdenv.cc.libc_lib
+                            ];
+                          })
+                        ) {}
+                      ;
+                    }
+                  ];
+                }
+              ) {}
+            ;
+          }
         ]
         ++ optionals withStrace [
           {

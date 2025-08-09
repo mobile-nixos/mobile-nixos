@@ -57,6 +57,13 @@ module LVGUI
     HEADER_BAR = BLUE_DARKER
   end
 
+  module PanelOrientation
+    BOTTOM_UP = 1
+    RIGHT_UP = 2
+    LEFT_UP = 3
+    NORMAL = 0
+  end
+
   module Fonts
     extend self
 
@@ -142,6 +149,10 @@ module LVGUI
 
   def self.focus_ring_disable()
     LVGUI::Native.lvgui_focus_ring_disable()
+  end
+
+  def self.get_panel_orientation()
+    LVGUI::Native.hal_get_panel_orientation()
   end
 
   module Styles

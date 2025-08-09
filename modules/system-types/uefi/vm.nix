@@ -1,4 +1,4 @@
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, extendModules, ... }:
 
 let
   inherit (lib) mkIf mkMerge mkOption types;
@@ -18,7 +18,7 @@ in
         internal = true;
         description = ''
           Internal switch to select whether the `outputs.uefi.vm` value points
-          to the composeConfig usage, or to the actual output.
+          to the VM config, or to the actual output.
         '';
       };
       outputs = {
@@ -81,10 +81,12 @@ in
       };
     })
     (mkIf (!config.mobile.quirks.uefi.enableVM) {
-      mobile.outputs.uefi.vm = (config.lib.mobile-nixos.composeConfig {
-        config = {
-          mobile.quirks.uefi.enableVM = true;
-        };
+      mobile.outputs.uefi.vm = (extendModules {
+        modules = [
+          {
+            mobile.quirks.uefi.enableVM = true;
+          }
+        ];
       }).config.mobile.outputs.uefi.vm;
     })
   ];

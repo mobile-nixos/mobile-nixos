@@ -56,6 +56,110 @@ class UI
     add_cover_bgrt
   end
 
+  def add_canvas(parent, width, height)
+    canvas = LVGL::LVCanvas.new(parent)
+    buf = LVGL::LVCanvas.allocate_buffer(width, height, LVGL::IMG_CF::TRUE_COLOR)
+    canvas.set_buffer(buf, width, height, LVGL::IMG_CF::TRUE_COLOR)
+    canvas
+  end
+
+  def add_bgrt(parent)
+    # Work around the extension sniffing from the image decoders...
+    File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
+    file = "/bgrt.bmp"
+
+    # Temporarily makes an image to get its width/height...
+    image = LVGL::LVImage.new(parent)
+    image.set_src("/bgrt.bmp")
+    width = image.get_width()
+    height = image.get_height()
+    image.del()
+
+    # Makes the BGRT a canvas...
+    # It will make sense later...
+    bgrt = add_canvas(parent, width, height)
+    bgrt.draw_img(0, 0, "/bgrt.bmp", LVGL::LVStyle::STYLE_PLAIN)
+
+    # See the ACPI specification for the status bit and other values.
+    # https://uefi.org/specs/ACPI/6.6/05_ACPI_Software_Programming_Model.html#boot-graphics-resource-table-bgrt
+    x = File.read("/sys/firmware/acpi/bgrt/xoffset").to_i
+    y = File.read("/sys/firmware/acpi/bgrt/yoffset").to_i
+    # Rotation to be applied to the image orientated on the panel's native orientation.
+    rotation_needed =
+      begin
+        value = File.read("/sys/firmware/acpi/bgrt/status").to_i
+        # Keep only bits 1 and 2.
+        value = (value & 0b110) >> 1
+        {
+          0b00 => :normal,
+          0b01 => :clockwise,
+          0b10 => :upside_down,
+          0b11 => :counter_clockwise,
+        }[value]
+      end
+
+    # This first goes counter to the panel's native rotation.
+    image_rotation =
+      case LVGUI.get_panel_orientation()
+      when LVGUI::PanelOrientation::LEFT_UP # installed 90° clockwise
+        -90
+      when LVGUI::PanelOrientation::RIGHT_UP # installed 90° counter-clockwise (270° clockwise)
+        -270
+      when LVGUI::PanelOrientation::BOTTOM_UP # installed upside-down
+        -180
+      else
+        -0
+      end
+
+    # Then we add back the native rotation of the picture.
+    image_rotation -=
+      case rotation_needed
+      when :clockwise
+        90
+      when :counter_clockwise
+        270
+      when :upside_down
+        180
+      else # :normal
+        0
+      end
+
+    # Rotate and display according to computed rotation.
+    # (Clamping -90 → 270 via modulo)
+    case image_rotation % 360
+    when 270 # (-90)
+      # Rotate coords
+      tmp = x
+      x = y
+      y = tmp
+      previous = bgrt
+      bgrt = add_canvas(parent, height, width)
+      bgrt.rotate(previous.get_img(), 270, 0, 0, 0, 0)
+      previous.del()
+    when 90 # (-270)
+      # Rotate coords
+      tmp = x
+      x = @screen.get_width() - y
+      y = @screen.get_height() - tmp
+      previous = bgrt
+      bgrt = add_canvas(parent, height, width)
+      bgrt.rotate(previous.get_img(), 90, 0, 0, 0, 0)
+      previous.del()
+    when 180
+      # Rotate coords
+      x = @screen.get_width() - x
+      y = @screen.get_height() - y
+      previous = bgrt
+      bgrt = add_canvas(parent, width, height)
+      bgrt.rotate(previous.get_img(), 180, 0, 0, 0, 0)
+      previous.del()
+    end
+
+    bgrt.set_pos(x, y)
+    
+    bgrt
+  end
+
   def add_label()
     @label = LVGL::LVLabel.new(@page)
     @label.get_style(LVGL::LABEL_STYLE::MAIN).dup.tap do |style|
@@ -72,9 +176,7 @@ class UI
 
   def add_logo()
     if use_bgrt?()
-      # Work around the extension sniffing from the image decoders...
-      File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
-      file = "/bgrt.bmp"
+      @logo = add_bgrt(@page)
     else
       file = LVGL::Hacks.get_asset_path("logo.svg")
 
@@ -85,17 +187,9 @@ class UI
         # 15% of the height
         file = "#{file}?height=#{(@page.get_height * 0.15).to_i}"
       end
-    end
 
-    @logo = LVGL::LVImage.new(@page)
-    @logo.set_src(file)
-
-    # Position the logo
-    if use_bgrt?
-      x = File.read("/sys/firmware/acpi/bgrt/xoffset").to_i
-      y = File.read("/sys/firmware/acpi/bgrt/yoffset").to_i
-      @logo.set_pos(x, y)
-    else
+      @logo = LVGL::LVImage.new(@page)
+      @logo.set_src(file)
       @logo.set_pos(*center(@logo, 0, -@logo.get_height))
     end
 
@@ -205,17 +299,7 @@ class UI
   # Its presence will be whatever state the cover is in.
   def add_cover_bgrt()
     return unless has_bgrt?()
-    # Work around the extension sniffing from the image decoders...
-    File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
-    file = "/bgrt.bmp"
-
-    @cover_bgrt = LVGL::LVImage.new(@cover)
-    @cover_bgrt.set_src(file)
-
-    # Position the logo
-    x = File.read("/sys/firmware/acpi/bgrt/xoffset").to_i
-    y = File.read("/sys/firmware/acpi/bgrt/yoffset").to_i
-    @cover_bgrt.set_pos(x, y)
+    @cover_bgrt = add_bgrt(@cover)
   end
 
   def add_textarea()

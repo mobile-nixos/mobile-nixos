@@ -7,6 +7,8 @@
 , SDL2
 , libdrm
 , libevdev
+, libinput
+, libxkbcommon
 , withSimulator ? false
 }:
 
@@ -15,86 +17,16 @@ let
   simulatorDeps = [
     SDL2
   ];
-
-  # Minified libinput, both for size and cross-compilation.
-  libinput = (pkgs.libinput.override({
-    # libwacom doesn't cross-compile at the moment
-    libwacom = null;
-
-    documentationSupport = false;
-    doxygen = null;
-    graphviz = null;
-
-    eventGUISupport = false;
-    cairo = null;
-    glib = null;
-    gtk3 = null;
-
-    testsSupport = false;
-    check = null;
-    valgrind = null;
-    python3 = null;
-  })).overrideAttrs(old: {
-    buildInputs = with pkgs; [
-      libevdev
-      mtdev
-    ];
-    nativeBuildInputs = old.nativeBuildInputs ++ [
-      pkgs.buildPackages.udev
-    ];
-    mesonFlags = old.mesonFlags ++ [
-      "-Dlibwacom=false"
-    ];
-  });
-
-  libxkbcommon = pkgs.callPackage (
-    { stdenv
-    , libxkbcommon
-    , meson
-    , ninja
-    , pkg-config
-    , bison
-    }:
-
-    libxkbcommon.overrideAttrs({...}: {
-      nativeBuildInputs = [ meson ninja pkg-config bison ];
-      buildInputs = [ ];
-
-      mesonFlags = [
-        "-Denable-wayland=false"
-        "-Denable-x11=false"
-        "-Denable-docs=false"
-        "-Denable-xkbregistry=false"
-
-        # This is because we're forcing uses of this build
-        # to define config and locale root; for stage-1 use.
-        # In stage-2, use the regular xkbcommon lib.
-        "-Dxkb-config-root=/NEEDS/OVERRIDE/etc/X11/xkb"
-        "-Dx-locale-root=/NEEDS/OVERRIDE/share/X11/locale"
-      ];
-
-      outputs = [ "out" "dev" ];
-
-      # Ensures we don't get any stray dependencies.
-      allowedReferences = [
-        "out"
-        "dev"
-        stdenv.cc.libc_lib
-      ];
-    })
-
-  ) {};
-
 in
   stdenv.mkDerivation {
     pname = "lvgui";
-    version = "2024-03-29";
+    version = "2025-08-03";
 
     src = fetchFromGitHub {
       repo = "lvgui";
       owner = "mobile-nixos";
-      rev = "8768bab377a7ccab0b25b96d204af670820f8c76";
-      hash = "sha256-lDmUppndyDGY1EJT7FC6Fdb3AT2M6D75FnXw4bPNrD0=";
+      rev = "4d1c176c2cfdf11a1e9624ae702c1dafd694c33c";
+      hash = "sha256-6gHTdu8TMn7JQ7dSdCPi2/VXeq+p8iHnmojm+cHbew8=";
     };
 
     # Document `LVGL_ENV_SIMULATOR` in the built headers.

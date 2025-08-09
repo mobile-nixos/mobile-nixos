@@ -16,7 +16,7 @@ Read more: <<about.adoc#,About Mobile NixOS>>.
 endif::[]
 
 ifdef::env-github[]
-⚠️ **Note**: Mobile NixOS is only expected to build succesfully against the **unstable** branch of Nixpkgs.
+⚠️ **Note**: Mobile NixOS is only expected to build successfully against the **unstable** branch of Nixpkgs.
 endif::[]
 
 == Documentation
