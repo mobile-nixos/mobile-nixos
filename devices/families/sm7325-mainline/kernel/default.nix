@@ -6,14 +6,14 @@
 
 # SC7280 is a compute variant of the SM7325
 mobile-nixos.kernel-builder {
-  version = "6.15.0";
+  version = "6.16.0";
   configfile = ./config.aarch64;
 
   src = fetchFromGitHub {
     owner = "sc7280-mainline";
     repo = "linux";
-    rev = "fc7454ac825ba92e59c202fd32944646cf87c7bc";
-    hash = "sha256-P+B8ln0enxAs1m6GdMnFFDnzWad+UiNPf3uAcl0/1Dk=";
+    rev = "6cfded7852edc676a16fd61eae38ae030ae9b8f6";
+    hash = "sha256-FRMPG/DgvgVhe9CT9GUqC2MnOTSZQbq6FzwWjpjaFs8=";
   };
 
   patches = [
