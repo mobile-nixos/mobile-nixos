@@ -20,7 +20,7 @@
   };
 
   boot.kernelModules = [
-    "snd_soc_sm8250"
+    "snd_soc_sc7280"
     "snd_soc_tfa987x"
   ];
 
