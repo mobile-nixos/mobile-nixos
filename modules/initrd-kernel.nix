@@ -12,12 +12,21 @@ let
   ;
   cfg = config.mobile.boot.stage-1.kernel;
 
-  modulesClosure = pkgs.makeModulesClosure {
-    kernel = cfg.package;
-    allowMissing = cfg.allowMissingModules;
-    rootModules = cfg.modules ++ cfg.additionalModules;
-    firmware = config.hardware.firmware;
-  };
+  modulesClosure = pkgs.makeModulesClosure (
+    {
+      kernel =
+        # Use the "new" split output for modules, when available.
+        # Fixes breakage caused by https://github.com/NixOS/nixpkgs/pull/423933
+        cfg.package.modules or cfg.package
+      ;
+      allowMissing = cfg.allowMissingModules;
+      rootModules = cfg.modules ++ cfg.additionalModules;
+      firmware = config.hardware.firmware;
+    } //
+    (lib.optionalAttrs ((builtins.functionArgs pkgs.makeModulesClosure) ? allowEmpty) {
+      allowEmpty = !cfg.modular;
+    })
+  );
 
   inherit (config.mobile.quirks) supportsStage-0;
 in
