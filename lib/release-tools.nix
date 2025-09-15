@@ -4,6 +4,15 @@ if pkgs == null then (builtins.throw "The `pkgs` argument needs to be provided t
 let
   # Original `evalConfig`
   evalConfig = import "${toString pkgs.path}/nixos/lib/eval-config.nix";
+  inherit (pkgs.lib)
+    filterAttrsRecursive
+    getAttrFromPath
+    isAttrs
+    isDerivation
+    isList
+    last
+    mapAttrsRecursive
+  ;
 in
 rec {
   # This should *never* rely on lib or pkgs.
@@ -80,4 +89,88 @@ rec {
       # The simplest eval for a device, with an empty configuration.
       evalFor = evalWithConfiguration {};
     };
+
+  # Given an overlay, and an attrset faking some needed attributes (as workarounds),
+  # will produce an attrset with null values.
+  # Use the result with `mapAttrsRecursive` to evaluate the overlay attributes.
+  readOverlayAttributeNames =
+    workarounds: overlay:
+    let
+      overlayAttrs = builtins.attrNames (overlay {} {});
+      bogusPkgs =
+        rec {
+          __tarpit = _: __tarpit; /* tarpit to allow type-checking */
+          callPackage = expr: args:
+            bogusPkgs.__tarpit
+          ;
+          overrideScope = arg:
+            let
+              scopeAttrs = builtins.attrNames (self);
+              super =
+                bogusPkgs
+                // (builtins.listToAttrs (builtins.map (name: { inherit name; value = super; }) scopeAttrs))
+              ;
+              self = arg self super;
+            in
+              self
+          ;
+          overrideAttrs = __tarpit;
+          pkgsStatic = bogusPkgs;
+        }
+        // (builtins.listToAttrs (builtins.map (name: { inherit name; value = bogusPkgs; }) overlayAttrs))
+        // (workarounds bogusPkgs)
+      ;
+      blockedAttributes =
+        filterAttrsRecursive
+        (_: v: v == false)
+        bogusPkgs
+      ;
+    in
+    (
+      mapAttrsRecursive
+      (path: value: null)
+      (
+        filterAttrsRecursive
+        (name: value: name != "recurseForDerivations" && value != false)
+        ((overlay bogusPkgs bogusPkgs) // blockedAttributes)
+      )
+    )
+  ;
+
+  recurseIntoPackageSet =
+    { path ? [], packageset, eval }:
+    (
+      if path == []
+      then mapAttrsRecursive
+      else builtins.mapAttrs
+    )
+    (
+      path': _:
+      let
+        currPath = path ++ (
+          if isList path'
+          then path'
+          else [ path' ]
+        );
+        value = getAttrFromPath currPath eval.pkgs;
+        name = last currPath;
+      in
+      if name == "recurseForDerivations" || value == null || value == false
+      then null
+      else
+      if (isDerivation value)
+      then currPath
+      else
+        if isAttrs value && value ? recurseForDerivations && value.recurseForDerivations
+        then (
+          recurseIntoPackageSet {
+            path = currPath;
+            packageset = value;
+            inherit eval;
+          }
+        )
+        else null
+    )
+    packageset
+  ;
 }
