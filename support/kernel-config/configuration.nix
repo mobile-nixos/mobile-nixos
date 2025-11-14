@@ -236,14 +236,14 @@ in
 
     (helpers: with helpers; mkDefaultIze {
       SWAP = yes;
-      ZSWAP = no;
+      ZSWAP = whenAtLeast "6.1" yes;
       ZSMALLOC = yes;
       ZRAM = yes;
       ZRAM_DEF_COMP_LZ4 = (whenAtLeast "5.11" yes);
       ZRAM_DEF_COMP = (whenAtLeast "5.11" (freeform ''"lz4"''));
       ZRAM_BACKEND_LZ4 = (whenAtLeast "6.12" yes);
       ZRAM_WRITEBACK = option yes;
-      ZBUD = option yes;
+      ZBUD = whenBetween "6.1" "6.15" yes;
 
       CRYPTO_LZ4 = (whenAtLeast "3.11" yes);
     })
