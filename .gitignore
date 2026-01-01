@@ -6,9 +6,6 @@ result-*
 # Local overrides
 local.nix
 
-# copilot saved sessions
-copilot-sessions
-
 # Misc
 *.swp
 devices/*/kernel/config.*.old
