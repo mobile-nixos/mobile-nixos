@@ -47,6 +47,8 @@
 , bison
 , flex
 
+, python3
+
 # For menuconfig
 , ncurses
 , pkg-config
@@ -168,6 +170,7 @@ in
 } @ inputArgs:
 
 let
+  userInstallTargets = inputArgs.installTargets or [];
   evaluatedStructuredConfig = import ./eval-config.nix {
     inherit lib path version writeShellScript;
     structuredConfig = (systemBuild-structuredConfig version);
@@ -202,7 +205,7 @@ in
 # We'll re-use this derivation inside passthru for normalizedConfig and menuconfig.
 let kernelDerivation =
 
-stdenv.mkDerivation (inputArgs // {
+stdenv.mkDerivation ((inputArgs // {
   pname = "linux";
   inherit src version;
   inherit qcdt_dtbs exynos_dtbs exynos_platform exynos_subtype;
@@ -222,6 +225,7 @@ stdenv.mkDerivation (inputArgs // {
     ++ optional (lib.versionAtLeast version "4.15") util-linux
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
+    ++ optional  (lib.versionAtLeast version "5.0")  python3
     ++ optional  (lib.versionAtLeast version "5.2")  cpio
     ++ optional  (lib.versionAtLeast version "5.8")  elfutils
     ++ optional  (isCompressed == "lz4") lz4
@@ -453,14 +457,10 @@ stdenv.mkDerivation (inputArgs // {
   # no-op buildPhase if we combine build and install steps
   buildPhase = if enableCombiningBuildAndInstallQuirk then ":" else null;
 
-  installTargets =
-    # zinstall only deals with `Image.gz`
-    # install will install the uncompressed kernel only...
-    # Though it's not an issue as we copy it ourselves anyway.
-    (if isCompressed == "gz" then [ "zinstall" ] else [ "install" ])
-    ++ installTargets
-    ++ optional isModular "modules_install"
-  ;
+    installTargets =
+      [ "install" ]
+      ++ userInstallTargets
+      ++ optional isModular "modules_install";
 
   preInstall = optionalString enableCombiningBuildAndInstallQuirk ''
     echo ":: Running preBuild hook before preInstall (combined build/install quirk)"
@@ -487,6 +487,24 @@ stdenv.mkDerivation (inputArgs // {
     # Clean up potential broken symlinks
     rm -vf "$out/lib/modules/${modDirVersion}/build"
     rm -vf "$out/lib/modules/${modDirVersion}/source"
+
+    # Install Image.gz if present, or create it from Image if needed
+    img_path="$buildRoot/arch/${platform.linuxArch}/boot/Image"
+    img_gz_path="$buildRoot/arch/${platform.linuxArch}/boot/Image.gz"
+    if [ -f "$img_path" ]; then
+      if [ ! -f "$img_gz_path" ]; then
+        echo ":: Creating Image.gz from Image"
+        gzip -c "$img_path" > "$img_gz_path"
+      fi
+      cp -v "$img_gz_path" "$out/"
+    fi
+
+    # Only install vmlinuz.efi if it exists (EFI build)
+    efi_path="$buildRoot/arch/${platform.linuxArch}/boot/efi/vmlinuz.efi"
+    if [ -f "$efi_path" ]; then
+      echo ":: Installing vmlinuz.efi (EFI kernel)"
+      cp -v "$efi_path" "$out/"
+    fi
 
   '' + optionalString hasDTB ''
     echo ":: Installing DTBs"
@@ -691,5 +709,5 @@ stdenv.mkDerivation (inputArgs // {
       '';
     });
   };
-});
+}));
 in kernelDerivation
