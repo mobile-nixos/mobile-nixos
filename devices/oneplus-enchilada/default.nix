@@ -22,4 +22,11 @@
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.device_name = "OnePlus6";
+
+  # Touchscreen support in initrd
+  mobile.boot.stage-1.kernel.modules = [
+    "i2c_qcom_geni"
+    "rmi_core"
+    "rmi_i2c"
+  ];
 }
