@@ -15,6 +15,7 @@ in
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
     qc-image-unpacker = callPackage ./qc-image-unpacker { };
+    tow-boot = callPackage ./tow-boot { };
     ufdt-apply-overlay = callPackage ./ufdt-apply-overlay {};
 
     # Extra "libs"
