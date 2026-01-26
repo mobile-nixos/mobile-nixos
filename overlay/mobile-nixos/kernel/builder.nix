@@ -522,7 +522,7 @@ stdenv.mkDerivation (inputArgs // {
     + maybeString postInstall
   ;
 
-  hardeningDisable = [ "bindnow" "format" "fortify" "stackprotector" "pic" "pie" ];
+  hardeningDisable = [ "bindnow" "format" "fortify" "stackprotector" "pic" ];
 
   makeFlags = [
     "O=$(buildRoot)"
