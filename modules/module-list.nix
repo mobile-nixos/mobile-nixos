@@ -31,6 +31,7 @@
   ./initrd-firmware.nix
   ./initrd-kernel.nix
   ./initrd-logs.nix
+  ./initrd-microhop.nix
   ./initrd-network.nix
   ./initrd-shell.nix
   ./initrd-ssh.nix
