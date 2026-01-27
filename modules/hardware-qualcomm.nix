@@ -16,6 +16,7 @@ let
     cfg.qualcomm-msm8996.enable
     cfg.qualcomm-msm8998.enable
     cfg.qualcomm-sc7180.enable
+    cfg.qualcomm-sc7280.enable
     cfg.qualcomm-sdm660.enable
     cfg.qualcomm-sdm845.enable
     cfg.qualcomm-sm6125.enable
@@ -58,6 +59,11 @@ in
       type = types.bool;
       default = false;
       description = "enable when SOC is 7c (SC7180)";
+    };
+    hardware.socs.qualcomm-sc7280.enable = mkOption {
+      type = types.bool;
+      default = false;
+      description = "enable when SOC is SC7280 (QCM6490)";
     };
     hardware.socs.qualcomm-sdm660.enable = mkOption {
       type = types.bool;
@@ -105,6 +111,12 @@ in
     {
       mobile = mkIf cfg.qualcomm-sc7180.enable {
         system.system = "aarch64-linux";
+      };
+    }
+    {
+      mobile = mkIf cfg.qualcomm-sc7280.enable {
+        system.system = "aarch64-linux";
+        boot.boot-control.enable = mkDefault true;
       };
     }
     {
