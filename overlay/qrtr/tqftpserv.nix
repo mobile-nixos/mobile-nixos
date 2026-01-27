@@ -1,28 +1,46 @@
-{ stdenv, lib, fetchFromGitHub, qrtr }:
-
-stdenv.mkDerivation {
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  meson,
+  ninja,
+  pkg-config,
+  qrtr,
+  zstd,
+  systemd,
+}:
+stdenv.mkDerivation rec {
   pname = "tqftpserv";
-  version = "unstable-2020-02-07";
+  version = "1.1.1";
 
-  buildInputs = [ qrtr ];
+  nativeBuildInputs = [
+    meson
+    ninja
+    pkg-config
+  ];
+
+  buildInputs = [
+    qrtr
+    zstd
+    systemd
+  ];
 
   src = fetchFromGitHub {
-    owner = "andersson";
+    owner = "linux-msm";
     repo = "tqftpserv";
-    rev = "783425b550de2a359db6aa3b41577c3fbaae5903";
-    hash = "sha256-Qybmd/mXhKotCem/xN0bOvWyAp2VJf+Hdh6PQyFnd3s==";
+    tag = "v${version}";
+    hash = "sha256-cwoAinvO2bQ6Ylx1zzh5ycE7om2vgk9uqyDJhpy6jP4=";
   };
 
   patches = [
     ./tqftpserv-firmware-path.diff
   ];
 
-  installFlags = [ "prefix=$(out)" ];
-
   meta = with lib; {
     description = "Trivial File Transfer Protocol server over AF_QIPCRTR";
-    homepage = "https://github.com/andersson/tqftpserv";
+    homepage = "https://github.com/linux-msm/tqftpserv";
     license = licenses.bsd3;
+    maintainers = [ ];
     platforms = platforms.aarch64;
   };
 }
