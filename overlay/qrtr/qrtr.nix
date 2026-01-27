@@ -1,22 +1,37 @@
-{ stdenv, lib, fetchFromGitHub }:
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  meson,
+  ninja,
+  pkg-config,
+  systemd,
+}:
 
 stdenv.mkDerivation {
   pname = "qrtr";
-  version = "unstable-2020-12-07";
+  version = "unstable-2025-12-08";
 
   src = fetchFromGitHub {
-    owner = "andersson";
+    owner = "linux-msm";
     repo = "qrtr";
-    rev = "9dc7a88548c27983e06465d3fbba2ba27d4bc050";
-    hash = "sha256-eJyErfLpIv4ndX2MPtjLTOQXrcWugQo/03Kz4S8S0xw=";
+    rev = "a38e9afbe76270262dc157749602229b8b681f09";
+    hash = "sha256-KxWDiTl+vbGZpB+OWYvH2/NvCWCJXZcpegAnkrG0UIo=";
   };
 
-  installFlags = [ "prefix=$(out)" ];
+  nativeBuildInputs = [
+    meson
+    ninja
+    pkg-config
+  ];
+
+  buildInputs = [ systemd ];
 
   meta = with lib; {
-    description = "QMI IDL compiler";
-    homepage = "https://github.com/andersson/qrtr";
+    description = "Qualcomm IPC Router userspace tools and library";
+    homepage = "https://github.com/linux-msm/qrtr";
     license = licenses.bsd3;
-    platforms = platforms.aarch64;
+    maintainers = with lib.maintainers; [ ];
+    platforms = platforms.linux;
   };
 }
