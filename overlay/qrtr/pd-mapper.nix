@@ -1,28 +1,35 @@
-{ stdenv, lib, fetchFromGitHub, qrtr }:
-
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  qrtr,
+  xz,
+}:
 stdenv.mkDerivation {
   pname = "pd-mapper";
-  version = "unstable-2022-02-08";
+  # No versioned releases, so let's use the commit hash for now.
+  version = "0a43c8be564feae0493b6e24b2e3e98459a4f9b6";
 
-  buildInputs = [ qrtr ];
+  buildInputs = [qrtr xz];
 
   src = fetchFromGitHub {
-    owner = "andersson";
+    owner = "linux-msm";
     repo = "pd-mapper";
-    rev = "9d78fc0c6143c4d1b7198c57be72a6699ce764c4";
-    hash = "sha256-vQZZ3WtZGh5OEw0EmlmT/My/cY6VRruuicsFR0YCQOw=";
+    rev = "0a43c8be564feae0493b6e24b2e3e98459a4f9b6";
+    hash = "sha256-XiEZS+hb44nD1o1Xvjnrq5ead7Nym/Yg7iCnr93qC+k=";
   };
 
   patches = [
     ./pd-mapper-firmware-path.diff
   ];
 
-  installFlags = [ "prefix=$(out)" ];
+  installFlags = ["prefix=$(out)"];
 
   meta = with lib; {
     description = "Qualcomm PD mapper";
-    homepage = "https://github.com/andersson/pd-mapper";
+    homepage = "https://github.com/linux-msm/pd-mapper";
     license = licenses.bsd3;
+    maintainers = [];
     platforms = platforms.aarch64;
   };
 }
