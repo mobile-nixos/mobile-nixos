@@ -99,6 +99,6 @@ mobile-nixos.kernel-builder {
     ln -sv Image.gz "$out/vmlinuz" || true
   '';
 
-  isModular = false;
+  isModular = true;
   isCompressed = "gz";
 }
