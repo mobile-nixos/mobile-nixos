@@ -85,7 +85,7 @@ mobile-nixos.kernel-builder {
 
   patches = [];
 
-  nativeBuildInputs = [ buildPackages.python3 ];
+  nativeBuildInputs = [ buildPackages.python3 buildPackages.zstd ];
 
   # Don't use zinstall, it expects EFI boot files which ARM64 doesn't generate
   installTargets = [ ];
