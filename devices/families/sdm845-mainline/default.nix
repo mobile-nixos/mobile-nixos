@@ -46,6 +46,12 @@
         "uuid=44444444-4444-4444-8888-888888888888: ext4,/,rw"
       ];
 
+      # Mask the bootloader's root parameter
+      # The Android bootloader passes a hardcoded PARTUUID at runtime that doesn't
+      # match our filesystem. By masking "root" from cmdline, microhop will use
+      # the disk configuration above instead.
+      mask_cmdline = [ "root" ];
+
       # Filesystem types to support
       filesystems = [ "ext4" ];
 
