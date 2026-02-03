@@ -166,6 +166,8 @@ let
       CONFIG_HID_SENSOR_CUSTOM_INTEL_HINGE=y
       CONFIG_HID_SENSOR_PRESS=y
       CONFIG_HID_SENSOR_PROX=y
+
+      CONFIG_GPIO_SHARED_PROXY=y
       EOF
 
             # Run olddefconfig to resolve dependencies
