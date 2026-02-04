@@ -7,11 +7,14 @@
 
   mobile.device.name = "google-blueline";
 
-  # Enable console output on the serial port
-  boot.kernelParams = [
+  # Kernel command line parameters for the boot image
+  # Note: Use mobile.system.android.kernelParams for Android devices to avoid
+  # inheriting unwanted NixOS system defaults (like loglevel=4, lsm=landlock,yama,bpf)
+  mobile.system.android.kernelParams = [
     "console=ttyMSM0,115200"
     "loglevel=8"
   ];
+
   mobile.device.identity = {
     name = "Pixel 3";
     manufacturer = "Google";

@@ -11,7 +11,9 @@ let
 
   kernelPackage = kernel.package;
 
-  cmdline = concatStringsSep " " config.boot.kernelParams;
+  # Use mobile-specific kernel parameters only, avoiding NixOS system defaults
+  # that may be incompatible with mobile/Android boot requirements
+  cmdline = concatStringsSep " " config.mobile.system.android.kernelParams;
 
   android-bootimg = pkgs.callPackage ./bootimg.nix rec {
     inherit (config.mobile.system.android) bootimg;
@@ -168,6 +170,18 @@ in
         type = with types; nullOr (listOf (oneOf [path str]));
         default = null;
         description = "List of dtb files to append to the kernel, when device uses appended DTB.";
+      };
+
+      kernelParams = lib.mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          Kernel command line parameters for the Android boot image.
+          This is separate from boot.kernelParams to avoid inheriting unwanted
+          NixOS system defaults. Use boot.kernelParams in device configurations
+          and they will be automatically copied here.
+        '';
+        internal = true;
       };
     };
     mobile = {
