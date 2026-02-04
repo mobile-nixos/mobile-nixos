@@ -128,4 +128,14 @@ in
     };
 
     image-builder = callPackage ./image-builder {};
+
+    # Strip large/unneeded vendor firmware directories from the compressed
+    # linux-firmware variant to keep images small.
+    linux-firmware = (final.linux-firmware // {
+      zstd = final.linux-firmware.zstd.overrideAttrs (old: {
+        postInstall = (old.postInstall or "") + ''
+          rm -rf $out/lib/firmware/intel $out/lib/firmware/nvidia $out/lib/firmware/mellanox $out/lib/firmware/mrvl $out/lib/firmware/amdgpu $out/lib/firmware/mediatek || true
+        '';
+      });
+    });
  }
