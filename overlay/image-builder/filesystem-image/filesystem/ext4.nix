@@ -108,10 +108,28 @@ in
 
       buildPhases = {
         copyPhase = ''
+          # Count files and directories to calculate required inodes
+          # NixOS systems need roughly one inode per file/directory
+          local file_count=$(find . -type f | wc -l)
+          local dir_count=$(find . -type d | wc -l)
+          local total_items=$((file_count + dir_count))
+          
+          # Add 20% safety margin for future file creation
+          local inode_count=$((total_items * 120 / 100))
+          
+          # Ensure minimum inode count (at least 8192)
+          if (( inode_count < 8192 )); then
+            inode_count=8192
+          fi
+          
+          echo "Found $file_count files and $dir_count directories (total: $total_items items)" 1>&2
+          echo "Allocating $inode_count inodes (with 20% safety margin)" 1>&2
+          
           faketime -f "1970-01-01 00:00:01" \
             make_ext4fs \
             -b $blockSize \
             -l $size \
+            -i $inode_count \
             ${optionalString (partitionID != null) "-U ${partitionID}"} \
             ${optionalString (label != null) "-L ${escapeShellArg label}"} \
             "$img" \
