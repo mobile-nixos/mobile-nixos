@@ -31,9 +31,17 @@ let
   # either of fastboot or the outputs.
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
-  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {} ''
+  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {
+    nativeBuildInputs = lib.optionals config.mobile.system.android.useSparseImage [ pkgs.android-tools ];
+  } ''
     mkdir -p $out
+    ${if config.mobile.system.android.useSparseImage then ''
+    # Convert system.img to Android sparse format
+    echo "Converting system.img to Android sparse format..."
+    img2simg ${rootfs.imagePath} $out/system.img
+    '' else ''
     cp -v ${rootfs.imagePath} $out/system.img
+    ''}
     cp -v ${android-bootimg} $out/boot.img
     ${optionalString has_recovery_partition ''
     cp -v ${android-recovery} $out/recovery.img
@@ -136,6 +144,13 @@ in
         type = types.str;
         description = "Partition label on which to install the system image. E.g. change to `userdata` when it does not fit in the system partition.";
         default = "system";
+        internal = true;
+      };
+
+      useSparseImage = lib.mkOption {
+        type = types.bool;
+        description = "Convert the system image to Android sparse format using img2simg. Required for some devices.";
+        default = false;
         internal = true;
       };
 
