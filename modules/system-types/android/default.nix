@@ -33,9 +33,13 @@ let
   # either of fastboot or the outputs.
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
-  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {} ''
+  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {
+    nativeBuildInputs = [ pkgs.android-tools ];
+  } ''
     mkdir -p $out
-    cp -v ${rootfs.imagePath} $out/system.img
+    # Convert system.img to Android sparse format
+    echo "Converting system.img to Android sparse format..."
+    img2simg ${rootfs.imagePath} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
     ${optionalString has_recovery_partition ''
     cp -v ${android-recovery} $out/recovery.img
