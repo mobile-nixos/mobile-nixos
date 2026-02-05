@@ -47,6 +47,7 @@
   ./nixpkgs.nix
   ./outputs.nix
   ./plymouth.nix
+  ./phosh.nix
   ./quirks
   ./recovery.nix
   ./rootfs.nix
