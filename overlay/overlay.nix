@@ -130,12 +130,29 @@ in
     image-builder = callPackage ./image-builder {};
 
     # Strip large/unneeded vendor firmware directories from the compressed
-    # linux-firmware variant to keep images small.
-    linux-firmware = (final.linux-firmware // {
-      zstd = final.linux-firmware.zstd.overrideAttrs (old: {
-        postInstall = (old.postInstall or "") + ''
-          rm -rf $out/lib/firmware/intel $out/lib/firmware/nvidia $out/lib/firmware/mellanox $out/lib/firmware/mrvl $out/lib/firmware/amdgpu $out/lib/firmware/mediatek || true
-        '';
-      });
-    });
+    # linux-firmware variant to keep images small. Use `super` to avoid
+    # referencing the overlay'd package set (prevents recursion).
+    linux-firmware =
+      let
+        base = super.linux-firmware;
+        stripCmd = ''rm -rf $out/lib/firmware/intel $out/lib/firmware/nvidia $out/lib/firmware/mellanox $out/lib/firmware/mrvl $out/lib/firmware/amdgpu $out/lib/firmware/mediatek || true'';
+        zstdVariant = if base ? zstd then base.zstd.overrideAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ super.zstd ];
+          postInstall = (old.postInstall or "") + ''
+            # Compress regular firmware files to .zst and remove originals
+            if [ -d $out/lib/firmware ]; then
+              find $out/lib/firmware -type f ! -name '*.zst' -print0 | xargs -0 -r ${super.zstd}/bin/zstd -10 --rm --force
+            fi
+            ${stripCmd}
+          '';
+        }) else base.overrideAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ super.zstd ];
+          postInstall = (old.postInstall or "") + ''
+            if [ -d $out/lib/firmware ]; then
+              find $out/lib/firmware -type f ! -name '*.zst' -print0 | xargs -0 -r ${super.zstd}/bin/zstd -10 --rm --force
+            fi
+            ${stripCmd}
+          '';
+        });
+      in base // { zstd = zstdVariant; };
  }
