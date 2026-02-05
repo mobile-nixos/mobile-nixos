@@ -58,49 +58,22 @@
       # Block device drivers
       blockDevices = [ "ufshcd" "ufs-qcom" ];
 
-      logLevel = "info";
+      logLevel = "debug";
     };
   };
 
-  hardware.enableRedistributableFirmware = true;
+  hardware.enableRedistributableFirmware = false;
 
-  # Note: on devices it's highly likely no firmware is required during stage-1.
-  # DRM *should* work fine without firmware.
-  # Modems and such will pick them back up in stage-2.
-  # Even though, we're eagerly adding firmware files that fit.
-  # This is a workaround for non-modular kernels wanting to load the adsp firmware during stage-1.
-
-  # For microhop: Add GPU firmware from linux-firmware and device-specific firmware
-  # The a630_zap.mbn file is required for GPU initialization
   mobile.boot.stage-1.microhop.firmwareFiles = lib.mkIf config.mobile.boot.stage-1.microhop.enable (
     let
-      # Extract codename from device name (e.g., "google-blueline" -> "blueline")
       deviceCodename = lib.last (lib.splitString "-" config.mobile.device.name);
     in
     [
-      "${pkgs.linux-firmware.zstd}/lib/firmware/qcom/a630_sqe.fw.zstd"
-      "${pkgs.linux-firmware.zstd}/lib/firmware/qcom/a630_gmu.bin.zstd"
-      # Include device-specific a630_zap.mbn firmware (REQUIRED)
-      # Path structure: qcom/sdm845/Vendor/codename/a630_zap.mbn
-      "${config.mobile.device.firmware}/lib/firmware/qcom/sdm845/${config.mobile.device.identity.manufacturer}/${deviceCodename}/a630_zap.mbn"
+      "${pkgs.linux-firmware.zstd}/lib/firmware/qcom/a630_sqe.fw.zst"
+      "${pkgs.linux-firmware.zstd}/lib/firmware/qcom/a630_gmu.bin.zst"
+      "${config.mobile.device.firmware}/lib/firmware/qcom/sdm845/${config.mobile.device.identity.manufacturer}/${deviceCodename}/a630_zap.mbn.zst"
     ]
   );
-
-  # For legacy stage-1, keep the old approach
-  mobile.boot.stage-1.firmware = lib.mkIf (!config.mobile.boot.stage-1.microhop.enable) [
-    (pkgs.runCommand "initrd-firmware" {} ''
-      cp -vrf ${config.mobile.device.firmware} $out
-      chmod -R +w $out
-      # Big file, fills and breaks stage-1
-      # Use find to safely remove modem.mbn files if they exist
-      find $out/lib/firmware/qcom/sdm845 -name "modem.mbn" -type f -delete -print || true
-
-      # Copy extra a630 firmware from linux-firmware
-      mkdir -p $out/lib/firmware/qcom
-      cp -vf ${pkgs.linux-firmware.zstd}/lib/firmware/qcom/{a630_sqe.fw.zstd,a630_gmu.bin.zstd} $out/lib/firmware/qcom
-    '')
-  ];
-
 
   mobile.system.type = "android";
   mobile.system.android = {
