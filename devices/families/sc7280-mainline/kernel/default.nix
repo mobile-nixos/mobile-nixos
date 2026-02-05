@@ -116,10 +116,5 @@ mobile-nixos.kernel-builder {
     # Create symlink for compatibility
     ln -sv Image.gz "$out/vmlinuz" || true
 
-    # Also install the uncompressed Image for NixOS compatibility
-    if [ ! -f "$out/Image" ]; then
-      echo "Decompressing Image.gz to Image for NixOS compatibility..."
-      ${buildPackages.gzip}/bin/gunzip -c "$out/Image.gz" > "$out/Image"
-    fi
   '';
 }
