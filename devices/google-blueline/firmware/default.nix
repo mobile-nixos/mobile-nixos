@@ -2,6 +2,7 @@
   lib,
   stdenvNoCC,
   fetchFromGitLab,
+  zstd,
 }:
 stdenvNoCC.mkDerivation {
   pname = "firmware-google-blueline";
@@ -14,16 +15,25 @@ stdenvNoCC.mkDerivation {
     hash = "sha256-fTbTV74qNQ9FSt78w+mvLF8CKBrThPLO/UhFvXYcO44=";
   };
 
+  nativeBuildInputs = [ zstd ];
+
   installPhase = ''
     runHook preInstall
 
     mkdir -p $out/lib/firmware
-    # Copy firmware, but handle the case where source already has lib/firmware in path
+    # Copy firmware only from lib/firmware if present; avoid installing full repo sources
     if [ -d lib/firmware ]; then
       cp -r lib/firmware/* $out/lib/firmware/
     else
-      cp -r * $out/lib/firmware/
+      echo "No lib/firmware directory in source; nothing to install."
     fi
+
+    # Remove unwanted large firmware directories
+    rm -rf $out/lib/firmware/intel $out/lib/firmware/nvidia $out/lib/firmware/mellanox $out/lib/firmware/mrvl $out/lib/firmware/amdgpu $out/lib/firmware/mediatek || true
+
+    # Compress firmware files to .zst and remove uncompressed originals
+    find $out/lib/firmware -type f ! -name '*.zst' -print0 |
+      xargs -0 -r -n1 sh -c 'for f; do zstd -q -19 --long=10 --rm "$f" -o "$f.zst" || exit 1; done' sh
 
     runHook postInstall
   '';
