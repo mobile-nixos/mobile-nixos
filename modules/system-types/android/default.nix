@@ -11,7 +11,9 @@ let
 
   kernelPackage = kernel.package;
 
-  cmdline = concatStringsSep " " config.boot.kernelParams;
+  # Use mobile-specific kernel parameters only, avoiding NixOS system defaults
+  # that may be incompatible with mobile/Android boot requirements
+  cmdline = concatStringsSep " " config.mobile.system.android.kernelParams;
 
   android-bootimg = pkgs.callPackage ./bootimg.nix rec {
     inherit (config.mobile.system.android) bootimg;
@@ -31,9 +33,13 @@ let
   # either of fastboot or the outputs.
   # This is because this output should have no refs. A simple tarball of this
   # output should be usable even on systems without Nix.
-  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {} ''
+  android-fastboot-images = pkgs.runCommand "android-fastboot-images-${device.name}" {
+    nativeBuildInputs = [ pkgs.android-tools ];
+  } ''
     mkdir -p $out
-    cp -v ${rootfs.imagePath} $out/system.img
+    # Convert system.img to Android sparse format
+    echo "Converting system.img to Android sparse format..."
+    img2simg ${rootfs.imagePath} $out/system.img
     cp -v ${android-bootimg} $out/boot.img
     ${optionalString has_recovery_partition ''
     cp -v ${android-recovery} $out/recovery.img
@@ -168,6 +174,18 @@ in
         type = with types; nullOr (listOf (oneOf [path str]));
         default = null;
         description = "List of dtb files to append to the kernel, when device uses appended DTB.";
+      };
+
+      kernelParams = lib.mkOption {
+        type = types.listOf types.str;
+        default = [];
+        description = ''
+          Kernel command line parameters for the Android boot image.
+          This is separate from boot.kernelParams to avoid inheriting unwanted
+          NixOS system defaults. Use boot.kernelParams in device configurations
+          and they will be automatically copied here.
+        '';
+        internal = true;
       };
     };
     mobile = {

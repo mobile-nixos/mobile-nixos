@@ -1,0 +1,56 @@
+Bluetooth: hci_qca: drop unused event during BT on
+
+For the WCN6750/WCN6855/WCN7850, the vendor command for a baudrate change is not
+sent as synchronous HCI command, controller sends the corresponding command
+complete event with the new baudrate. The event is received and properly decoded
+after changing the baudrate of the host port. It needs to be dropped, otherwise
+it may be misinterpreted as response to a later command.
+
+This fixes the "unexpected event for opcode 0xfc48" error that prevents the HCI
+controller from completing registration on devices like the Fairphone 5.
+
+Patch adapted from Linux kernel patch by Cheng Jiang
+<quic_chejiang@quicinc.com>. Not merged yet AFAIK.
+See v1: https://lore.kernel.org/lkml/20240726095828.2707111-1-quic_chejiang@quicinc.com
+See v2: https://lore.kernel.org/lkml/20240821091340.424248-1-quic_chejiang@quicinc.com
+
+diff --git a/drivers/bluetooth/hci_qca.c b/drivers/bluetooth/hci_qca.c
+index 4cff4d9be313..2e77e6293b6f 100644
+--- a/drivers/bluetooth/hci_qca.c
++++ b/drivers/bluetooth/hci_qca.c
+@@ -1220,7 +1220,14 @@ static int qca_recv_event(struct hci_dev *hdev, struct sk_buff *skb)
+ 		 * vendor command).
+ 		 */
+ 
+-		if (hdr->evt == HCI_EV_VENDOR)
++		/* For the WCN6750/WCN6855/WCN7850, like the WCN3990, the
++		 * vendor command for a baudrate change command isn't sent as
++		 * synchronous HCI command, the controller sends the corresponding
++		 * command complete event with the new baudrate. The event is
++		 * received and properly decoded after changing the baudrate of
++		 * the host port. It needs to be dropped.
++		 */
++		if (hdr->evt == HCI_EV_VENDOR || hdr->evt == HCI_EV_CMD_COMPLETE)
+ 			complete(&qca->drop_ev_comp);
+ 
+ 		kfree_skb(skb);
+@@ -1515,6 +1522,9 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
+ 
+ 		switch (soc_type) {
+ 		case QCA_WCN3990:
++		case QCA_WCN6750:
++		case QCA_WCN6855:
++		case QCA_WCN7850:
+ 			reinit_completion(&qca->drop_ev_comp);
+ 			set_bit(QCA_DROP_VENDOR_EVENT, &qca->flags);
+ 			break;
+@@ -1550,6 +1560,9 @@ static int qca_set_speed(struct hci_uart *hu, enum qca_speed_type speed_type)
+ 
+ 		switch (soc_type) {
+ 		case QCA_WCN3990:
++		case QCA_WCN6750:
++		case QCA_WCN6855:
++		case QCA_WCN7850:
+ 			/* Wait for the controller to send the vendor event
+ 			 * for the baudrate change command.
+ 			 */

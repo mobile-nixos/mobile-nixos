@@ -67,6 +67,10 @@ in
 
         echo "Done copying system closure..."
         cp -v ${closureInfo}/registration ./nix-path-registration
+
+        echo "Creating /sbin/init symlink..."
+        mkdir -p ./sbin
+        ln -sv ${config.system.build.toplevel}/init ./sbin/init
       '';
 
       # Give some headroom for initial mounting.

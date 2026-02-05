@@ -301,7 +301,7 @@ in
           '';
         };
         initrd = mkOption {
-          type = types.str;
+          type = types.path;
           internal = true;
           description = ''
             Path to the initrd, likely compressed, for the system.

@@ -44,7 +44,8 @@ let
       ${android-flashable-fragment-burnSystem}
     '';
     copyFiles = ''
-      cp -v ${rootfs}/${rootfs.filename} system.img
+      echo "Converting system.img to Android sparse format..."
+      ${pkgs.android-tools}/bin/img2simg ${rootfs}/${rootfs.filename} system.img
     '';
   };
 
@@ -57,7 +58,8 @@ let
     '';
     copyFiles = ''
       cp -v ${android-bootimg} boot.img
-      cp -v ${rootfs}/${rootfs.filename} system.img
+      echo "Converting system.img to Android sparse format..."
+      ${pkgs.android-tools}/bin/img2simg ${rootfs}/${rootfs.filename} system.img
     '';
   };
 in

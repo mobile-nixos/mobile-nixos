@@ -14,7 +14,7 @@ let
 in
 {
   config = mkIf (config.mobile.enable && !config.mobile.rootfs.shared.enabled) {
-    system.extraSystemBuilderCmds = ''
+    system.systemBuilderCommands = ''
       echo ":: Adding Mobile NixOS information to the build..."
       (
         PS4=" $ "; set -x

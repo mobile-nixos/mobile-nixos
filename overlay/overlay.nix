@@ -15,6 +15,7 @@ in
     msm-fb-refresher = callPackage ./msm-fb-refresher { };
     ply-image = callPackage ./ply-image { };
     qc-image-unpacker = callPackage ./qc-image-unpacker { };
+    tow-boot = callPackage ./tow-boot { };
     ufdt-apply-overlay = callPackage ./ufdt-apply-overlay {};
 
     # Extra "libs"
@@ -42,6 +43,8 @@ in
     bootlogd = callPackage ./bootlogd {};
     libusbgx = callPackage ./libusbgx {};
     gadget-tool = callPackage ./gt {}; # upstream this is called "gt", which is very Unix.
+
+    pil-squasher = callPackage ./pil-squasher { };
 
     qrtr = callPackage ./qrtr/qrtr.nix { };
     qmic = callPackage ./qrtr/qmic.nix { };
@@ -125,4 +128,31 @@ in
     };
 
     image-builder = callPackage ./image-builder {};
+
+    # Strip large/unneeded vendor firmware directories from the compressed
+    # linux-firmware variant to keep images small. Use `super` to avoid
+    # referencing the overlay'd package set (prevents recursion).
+    linux-firmware =
+      let
+        base = super.linux-firmware;
+        stripCmd = ''rm -rf $out/lib/firmware/intel $out/lib/firmware/nvidia $out/lib/firmware/mellanox $out/lib/firmware/mrvl $out/lib/firmware/amdgpu $out/lib/firmware/mediatek || true'';
+        zstdVariant = if base ? zstd then base.zstd.overrideAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ super.zstd ];
+          postInstall = (old.postInstall or "") + ''
+            # Compress regular firmware files to .zst and remove originals
+            if [ -d $out/lib/firmware ]; then
+              find $out/lib/firmware -type f ! -name '*.zst' -print0 | xargs -0 -r ${super.zstd}/bin/zstd -10 --rm --force
+            fi
+            ${stripCmd}
+          '';
+        }) else base.overrideAttrs (old: {
+          nativeBuildInputs = (old.nativeBuildInputs or []) ++ [ super.zstd ];
+          postInstall = (old.postInstall or "") + ''
+            if [ -d $out/lib/firmware ]; then
+              find $out/lib/firmware -type f ! -name '*.zst' -print0 | xargs -0 -r ${super.zstd}/bin/zstd -10 --rm --force
+            fi
+            ${stripCmd}
+          '';
+        });
+      in base // { zstd = zstdVariant; };
  }

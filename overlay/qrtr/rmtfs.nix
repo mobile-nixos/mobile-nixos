@@ -1,24 +1,32 @@
-{ stdenv, lib, fetchFromGitHub, udev, qrtr, qmic }:
-
+{
+  stdenv,
+  lib,
+  fetchFromGitHub,
+  udev,
+  qrtr,
+  qmic,
+}:
 stdenv.mkDerivation {
   pname = "rmtfs";
-  version = "unstable-2022-07-18";
+  # No versioned releases, so let's use the commit hash for now.
+  version = "f7566e4c8262c618c09173b93282bec6a340663c";
 
-  buildInputs = [ udev qrtr qmic ];
+  buildInputs = [udev qrtr qmic];
 
   src = fetchFromGitHub {
-    owner = "andersson";
+    owner = "linux-msm";
     repo = "rmtfs";
-    rev = "695d0668ffa6e2a4bf6e676f3c58a444a5d67690";
-    hash = "sha256-00KOjdkwcAER261lleSl7OVDEAEbDyW9MWxDd0GI8KA=";
+    rev = "f7566e4c8262c618c09173b93282bec6a340663c";
+    hash = "sha256-dpW68CXp9q8itzumtRWnr8qyjCup/2sb2CEwsOXAubI=";
   };
 
-  installFlags = [ "prefix=$(out)" ];
+  installFlags = ["prefix=$(out)"];
 
   meta = with lib; {
     description = "Qualcomm Remote Filesystem Service";
-    homepage = "https://github.com/andersson/rmtfs";
+    homepage = "https://github.com/linux-msm/rmtfs";
     license = licenses.bsd3;
+    maintainers = [];
     platforms = platforms.aarch64;
   };
 }

@@ -12,27 +12,68 @@
   mobile.boot.stage-1 = {
     compression = "xz";
     kernel.package = (pkgs.callPackage ./kernel { });
+
+    # Enable microhop-based initramfs
+    microhop = {
+      enable = true;
+      microhop = pkgs.microhop;
+
+      # Display and panel modules (required for DRM/graphics)
+      modules = [
+        # DMA support (CRITICAL - needed for GPU and other devices)
+        "gpi"
+        # DRM core and MSM display driver
+        "msm"
+        "panel-lg-sw43408"
+        # DRM bridge and aux support
+        "aux_bridge"
+        "display_connector"
+        # Additional DRM helpers
+        "drm_display_helper"
+        "drm_kms_helper"
+        # Input devices (touchscreen support)
+        "rmi_core"
+        "rmi_i2c"
+        # Input misc
+        "uinput"
+      ];
+
+      # Disk configuration for root filesystem
+      # Format: "device_identifier: fstype,mountpoint,mode"
+      # Supported identifiers: label=NAME, uuid=UUID, or /dev/path
+      # Using UUID to match the partition ID defined in modules/rootfs.nix
+      disks = [
+        "uuid=44444444-4444-4444-8888-888888888888: ext4,/,rw"
+      ];
+
+      # Mask the bootloader's root parameter
+      # The Android bootloader passes a hardcoded PARTUUID at runtime that doesn't
+      # match our filesystem. By masking "root" from cmdline, microhop will use
+      # the disk configuration above instead.
+      mask_cmdline = [ "root" ];
+
+      # Filesystem types to support
+      filesystems = [ "ext4" ];
+
+      # Block device drivers
+      blockDevices = [ "ufshcd" "ufs-qcom" ];
+
+      logLevel = "debug";
+    };
   };
 
-  hardware.enableRedistributableFirmware = true;
+  hardware.enableRedistributableFirmware = false;
 
-  # Note: on devices it's highly likely no firmware is required during stage-1.
-  # DRM *should* work fine without firmware.
-  # Modems and such will pick them back up in stage-2.
-  # Even though, we're eagerly adding firmware files that fit.
-  # This is a workaround for non-modular kernels wanting to load the adsp firmware during stage-1.
-  mobile.boot.stage-1.firmware = [
-    (pkgs.runCommand "initrd-firmware" {} ''
-      cp -vrf ${config.mobile.device.firmware} $out
-      chmod -R +w $out
-      # Big file, fills and breaks stage-1
-      rm -v $out/lib/firmware/qcom/sdm845/*/modem.mbn
-
-      # Copy extra a630 firmware from linux-firmware
-      cp -vf ${pkgs.linux-firmware}/lib/firmware/qcom/{a630_sqe.fw,a630_gmu.bin} $out/lib/firmware/qcom
-    '')
-  ];
-
+  mobile.boot.stage-1.microhop.firmwareFiles = lib.mkIf config.mobile.boot.stage-1.microhop.enable (
+    let
+      deviceCodename = lib.last (lib.splitString "-" config.mobile.device.name);
+    in
+    [
+      "${pkgs.linux-firmware.zstd}/lib/firmware/qcom/a630_sqe.fw.zst"
+      "${pkgs.linux-firmware.zstd}/lib/firmware/qcom/a630_gmu.bin.zst"
+      "${config.mobile.device.firmware}/lib/firmware/qcom/sdm845/${config.mobile.device.identity.manufacturer}/${deviceCodename}/a630_zap.mbn.zst"
+    ]
+  );
 
   mobile.system.type = "android";
   mobile.system.android = {
