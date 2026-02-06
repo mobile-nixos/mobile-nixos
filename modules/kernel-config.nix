@@ -32,8 +32,8 @@ in
     mobile.kernel.structuredConfig = [
       # Basic universal options
       (helpers: with helpers; {
-        LOCALVERSION = lib.mkDefault (freeform ''""'');
-        LOCALVERSION_AUTO = no;
+        LOCALVERSION = lib.mkDefault (option (freeform ''""''));
+        LOCALVERSION_AUTO = option no;
         # POSIX_ACL and XATTR are generally needed.
         TMPFS = yes;
         TMPFS_POSIX_ACL = yes;
