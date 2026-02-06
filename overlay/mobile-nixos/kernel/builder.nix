@@ -386,6 +386,7 @@ stdenv.mkDerivation ((inputArgs // {
               "CONFIG_ARM64_PTR_AUTH"
               "CONFIG_AS_HAS_CFI_NEGATE_RA_STATE"
               "CONFIG_AS_VERSION"
+              "CONFIG_CC_CAN_LINK"
               "CONFIG_CC_HAS_.*"
               "CONFIG_CC_HAVE_.*"
               "CONFIG_CC_NO_ARRAY_BOUNDS"
