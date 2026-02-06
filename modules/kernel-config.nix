@@ -84,7 +84,7 @@ in
         CRYPTO_HMAC = yes;
         CRYPTO_SHA256 = yes;
         SYSFS_DEPRECATED = no;
-        UEVENT_HELPER = no;
+        UEVENT_HELPER = option no;
         FW_LOADER_USER_HELPER = option no;
         BLOCK = yes;
         SCSI = yes;
