@@ -1,24 +1,31 @@
 {
   mobile-nixos
 , fetchFromGitLab
+, fetchpatch2
 , ...
 }:
 
 mobile-nixos.kernel-builder {
-  version = "6.17.3";
+  version = "6.17.7";
   configfile = ./config.aarch64;
 
   src = fetchFromGitLab {
     owner = "pine64-org";
     repo = "linux";
-    rev = "ppp-6.17-20251019-0848";
-    hash = "sha256-9qZbkvQC/Nm4+rVR1doHE3FVMUOOHloZhdXwMiiRQeE=";
+    rev = "ppp-6.17-20251104-2007";
+    hash = "sha256-2M6kmeiqjJVR3SvEqqXJpgq3s6iFky4flqVVpue4cbQ=";
   };
 
   patches = [
     ./0001-arm64-dts-rockchip-set-type-c-dr_mode-as-otg.patch
     ./0002-dts-pinephone-pro-Setup-default-on-and-panic-LEDs.patch
     ./0003-usb-dwc3-Enable-userspace-role-switch-control.patch
+    (fetchpatch2 {
+      # Fix battery status not being visible, see https://gitlab.postmarketos.org/postmarketOS/pmaports/-/issues/4080
+      name = "tcpm-allow-looking-for-role_sw-device-in-the-main-no.patch";
+      url = "https://lore.kernel.org/all/20251127-fix-ppp-power-v1-1-52cdd74c0ee6@collabora.com/raw";
+      hash = "sha256-okWjTHV9N6MToGwOkOqBO1Yz8qv6zvBVbyx1HnEEU9w=";
+    })
   ];
 
   postInstall = ''
