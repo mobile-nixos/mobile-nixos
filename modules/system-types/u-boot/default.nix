@@ -165,18 +165,23 @@ in
 
         ext4.partitionID = "ED3902B6-920A-4971-BC07-966D4E021683";
         populateCommands = ''
-          mkdir -vp mobile-nixos/{boot,recovery}
+          mkdir -vp mobile-nixos/{boot,recovery,storage}
           (
-          cd mobile-nixos/boot
-          cp -v ${stage-0.mobile.outputs.initrd} stage-1
+          cd mobile-nixos/storage
           cp -v ${kernel_file} kernel
           cp -vr ${kernel}/dtbs dtbs
           )
           (
+          cd mobile-nixos/boot
+          cp -v ${stage-0.mobile.outputs.initrd} stage-1
+          ln --symbolic --verbose ../storage/kernel kernel
+          ln --symbolic --verbose ../storage/dtbs dtbs
+          )
+          (
           cd mobile-nixos/recovery
           cp -v ${recovery.mobile.outputs.initrd} stage-1
-          cp -v ${kernel_file} kernel
-          cp -vr ${kernel}/dtbs dtbs
+          ln --symbolic --verbose ../storage/kernel kernel
+          ln --symbolic --verbose ../storage/dtbs dtbs
           )
           cp -v ${bootscr} ./boot.scr
         '';
