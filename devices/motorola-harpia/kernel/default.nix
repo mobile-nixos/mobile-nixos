@@ -17,5 +17,8 @@ mobile-nixos.kernel-builder {
 
   inherit src;
 
+  patches = [
+    ./pstore-and-simplefb-harpia.patch
+  ];
   isModular = true;
 }
