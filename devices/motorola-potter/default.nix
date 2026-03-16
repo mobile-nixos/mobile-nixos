@@ -54,23 +54,6 @@ in
   mobile.device.enableFirmware = false;
 
   mobile.system.android.device_name = "potter";
-  mobile.system.android = {
-    bootimg.flash = {
-      offset_base = "0x80000000";
-      offset_kernel = "0x00008000";
-      offset_ramdisk = "0x01000000";
-      offset_second = "0x00f00000";
-      offset_tags = "0x00000100";
-      pagesize = "2048";
-    };
-    appendDTB = [
-      "dtbs/qcom/sdm625-motorola-potter.dtb"
-    ];
-  };
-
-  # The boot partition on this phone is 16MB, so use `xz` compression
-  # as smaller than gzip
-  mobile.boot.stage-1.compression = lib.mkDefault "xz";
 
   mobile.usb = {
     mode = "gadgetfs";
@@ -83,8 +66,8 @@ in
     };
   };
 
-  mobile.system.type = "android";
-  mobile.system.android.flashingMethod = "lk2nd";
+  mobile.system.type = "lk2nd";
+  mobile.outputs.lk2nd.package = pkgs.lk2nd.override { soc = "msm8953"; };
 
   mobile.kernel.structuredConfig = [
     (helpers: with helpers; {

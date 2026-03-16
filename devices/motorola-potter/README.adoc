@@ -3,6 +3,11 @@ include::_support/common.inc[]
 
 == Device-specific notes
 
+=== Installation prerequisite (lk2nd)
+
+This device requires that the "lk2nd" second-stage bootloader is
+installed onto the `boot` partition before installing Mobile NixOS
+
 
 === Firmware for Wi-Fi
 
