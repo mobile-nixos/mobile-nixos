@@ -12,8 +12,8 @@ compatibility provided by lk2nd.
 
 lk2nd searches the device for a partition with an
 extlinux-compatible layout and boots the first it finds. The
-`outputs.default` target provides a file `extlinux-boot.img` which is
-an image of such a fileystem. A full install of Mobile NixOS comprises installing lk2nd (if not installed already), then  writing `extlinux-boot.img` and
+`outputs.default` target provides a file `boot.img` which is
+an image of such a fileystem. A full install of Mobile NixOS comprises installing lk2nd (if not installed already), then  writing `boot.img` and
 `system.img` onto any two partitions large enough to hold them.
 
 lk2nd searches partitions on the sd card as well as builtin storage,
@@ -25,7 +25,7 @@ recovery and use adb:
 
 ```
 $ # assumes sd card has previously been partitioned with boot and root
-$ dd status=progress if=extlinux-boot.img | adb shell -e none dd of=/dev/block/mmcblk1p1 bs=1048576
+$ dd status=progress if=boot.img | adb shell -e none dd of=/dev/block/mmcblk1p1 bs=1048576
 $ dd status=progress if=system.img | adb shell -e none dd of=/dev/block/mmcblk1p2 bs=1048576
 ```
 
