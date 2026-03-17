@@ -15,8 +15,8 @@ in
     name = "Moto G5 Plus";
     manufacturer = "Motorola";
   };
-  # The boot image is currently too big to fit.
-  mobile.device.supportLevel = "broken";
+
+  mobile.device.supportLevel = "unsupported";
 
   mobile.hardware = {
     soc = "qualcomm-msm8953";
