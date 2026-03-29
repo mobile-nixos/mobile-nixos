@@ -5,7 +5,7 @@ let
 
   inherit (pkgsBuildBuild) file;
   inherit (lib) optionalString;
-  inherit (stdenv) system;
+  inherit (stdenv.hostPlatform) system;
   emulators = {
     "aarch64-linux" = "qemu-aarch64";
     "armv7l-linux" = "qemu-arm";
@@ -15,7 +15,7 @@ let
     if stdenv.buildPlatform == stdenv.hostPlatform then ""
     else "${pkgsBuildBuild.qemu}/bin/${emulators.${system}}"
   ;
-  mkTest = what: script: runCommand "cross-canary-${what}-${stdenv.system}" {} ''
+  mkTest = what: script: runCommand "cross-canary-${what}-${stdenv.hostPlatform.system}" {} ''
     assert_static() {
       if ! ${file}/bin/file "$1" | grep -q 'statically linked'; then
         printf "Assertion failed: '%s' is not a static binary\n" "$1"

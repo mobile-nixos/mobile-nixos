@@ -57,7 +57,7 @@ let
     ''
     else if flashingMethod == "odin" then ''
       heimdall flash \
-        --BOOT "$dir"/boot.img ${optionalString has_recovery_partition ''\
+        --BOOT "$dir"/boot.img ${optionalString has_recovery_partition ''
         --RECOVERY "$dir"/recovery.img
       ''}
     ''

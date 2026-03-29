@@ -1,4 +1,4 @@
-{ stdenv, nodePackages }:
+{ stdenv, lessc, svgo }:
 
 stdenv.mkDerivation {
   src = ./.;
@@ -6,8 +6,8 @@ stdenv.mkDerivation {
   pname = "mobile-nixos-website-styles";
   version = "2019-11-06";
 
-  buildInputs = with nodePackages; [
-    less
+  buildInputs = [
+    lessc
     svgo
   ];
 

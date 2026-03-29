@@ -197,8 +197,8 @@ class Configuration::NixOSConfiguration
     case @configuration[:environment][:phone_environment].to_sym
     when :phosh
       imports << "<mobile-nixos/examples/phosh/phosh.nix>"
-    when :plamo
-      imports << "<mobile-nixos/examples/plasma-mobile/plasma-mobile.nix>"
+    #when :plamo
+    #  imports << "<mobile-nixos/examples/plasma-mobile/plasma-mobile.nix>"
     end
 
     imports = imports.join("\n").indent
@@ -258,13 +258,13 @@ services.xserver.desktopManager.phosh = {
   user = #{username.to_json};
 };
 EOF
-    when :plamo
-<<EOF
-# Auto-login for Plasma Mobile
-services.displayManager.autoLogin = {
-  user = #{username.to_json};
-};
-EOF
+#    when :plamo
+#<<EOF
+## Auto-login for Plasma Mobile
+#services.displayManager.autoLogin = {
+#  user = #{username.to_json};
+#};
+#EOF
     end
   end
 

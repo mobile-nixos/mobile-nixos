@@ -12,7 +12,7 @@ in
 {
   # Pins pre-built artifacts within the system closure that are going to be
   # used by the installer.
-  system.extraSystemBuilderCmds = ''
+  system.systemBuilderCommands = ''
     echo ":: Adding pre-built boot files to closure..."
     (
       PS4=" $ "; set -x

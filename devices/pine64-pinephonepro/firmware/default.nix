@@ -1,6 +1,6 @@
 { lib
 , runCommand
-, firmwareLinuxNonfree
+, linux-firmware
 , fetchgit
 , fetchFromGitLab
 }:
@@ -29,7 +29,7 @@ in
 
 # The minimum set of firmware files required for the device.
 runCommand "pine64-pinephonepro-firmware" {
-  src = firmwareLinuxNonfree;
+  src = linux-firmware;
 } ''
   for firmware in \
     rockchip/dptx.bin \

@@ -26,7 +26,7 @@ rec {
       ++ (import "${toString pkgs.path}/nixos/modules/module-list.nix")
     )
   }: evalConfig {
-    inherit (pkgs) system;
+    inherit (pkgs.stdenv.hostPlatform) system;
     inherit baseModules;
     modules =
       (if device ? special
@@ -57,18 +57,11 @@ rec {
                 aarch64-linux = "generic-aarch64";
                 armv7l-linux = "generic-armv7l";
               }.${buildingForSystem};
-              nixpkgs.localSystem = knownSystems.${system};
+              nixpkgs.buildPlatform = system;
+              nixpkgs.system = buildingForSystem;
             }
           ];
         };
-      };
-
-      # Shortcuts from a simple system name to the structure required for
-      # localSystem and crossSystem
-      knownSystems = {
-        x86_64-linux  = lib.systems.examples.gnu64;
-        aarch64-linux = lib.systems.examples.aarch64-multiplatform;
-        armv7l-linux  = lib.systems.examples.armv7l-hf-multiplatform;
       };
 
       # Eval with a configuration, for the given device.

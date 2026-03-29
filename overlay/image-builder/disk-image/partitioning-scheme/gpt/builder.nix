@@ -1,7 +1,7 @@
 { stdenvNoCC
 , lib
 , gptfdisk
-, utillinux
+, util-linux
 , config
 }:
 
@@ -35,7 +35,7 @@ stdenvNoCC.mkDerivation rec {
 
   nativeBuildInputs = [
     gptfdisk
-    utillinux
+    util-linux
   ];
 
   buildCommand = let

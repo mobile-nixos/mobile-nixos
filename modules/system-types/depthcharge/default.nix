@@ -54,7 +54,7 @@ let
     nativeBuildInputs = with pkgs; [
       dtc
       ubootTools
-      vboot_reference
+      vboot-utils
       xz
     ];
   } ''
@@ -79,8 +79,8 @@ let
       --bootloader bootloader.bin \
       --vmlinuz vmlinux.uimg \
       --arch ${arch} \
-      --keyblock ${pkgs.vboot_reference}/share/vboot/devkeys/kernel.keyblock \
-      --signprivate ${pkgs.vboot_reference}/share/vboot/devkeys/kernel_data_key.vbprivk \
+      --keyblock ${pkgs.vboot-utils}/share/vboot/devkeys/kernel.keyblock \
+      --signprivate ${pkgs.vboot-utils}/share/vboot/devkeys/kernel_data_key.vbprivk \
       --config ${kpart_config} \
       --pack $out
   '';
@@ -138,7 +138,7 @@ in
         additionalCommands = ''
           echo ":: Making image bootable by depthcharge"
           (PS4=" $ "; set -x
-          ${pkgs.buildPackages.vboot_reference}/bin/cgpt ${concatStringsSep " " [
+          ${pkgs.buildPackages.vboot-utils}/bin/cgpt ${concatStringsSep " " [
             "add"
             "-i 1"  # Work on the first partition (instead of adding)
             "-S 1"  # Mark as successful (so it'll be booted from)
@@ -146,7 +146,7 @@ in
             "-P 10" # Priority
             "$img"
           ]}
-          ${pkgs.buildPackages.vboot_reference}/bin/cgpt ${concatStringsSep " " [
+          ${pkgs.buildPackages.vboot-utils}/bin/cgpt ${concatStringsSep " " [
             "show"
             "$img"
           ]}

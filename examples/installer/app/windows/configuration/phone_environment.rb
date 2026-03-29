@@ -4,7 +4,7 @@ module GUI
     ENVIRONMENTS = [
       # Keep them alphabetically sorted
       [:phosh, "Phosh"],
-      [:plamo, "Plasma Mobile"],
+      #[:plamo, "Plasma Mobile"],
     ]
 
     def configuration_data

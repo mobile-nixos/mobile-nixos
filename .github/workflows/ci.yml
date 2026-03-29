@@ -13,15 +13,25 @@ jobs:
       - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
       - name: "Parse .nix files"
         run: .ci/parse-all.sh
-  Instantiation:
+  Quick_Eval:
     runs-on: [ubuntu-latest]
     steps:
       - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
       - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
         with:
           nix_path: nixpkgs=channel:nixos-unstable
-      - name: "Instantiation"
-        run: bin/hydra-eval
+      - name: "Quick Evaluation"
+        run: .ci/quick-eval.sh
+  # Temporarily disabled.
+  #Instantiation:
+  #  runs-on: [ubuntu-latest]
+  #  steps:
+  #    - uses: "actions/checkout@5a4ac9002d0be2fb38bd78e4b4dbde5606d7042f"
+  #    - uses: "cachix/install-nix-action@07da2520eebede906fbeefa9dd0a2b635323909d"
+  #      with:
+  #        nix_path: nixpkgs=channel:nixos-unstable
+  #    - name: "Instantiation"
+  #      run: bin/hydra-eval
   Kernel_configuration_up-to-date:
     runs-on: [ubuntu-latest]
     steps:

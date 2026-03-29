@@ -242,7 +242,7 @@ in
             extend = _: self;
           };
         in self
-        else (pkgs.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
+        else (lib.recurseIntoAttrs (pkgs.linuxPackagesFor cfg.package))
       );
 
       system.boot.loader.kernelFile = mkIf (cfg.package != null && cfg.package ? file) (

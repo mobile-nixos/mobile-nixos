@@ -40,20 +40,35 @@ class UI
   def initialize()
     @vertical_offset = 0
 
-    add_screen
-    add_page
-    # Biggest of horizontal or vertical; a percent.
+    # The screen holds "everything".
+    add_screen()
+
+    # Define a base unit from the size of the root widget.
+    # Biggest of horizontal or vertical; one percent of its size.
     @unit = ([@screen.get_width, @screen.get_height].max * 0.01).ceil
-    add_logo
-    add_progress_bar
-    add_label
-    add_recovery
+    # Common spacing between widgets
+    @spacing = 5 * @unit
 
-    add_textarea
-    add_keyboard
+    # The page holds the UI except for the keyboard.
+    # This can be used to move the display up, when showing the keyboard.
+    add_page()
+    # Then the keyboard.
+    add_keyboard()
 
-    add_cover
-    add_cover_bgrt
+    # We then build the page.
+    # Add the splash logo first,
+    add_logo()
+    # Then the different UI widgets
+    add_progress_bar()
+    add_label()
+    add_recovery()
+    add_textarea()
+    # Once all those are added, we'll know where the bottom of them all is.
+    # Recompute the layout so it doesn't go off-page.
+    relayout_page()
+
+    add_cover()
+    add_cover_bgrt()
   end
 
   def add_canvas(parent, width, height)
@@ -66,7 +81,6 @@ class UI
   def add_bgrt(parent)
     # Work around the extension sniffing from the image decoders...
     File.symlink(BGRT_PATH, "/bgrt.bmp") unless File.exist?("/bgrt.bmp")
-    file = "/bgrt.bmp"
 
     # Temporarily makes an image to get its width/height...
     image = LVGL::LVImage.new(parent)
@@ -170,7 +184,7 @@ class UI
     @label.set_align(LVGL::LABEL_ALIGN::CENTER)
 
     @label.set_width(@page.get_width * 0.9)
-    @label.set_pos(*center(@label, 0, 5*@unit))
+    @label.set_pos(*center(@label, 0, @spacing))
     @label.set_text("")
   end
 
@@ -200,7 +214,7 @@ class UI
     midpoint = @screen.get_height/2
     bottom_third = @screen.get_height() / 3.0 * 2
     logo_bottom = @logo.get_height() + @logo.get_y()
-    @vertical_offset = logo_bottom - midpoint + 5*@unit
+    @vertical_offset = logo_bottom - midpoint + @spacing
     @vertical_offset = 0 if @vertical_offset < 0
 
     # Some vendors ship a full-screen BGRT.
@@ -210,7 +224,7 @@ class UI
     # This assumption should hold since this is the assumptions for Windows.
     if (@vertical_offset + midpoint) > bottom_third
       # Force the UI area to be at the last third at the bottom.
-      @vertical_offset = bottom_third - midpoint + 5*@unit
+      @vertical_offset = bottom_third - midpoint + @spacing
     end
   end
 
@@ -292,6 +306,7 @@ class UI
       style.body_grad_color = BG_COLOR
       # Some themes will add a border to LVObject.
       style.body_border_width = 0
+      style.body_radius = 0
     end
   end
 
@@ -300,6 +315,7 @@ class UI
   def add_cover_bgrt()
     return unless has_bgrt?()
     @cover_bgrt = add_bgrt(@cover)
+    @cover_bgrt.set_click(false)
   end
 
   def add_textarea()
@@ -328,6 +344,25 @@ class UI
 
     LVGUI.focus_group.add_obj(@ta)
     LVGUI.focus_ring_disable()
+  end
+
+  def relayout_page()
+    page_bottom = @page.get_y() + @page.get_height()
+
+    # We know the widget that's the furthest down is the textarea. Let's use it for the metrics.
+    ta_bottom = @ta.get_y() + @ta.get_height()
+    # Add some space, so it's not tight against the bottom of the page.
+    ta_bottom = ta_bottom + (@spacing / 2)
+
+    # Is this going past the page's boundaries?
+    if ta_bottom > page_bottom
+      offset = page_bottom - ta_bottom
+      @page.get_children().each do |child|
+        unless child == @logo
+          child.set_y(child.get_y() + offset)
+        end
+      end
+    end
   end
 
   def add_keyboard()
@@ -361,8 +396,18 @@ class UI
     @keyboard.set_ta(@ta)
     @keyboard.show()
 
-    bottom_space = @screen.get_height() - (@ta.get_y() + @ta.get_height())
-    delta = bottom_space - @keyboard.get_height() - 3*@unit
+    bottom_space = [
+      # Starting from the bottom of the screen
+      @screen.get_height(),
+      # Check where the textarea is
+      @ta.get_y() + @ta.get_height(),
+      # With a half-spacing
+      @spacing / 2,
+    ].inject(:-)
+
+    # See if they keyboard would cover it...
+    delta = bottom_space - @keyboard.get_height()
+    # And offset the page so to not cover it.
     offset_page(delta) if delta < 0
 
     @ta.on_submit = ->(value) do
@@ -379,7 +424,7 @@ class UI
   def offset_page(delta)
     LVGL::LVAnim.new().tap do |anim|
       anim.set_exec_cb(@page, :lv_obj_set_y)
-      anim.set_time(300, 0)
+      anim.set_time(@keyboard.animation_duration, 0)
       anim.set_values(@page.get_y(), delta)
       anim.set_path_cb(LVGL::LVAnim::Path::EASE_OUT)
 

@@ -69,7 +69,7 @@ let
     ln -s ${assets} $out/"share/${assetsPath}"
   '';
 
-  script-loader = mobile-nixos.stage-1.script-loader.override({
+  script-loader = mobile-nixos.script-loader.override({
     withSimulator = true;
   });
 

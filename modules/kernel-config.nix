@@ -164,8 +164,8 @@ in
         IP_NF_IPTABLES              = module;
         IP6_NF_IPTABLES             = module;
         NETFILTER_XTABLES           = module;
-        IP_NF_RAW                   = module;
-        IP6_NF_RAW                  = module;
+        IP_NF_RAW                   = whenOlder "6.17" module; # Transitively depends on CONFIG_NETFILTER_XTABLES_LEGACY on newer kernels
+        IP6_NF_RAW                  = whenOlder "6.17" module; # Transitively depends on CONFIG_NETFILTER_XTABLES_LEGACY on newer kernels
         NETFILTER_XT_TARGET_CT      = module; # required for NF_CONNTRACK_ZONES
 
         BRIDGE                      = module; # required for BRIDGE_NETFILTER

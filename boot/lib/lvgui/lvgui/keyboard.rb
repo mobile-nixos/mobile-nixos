@@ -4,12 +4,14 @@
 class LVGUI::Keyboard < LVGUI::Widget
   include Singleton
 
+  attr_accessor :animation_duration
   attr_accessor :container
 
   private
 
   def initialize()
     @shown = false
+    @animation_duration = 300
     # Attach the keyboard to the current active screen, by default.
     super(LVGL::LVKeyboard.new(LVGL::LVDisplay.get_scr_act()))
     set_cursor_manage(true)
@@ -76,7 +78,7 @@ class LVGUI::Keyboard < LVGUI::Widget
   def _animate_y(ending)
     LVGL::LVAnim.new().tap do |anim|
       anim.set_exec_cb(self, :lv_obj_set_y)
-      anim.set_time(300, 0)
+      anim.set_time(@animation_duration, 0)
       anim.set_values(get_y(), ending)
       anim.set_path_cb(LVGL::LVAnim::Path::EASE_OUT)
 

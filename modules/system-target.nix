@@ -22,11 +22,20 @@ let
   # Use JSON to escape values for printing
   e = builtins.toJSON;
 
-  # When `nixpkgs` is built on a different platform than it will be running on.
-  isCross = deviceHostPlatform.system != localSystem.system;
-
   # The host platform selected by the Mobile device configuration
   deviceHostPlatform = elaborate cfg.system;
+
+  # The `config.nixpkgs` attribute set value defaults are not supposed to be read.
+  # Let's try anyway, and assume a pure evaluation with i.e. `[flake]lib.nixosSystem` is in play when that fails.
+  # This should be safe, as this is only used to automatically compute cross-compilation in “impure” environments.
+  hasLocalSystem =
+    (builtins.tryEval (
+      config.nixpkgs.localSystem
+    )).success
+  ;
+
+  # When `nixpkgs` is built on a different platform than it will be running on.
+  isCross = hasLocalSystem && deviceHostPlatform.system != localSystem.system;
 
   # Be mindful about using `config` values that depends on `nixpkgs.buildPlatform`!
   # This is used when setting `nixpkgs.buildPlatform`, so any values depending on `nixpkgs.buildPlatform`,

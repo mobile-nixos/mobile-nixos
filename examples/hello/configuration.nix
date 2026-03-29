@@ -4,7 +4,7 @@ let
   inherit (lib.strings) makeBinPath;
 
   app = pkgs.callPackage ./app {};
-  hello-gui = pkgs.mobile-nixos.stage-1.script-loader.wrap {
+  hello-gui = pkgs.mobile-nixos.script-loader.wrap {
     name = "hello-gui";
     applet = "${app}/libexec/app.mrb";
     env = {
@@ -120,9 +120,11 @@ in
   # The LVGUI interface can be used with volume keys for selecting
   # and power to activate an option.
   # Without this, logind just powers off :).
-  services.logind.extraConfig = ''
-    HandlePowerKey=ignore
-  '';
+  services.logind.settings = {
+    Login = {
+      HandlePowerKey = "ignore";
+    };
+  };
 
   system.build = {
     app-simulator = app.simulator;
