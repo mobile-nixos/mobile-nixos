@@ -27,5 +27,6 @@
   ];
   mesonFlags = mesonFlags ++ [
     "-Dlibwacom=false"
+    "-Dlua-plugins=disabled"
   ];
 })
