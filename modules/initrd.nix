@@ -407,5 +407,9 @@ in
         LD_LIBRARY_PATH = "${extraUtils}/lib";
         PATH = "${extraUtils}/bin";
       };
+      system.systemBuilderCommands = ''
+        printf ":: Copying Mobile NixOS stage-1...\n"
+        ln -f -v -s "${config.system.build.initialRamdisk}/${config.system.boot.loader.initrdFile}" $out/initrd
+      '';
     };
   }
