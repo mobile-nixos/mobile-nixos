@@ -1,4 +1,5 @@
-{ libinput
+{ lib
+, libinput
 , libevdev
 , mtdev
 , buildPackages
@@ -26,6 +27,6 @@
     buildPackages.udev
   ];
   mesonFlags = mesonFlags ++ [
-    "-Dlibwacom=false"
+    (lib.mesonBool "libwacom" false)
   ];
 })
