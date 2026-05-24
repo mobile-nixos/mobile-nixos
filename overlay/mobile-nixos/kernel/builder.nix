@@ -169,7 +169,9 @@ in
 
 let
   evaluatedStructuredConfig = import ./eval-config.nix {
-    inherit lib path version writeShellScript;
+    inherit lib path version;
+    runtimeShell = buildPackages.runtimeShell;
+    inherit writeTextFile;
     structuredConfig = (systemBuild-structuredConfig version);
   };
 
