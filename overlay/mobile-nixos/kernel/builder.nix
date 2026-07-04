@@ -160,9 +160,19 @@ in
 
 # Used to provide the default kernelFile
 , kernelFileExtension ? if isCompressed != false then ".${isCompressed}" else ""
-, kernelTarget ? if platform.linux-kernel.target == "Image"
-    then "${platform.linux-kernel.target}${kernelFileExtension}"
-    else platform.linux-kernel.target
+, kernelTarget ?
+    if stdenv.hostPlatform.isx86 then
+      "bzImage"
+    else if stdenv.hostPlatform.isAarch32 then
+      "zImage"
+    else if stdenv.hostPlatform.isAarch64 || stdenv.hostPlatform.isRiscV then
+      "Image"
+    else if stdenv.hostPlatform.isLoongArch64 then
+      "vmlinuz.efi"
+    else
+      "vmlinux"
+, buildDTBs ?
+    stdenv.hostPlatform.isAarch || stdenv.hostPlatform.isRiscV || stdenv.hostPlatform.isLoongArch64
 
 , ...
 } @ inputArgs:
@@ -194,8 +204,6 @@ let
   pkg-config-helper = writeShellScriptBin "pkg-config" ''
     exec ${buildPackages.pkg-config}/bin/${buildPackages.pkg-config.targetPrefix}pkg-config "$@"
   '';
-
-  hasDTB = platform.linux-kernel ? DTB && platform.linux-kernel.DTB;
 in
 
 # This `let` block allows us to have a self-reference to this derivation.
@@ -217,7 +225,7 @@ stdenv.mkDerivation (inputArgs // {
 
   depsBuildBuild = [ buildPackages.stdenv.cc ];
   nativeBuildInputs = [ perl bc net-tools openssl rsync gmp libmpc mpfr ]
-    ++ optional (platform.linux-kernel.target == "uImage") buildPackages.ubootTools
+    ++ optional (kernelTarget == "uImage") buildPackages.ubootTools
     ++ optional (lib.versionAtLeast version "4.14" && lib.versionOlder version "5.8") libelf
     ++ optional (lib.versionAtLeast version "4.15") util-linux
     ++ optionals (lib.versionAtLeast version "4.16") [ bison flex ]
@@ -488,7 +496,7 @@ stdenv.mkDerivation (inputArgs // {
     rm -vf "$out/lib/modules/${modDirVersion}/build"
     rm -vf "$out/lib/modules/${modDirVersion}/source"
 
-  '' + optionalString hasDTB ''
+  '' + optionalString buildDTBs ''
     echo ":: Installing DTBs"
     mkdir -p $out/dtbs/
     make $makeFlags "''${makeFlagsArray[@]}" dtbs dtbs_install INSTALL_DTBS_PATH=$out/dtbs

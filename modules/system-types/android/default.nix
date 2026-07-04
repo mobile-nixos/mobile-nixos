@@ -221,6 +221,8 @@ in
 
       mobile.documentation.systemTypeFargment = ./. + "/device-notes.${flashingMethod}.adoc.erb";
 
+      hardware.deviceTree.enable = false;
+
       assertions = [
         {
           assertion = config.mobile.system.android.appendDTB == null || config.mobile.system.android.bootimg.dt == null;

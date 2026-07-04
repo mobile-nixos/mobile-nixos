@@ -160,6 +160,8 @@ in
           disk-image = config.mobile.generatedDiskImages.disk-image.output;
         };
       };
+
+      hardware.deviceTree.enable = false;
     })
   ];
 }
