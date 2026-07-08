@@ -1,0 +1,24 @@
+== Building
+
+This will build the default output for your _<%= info["fullName"] %>_.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A outputs.default
+
+=== Installation
+
+Before Mobile NixOS can be installed on your _<%= info["fullName"] %>_
+you will first need to install the "lk2nd" second-stage
+bootloader. This is flashed to the `boot` partition in place of an
+Android-style boot image, and when started it will look across
+all the other partitions for an extlinux-style boot partition to
+continue booting.
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A outputs.default
+ $ fastboot flash boot result/lk2nd.img
+
+lk2nd also implements the Android fastboot protocol. If you are
+already booted to the lk2nd screen and want to upgrade to a newer
+lk2nd, then you should flash to `lk2nd` instead of `boot`
+
+ $ nix-build --argstr device <%= info["identifier"] %> -A outputs.default
+ $ fastboot flash lk2nd result/lk2nd.img

@@ -3,6 +3,7 @@ stdenv
 , fetchFromGitHub
 , libhybris
 , zlib
+, lib
 , openssl
 }:
 

@@ -38,7 +38,7 @@ pkgs.runCommand name {
     --kernel  $kernel \
     ${optionalString (bootimg.dt != null) "--dt ${bootimg.dt}"} \
     --ramdisk ${initrd} \
-    --cmdline       "${cmdline}" \
+    --cmdline        ${lib.escapeShellArg cmdline} \
     --base           ${bootimg.flash.offset_base   } \
     --kernel_offset  ${bootimg.flash.offset_kernel } \
     --second_offset  ${bootimg.flash.offset_second } \
