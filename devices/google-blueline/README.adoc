@@ -1,0 +1,26 @@
+= Google Pixel 3
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== Console
+
+```
+ $ fastboot oem uart full
+```
+
+[NOTE]
+====
+Using `fastboot oem uart help` gives you some help about the feature.
+====
+
+
+=== Tips
+
+==== `fastboot boot`
+
+Using `fastboot boot` may fail if the current slot is in a failed state.
+
+With the latest platform firmware available (RQ3A) boot counting starts at `0`,
+which means that a single reboot without marking the slot as successful will
+mark the slot as failed.

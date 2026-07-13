@@ -1,0 +1,115 @@
+From 91547f1e784e25bcc49981b92a855346974c687c Mon Sep 17 00:00:00 2001
+From: Samuel Dionne-Riel <samuel@dionne-riel.com>
+Date: Sat, 10 Sep 2022 21:19:10 -0400
+Subject: [PATCH] XXX: google-blueline: sync dts with
+ 9060b7256952a63311479ea56fda6c4d22ca96ab
+
+This makes touch work, but obviously do not ship.
+---
+ .../boot/dts/qcom/sdm845-google-blueline.dts  | 62 ++++++++++++++++---
+ 1 file changed, 54 insertions(+), 8 deletions(-)
+
+diff --git a/arch/arm64/boot/dts/qcom/sdm845-google-blueline.dts b/arch/arm64/boot/dts/qcom/sdm845-google-blueline.dts
+index eaa2b4a929b8e..e01cc8f9eb473 100644
+--- a/arch/arm64/boot/dts/qcom/sdm845-google-blueline.dts
++++ b/arch/arm64/boot/dts/qcom/sdm845-google-blueline.dts
+@@ -21,7 +21,7 @@
+ 
+ / {
+ 	model = "Google Pixel 3";
+-	compatible = "google,blueline", "qcom,sdm845";
++	compatible = "google,blueline", "google,pixel3", "qcom,sdm845";
+ 	qcom,board-id = <0x00021505 0>;
+ 	qcom,msm-id = <321 0x20001>;
+ 
+@@ -134,6 +134,47 @@ vreg_s4a_1p8: vreg-s4a-1p8 {
+ 
+ 		vin-supply = <&vph_pwr>;
+ 	};
++
++	/*
++	 * GPI_DMA on qup2 seems to be broken, so use i2c-gpio
++	 * for the touchscreen for now
++	 */
++	ts-i2c-gpio {
++		compatible = "i2c-gpio";
++		status = "okay";
++		sda-gpios = <&tlmm 27 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
++		scl-gpios = <&tlmm 28 (GPIO_ACTIVE_HIGH|GPIO_OPEN_DRAIN)>;
++		// 5us ~= 100kHz
++		// 2us ~= 250kHz
++		// RIP one CPU core
++		i2c-gpio,delay-us = <1>;
++
++		pinctrl-names = "default";
++		pinctrl-0 = <&touchscreen_i2c_pins>;
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		touchscreen@49 {
++			compatible = "st,fts";
++			reg = <0x49>;
++			pinctrl-names = "default";
++			pinctrl-0 = <&touchscreen_pins &touchscreen_reset>;
++			interrupt-parent = <&tlmm>;
++			interrupts = <125 IRQ_TYPE_LEVEL_LOW>;
++			avdd-supply = <&vreg_l14a_1p88>;
++			vdd-supply = <&vreg_l19a_3p3>;
++			// touchscreen-size-x = <1080>;
++			// touchscreen-size-y = <2160>;
++
++			st,irq-gpio = <&tlmm 125 0>;
++			st,reset-gpio = <&tlmm 99 0>;
++			st,switch_gpio = <&tlmm 136 0>;
++			st,max-coords = <1079 2159>;
++			st,regulator_dvdd = "vdd";
++			st,regulator_avdd = "avdd";
++		};
++	};
+ };
+ 
+ &adsp_pas {
+@@ -404,6 +445,10 @@ zap-shader {
+ 	};
+ };
+ 
++/*
++ * For some reason the touchscreen doesn't work properly
++ * with the proper i2c controller, leave it disabled for now
++ */
+ &i2c2 {
+ 	status = "disabled";
+ 	#dma-cells = <3>;
+@@ -433,13 +478,6 @@ touchscreen@49 {
+ 	};
+ };
+ 
+-&ipa {
+-	status = "okay";
+-
+-	memory-region = <&ipa_fw_mem>;
+-	firmware-name = "qcom/sdm845/pixel3/ipa_fws.mbn";
+-};
+-
+ &mss_pil {
+ 	status = "okay";
+ 	firmware-name = "qcom/sdm845/pixel3/mba.mbn", "qcom/sdm845/pixel3/modem.mbn";
+@@ -590,6 +628,14 @@ mux {
+ 			bias-disable;
+ 		};
+ 	};
++
++	touchscreen_i2c_pins: qup-i2c2-gpio {
++		pins = "gpio27", "gpio28";
++		function = "gpio";
++
++		drive-strength = <2>;
++		bias-disable;
++	};
+ };
+ 
+ &uart6 {
+-- 
+2.35.1
+
