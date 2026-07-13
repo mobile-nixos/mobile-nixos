@@ -1,0 +1,14 @@
+= Xiaomi POCO F1
+include::_support/common.inc[]
+
+== Device-specific notes
+
+=== First time setup notes
+
+==== Update firmware
+
+==== Dual booting
+
+This is not supported. Refer to other non-Android Linux instructions and
+adapt as needed. Here be snapdragons.
+
