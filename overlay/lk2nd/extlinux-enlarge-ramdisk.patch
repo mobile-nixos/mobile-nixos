@@ -1,0 +1,30 @@
+CAUTION: This patch works for me on
+
+* Motorola Harpia
+* Motorola Potter
+
+but may not work for you on some other device (or even variant,
+perhaps). However, 16MB is too little to load the mobile nixos
+initramfs, so it's a choice between a patch that works on some
+machines or no patch that works nowhere.
+
+To quote the PostmarketOS lk2nd maintainers: "there is only so much
+universally safe ram to load stuff at. If you make it bigger you'd
+either overrun lk's memory or hit reserved memory and crash. If you
+put it anywhere else (i.e. in scratch) you risk overlapping linux
+reserved memory or hit non-identity mapped virtual memory."
+
+
+diff --git a/lk2nd/boot/extlinux.c b/lk2nd/boot/extlinux.c
+index 2332e3c3..79ab14ec 100644
+--- a/lk2nd/boot/extlinux.c
++++ b/lk2nd/boot/extlinux.c
+@@ -354,7 +354,7 @@ extern void boot_linux(void *kernel, unsigned *tags,
+ 
+ #define MAX_KERNEL_SIZE			(32 * 1024 * 1024)
+ #define MAX_TAGS_SIZE			(2 * 1024 * 1024)
+-#define MAX_RAMDISK_SIZE		(16 * 1024 * 1024)
++#define MAX_RAMDISK_SIZE		(64 * 1024 * 1024)
+ 
+ struct load_addrs {
+ 	void *kernel;
