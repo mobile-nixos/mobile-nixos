@@ -61,6 +61,14 @@ in
         Support level for the device.
       '';
     };
+
+    maintainers = mkOption {
+      type = (types.listOf types.attrs);
+      default = [ { } ];
+      description = lib.mdDoc ''
+        List of maintainers for the device
+      '';
+    };
   };
 
   config = mkMerge [
