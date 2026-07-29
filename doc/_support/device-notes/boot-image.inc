@@ -32,3 +32,21 @@ be able to instantiate a cross-compilable boot image this way:
 
 The build infra for Mobile NixOS will activate cross-compiling for the
 derivation. It can be copied to a standard `x86_64-linux` host and built there.
+
+===== With flakes
+
+If your system is built with flakes, the boot partition can be built with:
+
+```
+nix build your/flake#nixosConfigurations.your-host.config.mobile.outputs.u-boot.boot-partition
+```
+
+To cross compile for example x86_64-linux->aarch64-linux, you'll need to
+set `nixosConfigurations.your-host.system = "x86_64-linux"` in your flake despite this
+contradicting what the target device is running.
+
+The boot partition will instead be built with binfmt when
+nixosConfigurations.your-host.system equals the target device system, the build platform differs from
+the target device, and binfmt is enabled on the build platform with
+`boot.binfmt.emulatedSystems = [ "aarch64-linux" ];`.
+
