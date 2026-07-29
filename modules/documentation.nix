@@ -20,7 +20,6 @@ in
     };
   };
   config = {
-    documentation.nixos.options.splitBuild = false;
     mobile.documentation.hydraOutputs = lib.mkAfter [
       # x86_64-linux since we link to the cross-compiled build.
       # TODO: link to native builds?
