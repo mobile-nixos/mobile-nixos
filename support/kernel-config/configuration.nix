@@ -47,13 +47,14 @@ let
     "ARCH_XGENE"
     "ARCH_ZYNQMP"
   ];
-  inherit (pkgs.stdenv)
+  inherit (pkgs.stdenv.hostPlatform)
     is64bit
+    isAarch32
     isAarch64
     isx86_32
     isx86_64
   ;
-  isArm = pkgs.stdenv.isAarch64 || pkgs.stdenv.isAarch32;
+  isArm =  isAarch32 || isAarch64;
   isx86 = isx86_32 || isx86_64;
 
   evaluatedStructuredConfig = import ../../overlay/mobile-nixos/kernel/eval-config.nix  rec {
