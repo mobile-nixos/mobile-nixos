@@ -47,7 +47,7 @@ let
     "ARCH_XGENE"
     "ARCH_ZYNQMP"
   ];
-  inherit (pkgs.stdenv)
+  inherit (pkgs.stdenv.hostPlatform)
     is64bit
     isAarch32
     isAarch64
