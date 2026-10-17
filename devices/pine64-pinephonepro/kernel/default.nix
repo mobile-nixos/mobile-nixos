@@ -23,10 +23,13 @@ mobile-nixos.kernel-builder {
 
   postInstall = ''
     echo ":: Installing FDTs"
+    make $makeFlags "''${makeFlagsArray[@]}" rockchip/rk3399-pinephone-pro.dtb
     mkdir -p $out/dtbs/rockchip
     cp -v "$buildRoot/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dtb" "$out/dtbs/rockchip/"
   '';
 
   isModular = false;
   isCompressed = false;
+  # Only the device's own DTB is built and installed (see postInstall), so it fits on the boot partition.
+  buildDTBs = false;
 }
