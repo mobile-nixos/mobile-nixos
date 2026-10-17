@@ -46,6 +46,15 @@
 
       # Vibrate motor
       INPUT_GPIO_VIBRA = yes;
+
+      # Cameras
+      VIDEO_ROCKCHIP_ISP1 = yes;
+      PHY_ROCKCHIP_DPHY_RX0 = yes; # Front camera MIPI receiver
+      ROCKCHIP_DW_MIPI_DSI = yes; # DSI1 doubles as the rear camera MIPI receiver
+      VIDEO_IMX258 = yes; # Rear camera
+      VIDEO_DW9714 = yes; # Rear camera focus
+      VIDEO_OV8858 = yes; # Front camera
+      LEDS_SGM3140 = yes; # Flash
     })
   ];
 }
