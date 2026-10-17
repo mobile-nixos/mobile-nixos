@@ -19,6 +19,7 @@ mobile-nixos.kernel-builder {
     ./0001-arm64-dts-rockchip-set-type-c-dr_mode-as-otg.patch
     ./0002-dts-pinephone-pro-Setup-default-on-and-panic-LEDs.patch
     ./0003-usb-dwc3-Enable-userspace-role-switch-control.patch
+    ./0004-arm64-dts-rockchip-pinephone-pro-Move-usb-role-switch-to-connector.patch
   ];
 
   postInstall = ''
