@@ -44,7 +44,6 @@ class Tasks::Luks < Task
     #    "keyFileOffset",
     #    "keyFileSize",
     #    "postOpenCommands",
-    #    "preLVM",
     #    "preOpenCommands",
     #    "yubikey",
     @info = info
