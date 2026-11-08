@@ -7,7 +7,17 @@ in
 lib.mkIf (luks.devices != {} || luks.forceLuksSupportInInitrd) {
   mobile.boot.stage-1 = {
     bootConfig = {
-      luksDevices = luks.devices;
+      #luksDevices = luks.devices;
+      luksDevices =
+        # Prevent awkward check for preLVM usage from firing
+        # when serializing the whole `luks.devices` attribute set.
+        # See: https://github.com/NixOS/nixpkgs/pull/573038
+        lib.mapAttrs (
+          k: v:
+          lib.removeAttrs v ["preLVM"]
+        )
+        luks.devices
+      ;
     };
     kernel = {
       modules = [ "dm_mod" ];
