@@ -1,0 +1,42 @@
+From 7068ad276e923480ae1f68d77c28c49654894a5c Mon Sep 17 00:00:00 2001
+From: Evgeny Kurnevsky <kurnevsky@gmail.com>
+Date: Sat, 17 Oct 2026 11:28:07 +0000
+Subject: [PATCH] arm64: dts: rockchip: pinephone-pro: Move usb-role-switch to
+ connector
+
+Since Linux 6.17 tcpm looks up the role switch via the connector fwnode
+first. fwnode_usb_role_switch_get() then treats the connector's parent
+(the fusb302 node) as the role switch provider because it has a
+"usb-role-switch" property, and defers forever since the fusb302 is not
+a role switch. This breaks fusb302 probing and, transitively, the rk818
+charger, so no battery power supply is registered.
+
+Reference the role switch from the connector node instead, alongside
+the mode and orientation switches.
+---
+ arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+index e6c03c8..350abee 100644
+--- a/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
++++ b/arch/arm64/boot/dts/rockchip/rk3399-pinephone-pro.dts
+@@ -1040,7 +1040,6 @@
+ 		pinctrl-names = "default";
+ 		pinctrl-0 = <&fusb0_int>;
+ 		extcon = <&typec_extcon_bridge>;
+-		usb-role-switch = <&typec_extcon_bridge>;
+ 		vbus-supply = <&otg_switch>;
+ 
+ 		connector {
+@@ -1054,6 +1053,7 @@
+ 			try-power-role = "sink";
+ 			mode-switch = <&typec_extcon_bridge>;
+ 			orientation-switch = <&typec_extcon_bridge>;
++			usb-role-switch = <&typec_extcon_bridge>;
+ 
+ 			altmodes {
+ 				dp {
+-- 
+2.55.0
+
