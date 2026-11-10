@@ -1,0 +1,37 @@
+= Xiaomi Poco F3
+
+== Status
+
+Working port for the Xiaomi Poco F3 / Redmi K40 / Mi 11X
+(`xiaomi-alioth`) using the SM8250 mainline kernel from the
+`mainlining/linux` community tree.
+
+Verified working: display, WiFi, USB, sensors (SLPI via hexagonrpcd),
+CDSP, ADSP, charging.
+
+== Building
+
+----
+$ nix-build --argstr device xiaomi-alioth -A outputs.default
+----
+
+== Notes
+
+The alioth device uses appended DTB (`sm8250-xiaomi-alioth.dtb`) with
+boot header v0. Flash `boot.img` to the boot partition and `system.img`
+to userdata.
+
+The device requires `hexagonrpcd` for SLPI sensor operation, which is
+configured as a systemd service.
+
+Firmware is fetched from the existing alioth firmware repository used by
+postmarketOS. Its license is treated as unfree, so it is not enabled by
+default. Enable it from your local configuration:
+
+----
+{ lib, ... }:
+
+{
+  mobile.device.enableFirmware = lib.mkForce true;
+}
+----
