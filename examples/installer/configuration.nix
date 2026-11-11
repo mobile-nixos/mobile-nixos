@@ -11,4 +11,6 @@
   imports = [
     ./modules/all.nix
   ];
+
+  mobile.rootfs.useSquashfs = true;
 }
