@@ -43,6 +43,8 @@ in
     libusbgx = callPackage ./libusbgx {};
     gadget-tool = callPackage ./gt {}; # upstream this is called "gt", which is very Unix.
 
+    pil-squasher = callPackage ./pil-squasher { };
+
     qrtr = callPackage ./qrtr/qrtr.nix { };
     qmic = callPackage ./qrtr/qmic.nix { };
     tqftpserv = callPackage ./qrtr/tqftpserv.nix { };
