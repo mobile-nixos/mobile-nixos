@@ -22,4 +22,8 @@
   mobile.device.firmware = pkgs.callPackage ./firmware {};
 
   mobile.system.android.device_name = "OnePlus6";
+
+  mobile.device.maintainers = [
+    lib.maintainers.samueldr
+  ];
 }
