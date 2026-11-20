@@ -4,7 +4,8 @@
 , modules ? []
 , structuredConfig
 , version
-, writeShellScript
+, runtimeShell
+, writeTextFile
 }: rec {
   module = import (path + "/nixos/modules/system/boot/kernel_config.nix");
   config = (lib.evalModules {
@@ -43,8 +44,12 @@
           mkConf = cfg: lib.concatStringsSep "\n" (lib.mapAttrsToList mkConfigLine cfg);
           configfile = mkConf config.settings;
 
-          validatorSnippet = writeShellScript "kernel-configuration-validator-snippet" ''
-            (
+          validatorSnippet = writeTextFile {
+            name = "kernel-configuration-validator-snippet";
+            executable = true;
+            text = ''
+              #!${runtimeShell}
+              (
             # This can be executed outside of a Nix build script.
             set -eu
             set -o pipefail
@@ -140,7 +145,8 @@
               echo "... continuing."
             fi
             )
-          '';
+            '';
+          };
         in
         {
           options = {
