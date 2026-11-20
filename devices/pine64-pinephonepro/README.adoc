@@ -9,11 +9,13 @@ The only *supported* platform firmware configuration is to link:https://tow-boot
 
 === Installer
 
-The installer can be downloaded and flashed to an SD card.
+The installer can be downloaded from link:https://hydra.nixos.org/job/mobile-nixos/unstable/installer.pine64-pinephonepro[hydra] and flashed to an SD card. As of March 8th, 2026, the last known working build of the  installer is from link:https://hydra.nixos.org/build/245211838[December 12th, 2023] (link:https://github.com/mobile-nixos/mobile-nixos/issues/700[#700]), but once installed, you can update to the latest version of Mobile NixOS. Note that only Phosh is supported by NixOS now, so do not choose Plasma Mobile in the installer if you intend to update.
 
 ```
  $ dd if=mobile-nixos_pine64-pinephonepro_installer.img of=/dev/sdX bs=8M oflag=sync,direct status=progress
 ```
+
+If you are using the link:https://hydra.nixos.org/build/245211838[December 12th, 2023] build of the installer, or similar, you will have to manually resize the 2nd partition on the SD card to fill the remaining space to avoid the installer running out of space when building packages. It is known to work on an 8GB SD card. This issue is documented for the Pinephone as link:https://github.com/mobile-nixos/mobile-nixos/issues/793[#793].
 
 When using Tow-Boot, hold _volume down_ during boot to boot from the SD card.
 
