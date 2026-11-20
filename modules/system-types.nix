@@ -17,6 +17,7 @@ in
     ./system-types/android
     ./system-types/u-boot
     ./system-types/uefi
+    ./system-types/lk2nd
   ];
 
   options.mobile = {

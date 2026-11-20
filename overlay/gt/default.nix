@@ -17,6 +17,9 @@ stdenv.mkDerivation rec {
     libconfig
     libusbgx
   ];
+  postPatch = ''
+    sed -i.bak -e 's/VERSION 2.8/VERSION 3.5/' CMakeLists.txt
+  '';
   sourceRoot = "${src.name}/source";
   src = fetchFromGitHub {
     owner = "linux-usb-gadgets";
